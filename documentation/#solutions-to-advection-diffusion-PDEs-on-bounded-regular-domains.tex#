@@ -118,6 +118,7 @@
 \spacingset{1.00} % DON'T change the spacing! was set to 1.45
 \section{Motivation}\label{se:introduction}
 
+
 \section{Solution on $\Omega \subset \mathbb{R}$}
 
 \bibliographystyle{plainnat}
