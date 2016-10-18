@@ -132,6 +132,10 @@ The PDE we will solve is the following BC/IC problem
   q(x,0) &= \delta_{x_0}(x), \label{eq:ic} \\
   q(a,t) &= q(b,t) = 0. & (\mbox{i.e. } \Omega = [a,b]) \label{eq:bc}
 \end{align}
+\textbf{Without loss of generality we will assume}
+\begin{align*}
+  a &=0, & b &= 1.
+\end{align*}
 
 Problem (\ref{eq:pde}) - (\ref{eq:bc}) can be solved in a variety of
 ways. We will use the method of images, which repeatedly reflects the
@@ -143,7 +147,7 @@ about the boundary points $a$ and $b$. The steps for the full
 solutions are as follows:
 
 \begin{enumerate}[Step 1:]
-\item Select a kernel for the basis expansion,
+\item Select a kernel $f(x|t)$ for the basis expansion,
 \item Perform Gram-Schmidt orthogonalization on the polynomials basis,
 \item Compute the weight for each basis element,
 \item Profit.
@@ -151,8 +155,66 @@ solutions are as follows:
 
 \subsection{A suitable kernel for the basis elements}
 As noted in the motivating Section \ref{se:motivation}, the kernel we
-will use must be in $C^{\infty}(a,b)$, must obey the boundary
-conditions,
+will use must be in $C^{\infty}(a,b)$, and it must obey the boundary
+conditions. Moreover, it must be chosen such that i) derivatives
+$f'(x)$ and ii) integrals $\int_{\Omega} x^m f(x|t)^2\, dx$ can be
+easily computed. Consideration i) suggests that $f(x|t)$ is of
+polynomial form. Consideration ii) suggests that $f(x|t)$ should be a
+known pdf over $[a,b]$, taking on zero at $a$ and $b$.
+
+Given these requirements, the Beta distribution comes to mind:
+\[
+  f(x|t, \alpha, \beta) = \frac{1}{B(\alpha,\beta)} x^{\alpha-1}(1-x)^{\beta-1},
+\]
+where $B(\alpha,\beta)$ is the beta function. Our choice for $\alpha$
+and $\beta$ is not very restricted. However, we will outline a few
+heuristics by which we can choose these parameters. Note that there
+may exist and optimal choise for $(\alpha, \beta)$ in terms of the
+accuracy of the asymptotic expansion. However, we will not prove
+anything in this vein here.
+
+\textbf{First}, as long as
+\begin{align}
+  \alpha, \beta > 1, \label{eq:lower-bound}
+\end{align}
+the mode for the distribution is guaranteed to
+exist, so that the boundary conditions are met.
+
+Aside from $\alpha > 1$ and $\beta > 1$, we can pick any
+$(\alpha,\beta)$ pair for our kernel. However, given that $f(x|t)$ can
+be thought of as implicitly dependent upon $t$, and that the variance
+of the fundamental solution is $\sigma^2t$, a first, reasonable guess
+for $(\alpha,\beta)$ can be given by the solution to the equation:
+\begin{align}
+  \Var{X} &:= \frac{\alpha \beta}{(\alpha+\beta)^2(\alpha+\beta+1)} = \sigma^2t, \label{eq:var-restriction}\\
+  p(X=x) &= f(x|t, \alpha, \beta). \nonumber
+\end{align}
+
+By the same logic, noting the mean for the fundamental solution, we can require
+\begin{align}
+  \E{X} &:= \frac{\alpha}{\alpha+\beta} = x_0, \label{eq:mean-restriction}\\
+  p(X=x) &= f(x|t, \alpha, \beta). \nonumber
+\end{align}
+
+Finally, we may require that $\alpha, \beta \in \mathbb{Z}$, since
+this will guarantee that
+\[
+  \frac{\partial^k}{\partial x^k} f(x|t,\alpha,\beta) = 0
+\]
+for large enough $k$. [georgid: This may not prove important, but I
+will keep it here anyway]
+
+Thus, to set $\alpha$ and $\beta$, we simultaneously solve
+(\ref{eq:var-restriction}) and (\ref{eq:mean-restriction}), then round
+$\alpha$ and $\beta$ to the closest integer greater than or equal to
+2. Since $\alpha$ and $\beta$ are dependent upon $t$, we will keep $t$
+in our notation for $f$, albeit implicitly. In other words, once we
+choose $\alpha$ and $\beta$, we will not be able to take derivatives
+of $f$ with respect to $t$:
+\[
+  f(x| \alpha, \beta ; t) 
+\]
+
 
 \bibliographystyle{plainnat}
 % \bibliographystyle{bka}
