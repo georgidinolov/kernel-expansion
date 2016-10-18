@@ -1,0 +1,25 @@
+univariate.solution <- function(x, problem.parameters) {
+    a = problem.parameters$a;
+    b = problem.parameters$b;
+    x.ic = problem.parameters$x.ic;
+    t = problem.parameters$t;
+    sigma.2 = problem.parameters$sigma.2;
+    number.terms = problem.parameters$number.terms;
+    
+    if ( x.ic < a || x.ic > b) {
+        stop ("x.ic not in boundaries");
+    }
+
+    v1 = x.ic + seq(-number.terms,number.terms)*2*(b-a); ## all 1
+    v2 = (a-(x.ic-a)) + seq(-number.terms,number.terms)*2*(b-a); ## all -1
+
+    variance = sigma.2 * t;
+    ## print(c(t,variance, sigma.2));
+
+    out = rep(NA, length(x));
+    for (i in seq(1,length(x))) {
+        out[i] = sum(dnorm(x[i], mean=v1, sd=sqrt(variance)) - dnorm(x[i], mean=v2, sd=sqrt(variance)));
+    }
+    
+    return (out);
+};
