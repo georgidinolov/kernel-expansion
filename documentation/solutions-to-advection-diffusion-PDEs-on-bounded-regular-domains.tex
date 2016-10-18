@@ -116,9 +116,43 @@
 {\it Keywords:} Diffusion equation, regular bounded domain
 
 \spacingset{1.00} % DON'T change the spacing! was set to 1.45
-\section{Motivation}\label{se:introduction}
+\section{Motivation}\label{se:motivation}
 
 \section{Solution on $\Omega \subset \mathbb{R}$}
+
+In this Section we will demonstrate the method outlined in Section
+\ref{se:motivation} where the solution is defined on a bounded
+interval on $\mathbb{R}$. In this case, we have the true solution to
+the diffusion equation. We will compare the asymptotic
+expansion to the true solutio.
+
+The PDE we will solve is the following BC/IC problem
+\begin{align}
+  \frac{\partial}{\partial t} q(x,t) &= \frac{1}{2}\sigma^2 \frac{\partial^2}{\partial x^2} q(x,t), \label{eq:pde} \\
+  q(x,0) &= \delta_{x_0}(x), \label{eq:ic} \\
+  q(a,t) &= q(b,t) = 0. & (\mbox{i.e. } \Omega = [a,b]) \label{eq:bc}
+\end{align}
+
+Problem (\ref{eq:pde}) - (\ref{eq:bc}) can be solved in a variety of
+ways. We will use the method of images, which repeatedly reflects the
+fundamental solution
+\[
+  q_{fundamental}(x,t) = \frac{1}{\sqrt{2\pi \sigma^2 t}} \exp\left\{ -\frac{1}{2\sigma^2t} (x-x_0)^2 \right\}
+\]
+about the boundary points $a$ and $b$. The steps for the full
+solutions are as follows:
+
+\begin{enumerate}[Step 1:]
+\item Select a kernel for the basis expansion,
+\item Perform Gram-Schmidt orthogonalization on the polynomials basis,
+\item Compute the weight for each basis element,
+\item Profit.
+\end{enumerate}
+
+\subsection{A suitable kernel for the basis elements}
+As noted in the motivating Section \ref{se:motivation}, the kernel we
+will use must be in $C^{\infty}(a,b)$, must obey the boundary
+conditions,
 
 \bibliographystyle{plainnat}
 % \bibliographystyle{bka}
