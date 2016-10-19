@@ -12,6 +12,10 @@ alpha.beta <- select.alpha.beta(problem.parameters);
 alpha <- alpha.beta$alpha;
 beta <- alpha.beta$beta;
 
+kernel <- function(x) {
+    return (dbeta(x,alpha,beta));
+}
+
 x = seq(problem.parameters$a,problem.parameters$b,length.out = 100);
 ## plot(x, dnorm(x=x,
 ##               mean=problem.parameters$x.ic,
@@ -28,7 +32,7 @@ lines(x, dbeta(x=x, shape1=alpha, shape2=beta, log=FALSE)^2, col = "green")
 
 poly.degree.x = 3;
 x.pow.integral.vec <- x.power.integral.vector(problem.parameters,
-                                          poly.degree.x,
+                                          2*(poly.degree.x+1),
                                           alpha,
                                           beta);
 z <- univariate.solution(x, problem.parameters);
@@ -70,10 +74,37 @@ for (n in seq(1,(poly.degree.x+1))) {
         orthogonality.matrix[n,m] =
             as.double(integrate.polynomial(poly=polynomials.table[[n]]*
                                                polynomials.table[[m]],
-                                           integrals.table = integrals.table))
+                                           integrals.table = x.pow.integral.vec))
     }
 }
 
+### plotting some of the basis elements ###
+basis.elements <- vector(mode="list", length=poly.degree.x+1);
+for (i in seq(1,poly.degree.x+1)) {
+    if (i==1) {
+        basis.elements[[i]] = rep(as.double(unlist(polynomials.table[[i]])),
+                                  length(x)) *
+            kernel(x);
+    } else {
+        current.function <- function(x) {
+            return( as.function(polynomials.table[[i]],
+                                vector=FALSE)(x) *
+                                             kernel(x) )
+        };
+        
+        basis.elements[[i]] = current.function(x);
+    }
+}
+
+for (i in seq(1,poly.degree.x+1)) {
+    if (i==1) {
+        plot(x, basis.elements[[i]], type = "l", ylim=c(-2,2));
+    } else {
+        lines(x, basis.elements[[i]]);
+    }
+}
+
+### COEFFICIENTS ###
 k = max(poly.degree.x);
 coefficients.table <- vector(mode="list", length=poly.degree.x+1);
 
