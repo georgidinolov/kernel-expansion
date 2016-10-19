@@ -216,7 +216,26 @@ $f(x| \alpha, \beta ; t)$.
 \subsection{Gram-Schmidt orthogonalization on the polynomials basis}
 The family of (polynomial) functions
 $\left\{ x^m f(x| \alpha, \beta; t) \right\}_{m=0}^\infty$ spans the
-space of $L^2(\Omega)$ functions. 
+space of $L^2([a,b])$ functions. We generate the basis elements
+$\left\{ u_m(x|\alpha,\beta;t) \right\}_{m=0}^\infty$ by setting
+\begin{align}
+  v_0(x| \alpha, \beta; t) &= f(x| \alpha, \beta; t), \nonumber \\
+  u_0(x| \alpha, \beta; t) &= \frac{f(x| \alpha, \beta; t)}{\|f(x|\alpha, \beta; t\|}, \label{eq:u0} \\
+  \|f(x|\alpha,\beta;t) \| &\equiv \left( \int_{\Omega} f(x|\alpha,\beta;t)^2 dx \right)^{1/2}. \label{eq:norm}
+\end{align}
+The integral in (\ref{eq:norm}) is easy to compute because of the form
+we have chosen for the kernel $f:$
+\begin{align*}
+  \int_{\Omega} f(x|\alpha,\beta;t)^2 dx  &= \int_{\Omega} \left( \frac{1}{B(\alpha,\beta)} x^{\alpha-1}(1-x)^{\beta-1} \right)^{2} dx, \\
+                                          &= \int_{\Omega} \frac{1}{B(\alpha,\beta)^2} x^{(2\alpha-1)-1}(1-x)^{(2\beta-1)-1} dx, \\
+                                          &= \frac{B(2\alpha-1, 2\beta-1)}{B(\alpha,\beta)^2}, \\
+  \left( \int_{\Omega} f(x|\alpha,\beta;t)^2 dx \right)^{1/2} &= \sqrt{\frac{B(2\alpha-1, 2\beta-1)}{B(\alpha,\beta)^2}}.
+\end{align*}
+Next, for $u_1(x;\alpha,\beta;t)$,
+\begin{align}
+  v_1(x| \alpha, \beta; t) &= x f(x|\alpha,\beta;t) - \left<x f(x|\alpha,\beta;t) | u_0(x|\alpha,\beta;t) \right> u_0(x|\alpha,\beta;t) \\
+  \left<x f(x|\alpha,\beta;t) | u_0(x|\alpha,\beta;t) \right> &= \int_\Omega \frac{x f(x|\alpha,\beta;t)^2}{\| f(x|\alpha,\beta;t) \|}
+\end{align}
 
 \bibliographystyle{plainnat}
 % \bibliographystyle{bka}
