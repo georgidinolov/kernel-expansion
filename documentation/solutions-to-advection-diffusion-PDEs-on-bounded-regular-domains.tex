@@ -156,13 +156,15 @@ solutions are as follows:
 \subsection{A suitable kernel for the basis elements}
 As noted in the motivating Section \ref{se:motivation}, the kernel we
 will use must be in $C^{\infty}(a,b)$, and it must obey the boundary
-conditions. Moreover, it must be chosen such that i) derivatives
-$f'(x)$ and ii) integrals $\int_{\Omega} x^m f(x|t)^2\, dx$ can be
-easily computed. Consideration i) suggests that $f(x|t)$ is of
-polynomial form. Consideration ii) suggests that $f(x|t)$ should be a
-known pdf over $[a,b]$, taking on zero at $a$ and $b$.
-
-Given these requirements, the Beta distribution comes to mind:
+conditions. Moreover, the basis kernel must be chosen such that
+\begin{enumerate}[i)]
+\item derivatives $f'(x)$ can be computed easily, 
+\item integrals $\int_{\Omega} x^m f(x|t)^2\, dx$ can be computed easily
+\end{enumerate}
+Consideration i) suggests that $f(x|t)$ should be of polynomial
+form. Consideration ii) suggests that $f(x|t)$ should be a known pdf
+over $[a,b]$, taking on zero at $a$ and $b$.  Given these
+requirements, the Beta distribution comes to mind:
 \[
   f(x|t, \alpha, \beta) = \frac{1}{B(\alpha,\beta)} x^{\alpha-1}(1-x)^{\beta-1},
 \]
@@ -170,8 +172,8 @@ where $B(\alpha,\beta)$ is the beta function. Our choice for $\alpha$
 and $\beta$ is not very restricted. However, we will outline a few
 heuristics by which we can choose these parameters. Note that there
 may exist and optimal choise for $(\alpha, \beta)$ in terms of the
-accuracy of the asymptotic expansion. However, we will not prove
-anything in this vein here.
+accuracy of the asymptotic expansion with respect to the true solution
+$q(x,t)$. However, we will not prove anything in this vein here.
 
 \textbf{First}, as long as
 \begin{align}
@@ -187,13 +189,13 @@ of the fundamental solution is $\sigma^2t$, a first, reasonable guess
 for $(\alpha,\beta)$ can be given by the solution to the equation:
 \begin{align}
   \Var{X} &:= \frac{\alpha \beta}{(\alpha+\beta)^2(\alpha+\beta+1)} = \sigma^2t, \label{eq:var-restriction}\\
-  p(X=x) &= f(x|t, \alpha, \beta). \nonumber
+  p(X \in dx) &= f(x|t, \alpha, \beta). \nonumber
 \end{align}
 
 By the same logic, noting the mean for the fundamental solution, we can require
 \begin{align}
   \E{X} &:= \frac{\alpha}{\alpha+\beta} = x_0, \label{eq:mean-restriction}\\
-  p(X=x) &= f(x|t, \alpha, \beta). \nonumber
+  p(X \in dx) &= f(x|t, \alpha, \beta). \nonumber
 \end{align}
 
 Finally, we may require that $\alpha, \beta \in \mathbb{Z}$, since
@@ -234,8 +236,17 @@ we have chosen for the kernel $f:$
 Next, for $u_1(x;\alpha,\beta;t)$,
 \begin{align}
   v_1(x| \alpha, \beta; t) &= x f(x|\alpha,\beta;t) - \left<x f(x|\alpha,\beta;t) | u_0(x|\alpha,\beta;t) \right> u_0(x|\alpha,\beta;t) \\
-  \left<x f(x|\alpha,\beta;t) | u_0(x|\alpha,\beta;t) \right> &= \int_\Omega \frac{x f(x|\alpha,\beta;t)^2}{\| f(x|\alpha,\beta;t) \|}
+  &= \left(x - \frac{\left<x f(x|\alpha,\beta;t) | u_0(x|\alpha,\beta;t) \right>}{\| f(x|\alpha,\beta;t) \|} \right) f(x|\alpha,\beta;t) \\
+  \left<x f(x|\alpha,\beta;t) | u_0(x|\alpha,\beta;t) \right> &= \int_\Omega \frac{x f(x|\alpha,\beta;t)^2}{\| f(x|\alpha,\beta;t) \|} = \frac{1}{\| f(x|\alpha,\beta;t) \|} \int_\Omega \frac{1}{B(\alpha,\beta)} x^\alpha(1-x)^{\beta-1} dx \\
+                           &= \frac{1}{\| f(x|\alpha,\beta;t) \|} \frac{B(\alpha+1,\beta)}{B(\alpha,\beta)} = \sqrt{\frac{B(\alpha,\beta)^2}{B(2\alpha-1, 2\beta-1)}}\frac{B(\alpha+1,\beta)}{B(\alpha,\beta)} \\
+  u_1(x|\alpha,\beta;t) &= \frac{v_1(x|\alpha,\beta;t)}{\|v_1(x|\alpha,\beta;t)\|} \\
+  \|v_1(x|\alpha,\beta;t)\| &= \int_\Omega \left(x - \frac{\left<x f(x|\alpha,\beta;t) | u_0(x|\alpha,\beta;t) \right>}{\| f(x|\alpha,\beta;t) \|} \right)^2 f(x|\alpha,\beta;t)^2 dx \\
+  u_1(x|\alpha,\beta;t) &= \frac{v_1(x|\alpha,\beta;t)}{\|v_1(x|\alpha,\beta;t)\|} = p_1(x) f(x|\alpha,\beta;t), 
 \end{align}
+where $p_1(x)$ is a first-order polynomial. In general,
+\begin{align*}
+
+\end{align*}
 
 \bibliographystyle{plainnat}
 % \bibliographystyle{bka}
