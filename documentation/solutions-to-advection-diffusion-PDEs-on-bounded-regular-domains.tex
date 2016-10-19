@@ -261,6 +261,25 @@ of $f(x|\alpha,\beta;t)$, as show in (\ref{eq:intpoly}).
   \int_\Omega x^m f(x|\alpha,\beta;t)^2 dx &= \int_\Omega x^m \frac{1}{B(\alpha,\beta)^2} x^{2\alpha-2}(1-x)^{2\beta-2} dx = \frac{1}{B(\alpha,\beta)^2} \int_\Omega x^{2\alpha+m-2}(1-x)^{2\beta-2} dx = \frac{B(2\alpha+m-1, 2\beta-1)}{B(\alpha,\beta)^2} \label{eq:intpoly}
 \end{align}
 
+\subsection{Computing the Weights of the Basis Elements}
+Given the set of orthonormal functions
+$\{u_m(x|\alpha,\beta;t)\}_{m=0}^\infty$ spanning $L^2([a,b])$, and
+assuming that $q(x,t) \in L^2([a,b])$, we can write down
+\begin{align*}
+   q(x,t) &= \sum_{m=0}^\infty c_m u_m(x|\alpha,\beta;t), \\
+  \mbox{with  } c_m &= \int_\Omega q(x,t) u_m(x|\alpha,\beta;t) dx.
+\end{align*}
+Since each $u_m$ is the product of two polynomials,
+$u_m(x|\alpha,\beta;t) \in C^{\infty}([a,b])$ and is
+square-integrable. Therefore, we can write
+\begin{equation}
+  \int_\Omega \frac{\partial^k \delta_{x_0}(x)}{\partial x^2}
+  u_m(x|\alpha,\beta;t) dx = (-1)^{k} \int_\Omega \delta_{x_0}(x)
+  \frac{\partial^k u_m(x|\alpha,\beta;t)}{\partial x^k} dx = (-1)^k
+  \left. \frac{\partial^k u_m(x|\alpha,\beta;t)}{\partial x^k}
+  \right|_{x=x_0}
+\end{equation}
+
 \bibliographystyle{plainnat}
 % \bibliographystyle{bka}
 \bibliography{master-bibliography}

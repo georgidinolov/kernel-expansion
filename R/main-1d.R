@@ -12,6 +12,11 @@ alpha.beta <- select.alpha.beta(problem.parameters);
 alpha <- alpha.beta$alpha;
 beta <- alpha.beta$beta;
 
+## MANUAL ALPHA BETA ##
+beta <- 10;
+alpha <- beta*problem.parameters$x.ic / (1-problem.parameters$x.ic);
+
+
 kernel <- function(x) {
     return (dbeta(x,alpha,beta));
 }
@@ -30,7 +35,7 @@ plot(x, univariate.solution(x, problem.parameters),
 lines(x, dbeta(x=x, shape1=alpha, shape2=beta, log=FALSE))
 lines(x, dbeta(x=x, shape1=alpha, shape2=beta, log=FALSE)^2, col = "green")
 
-poly.degree.x = 3;
+poly.degree.x = 10;
 x.pow.integral.vec <- x.power.integral.vector(problem.parameters,
                                           2*(poly.degree.x+1),
                                           alpha,
