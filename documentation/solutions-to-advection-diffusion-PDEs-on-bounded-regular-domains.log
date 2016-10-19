@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2016.10.17)  19 OCT 2016 12:02
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2016.10.17)  19 OCT 2016 13:32
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -891,11 +891,11 @@ sion > 4. Object streams disabled now.
 No file solutions-to-advection-diffusion-PDEs-on-bounded-regular-domains.bbl.
 [3] (./solutions-to-advection-diffusion-PDEs-on-bounded-regular-domains.aux) ) 
 Here is how much of TeX's memory you used:
- 24543 strings out of 493029
- 602354 string characters out of 6136233
+ 24549 strings out of 493029
+ 602407 string characters out of 6136233
  788912 words of memory out of 5000000
- 27590 multiletter control sequences out of 15000+600000
- 43540 words of font info for 100 fonts, out of 8000000 for 9000
+ 27592 multiletter control sequences out of 15000+600000
+ 45176 words of font info for 104 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  55i,10n,77p,783b,609s stack positions out of 5000i,500n,10000p,200000b,80000s
 {
@@ -905,16 +905,17 @@ ist/fonts/type1/public/amsfonts/cmextra/cmex9.pfb></usr/share/texlive/texmf-dis
 t/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/font
 s/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1
 /public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/publi
-c/amsfonts/symbols/msbm10.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/pa
-latino/uplb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/palatino/uplr8
-a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/palatino/uplri8a.pfb></usr
-/share/texlive/texmf-dist/fonts/type1/urw/symbol/usyr.pfb></usr/share/texlive/t
-exmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts
-/type1/urw/times/utmri8a.pfb>
+c/amsfonts/symbols/msbm10.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/co
+urier/ucrr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/palatino/uplb8a
+.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/palatino/uplr8a.pfb></usr/s
+hare/texlive/texmf-dist/fonts/type1/urw/palatino/uplri8a.pfb></usr/share/texliv
+e/texmf-dist/fonts/type1/urw/symbol/usyr.pfb></usr/share/texlive/texmf-dist/fon
+ts/type1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/ti
+mes/utmri8a.pfb>
 Output written on solutions-to-advection-diffusion-PDEs-on-bounded-regular-doma
-ins.pdf (3 pages, 127822 bytes).
+ins.pdf (3 pages, 136595 bytes).
 PDF statistics:
- 64 PDF objects out of 1000 (max. 8388607)
+ 68 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  13 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -3,60 +3,37 @@ source("1-d-solution.R");
 problem.parameters = NULL;
 problem.parameters$a = 0;
 problem.parameters$b = 1;
-problem.parameters$x.ic = 0.01;
+problem.parameters$x.ic = 0.1;
 problem.parameters$number.terms = 1000;
 problem.parameters$sigma.2 = 1;
+problem.parameters$t = 0.1;
+
+alpha.beta <- select.alpha.beta(problem.parameters);
+alpha <- alpha.beta$alpha;
+beta <- alpha.beta$beta;
 
 x = seq(problem.parameters$a,problem.parameters$b,length.out = 100);
-ts = seq(0.1, 1, length.out = 10);
-for (i in seq(1,length(ts))) {
+## plot(x, dnorm(x=x,
+##               mean=problem.parameters$x.ic,
+##               sd=sqrt(problem.parameters$sigma.2*problem.parameters$t)),
+##      type = "l",
+##      col = "red",
+##      ylab = "y",
+##      xlab = "x",
+##      ylim = c(0,1));
+plot(x, univariate.solution(x, problem.parameters),
+     type = "l");
+lines(x, dbeta(x=x, shape1=alpha, shape2=beta, log=FALSE))
+lines(x, dbeta(x=x, shape1=alpha, shape2=beta, log=FALSE)^2, col = "green")
 
-    problem.parameters$t = ts[i];
-    
-    if (i==1) {
-        y <- univariate.solution(x=x, problem.parameters);
-        plot(x,y,type = "l", col = "red");
- 
-    } else {
-        y <- univariate.solution(x=x, problem.parameters);
-        lines(x,y);
- 
-    }
-}
-
-t = 0.2;
-problem.parameters.x = NULL;
-problem.parameters.x$a = -0.5;
-problem.parameters.x$b = 1;
-problem.parameters.x$x.ic = 0.0;
-problem.parameters.x$number.terms = 100;
-problem.parameters.x$sigma.2 = 1;
-problem.parameters.x$t = t;
-
-x = seq(problem.parameters.x$a, problem.parameters.x$b, length.out = 100);
-
-z <- univariate.solution(x, problem.parameters.x)
-plot(x,z, type = "l");
-
-### integral table ###
-poly.degree.x = 1;
-elementary.integral.table.x = integral.table(problem.parameters.x,
-                                             2*(poly.degree.x+1));
+poly.degree.x = 3;
+x.pow.integral.vec <- x.power.integral.vector(problem.parameters,
+                                          poly.degree.x,
+                                          alpha,
+                                          beta);
+z <- univariate.solution(x, problem.parameters);
 
 ## poly bases ##
-image.means.weights.x <- image.means.weights(problem.parameters.x);
-image.means.x <- image.means.weights.x$image.means;
-image.weights.x <- image.means.weights.x$image.weights;
-
-### int x^l y^m f dx dy ###
-integrals.table <- rep(NA, 2*poly.degree.x+1);
-
-for (i in seq(1,2*poly.degree.x+1)) {
-    integrals.table[i] =
-        sum(image.weights.x * elementary.integral.table.x[,i]);
-}
-K <- integrals.table;
-
 polynomials.table <- vector(mode="list", length=poly.degree.x+1);
 for (i in seq(1,poly.degree.x+1)) {
     ## pp = x^(i-1)y^(j-1)
@@ -71,13 +48,13 @@ for (i in seq(1,poly.degree.x+1)) {
         for (n in seq(1,N)) {
             P.i.j <- P.i.j -
                 integrate.polynomial(poly = P.i.j*polynomials.table[[n]],
-                                     integrals.table = K) *
+                                     integrals.table = x.pow.integral.vec) *
                 polynomials.table[[n]];
         }
     }
     P.i.j.sq <- P.i.j^2;
     L2.norm <- sqrt(integrate.polynomial(poly=P.i.j.sq,
-                                    integrals.table=integrals.table));
+                                    integrals.table=x.pow.integral.vec));
     print(c(i,L2.norm));
     polynomials.table[[i]] <- mpoly(list(c("x"=0,"coef"=1/L2.norm))) * P.i.j;
 }

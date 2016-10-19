@@ -1,5 +1,42 @@
 library("mpoly");
 
+select.alpha.beta <- function(problem.parameters) {
+    a = problem.parameters$a;
+    b = problem.parameters$b;
+    x.ic = problem.parameters$x.ic;
+    sigma2 = problem.parameters$sigma.2;
+    t = problem.parameters$t;
+
+    mean = x.ic;
+    var = sigma2*t;
+
+    ## the initial guess is alpha=beta=2;
+    initial.guess <- c(log(2), log(2))
+    log.alpha.beta <- optim(par=initial.guess,
+                            fn = mean.var.sum.sq,
+                            mean = mean,
+                            var = var);
+
+    alpha = max(2, round(exp(log.alpha.beta$par[1])));
+    beta = max(2, round(exp(log.alpha.beta$par[2])));
+
+    out = NULL;
+    out$alpha = alpha;
+    out$beta = beta;
+    return (out);
+}
+
+mean.var.sum.sq <- function(x, mean, var) {
+    alpha <- exp(x[1]);
+    beta <- exp(x[2]);
+
+    current.mean <- alpha/(alpha+beta);
+    current.var <- alpha*beta/((alpha+beta)^2*(alpha+beta+1));
+    
+    out = (mean - current.mean)^2 + (var-current.var)^2;
+    return (out);
+}
+
 univariate.solution <- function(x, problem.parameters) {
     a = problem.parameters$a;
     b = problem.parameters$b;
@@ -25,6 +62,30 @@ univariate.solution <- function(x, problem.parameters) {
     
     return (out);
 };
+
+x.power.integral.vector <- function(problem.parameters,
+                                    poly.degree,
+                                    alpha,
+                                    beta) {
+    a = problem.parameters$a;
+    b = problem.parameters$b;
+    x.ic = problem.parameters$x.ic;
+    t = problem.parameters$t;
+    sigma.2 = problem.parameters$sigma.2;
+    number.terms = problem.parameters$number.terms;
+
+    if ( x.ic < a || x.ic > b) {
+        stop ("x.ic not in boundaries");
+    }
+
+    out <- rep(NA, poly.degree+1);
+
+    for (m in seq(1,poly.degree+1)) {
+        out[m] = exp(lbeta(2*alpha+(m-1)-1,2*beta-1) -
+                     2*lbeta(alpha,beta));
+    }
+    return (out);
+}
 
 integral.table <- function(problem.parameters, poly.degree) {
     a = problem.parameters$a;

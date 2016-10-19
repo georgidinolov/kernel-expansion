@@ -237,16 +237,29 @@ Next, for $u_1(x;\alpha,\beta;t)$,
 \begin{align}
   v_1(x| \alpha, \beta; t) &= x f(x|\alpha,\beta;t) - \left<x f(x|\alpha,\beta;t) | u_0(x|\alpha,\beta;t) \right> u_0(x|\alpha,\beta;t) \\
   &= \left(x - \frac{\left<x f(x|\alpha,\beta;t) | u_0(x|\alpha,\beta;t) \right>}{\| f(x|\alpha,\beta;t) \|} \right) f(x|\alpha,\beta;t) \\
-  \left<x f(x|\alpha,\beta;t) | u_0(x|\alpha,\beta;t) \right> &= \int_\Omega \frac{x f(x|\alpha,\beta;t)^2}{\| f(x|\alpha,\beta;t) \|} = \frac{1}{\| f(x|\alpha,\beta;t) \|} \int_\Omega \frac{1}{B(\alpha,\beta)} x^\alpha(1-x)^{\beta-1} dx \\
-                           &= \frac{1}{\| f(x|\alpha,\beta;t) \|} \frac{B(\alpha+1,\beta)}{B(\alpha,\beta)} = \sqrt{\frac{B(\alpha,\beta)^2}{B(2\alpha-1, 2\beta-1)}}\frac{B(\alpha+1,\beta)}{B(\alpha,\beta)} \\
+  \left<x f(x|\alpha,\beta;t) | u_0(x|\alpha,\beta;t) \right> &= \int_\Omega \frac{x f(x|\alpha,\beta;t)^2}{\| f(x|\alpha,\beta;t) \|} = \frac{1}{\| f(x|\alpha,\beta;t) \|} \int_\Omega \frac{1}{B(\alpha,\beta)^2} x^{2\alpha-1}(1-x)^{(2\beta-1)-1} dx  \\
   u_1(x|\alpha,\beta;t) &= \frac{v_1(x|\alpha,\beta;t)}{\|v_1(x|\alpha,\beta;t)\|} \\
   \|v_1(x|\alpha,\beta;t)\| &= \int_\Omega \left(x - \frac{\left<x f(x|\alpha,\beta;t) | u_0(x|\alpha,\beta;t) \right>}{\| f(x|\alpha,\beta;t) \|} \right)^2 f(x|\alpha,\beta;t)^2 dx \\
   u_1(x|\alpha,\beta;t) &= \frac{v_1(x|\alpha,\beta;t)}{\|v_1(x|\alpha,\beta;t)\|} = p_1(x) f(x|\alpha,\beta;t), 
 \end{align}
 where $p_1(x)$ is a first-order polynomial. In general,
 \begin{align*}
-
+  v_{m}(x|\alpha,\beta;t) &= x^m f(x|\alpha,\beta;t) - \sum_{m'=0}^{m-1} \left< x^m f(x|\alpha,\beta;t) | u_{m'}(x|\alpha,\beta;t) \right>u_{m'}(x|\alpha,\beta;t) \\
+  u_{m}(x|\alpha,\beta;t) &=  \frac{v_{m}(x|\alpha,\beta;t)}{\| v_{m}(x|\alpha,\beta;t) \|}  \equiv p_m(x|\alpha,\beta;t) f(x|\alpha,\beta;t)
 \end{align*}
+In finding the basis, we will have to perform two main types
+calcluations:
+\begin{enumerate}[1)]
+\item polynomial multiplication: $p_m(x|\alpha,\beta;t)p_n(x|\alpha,\beta;t)$
+\item integration of the form: $\int_\Omega x^m f(x|\alpha,\beta;t)^2 dx$
+\end{enumerate}
+In \texttt{R}, the package \texttt{mpoly} will be used to handle
+1). Calculation 2) can be performed relatively easily due to the form
+of $f(x|\alpha,\beta;t)$, as show in (\ref{eq:intpoly}).
+
+\begin{align}
+  \int_\Omega x^m f(x|\alpha,\beta;t)^2 dx &= \int_\Omega x^m \frac{1}{B(\alpha,\beta)^2} x^{2\alpha-2}(1-x)^{2\beta-2} dx = \frac{1}{B(\alpha,\beta)^2} \int_\Omega x^{2\alpha+m-2}(1-x)^{2\beta-2} dx = \frac{B(2\alpha+m-1, 2\beta-1)}{B(\alpha,\beta)^2} \label{eq:intpoly}
+\end{align}
 
 \bibliographystyle{plainnat}
 % \bibliographystyle{bka}
