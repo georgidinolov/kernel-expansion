@@ -265,10 +265,10 @@ of $f(x|\alpha,\beta;t)$, as show in (\ref{eq:intpoly}).
 Given the set of orthonormal functions
 $\{u_m(x|\alpha,\beta;t)\}_{m=0}^\infty$ spanning $L^2([a,b])$, and
 assuming that $q(x,t) \in L^2([a,b])$, we can write down
-\begin{align*}
+\begin{align}
    q(x,t) &= \sum_{m=0}^\infty c_m u_m(x|\alpha,\beta;t), \\
-  \mbox{with  } c_m &= \int_\Omega q(x,t) u_m(x|\alpha,\beta;t) dx.
-\end{align*}
+  \mbox{with  } c_m &= \int_\Omega q(x,t) u_m(x|\alpha,\beta;t) dx. \label{eq:coef}
+\end{align}
 Since each $u_m$ is the product of two polynomials,
 $u_m(x|\alpha,\beta;t) \in C^{\infty}([a,b])$ and is
 square-integrable. Therefore, we can write
@@ -277,8 +277,19 @@ square-integrable. Therefore, we can write
   u_m(x|\alpha,\beta;t) dx = (-1)^{k} \int_\Omega \delta_{x_0}(x)
   \frac{\partial^k u_m(x|\alpha,\beta;t)}{\partial x^k} dx = (-1)^k
   \left. \frac{\partial^k u_m(x|\alpha,\beta;t)}{\partial x^k}
-  \right|_{x=x_0}
+  \right|_{x=x_0} \label{eq:delta-deriv}
 \end{equation}
+Equipped with (\ref{eq:delta-deriv}) and that
+$q(x,0) = \delta_{x_0}(x)$, we can compute the integrals in
+(\ref{eq:coef}) by using the Taylor expansion of $q(x,t)$ about $t=0$:
+\begin{align*}
+ c_m(t; \alpha,\beta,x_0) =  \int_\Omega q(x,t) u_m(x|\alpha,\beta;t) dx &= \int_\Omega \left[\underbrace{q(x,0)}_{\delta_{x_0}(x)} + \sum_{k=1}^\infty \frac{t^k}{k!} \left. \frac{\partial^k q(x,t)}{\partial t^k} \right|_{t=0} \right] u_m(x|\alpha,\beta;t) dx \\
+                                              &= \int_\Omega \delta_{x_0}(x) u_m(x|\alpha,\beta;t) dx + \sum_{k=1}^\infty \frac{t^k}{k!} \int_\Omega \left. \frac{\partial^k q(x,t)}{\partial t^k} \right|_{t=0} u_m(x|\alpha,\beta;t) dx \\
+                                              &= \int_\Omega \delta_{x_0}(x) u_m(x|\alpha,\beta;t) dx + \sum_{k=1}^\infty \frac{t^k}{k!} \int_\Omega \frac{\partial^{2k} \delta_{x_0}(x)}{\partial x^{2k}} u_m(x|\alpha,\beta;t) dx \\
+                                              &= u_m(x_0|\alpha,\beta;t) + \sum_{k=1}^\infty \frac{t^k}{k!} (-1)^{2k} \int_\Omega \delta_{x_0}(x) \frac{\partial^{2k} u_m(x|\alpha,\beta;t)}{\partial x^{2k}} dx \\
+                                              &= u_m(x_0|\alpha,\beta;t) + \sum_{k=1}^\infty \frac{t^k}{k!} (-1)^{2k} \frac{\partial^{2k} u_m(x_0|\alpha,\beta;t)}{\partial x^{2k}} \\
+                                                                         &= u_m(x_0|\alpha,\beta;t) + \sum_{k=1}^\infty \frac{t^k}{k!} \frac{\partial^{2k} u_m(x_0|\alpha,\beta;t)}{\partial x^{2k}}.
+\end{align*}
 
 \bibliographystyle{plainnat}
 % \bibliographystyle{bka}

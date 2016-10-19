@@ -13,9 +13,9 @@ alpha <- alpha.beta$alpha;
 beta <- alpha.beta$beta;
 
 ## MANUAL ALPHA BETA ##
-beta <- 10;
+beta <- 5;
 alpha <- beta*problem.parameters$x.ic / (1-problem.parameters$x.ic);
-
+## ## 
 
 kernel <- function(x) {
     return (dbeta(x,alpha,beta));
