@@ -12,10 +12,10 @@ alpha.beta <- select.alpha.beta(problem.parameters);
 alpha <- alpha.beta$alpha;
 beta <- alpha.beta$beta;
 
-## MANUAL ALPHA BETA ##
-beta <- 5;
-alpha <- beta*problem.parameters$x.ic / (1-problem.parameters$x.ic);
-## ## 
+## ## MANUAL ALPHA BETA ##
+## beta <- 5;
+## alpha <- beta*problem.parameters$x.ic / (1-problem.parameters$x.ic);
+## ## ## 
 
 kernel <- function(x) {
     return (dbeta(x,alpha,beta));
@@ -35,7 +35,7 @@ plot(x, univariate.solution(x, problem.parameters),
 lines(x, dbeta(x=x, shape1=alpha, shape2=beta, log=FALSE))
 lines(x, dbeta(x=x, shape1=alpha, shape2=beta, log=FALSE)^2, col = "green")
 
-poly.degree.x = 10;
+poly.degree.x = 3;
 x.pow.integral.vec <- x.power.integral.vector(problem.parameters,
                                           2*(poly.degree.x+1),
                                           alpha,
@@ -110,39 +110,34 @@ for (i in seq(1,poly.degree.x+1)) {
 }
 
 ### COEFFICIENTS ###
-k = max(poly.degree.x);
-coefficients.table <- vector(mode="list", length=poly.degree.x+1);
+polynomial.kernel <- mpoly(list(c("x"=alpha-1, coef=1/beta(alpha,beta))))*
+    (mpoly(list(c("x"=beta-1, coef=1))) + mpoly(list(c("x"=0, coef=-1))))^(beta-1);
 
-for (i in seq(1,poly.degree.x+1)) {
-    coef <- mpoly(list(c("x"=0,"coef"=0)));
-    for (l in seq(0,k)) {
-        coef = coef +
-            apply.generator(poly=polynomials.table[[i]],
-                            k=l,
-                            problem.parameters.x=problem.parameters.x) *
-            mpoly(list(c(x=0,coef=t^l/factorial(l))));
-        
-    }
-    coefficients.table[[i]] = as.function(coef)(c(problem.parameters.x$x.ic));
-}                     
+coefs <- coefficients(problem.parameters=problem.parameters,
+                      polynomials.table=polynomials.table,
+                      polynomial.kernel=polynomial.kernel,
+                      kernel=kernel,
+                      poly.degree=poly.degree.x,
+                      number.derivs=10);
+                      
 
-solution <- rep(nrow=length(x), ncol=length(y), 0);
+solution <- rep(0, length(x));
 basis.table <- vector(mode="list", length=poly.degree.x+1);
-
-for (i in seq(1,1)) {
+for (i in seq(1,poly.degree.x+1)) {
     if (i == 1) {
         current.function = as.function(polynomials.table[[i]]);
-        basis.table[[i]] = rep(as.double(unlist(polynomials.table[[1]])),
-                               length(x));
+        basis.table[[i]] = rep(as.double(unlist(polynomials.table[[i]])),
+                               length(x))*
+            kernel(x);
     } else {
         current.function = as.function(polynomials.table[[i]], vector=FALSE)
-        basis.table[[i]] <- current.function(x);
+        basis.table[[i]] <- current.function(x)*kernel(x);
     }
     solution = solution +
-        coefficients.table[[i]]*basis.table[[i]];
+        coefs[i]*basis.table[[i]];
 }
 
-plot(x, solution*z, type = "l");
+plot(x, solution, type = "l");
 lines(x, z, col = "red", lty="dashed");
 i=1
 j=1

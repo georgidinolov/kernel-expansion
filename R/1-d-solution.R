@@ -87,6 +87,41 @@ x.power.integral.vector <- function(problem.parameters,
     return (out);
 }
 
+coefficients <- function(problem.parameters,
+                         polynomials.table,
+                         polynomial.kernel,
+                         kernel,
+                         poly.degree,
+                         number.derivs) {
+    x.0 <- problem.parameters$x.ic;
+    sigma2 <- problem.parameters$sigma.2;
+    t <- problem.parameters$t;
+    coefs <- rep(NA, poly.degree+1);
+
+    for (i in seq(1,poly.degree+1)) {
+        polynomial <- polynomials.table[[i]]*polynomial.kernel;
+        derivatives <- vector(mode="list", length=number.derivs);
+        derivatives.doubles <- rep(NA, length=number.derivs);
+        for (k in seq(1,number.derivs)) {
+            if (k==1) {
+                derivatives[[k]] = deriv(deriv(polynomial, "x"), "x");
+            } else {
+                derivatives[[k]] = deriv(deriv(derivatives[[k-1]], "x"), "x");
+            }
+            derivatives.doubles[k] = as.function(derivatives[[k]], vector=FALSE)(x.0);
+        }
+        
+        coef = as.function(polynomials.table[[i]],
+                           vector=FALSE)(x.0)*kernel(x.0) +
+                                       sum(t^seq(1,number.derivs)/
+                                             factorial(seq(1,number.derivs))*
+                                             (0.5*sigma2)^seq(1,number.derivs)*
+                                                          derivatives.doubles);
+        coefs[i] = coef;
+    }
+    return (coefs);
+}
+
 integral.table <- function(problem.parameters, poly.degree) {
     a = problem.parameters$a;
     b = problem.parameters$b;
