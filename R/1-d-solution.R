@@ -91,14 +91,14 @@ coefficients <- function(problem.parameters,
                          polynomials.table,
                          polynomial.kernel,
                          kernel,
-                         poly.degree,
+                         poly.degree.x,
                          number.derivs) {
     x.0 <- problem.parameters$x.ic;
     sigma2 <- problem.parameters$sigma.2;
     t <- problem.parameters$t;
-    coefs <- rep(NA, poly.degree+1);
+    coefs <- rep(NA, poly.degree.x+1);
 
-    for (i in seq(1,poly.degree+1)) {
+    for (i in seq(1,poly.degree.x+1)) {
         polynomial <- polynomials.table[[i]]*polynomial.kernel;
         derivatives <- vector(mode="list", length=number.derivs);
         derivatives.doubles <- rep(NA, length=number.derivs);

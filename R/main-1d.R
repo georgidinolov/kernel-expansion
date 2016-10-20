@@ -1,3 +1,4 @@
+rm(list=ls());
 source("1-d-solution.R");
 
 problem.parameters = NULL;
@@ -6,16 +7,17 @@ problem.parameters$b = 1;
 problem.parameters$x.ic = 0.1;
 problem.parameters$number.terms = 1000;
 problem.parameters$sigma.2 = 1;
-problem.parameters$t = 0.1;
+problem.parameters$t = 0.5;
 
 alpha.beta <- select.alpha.beta(problem.parameters);
 alpha <- alpha.beta$alpha;
 beta <- alpha.beta$beta;
 
-## ## MANUAL ALPHA BETA ##
-## beta <- 5;
-## alpha <- beta*problem.parameters$x.ic / (1-problem.parameters$x.ic);
-## ## ## 
+## MANUAL ALPHA BETA ##
+beta <- 10;
+alpha <- max(beta*problem.parameters$x.ic / (1-problem.parameters$x.ic),
+             2);
+## ## 
 
 kernel <- function(x) {
     return (dbeta(x,alpha,beta));
@@ -35,7 +37,7 @@ plot(x, univariate.solution(x, problem.parameters),
 lines(x, dbeta(x=x, shape1=alpha, shape2=beta, log=FALSE))
 lines(x, dbeta(x=x, shape1=alpha, shape2=beta, log=FALSE)^2, col = "green")
 
-poly.degree.x = 3;
+poly.degree.x = 15;
 x.pow.integral.vec <- x.power.integral.vector(problem.parameters,
                                           2*(poly.degree.x+1),
                                           alpha,
@@ -109,6 +111,18 @@ for (i in seq(1,poly.degree.x+1)) {
     }
 }
 
+### check representation of IC ###
+IC <- rep(0, length(x));
+for (i in seq(1,poly.degree.x+1)) {
+    IC = IC +
+        as.function(polynomials.table[[i]],
+                    vector=FALSE)(problem.parameters$x.ic)*
+                                basis.elements[[i]];
+    print(as.function(polynomials.table[[i]],
+                      vector=FALSE)(problem.parameters$x.ic));
+}
+plot(x,IC, type = "l");
+
 ### COEFFICIENTS ###
 polynomial.kernel <- mpoly(list(c("x"=alpha-1, coef=1/beta(alpha,beta))))*
     (mpoly(list(c("x"=beta-1, coef=1))) + mpoly(list(c("x"=0, coef=-1))))^(beta-1);
@@ -118,12 +132,12 @@ coefs <- coefficients(problem.parameters=problem.parameters,
                       polynomial.kernel=polynomial.kernel,
                       kernel=kernel,
                       poly.degree=poly.degree.x,
-                      number.derivs=10);
+                      number.derivs=20);
                       
 
 solution <- rep(0, length(x));
 basis.table <- vector(mode="list", length=poly.degree.x+1);
-for (i in seq(1,poly.degree.x+1)) {
+for (i in seq(1,1)) {
     if (i == 1) {
         current.function = as.function(polynomials.table[[i]]);
         basis.table[[i]] = rep(as.double(unlist(polynomials.table[[i]])),
