@@ -283,25 +283,34 @@ Equipped with (\ref{eq:delta-deriv}) and that
 $q(x,0) = \delta_{x_0}(x)$, we can compute the integrals in
 (\ref{eq:coef}) by using the Taylor expansion of $q(x,t)$ about $t=0$:
 \begin{align*}
- c_m(t; \alpha,\beta,x_0) =  \int_\Omega q(x,t) u_m(x|\alpha,\beta;t) dx &= \int_\Omega \left[\underbrace{q(x,0)}_{\delta_{x_0}(x)} + \sum_{k=1}^\infty \frac{t^k}{k!} \left. \frac{\partial^k q(x,t)}{\partial t^k} \right|_{t=0} \right] u_m(x|\alpha,\beta;t) dx \\
-                                              &= \int_\Omega \delta_{x_0}(x) u_m(x|\alpha,\beta;t) dx + \sum_{k=1}^\infty \frac{t^k}{k!} \int_\Omega \left. \frac{\partial^k q(x,t)}{\partial t^k} \right|_{t=0} u_m(x|\alpha,\beta;t) dx \\
+  c_m(t; \alpha,\beta,x_0) = \int_\Omega q(x,t) u_m(x|\alpha,\beta;t) dx
+  &= \int_\Omega \left[\underbrace{q(x,0)}_{\delta_{x_0}(x)} +
+    \sum_{k=1}^\infty \frac{t^k}{k!} \left. \frac{\partial^k q(x,t)}{\partial t^k} \right|_{t=0} \right] u_m(x|\alpha,\beta;t) dx \\
+                                                                         &= \int_\Omega \delta_{x_0}(x) u_m(x|\alpha,\beta;t) dx + \sum_{k=1}^\infty \frac{t^k}{k!} \int_\Omega \left. \frac{\partial^k q(x,t)}{\partial t^k} \right|_{t=0} u_m(x|\alpha,\beta;t) dx \\
                                                                          &= \int_\Omega \delta_{x_0}(x) u_m(x|\alpha,\beta;t) dx + \sum_{k=1}^\infty \frac{t^k}{k!} \int_\Omega \left(\frac{1}{2}\sigma^2\right)^{k} \frac{\partial^{2k} \delta_{x_0}(x)}{\partial x^{2k}} u_m(x|\alpha,\beta;t) dx \\
-                                              &= u_m(x_0|\alpha,\beta;t) + \sum_{k=1}^\infty \frac{t^k}{k!} (-1)^{2k} \left(\frac{1}{2}\sigma^2\right)^{k} \int_\Omega \delta_{x_0}(x) \frac{\partial^{2k} u_m(x|\alpha,\beta;t)}{\partial x^{2k}} dx \\
+                                                                         &= u_m(x_0|\alpha,\beta;t) + \sum_{k=1}^\infty \frac{t^k}{k!} (-1)^{2k} \left(\frac{1}{2}\sigma^2\right)^{k} \int_\Omega \delta_{x_0}(x) \frac{\partial^{2k} u_m(x|\alpha,\beta;t)}{\partial x^{2k}} dx \\
                                               &= u_m(x_0|\alpha,\beta;t) + \sum_{k=1}^\infty \frac{t^k}{k!} (-1)^{2k} \left(\frac{1}{2}\sigma^2\right)^{k}\frac{\partial^{2k} u_m(x_0|\alpha,\beta;t)}{\partial x^{2k}} \\
                                                                          &= u_m(x_0|\alpha,\beta;t) + \sum_{k=1}^\infty \frac{t^k}{k!} \left(\frac{1}{2}\sigma^2\right)^{k} \frac{\partial^{2k} u_m(x_0|\alpha,\beta;t)}{\partial x^{2k}}.
 \end{align*}
 
 Note that
 \begin{align*}
-  u_m'(x|\alpha,\beta;t) &= p'_m(x|\alpha,\beta;t) f(x|\alpha,\beta;t)
-                           + p_m(x|\alpha,\beta;t) f'(x|\alpha,\beta;t) \\
+  u_m^{(k)}(x|\alpha,\beta;t) &= \sum_{j=0}^k \left(\begin{array}{c}
+                                                      k \\
+                                                      j
+                                                      \end{array} \right)
+  p^{(j)}_m(x|\alpha,\beta;t) f^{(k-j)}(x|\alpha,\beta;t) \\
   f'(x|\alpha,\beta;t) &= \frac{1}{B(\alpha,\beta)}
                          \left[(\alpha-1)x^{\alpha-2}(1-x)^{\beta-1}
                          + (\beta-1)x^{\alpha-1}(1-x)^{\beta-2} \right] \\
                          &= \frac{1}{B(\alpha,\beta)}
                          \left[(\alpha-1)B(\alpha-1,\beta) f(x|\alpha-1,\beta;t)
-                         + (\beta-1)B(\alpha,\beta-1) f(x|\alpha,\beta-1;t) \right]
+                           + (\beta-1)B(\alpha,\beta-1)
+                           f(x|\alpha,\beta-1;t) \right] \\
 \end{align*}
+
+The $k^{th}$ order derivative of the polynomial $p_m(x|\alpha,\beta;t)$ can be
+computed on the fly with \texttt{mpoly}. The recursive definition of 
 
 \bibliographystyle{plainnat}
 % \bibliographystyle{bka}
