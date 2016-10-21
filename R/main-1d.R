@@ -7,43 +7,29 @@ problem.parameters$b = 1;
 problem.parameters$x.ic = 0.1;
 problem.parameters$number.terms = 1000;
 problem.parameters$sigma.2 = 1;
-problem.parameters$t = 0.5;
+problem.parameters$t = 0.1;
 
 alpha.beta <- select.alpha.beta(problem.parameters);
 alpha <- alpha.beta$alpha;
 beta <- alpha.beta$beta;
 
-## MANUAL ALPHA BETA ##
-beta <- 10;
-alpha <- max(beta*problem.parameters$x.ic / (1-problem.parameters$x.ic),
-             2);
-## ## 
+## ## MANUAL ALPHA BETA ##
+## beta <- 10;
+## alpha <- max(beta*problem.parameters$x.ic / (1-problem.parameters$x.ic),
+##              2);
+## ## ## 
 
 kernel <- function(x) {
     return (dbeta(x,alpha,beta));
 }
 
 x = seq(problem.parameters$a,problem.parameters$b,length.out = 100);
-## plot(x, dnorm(x=x,
-##               mean=problem.parameters$x.ic,
-##               sd=sqrt(problem.parameters$sigma.2*problem.parameters$t)),
-##      type = "l",
-##      col = "red",
-##      ylab = "y",
-##      xlab = "x",
-##      ylim = c(0,1));
-plot(x, univariate.solution(x, problem.parameters),
-     type = "l");
-lines(x, dbeta(x=x, shape1=alpha, shape2=beta, log=FALSE))
-lines(x, dbeta(x=x, shape1=alpha, shape2=beta, log=FALSE)^2, col = "green")
 
-poly.degree.x = 15;
+poly.degree.x = 2;
 x.pow.integral.vec <- x.power.integral.vector(problem.parameters,
                                           2*(poly.degree.x+1),
                                           alpha,
                                           beta);
-z <- univariate.solution(x, problem.parameters);
-
 ## poly bases ##
 polynomials.table <- vector(mode="list", length=poly.degree.x+1);
 for (i in seq(1,poly.degree.x+1)) {
@@ -70,6 +56,22 @@ for (i in seq(1,poly.degree.x+1)) {
     polynomials.table[[i]] <- mpoly(list(c("x"=0,"coef"=1/L2.norm))) * P.i.j;
 }
 
+basis.function <- function(x,i) {
+    out = as.function(polynomials.table[[i]],vector=FALSE)(x)*kernel(x);
+    return (out);
+}
+
+
+for (i in seq(1,poly.degree.x+1)) {
+    if (i==1) {
+        plot(x,basis.function(x,i),
+             type="l",
+             ylim=c(-2,2));
+    } else {
+        lines(x, basis.function(x,i));
+    }
+}
+
 ### check orthogonality ###
 N = (poly.degree.x+1);
 orthogonality.matrix <- matrix(nrow=poly.degree.x+1,
@@ -84,48 +86,60 @@ for (n in seq(1,(poly.degree.x+1))) {
                                            integrals.table = x.pow.integral.vec))
     }
 }
-
-### plotting some of the basis elements ###
-basis.elements <- vector(mode="list", length=poly.degree.x+1);
-for (i in seq(1,poly.degree.x+1)) {
-    if (i==1) {
-        basis.elements[[i]] = rep(as.double(unlist(polynomials.table[[i]])),
-                                  length(x)) *
-            kernel(x);
-    } else {
-        current.function <- function(x) {
-            return( as.function(polynomials.table[[i]],
-                                vector=FALSE)(x) *
-                                             kernel(x) )
-        };
-        
-        basis.elements[[i]] = current.function(x);
-    }
-}
-
-for (i in seq(1,poly.degree.x+1)) {
-    if (i==1) {
-        plot(x, basis.elements[[i]], type = "l", ylim=c(-2,2));
-    } else {
-        lines(x, basis.elements[[i]]);
-    }
-}
+print(orthogonality.matrix);
 
 ### check representation of IC ###
 IC <- rep(0, length(x));
 for (i in seq(1,poly.degree.x+1)) {
     IC = IC +
-        as.function(polynomials.table[[i]],
-                    vector=FALSE)(problem.parameters$x.ic)*
-                                basis.elements[[i]];
-    print(as.function(polynomials.table[[i]],
-                      vector=FALSE)(problem.parameters$x.ic));
+        basis.function(problem.parameters$x.ic,i)*
+        basis.function(x,i);                        
 }
 plot(x,IC, type = "l");
 
-### COEFFICIENTS ###
+### COEFFICIENTS EXACT ### (REIMANN INTEGRALS)
+test.function <- function(x) {
+    return (x*(1-x));
+}
+
+a = problem.parameters$a;
+b = problem.parameters$b;
+N = 1000;
+dx = (b-a)/N;
+
+c.exact <- sum(univariate.solution(seq(0,N-1)*dx, problem.parameters)*
+               dx);
+
+c.approx <- test.function(problem.parameters$x.ic) +
+    problem.parameters$t * 0.5 * problem.parameters$sigma.2 * -2;  
+
+coefs.exact = rep(NA, poly.degree.x+1);
+for (i in seq(1,poly.degree.x+1)) {
+    integral=sum(univariate.solution(seq(0,N-1)*dx, problem.parameters)*
+                 basis.function(seq(0,N-1)*dx,i)*
+                                          dx);
+    print(c(i,integral));
+    coefs.exact[i] = integral;
+}
+
+approx.solution = rep(0,length(x));
+for (i in seq(1,poly.degree.x+1)) {
+    approx.solution = approx.solution +
+        coefs.exact[i]*basis.function(x,i);
+}
+
+plot(x,univariate.solution(x,problem.parameters),
+     type="l",
+     col="red");
+lines(x,approx.solution);
+
+### COEFFICIENTS APPROX ###
 polynomial.kernel <- mpoly(list(c("x"=alpha-1, coef=1/beta(alpha,beta))))*
-    (mpoly(list(c("x"=beta-1, coef=1))) + mpoly(list(c("x"=0, coef=-1))))^(beta-1);
+    (mpoly(list(c("x"=0, coef=1))) - mpoly(list(c("x"=1, coef=1))) )^(beta-1);
+
+plot(x,kernel(x),type="l", col="red");
+lines(x,as.function(polynomial.kernel,vector=FALSE)(x),
+      lty="dashed");
 
 coefs <- coefficients(problem.parameters=problem.parameters,
                       polynomials.table=polynomials.table,

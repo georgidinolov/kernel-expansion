@@ -111,16 +111,38 @@ coefficients <- function(problem.parameters,
             derivatives.doubles[k] = as.function(derivatives[[k]], vector=FALSE)(x.0);
         }
         
-        coef = as.function(polynomials.table[[i]],
-                           vector=FALSE)(x.0)*kernel(x.0) +
-                                       sum(t^seq(1,number.derivs)/
-                                             factorial(seq(1,number.derivs))*
-                                             (0.5*sigma2)^seq(1,number.derivs)*
-                                                          derivatives.doubles);
+        coefficient = as.function(polynomial,
+                                  vector=FALSE)(x.0) +
+                                              sum(t^seq(1,number.derivs)/
+                                                    factorial(seq(1,number.derivs))*
+                                                    (0.5*sigma2)^seq(1,number.derivs)*
+                                                                 derivatives.doubles);
         coefs[i] = coef;
     }
     return (coefs);
 }
+
+coefficients.exact <- function(kernel,
+                               basis.function.table,
+                               problem.parameters,
+                               N) {
+    a = problem.parameters$a;
+    b = problem.parameters$b;
+    dx = (b-a)/N;
+
+    
+    coefs = rep(NA, length(basis.function.table));
+    
+    for (i in seq(1,length(basis.function.table))) {
+        integral=sum(univariate.solution(seq(0,N-1)*dx, problem.parameters)*
+                     basis.function.table[[i]](seq(0,N-1)*dx)*
+                     dx)
+        print(c(i,integral));
+                                     
+    }
+    return (coefs);
+}
+
 
 integral.table <- function(problem.parameters, poly.degree) {
     a = problem.parameters$a;
