@@ -1,0 +1,297 @@
+\message{ !name(solutions-to-advection-diffusion-PDEs-on-bounded-regular-domains.tex)}\documentclass[10pt]{article}
+\pdfminorversion=4
+
+\usepackage{amssymb}
+\usepackage{pslatex,palatino,avant,graphicx,color}
+\usepackage{colortbl}
+\usepackage{fullpage}
+\usepackage{mathtools}
+\usepackage{natbib}
+\usepackage{amsmath}
+\usepackage{caption}
+%\usepackage{subfigure}
+\usepackage{subcaption}
+\usepackage{bm}
+\usepackage{wrapfig}
+\usepackage{enumerate}
+\usepackage{rotating}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{bbm}
+\usepackage[titles,subfigure]{tocloft} % Alter the style of the Table of Contents
+
+%\pdfminorversion=4
+% NOTE: To produce blinded version, replace "0" with "1" below.
+\newcommand{\blind}{0}
+
+% DON'T change margins - should be 1 inch all around.
+\addtolength{\oddsidemargin}{-.5in}%
+\addtolength{\evensidemargin}{-.5in}%
+\addtolength{\textwidth}{1in}%
+\addtolength{\textheight}{1.3in}%
+\addtolength{\topmargin}{-.8in}%
+
+
+\renewcommand{\cftsecfont}{\rmfamily\mdseries\upshape}
+\renewcommand{\cftsecpagefont}{\rmfamily\mdseries\upshape} % No bold!
+
+\newcommand{\indicator}[1]{\mathbbm{1}\left( #1 \right) }
+\newcommand{\hb}{\hat{b}}
+\newcommand{\ha}{\hat{a}}
+\newcommand{\htheta}{\hat{\theta}}
+\newcommand{\halpha}{\hat{\alpha}}
+\newcommand{\hmu}{\hat{\mu}}
+\newcommand{\hsigma}{\hat{\sigma}}
+\newcommand{\hphi}{\hat{\phi}}
+\newcommand{\htau}{\hat{\tau}}
+\newcommand{\heta}{\hat{\eta}}
+\newcommand{\E}[1]{\mbox{E}\left[#1\right]}
+\newcommand{\Var}[1]{\mbox{Var}\left[#1\right]}
+\newcommand{\Indicator}[1]{\mathbbm{1}_{ \left( #1 \right) } }
+\newcommand{\dNormal}[3]{ N\left( #1 \left| #2, #3 \right. \right) }
+\newcommand{\Beta}[2]{\mbox{Beta}\left( #1, #2 \right)}
+\newcommand{\alphaphi}{\alpha_{\hphi}}
+\newcommand{\betaphi}{\beta_{\hphi}}
+\newcommand{\expo}[1]{ \exp\left\{ #1 \right\}}
+\newcommand{\tauSquareDelta}{\htau^2
+  \left(\frac{1-\expo{-2\htheta\Delta}}{2\htheta} \right)}
+\newcommand{\mumu}{\mu_{\hmu}}
+\newcommand{\sigmamu}{\sigma^2_{\hmu}}
+\newcommand{\sigmamuexpr}{\log\left( \frac{\VarX}{\EX^2} + 1 \right)}
+\newcommand{\mumuexpr}{\log(\EX) -  \log\left( \frac{\VarX}{\EX^2} + 1 \right) /2 }
+
+\newcommand{\EX}{\mbox{E}\left[ X \right] }
+\newcommand{\VarX}{\mbox{Var}\left[ X \right] }
+\newcommand{\mueta}{\mu_{\heta} }
+\newcommand{\sigmaeta}{\sigma^2_{\heta}}
+\newcommand{\sigmaetaexpr}{ \log\left( \frac{\VarX}{\EX^2} + 1 \right) }
+\newcommand{\muetaexpr}{ \log(\EX) -  \sigmaetaexpr /2 }
+
+\newcommand{\mualpha}{\mu_{\halpha} }
+\newcommand{\sigmaalpha}{\sigma^2_{\halpha}}
+\newcommand{\sigmaalphaexpr}{ \log\left( \frac{\VarX}{\EX^2} + 1 \right) }
+\newcommand{\mualphaexpr}{ \log(\EX) -  \sigmaalphaexpr /2 }
+
+\newcommand{\mutauexpr}{ \frac{2}{T} \EX }
+\newcommand{\sigmatauexpr}{ \frac{4}{T^2} \Var{X}}
+
+\newcommand{\alphatau}{\alpha_{\htau^2}}
+\newcommand{\betatau}{\beta_{\htau^2}}
+
+\newcommand{\Gam}[2]{\mbox{Gamma}\left( #1, #2 \right) }
+\newcommand{\InvGam}[2]{\mbox{Inv-Gamma}\left( #1, #2 \right) }
+
+%%% END Article customizations
+
+%%% The "real" document content comes below...
+
+% \newbox{\LegendeA}
+% \savebox{\LegendeA}{
+%    (\begin{pspicture}(0,0)(0.6,0)
+%    \psline[linewidth=0.04,linecolor=red](0,0.1)(0.6,0.1)
+%    \end{pspicture})}
+% \newbox{\LegendeB}
+%    \savebox{\LegendeB}{
+%    (\begin{pspicture}(0,0)(0.6,0)
+%    \psline[linestyle=dashed,dash=1pt 2pt,linewidth=0.04,linecolor=blue](0,0.1)(0.6,0.1)
+%    \end{pspicture})}
+
+\title{Solution to a Non-Seperable Diffusion Equation on a Regular Domain}
+\author{Georgi Dinolov, Abel Rodriguez, Hongyun Wang}
+\date{} % Activate to display a given date or no date (if empty),
+         % otherwise the current date is printed 
+
+\begin{document}
+
+\message{ !name(solutions-to-advection-diffusion-PDEs-on-bounded-regular-domains.tex) !offset(-3) }
+
+\def\spacingset#1{\renewcommand{\baselinestretch}%
+{#1}\small\normalsize} \spacingset{1}
+
+\bigskip
+
+\abstract{}
+
+\vspace{1cm}
+\noindent
+{\it Keywords:} Diffusion equation, regular bounded domain
+
+\spacingset{1.00} % DON'T change the spacing! was set to 1.45
+\section{Motivation}\label{se:motivation}
+
+\section{Solution on $\Omega \subset \mathbb{R}$}
+
+In this Section we will demonstrate the method outlined in Section
+\ref{se:motivation} where the solution is defined on a bounded
+interval on $\mathbb{R}$. In this case, we have the true solution to
+the diffusion equation. We will compare the asymptotic
+expansion to the true solutio.
+
+The PDE we will solve is the following BC/IC problem
+\begin{align}
+  \frac{\partial}{\partial t} q(x,t) &= \frac{1}{2}\sigma^2 \frac{\partial^2}{\partial x^2} q(x,t), \label{eq:pde} \\
+  q(x,0) &= \delta_{x_0}(x), \label{eq:ic} \\
+  q(a,t) &= q(b,t) = 0. & (\mbox{i.e. } \Omega = [a,b]) \label{eq:bc}
+\end{align}
+\textbf{Without loss of generality we will assume}
+\begin{align*}
+  a &=0, & b &= 1.
+\end{align*}
+
+Problem (\ref{eq:pde}) - (\ref{eq:bc}) can be solved in a variety of
+ways. We will use the method of images, which repeatedly reflects the
+fundamental solution
+\[
+  q_{fundamental}(x,t) = \frac{1}{\sqrt{2\pi \sigma^2 t}} \exp\left\{ -\frac{1}{2\sigma^2t} (x-x_0)^2 \right\}
+\]
+about the boundary points $a$ and $b$. The steps for the full
+solutions are as follows:
+
+\begin{enumerate}[Step 1:]
+\item Select a kernel $f(x|t)$ for the basis expansion,
+\item Perform Gram-Schmidt orthogonalization on the polynomials basis,
+\item Compute the weight for each basis element,
+\item Profit.
+\end{enumerate}
+
+\subsection{A suitable kernel for the basis elements}
+As noted in the motivating Section \ref{se:motivation}, the kernel we
+will use must be in $C^{\infty}(a,b)$, and it must obey the boundary
+conditions. Moreover, the basis kernel must be chosen such that
+\begin{enumerate}[i)]
+\item derivatives $f'(x)$ can be computed easily, 
+\item integrals $\int_{\Omega} x^m f(x|t)^2\, dx$ can be computed easily
+\end{enumerate}
+Consideration i) suggests that $f(x|t)$ should be of polynomial
+form. Consideration ii) suggests that $f(x|t)$ should be a known pdf
+over $[a,b]$, taking on zero at $a$ and $b$.  Given these
+requirements, the Beta distribution comes to mind:
+\[
+  f(x|t, \alpha, \beta) = \frac{1}{B(\alpha,\beta)} x^{\alpha-1}(1-x)^{\beta-1},
+\]
+where $B(\alpha,\beta)$ is the beta function. Our choice for $\alpha$
+and $\beta$ is not very restricted. However, we will outline a few
+heuristics by which we can choose these parameters. Note that there
+may exist and optimal choise for $(\alpha, \beta)$ in terms of the
+accuracy of the asymptotic expansion with respect to the true solution
+$q(x,t)$. However, we will not prove anything in this vein here.
+
+\textbf{First}, as long as
+\begin{align}
+  \alpha, \beta > 1, \label{eq:lower-bound}
+\end{align}
+the mode for the distribution is guaranteed to
+exist, so that the boundary conditions are met.
+
+Aside from $\alpha > 1$ and $\beta > 1$, we can pick any
+$(\alpha,\beta)$ pair for our kernel. However, given that $f(x|t)$ can
+be thought of as implicitly dependent upon $t$, and that the variance
+of the fundamental solution is $\sigma^2t$, a first, reasonable guess
+for $(\alpha,\beta)$ can be given by the solution to the equation:
+\begin{align}
+  \Var{X} &:= \frac{\alpha \beta}{(\alpha+\beta)^2(\alpha+\beta+1)} = \sigma^2t, \label{eq:var-restriction}\\
+  p(X \in dx) &= f(x|t, \alpha, \beta). \nonumber
+\end{align}
+
+By the same logic, noting the mean for the fundamental solution, we can require
+\begin{align}
+  \E{X} &:= \frac{\alpha}{\alpha+\beta} = x_0, \label{eq:mean-restriction}\\
+  p(X \in dx) &= f(x|t, \alpha, \beta). \nonumber
+\end{align}
+
+Finally, we may require that $\alpha, \beta \in \mathbb{Z}$, since
+this will guarantee that
+\[
+  \frac{\partial^k}{\partial x^k} f(x|t,\alpha,\beta) = 0
+\]
+for large enough $k$. [georgid: This may not prove important, but I
+will keep it here anyway]
+
+Thus, to set $\alpha$ and $\beta$, we simultaneously solve
+(\ref{eq:var-restriction}) and (\ref{eq:mean-restriction}), then round
+$\alpha$ and $\beta$ to the closest integer greater than or equal to
+2. Since $\alpha$ and $\beta$ are dependent upon $t$, we will keep $t$
+in our notation for $f$, albeit implicitly. In other words, once we
+choose $\alpha$ and $\beta$, we will not be able to take derivatives
+of $f$ with respect to $t$. We will denote the kernel as
+$f(x| \alpha, \beta ; t)$.
+
+\subsection{Gram-Schmidt orthogonalization on the polynomials basis}
+The family of (polynomial) functions
+$\left\{ x^m f(x| \alpha, \beta; t) \right\}_{m=0}^\infty$ spans the
+space of $L^2([a,b])$ functions. We generate the basis elements
+$\left\{ u_m(x|\alpha,\beta;t) \right\}_{m=0}^\infty$ by setting
+\begin{align}
+  v_0(x| \alpha, \beta; t) &= f(x| \alpha, \beta; t), \nonumber \\
+  u_0(x| \alpha, \beta; t) &= \frac{f(x| \alpha, \beta; t)}{\|f(x|\alpha, \beta; t\|}, \label{eq:u0} \\
+  \|f(x|\alpha,\beta;t) \| &\equiv \left( \int_{\Omega} f(x|\alpha,\beta;t)^2 dx \right)^{1/2}. \label{eq:norm}
+\end{align}
+The integral in (\ref{eq:norm}) is easy to compute because of the form
+we have chosen for the kernel $f:$
+\begin{align*}
+  \int_{\Omega} f(x|\alpha,\beta;t)^2 dx  &= \int_{\Omega} \left( \frac{1}{B(\alpha,\beta)} x^{\alpha-1}(1-x)^{\beta-1} \right)^{2} dx, \\
+                                          &= \int_{\Omega} \frac{1}{B(\alpha,\beta)^2} x^{(2\alpha-1)-1}(1-x)^{(2\beta-1)-1} dx, \\
+                                          &= \frac{B(2\alpha-1, 2\beta-1)}{B(\alpha,\beta)^2}, \\
+  \left( \int_{\Omega} f(x|\alpha,\beta;t)^2 dx \right)^{1/2} &= \sqrt{\frac{B(2\alpha-1, 2\beta-1)}{B(\alpha,\beta)^2}}.
+\end{align*}
+Next, for $u_1(x;\alpha,\beta;t)$,
+\begin{align}
+  v_1(x| \alpha, \beta; t) &= x f(x|\alpha,\beta;t) - \left<x f(x|\alpha,\beta;t) | u_0(x|\alpha,\beta;t) \right> u_0(x|\alpha,\beta;t) \\
+  &= \left(x - \frac{\left<x f(x|\alpha,\beta;t) | u_0(x|\alpha,\beta;t) \right>}{\| f(x|\alpha,\beta;t) \|} \right) f(x|\alpha,\beta;t) \\
+  \left<x f(x|\alpha,\beta;t) | u_0(x|\alpha,\beta;t) \right> &= \int_\Omega \frac{x f(x|\alpha,\beta;t)^2}{\| f(x|\alpha,\beta;t) \|} = \frac{1}{\| f(x|\alpha,\beta;t) \|} \int_\Omega \frac{1}{B(\alpha,\beta)^2} x^{2\alpha-1}(1-x)^{(2\beta-1)-1} dx  \\
+  u_1(x|\alpha,\beta;t) &= \frac{v_1(x|\alpha,\beta;t)}{\|v_1(x|\alpha,\beta;t)\|} \\
+  \|v_1(x|\alpha,\beta;t)\| &= \int_\Omega \left(x - \frac{\left<x f(x|\alpha,\beta;t) | u_0(x|\alpha,\beta;t) \right>}{\| f(x|\alpha,\beta;t) \|} \right)^2 f(x|\alpha,\beta;t)^2 dx \\
+  u_1(x|\alpha,\beta;t) &= \frac{v_1(x|\alpha,\beta;t)}{\|v_1(x|\alpha,\beta;t)\|} = p_1(x) f(x|\alpha,\beta;t), 
+\end{align}
+where $p_1(x)$ is a first-order polynomial. In general,
+\begin{align*}
+  v_{m}(x|\alpha,\beta;t) &= x^m f(x|\alpha,\beta;t) - \sum_{m'=0}^{m-1} \left< x^m f(x|\alpha,\beta;t) | u_{m'}(x|\alpha,\beta;t) \right>u_{m'}(x|\alpha,\beta;t) \\
+  u_{m}(x|\alpha,\beta;t) &=  \frac{v_{m}(x|\alpha,\beta;t)}{\| v_{m}(x|\alpha,\beta;t) \|}  \equiv p_m(x|\alpha,\beta;t) f(x|\alpha,\beta;t)
+\end{align*}
+In finding the basis, we will have to perform two main types
+calcluations:
+\begin{enumerate}[1)]
+\item polynomial multiplication: $p_m(x|\alpha,\beta;t)p_n(x|\alpha,\beta;t)$
+\item integration of the form: $\int_\Omega x^m f(x|\alpha,\beta;t)^2 dx$
+\end{enumerate}
+In \texttt{R}, the package \texttt{mpoly} will be used to handle
+1). Calculation 2) can be performed relatively easily due to the form
+of $f(x|\alpha,\beta;t)$, as show in (\ref{eq:intpoly}).
+
+\begin{align}
+  \int_\Omega x^m f(x|\alpha,\beta;t)^2 dx &= \int_\Omega x^m \frac{1}{B(\alpha,\beta)^2} x^{2\alpha-2}(1-x)^{2\beta-2} dx = \frac{1}{B(\alpha,\beta)^2} \int_\Omega x^{2\alpha+m-2}(1-x)^{2\beta-2} dx = \frac{B(2\alpha+m-1, 2\beta-1)}{B(\alpha,\beta)^2} \label{eq:intpoly}
+\end{align}
+
+\subsection{Computing the Weights of the Basis Elements}
+Given the set of orthonormal functions
+$\{u_m(x|\alpha,\beta;t)\}_{m=0}^\infty$ spanning $L^2([a,b])$, and
+assuming that $q(x,t) \in L^2([a,b])$, we can write down
+\begin{align}
+   q(x,t) &= \sum_{m=0}^\infty c_m u_m(x|\alpha,\beta;t), \\
+  \mbox{with  } c_m &= \int_\Omega q(x,t) u_m(x|\alpha,\beta;t) dx. \label{eq:coef}
+\end{align}
+Since each $u_m$ is the product of two polynomials,
+$u_m(x|\alpha,\beta;t) \in C^{\infty}([a,b])$ and is
+square-integrable. Therefore, we can write
+\begin{equation}
+  \int_\Omega \frac{\partial^k \delta_{x_0}(x)}{\partial x^2}
+  u_m(x|\alpha,\beta;t) dx = (-1)^{k} \int_\Omega \delta_{x_0}(x)
+  \frac{\partial^k u_m(x|\alpha,\beta;t)}{\partial x^k} dx = (-1)^k
+  \left. \frac{\partial^k u_m(x|\alpha,\beta;t)}{\partial x^k}
+  \right|_{x=x_0} \label{eq:delta-deriv}
+\end{equation}
+Equipped with (\ref{eq:delta-deriv}) and that
+$q(x,0) = \delta_{x_0}(x)$, we can compute the integrals in
+(\ref{eq:coef}) by using the Taylor expansion of $q(x,t)$ about $t=0$:
+\begin{align*}
+  \int_\Omega q(x,t) u_m(x|\alpha,\beta;t) dx &= \int_\Omega \left[\underbrace{q(x,0)}_{\delta_{x_0}(x)} + \sum_{k=1}^\infty \frac{t^k}{k!} \frac{\partial^k q(x,t)}{\partial t^k} \right] u_m(x|\alpha,\beta;t) dx
+\end{align*}
+
+\bibliographystyle{plainnat}
+% \bibliographystyle{bka}
+\bibliography{master-bibliography}
+\end{document}
+
+\message{ !name(solutions-to-advection-diffusion-PDEs-on-bounded-regular-domains.tex) !offset(-297) }
