@@ -2,12 +2,12 @@ rm(list=ls());
 source("1-d-solution.R");
 
 problem.parameters = NULL;
-problem.parameters$a = -1;
+problem.parameters$a = 0;
 problem.parameters$b = 1;
 problem.parameters$x.ic = 0.1;
 problem.parameters$number.terms = 1000;
 problem.parameters$sigma.2 = 1;
-problem.parameters$t = 0.1;
+problem.parameters$t = 0.8;
 
 alpha.beta <- select.alpha.beta(problem.parameters);
 alpha <- alpha.beta$alpha;
@@ -19,8 +19,9 @@ beta <- alpha.beta$beta;
 ##              2);
 ## ## ## 
 C = 1;
+K = 3;
 kernel <- function(x) {
-    return (C*exp(-(1-x^2)^(-1)));
+    return (C*x^(2*K)*(1-x)^(2*K)/beta(2*K+1,2*K+1));
 }
 x = seq(problem.parameters$a,problem.parameters$b,length.out = 100);
 
@@ -39,9 +40,9 @@ lines(x,
 
 ### EXACT INTEGRAL ###
 N = 10000;
-dx = (1- -1)/N;
-integral.exact <- sum(univariate.solution(seq(0,N-1)*dx -1 , problem.parameters)*
-                      kernel(seq(0,N-1)*dx -1)*
+dx = (1)/N;
+integral.exact <- sum(univariate.solution(seq(0,N-1)*dx , problem.parameters)*
+                      kernel(seq(0,N-1)*dx)*
                       dx);
 ### APPROX INTEGRAL ###
 x.0 = problem.parameters$x.ic;
