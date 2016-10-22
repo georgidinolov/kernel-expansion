@@ -1,14 +1,46 @@
 library("mpoly");
 ### NEW STUFF START ###
 ## derivative of kernel test function on (-1,1)
+kernel.deriv.poly <- function(x,k) {
+    if (k==1) {
+        return( second.derivative.poly(x) );
+    } else if (k==2) {
+        return( fourth.derivative.poly(x) )
+    } else if (k==3) {
+        return( sixth.derivative.poly(x) )
+    } else if (k==4) {
+        return( eighth.derivative.poly(x) )
+    } else {
+        stop ("k above 4");
+    }
+}
+
 second.derivative.poly <- function(x) {
+    sign.numer = sign(6*x^4-2);
+    out.exp.log = sign.numer*( exp(log(abs(6*x^4-2)) -
+                                  4*log(1-x^2)));
     out = (6*x^4-2) / (1-x^2)^4;
     return (out);
 }
 
 fourth.derivative.poly <- function(x) {
+    sign.numer = sign(30*x^10 + 45*x^8 - 132*x^6 + 58*x^4 + 6*x^2 -3);
+    
+    out.exp.log = sign.numer*exp(log(4*abs(30*x^10 + 45*x^8 - 132*x^6 + 58*x^4 + 6*x^2 -3))-
+                                 8*log(1-x^2));
     out = 4*(30*x^10 + 45*x^8 - 132*x^6 + 58*x^4 + 6*x^2 -3)/
         (x^2-1)^8;
+    return (out);
+}
+
+sixth.derivative.poly <- function(x) {
+    out = (8)*(x^2*(((15*x^2*(42*x^8+210*x^6-567*x^4+62*x^2+643)-7102)*x^2+1005)*x^2+270)-15)/(x^2-1)^12
+    return (out);
+}
+
+eighth.derivative.poly <- function(x) {
+    out = (16)*(22680*x^22+238140*x^20-502740*x^18-868455*x^16+2862720*x^14-2049012*x^12-473256*x^10+1190310*x^8-440216*x^6+3360*x^4+16380*x^2+105)/((x-1)^16*(x+1)^16);
+
     return (out);
 }
 ### NEW STUFF END ###

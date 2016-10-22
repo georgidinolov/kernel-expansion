@@ -7,7 +7,7 @@ problem.parameters$b = 1;
 problem.parameters$x.ic = 0.1;
 problem.parameters$number.terms = 1000;
 problem.parameters$sigma.2 = 1;
-problem.parameters$t = 0.2;
+problem.parameters$t = 0.1;
 
 alpha.beta <- select.alpha.beta(problem.parameters);
 alpha <- alpha.beta$alpha;
@@ -48,13 +48,14 @@ x.0 = problem.parameters$x.ic;
 t = problem.parameters$t;
 sigma2 = problem.parameters$sigma.2;
 
-integral.approx <- kernel(x.0) +
-    t*0.5*sigma2*
-    kernel(x.0)*second.derivative.poly(x.0) +
-    t^2/2*(0.5*sigma2)^2*
-    kernel(x.0)*fourth.derivative.poly(x.0)
-
-
+for (K in seq(1,4)) {
+    integral.approx = kernel(x.0);
+    for (k in seq(1,K)) {
+        integral.approx = integral.approx +
+        t^k/factorial(k)*(0.5*sigma2)^k*kernel(x.0)*kernel.deriv.poly(x.0,k);
+    }
+    print(100*abs((integral.exact - integral.approx)/integral.exact));
+}
 
 poly.degree.x = 2;
 
