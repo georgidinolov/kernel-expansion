@@ -13,11 +13,10 @@ alpha.beta <- select.alpha.beta(problem.parameters);
 alpha <- alpha.beta$alpha;
 beta <- alpha.beta$beta;
 
-## ## MANUAL ALPHA BETA ##
-## beta <- 10;
-## alpha <- max(beta*problem.parameters$x.ic / (1-problem.parameters$x.ic),
-##              2);
-## ## ## 
+## MANUAL ALPHA BETA ##
+beta <- 4;
+alpha <- 4;
+## ## 
 
 kernel <- function(x) {
     return (dbeta(x,alpha,beta));
@@ -25,7 +24,7 @@ kernel <- function(x) {
 
 x = seq(problem.parameters$a,problem.parameters$b,length.out = 100);
 
-poly.degree.x = 2;
+poly.degree.x = 5;
 x.pow.integral.vec <- x.power.integral.vector(problem.parameters,
                                           2*(poly.degree.x+1),
                                           alpha,
@@ -146,12 +145,12 @@ coefs <- coefficients(problem.parameters=problem.parameters,
                       polynomial.kernel=polynomial.kernel,
                       kernel=kernel,
                       poly.degree=poly.degree.x,
-                      number.derivs=20);
+                      number.derivs=1);
                       
 
 solution <- rep(0, length(x));
 basis.table <- vector(mode="list", length=poly.degree.x+1);
-for (i in seq(1,1)) {
+for (i in seq(1,3)) {
     if (i == 1) {
         current.function = as.function(polynomials.table[[i]]);
         basis.table[[i]] = rep(as.double(unlist(polynomials.table[[i]])),
@@ -166,7 +165,7 @@ for (i in seq(1,1)) {
 }
 
 plot(x, solution, type = "l");
-lines(x, z, col = "red", lty="dashed");
+lines(x, univariate.solution(x,problem.parameters), col = "red", lty="dashed");
 i=1
 j=1
 persp(x, y, coefficients.table[[i]][[j]]*basis.table[[i]][[j]]*sqrt(z),

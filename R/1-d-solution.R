@@ -117,7 +117,7 @@ coefficients <- function(problem.parameters,
                                                     factorial(seq(1,number.derivs))*
                                                     (0.5*sigma2)^seq(1,number.derivs)*
                                                                  derivatives.doubles);
-        coefs[i] = coef;
+        coefs[i] = coefficient;
     }
     return (coefs);
 }
