@@ -24,7 +24,7 @@ kernel <- function(x) {
 
 x = seq(problem.parameters$a,problem.parameters$b,length.out = 100);
 
-poly.degree.x = 5;
+poly.degree.x = 3;
 x.pow.integral.vec <- x.power.integral.vector(problem.parameters,
                                           2*(poly.degree.x+1),
                                           alpha,
