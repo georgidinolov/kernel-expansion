@@ -14,8 +14,8 @@ alpha <- alpha.beta$alpha;
 beta <- alpha.beta$beta;
 
 ## MANUAL ALPHA BETA ##
-beta <- 4;
-alpha <- 4;
+beta <- 5;
+alpha <- 5;
 ## ## 
 
 kernel <- function(x) {
@@ -24,7 +24,7 @@ kernel <- function(x) {
 
 x = seq(problem.parameters$a,problem.parameters$b,length.out = 100);
 
-poly.degree.x = 3;
+poly.degree.x = 4;
 x.pow.integral.vec <- x.power.integral.vector(problem.parameters,
                                           2*(poly.degree.x+1),
                                           alpha,
