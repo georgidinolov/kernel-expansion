@@ -1,40 +1,65 @@
 library("mpoly");
 ### NEW STUFF START ###
 ## derivative of kernel test function on (-1,1)
-kernel.deriv.poly <- function(x,k) {
+kernel.deriv.poly <- function(x,K,kernel) {
+
+    ## P.0s = vector(mode="list", length = K);
+    ## P.1s = vector(mode="list", length = K);
+    ## derivs.doubles = matrix(nrow=length(x), ncol=K);
+
+    ## for (k in seq(1,K)) {
+    ##     if (k==1) {
+    ##         P.0s[[k]] = mpoly(list(c("x"=0,coef=1),
+    ##                                c("x"=2,coef=-1)))^2;
+    ##         P.1s[[k]] = mpoly(list(c("x"=1,coef=-2)));
+    ##     } else {
+    ##         P.0s[[k]] = P.0s[[k-1]]^3 * P.0s[[1]];
+    ##         P.1s[[k]] =
+    ##             P.1s[[1]] *
+    ##             P.1s[[k-1]] *
+    ##             P.0s[[k-1]]^2 +
+    ##                             P.0s[[k-1]] *
+    ##                             P.0s[[1]] *
+    ##                             (P.0s[[k-1]]*deriv(P.1s[[k-1]],"x") -
+    ##                              deriv(P.0s[[k-1]],"x")*P.1s[[k-1]]);
+    ##     }
+    ##     P.k.0 = as.function(P.0s[[k]],vector=FALSE)(x);
+    ##     signs.P.k.0 = sign(P.k.0);
+
+    ##     P.k.1 = as.function(P.1s[[k]],vector=FALSE)(x);
+    ##     signs.P.k.1 = sign(P.k.1);
+        
+    ##     derivs.doubles[,k] = signs.P.k.0*signs.P.k.1*
+    ##         exp(-log(abs(P.k.0))+log(abs(P.k.1))+log(kernel(x)));
+            
+    ## }
+    
     if (k==1) {
-        return( second.derivative.poly(x) );
+        return( second.derivative.poly(x,kernel) );
     } else if (k==2) {
-        return( fourth.derivative.poly(x) )
+        return( fourth.derivative.poly(x,kernel) )
     } else if (k==3) {
-        return( sixth.derivative.poly(x) )
-    } else if (k==4) {
-        return( eighth.derivative.poly(x) )
+        return( sixth.derivative.poly(x,kernel) )
     } else {
-        stop ("k above 4");
+        stop ("k above 3");
     }
 }
 
-second.derivative.poly <- function(x) {
-    sign.numer = sign(6*x^4-2);
-    out.exp.log = sign.numer*( exp(log(abs(6*x^4-2)) -
-                                  4*log(1-x^2)));
-    out = (6*x^4-2) / (1-x^2)^4;
+second.derivative.poly <- function(x,kernel) {
+    ## sign.numer = sign(6*x^4-2);
+    ## out.exp.log = sign.numer*( exp(log(abs(6*x^4-2)) -
+    ##                               4*log(1-x^2)));
+    out =  kernel(x) * (6*x^4-2) / (1-x^2)^4;
     return (out);
 }
 
-fourth.derivative.poly <- function(x) {
-    sign.numer = sign(30*x^10 + 45*x^8 - 132*x^6 + 58*x^4 + 6*x^2 -3);
-    
-    out.exp.log = sign.numer*exp(log(4*abs(30*x^10 + 45*x^8 - 132*x^6 + 58*x^4 + 6*x^2 -3))-
-                                 8*log(1-x^2));
-    out = 4*(30*x^10 + 45*x^8 - 132*x^6 + 58*x^4 + 6*x^2 -3)/
-        (x^2-1)^8;
+fourth.derivative.poly <- function(x,kernel) {
+    out= (4*kernel(x))*(30*x^10+45*x^8-132*x^6+58*x^4+6*x^2-3)/(x^2-1)^8
     return (out);
 }
 
-sixth.derivative.poly <- function(x) {
-    out = (8)*(x^2*(((15*x^2*(42*x^8+210*x^6-567*x^4+62*x^2+643)-7102)*x^2+1005)*x^2+270)-15)/(x^2-1)^12
+sixth.derivative.poly <- function(x,kernel) {
+    out = kerne(x)*(8)*(x^2*(((15*x^2*(42*x^8+210*x^6-567*x^4+62*x^2+643)-7102)*x^2+1005)*x^2+270)-15)/(x^2-1)^12
     return (out);
 }
 

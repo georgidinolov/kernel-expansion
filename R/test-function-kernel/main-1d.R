@@ -2,12 +2,12 @@ rm(list=ls());
 source("1-d-solution.R");
 
 problem.parameters = NULL;
-problem.parameters$a = 0;
+problem.parameters$a = -1;
 problem.parameters$b = 1;
-problem.parameters$x.ic = 0.1;
+problem.parameters$x.ic = 0.8;
 problem.parameters$number.terms = 1000;
 problem.parameters$sigma.2 = 1;
-problem.parameters$t = 0.8;
+problem.parameters$t = 0.1;
 
 alpha.beta <- select.alpha.beta(problem.parameters);
 alpha <- alpha.beta$alpha;
@@ -18,12 +18,12 @@ beta <- alpha.beta$beta;
 ## alpha <- max(beta*problem.parameters$x.ic / (1-problem.parameters$x.ic),
 ##              2);
 ## ## ## 
-C = 1;
+C = 1/0.133086;
 K = 3;
 kernel <- function(x) {
-    return (C*x^(2*K)*(1-x)^(2*K)/beta(2*K+1,2*K+1));
+    return (C*exp(-1/(1-x^2)));
 }
-x = seq(problem.parameters$a,problem.parameters$b,length.out = 100);
+x = seq(problem.parameters$a+0.001,problem.parameters$b-0.001,length.out = 100);
 
 plot(x, kernel(x),type="l",
      ylim = c(min(c(univariate.solution(x,problem.parameters),
@@ -37,23 +37,24 @@ lines(x,
       kernel(x),
       col="green");
 
-
 ### EXACT INTEGRAL ###
 N = 10000;
-dx = (1)/N;
-integral.exact <- sum(univariate.solution(seq(0,N-1)*dx , problem.parameters)*
-                      kernel(seq(0,N-1)*dx)*
+dx = (problem.parameters$b-problem.parameters$a)/N;
+integral.exact <- sum(univariate.solution(seq(0,N-1)*dx+problem.parameters$a,
+                                          problem.parameters)*
+                      kernel(seq(0,N-1)*dx+
+                             problem.parameters$a)*
                       dx);
 ### APPROX INTEGRAL ###
 x.0 = problem.parameters$x.ic;
 t = problem.parameters$t;
 sigma2 = problem.parameters$sigma.2;
 
-for (K in seq(1,4)) {
+for (K in seq(1,2)) {
     integral.approx = kernel(x.0);
     for (k in seq(1,K)) {
         integral.approx = integral.approx +
-        t^k/factorial(k)*(0.5*sigma2)^k*kernel(x.0)*kernel.deriv.poly(x.0,k);
+        t^k/factorial(k)*(0.5*sigma2)^k*kernel.deriv.poly(x.0,k,kernel);
     }
     print(100*abs((integral.exact - integral.approx)/integral.exact));
 }

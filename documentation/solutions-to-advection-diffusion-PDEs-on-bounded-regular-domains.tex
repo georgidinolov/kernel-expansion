@@ -312,6 +312,51 @@ Note that
 The $k^{th}$ order derivative of the polynomial $p_m(x|\alpha,\beta;t)$ can be
 computed on the fly with \texttt{mpoly}. The recursive definition of 
 
+\section{Another Kernel Choice}
+Another suitable kernel choise the bump function
+\begin{align}
+  f(x) &= \left\{ \begin{array}{cc}
+                    \exp\left\{ -\frac{1}{1-x^2} \right\}, &\mbox{if } |x|<1 \\
+                    0, &\mbox{otherwise}
+                  \end{array} \right.
+\end{align}
+In thise case, $f \in C^\infty(-1,1).$ As outlined perviously, we need to compute
+\begin{align*}
+  f^{(k)}(x), &  \int_{-1}^1 x^m f(x)^2 \,dx  &
+\end{align*}
+For the first calculation, note that
+\begin{align*}
+  f'(x) &= f(x)(1-x^2)^{-2}(-2x) \equiv f(x)P_{1,0}(x)^{-1} P_{1,1}(x)
+\end{align*}
+Assuming that
+\[
+  f^{(k)}(x) = f(x)P_{k,0}(x)^{-1}P_{k,1}(x),
+\]
+we have that
+\begin{align*}
+  f^{(k+1)}(x) &= f'(x)P_{k,0}(x)^{-1}P_{k,1}(x) \\
+               &&+ f(x)\left[ -P_{k,0}(x)^{-2}P_{k,0}'(x)P_{k,1}(x)
+                 + P_{k,0}(x)^{-1}P_{k,1}'(x) \right] \\
+               &= \left( f(x)P_{1,0}(x)^{-1} P_{1,1}(x) \right)P_{k,0}(x)^{-1}P_{k,1}(x) \\
+               &&+ f(x)P_{k,0}(x)^{-2}\left[ -P_{k,0}'(x)P_{k,1}(x)
+                  + P_{k,0}(x)P_{k,1}'(x) \right] \\
+               &= f(x) \left(P_{k,0}(x)P_{1,0}(x)\right)^{-1} P_{1,1}(x) P_{k,1}(x)\\
+                 &&+f(x)P_{k,0}(x)^{-2}\left[ -P_{k,0}'(x)P_{k,1}(x)
+                 + P_{k,0}(x)P_{k,1}'(x) \right]
+\end{align*}
+
+\[
+  f^{(k+1)}(x) =
+  f(x)\left[P_{k,0}(x)P_{1,0}(x)P_{k,0}(x)^2\right]^{-1} \left(
+    P_{1,1}(x) P_{k,1}(x)P_{k,0}(x)^2 + P_{k,0}(x)P_{1,0}(x)\left[
+      -P_{k,0}'(x)P_{k,1}(x) + P_{k,0}(x)P_{k,1}'(x) \right] \right)
+\]
+
+\[ \boxed{ P_{k+1,0} = P_{k,0}(x)P_{1,0}(x)P_{k,0}(x)^2 } \]
+\[ \boxed{ P_{k+1,1} = P_{1,1}(x) P_{k,1}(x)P_{k,0}(x)^2 +
+    P_{k,0}(x)P_{1,0}(x)\left[ -P_{k,0}'(x)P_{k,1}(x) +
+      P_{k,0}(x)P_{k,1}'(x) \right] } \]
+
 \bibliographystyle{plainnat}
 % \bibliographystyle{bka}
 \bibliography{master-bibliography}
