@@ -1,5 +1,39 @@
 library("mpoly");
 
+bump <- function(x) {
+    out = rep(NA, length(x));
+
+    ind <- which(abs(x)<1)
+    ind1 <- which(abs(x) >= 1)
+    
+    out[ind] = exp(-1/(1-(x[ind])^2));
+    out[ind1] = 0;
+    return (out/0.443994);
+}
+
+bump.eps <- function(x, epsilon) {
+    return (1/epsilon * bump(x/epsilon));
+}
+
+mollified.kernel <- function(a, b, N, kernel, epsilon) {
+    x = seq(a,b,length.out=N);
+    dx = (b-a)/N;
+    
+    out.matrix <- vector(mode="list", length=length(x));
+    out <- rep(NA,length(x));
+    
+    for (i in seq(1,length(x))) {
+        y = x[i];
+        out.matrix[[i]] = bump.eps(x-y,epsilon)*kernel(x);
+        out[i] = sum(out.matrix[[i]]*dx);
+        print(c(i,out[i]));
+    }
+    output = NULL;
+    output$out = out;
+    output$out.matrix = out.matrix;
+    return (output)
+}
+
 select.alpha.beta <- function(problem.parameters) {
     a = problem.parameters$a;
     b = problem.parameters$b;

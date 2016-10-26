@@ -14,8 +14,8 @@ alpha <- alpha.beta$alpha;
 beta <- alpha.beta$beta;
 
 ## MANUAL ALPHA BETA ##
-beta <- 5;
-alpha <- 5;
+beta <- 2;
+alpha <- 2;
 ## ## 
 
 kernel <- function(x) {
@@ -23,6 +23,28 @@ kernel <- function(x) {
 }
 
 x = seq(problem.parameters$a,problem.parameters$b,length.out = 100);
+plot(x, kernel(x), type = "l");
+lines(x,univariate.solution(x,problem.parameters),col="red");
+
+a = problem.parameters$a;
+b = problem.parameters$b;
+t = problem.parameters$t;
+N = 10000;
+x <- seq(a,b,length.out=N);
+dx <- (b-a)/N;
+
+m.ker <- mollified.kernel(a,
+                          b,
+                          N,
+                          kernel,0.02);
+
+plot(x, m.ker$out, type="l");
+lines(x, kernel(x), col = "red", lty="dashed");
+
+ind <- 1000;
+x.0 <- x[ind];
+(kernel(x[ind+1]) - kernel(x[ind]))/dx;
+(m.ker$out[ind+1] - m.ker$out[ind])/dx;
 
 poly.degree.x = 4;
 x.pow.integral.vec <- x.power.integral.vector(problem.parameters,
