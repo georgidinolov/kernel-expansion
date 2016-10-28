@@ -29,22 +29,32 @@ lines(x,univariate.solution(x,problem.parameters),col="red");
 a = problem.parameters$a;
 b = problem.parameters$b;
 t = problem.parameters$t;
-N = 10000;
+N = 1000;
 x <- seq(a,b,length.out=N);
 dx <- (b-a)/N;
 
 m.ker <- mollified.kernel(a,
                           b,
                           N,
-                          kernel,0.02);
+                          kernel,0.1);
 
 plot(x, m.ker$out, type="l");
 lines(x, kernel(x), col = "red", lty="dashed");
 
-ind <- 1000;
-x.0 <- x[ind];
-(kernel(x[ind+1]) - kernel(x[ind]))/dx;
-(m.ker$out[ind+1] - m.ker$out[ind])/dx;
+ic.ind <- 100;
+x.0 <- x[ic.ind];
+(kernel(x[ic.ind+1]) - kernel(x[ic.ind]))/dx;
+(m.ker$out[ic.ind+1] - m.ker$out[ic.ind])/dx;
+
+kernel(x[ic.ind])
+
+problem.parameters$t *
+    (0.5*problem.parameters$sigma.2) *
+    (kernel(x[ic.ind+1]) - 2*kernel(x[ic.ind]) + kernel(x[ic.ind-1]))/dx^2;
+
+problem.parameters$t *
+    (0.5*problem.parameters$sigma.2) *
+    (m.ker$out[ic.ind+1] - 2*m.ker$out[ic.ind] + m.ker$out[ic.ind-1])/dx^2;
 
 poly.degree.x = 4;
 x.pow.integral.vec <- x.power.integral.vector(problem.parameters,
