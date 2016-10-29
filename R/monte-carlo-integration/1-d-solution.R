@@ -1,11 +1,13 @@
 library("mpoly");
 
-sample.bounded.bm <- function(problem.parameters, dt, number.samples) {
+sample.bounded.bm.accept.reject <- function(problem.parameters,
+                                            delta.t,
+                                            number.samples) {
     out = NULL;
     out$weights = rep(NA, number.samples);
     out$points = rep(NA, number.samples);
     
-    t = seq(dt, problem.parameters$t, by = dt);
+    t = seq(delta.t, problem.parameters$t, by = delta.t);
     sigma = sqrt(problem.parameters$sigma.2);
 
     for (i in seq(1,number.samples)) {
@@ -16,10 +18,40 @@ sample.bounded.bm <- function(problem.parameters, dt, number.samples) {
         for (j in seq(1,length(t))) {
             x.previous = x.current;
             t.current = t[j];
-            x.current = x.previous + sigma*sqrt(dt)*es[j];
+            x.current = x.previous + sigma*sqrt(delta.t)*es[j];
             if (x.current <= problem.parameters$a ||
                 x.current >= problem.parameters$b ) {
-                x.current = x.previous - sigma*sqrt(dt)*es[j];
+                x.current = x.previous - sigma*sqrt(delta.t)*es[j];
+                weight = 0;
+                break;
+            }
+        }
+        out$weights[i] = weight;
+        out$points[i] = x.current;
+    }
+    return (out);
+}
+
+sample.bounded.bm <- function(problem.parameters, delta.t, number.samples) {
+    out = NULL;
+    out$weights = rep(NA, number.samples);
+    out$points = rep(NA, number.samples);
+    
+    t = seq(delta.t, problem.parameters$t, by = delta.t);
+    sigma = sqrt(problem.parameters$sigma.2);
+
+    for (i in seq(1,number.samples)) {
+        x.current = problem.parameters$x.ic;
+        es <- rnorm(n=length(t));
+        weight = 1;
+        
+        for (j in seq(1,length(t))) {
+            x.previous = x.current;
+            t.current = t[j];
+            x.current = x.previous + sigma*sqrt(delta.t)*es[j];
+            if (x.current <= problem.parameters$a ||
+                x.current >= problem.parameters$b ) {
+                x.current = x.previous - sigma*sqrt(delta.t)*es[j];
                 weight = weight * 0.5;
             }
 
@@ -35,7 +67,7 @@ sample.bounded.bm <- function(problem.parameters, dt, number.samples) {
 }
 
 sample.bounded.bm.automatic <- function(problem.parameters,
-                                        dt.min,
+                                        delta.t.min,
                                         number.samples) {
     out = NULL;
     out$weights = rep(NA, number.samples);
@@ -52,7 +84,7 @@ sample.bounded.bm.automatic <- function(problem.parameters,
         t.current = 0;
         d = min(abs(problem.parameters$a-x.current),
                 abs(problem.parameters$b-x.current));
-        dt = min((max(dt.min,
+        delta.t = min((max(delta.t.min,
         (d/(sigma*3))^2)),
         t-t.current);
         
@@ -62,21 +94,21 @@ sample.bounded.bm.automatic <- function(problem.parameters,
         ## path[count]=x.current;
         ## times[count]=t.current;
         
-        while (t.current < (t-dt.min)) {
+        while (t.current < (t-delta.t.min)) {
             count = count + 1;
             d = min(abs(problem.parameters$a-x.current),
                     abs(problem.parameters$b-x.current));
-            dt = min((max(dt.min,
+            delta.t = min((max(delta.t.min,
             (d/(sigma*3))^2)),
             t-t.current);
             
             x.previous = x.current;
-            t.current = t.current + dt;
+            t.current = t.current + delta.t;
             eps <- rnorm(1);
-            x.current = x.previous + sigma*sqrt(dt)*eps;
+            x.current = x.previous + sigma*sqrt(delta.t)*eps;
             if (x.current <= problem.parameters$a ||
                 x.current >= problem.parameters$b ) {
-                x.current = x.previous - sigma*sqrt(dt)*eps;
+                x.current = x.previous - sigma*sqrt(delta.t)*eps;
                 weight = weight * 0.5;
             }
 
