@@ -49,10 +49,29 @@ integral.exact <- sum(univariate.solution(seq(0,N-1)*dx+problem.parameters$a,
                       dx);
 
 ### MC INTEGRAL ###
-number.samples = 1000;
-sampled.bm <- sample.bounded.bm(problem.parameters, dt=0.001,
-                                number.samples=number.samples);
-sum(sampled.bm$weights * kernel(sampled.bm$points))/number.samples
+number.samples = 100;
+NN = 50;
+mc.sims <- vector(mode="list", length=NN);
+for (n in seq(1,NN)) {
+    sampled.bm <- sample.bounded.bm.automatic(problem.parameters, dt=1e-7,
+                                              number.samples=number.samples);
+
+    plot(density(sampled.bm$points));
+
+    mc.sims[[n]] = sampled.bm;
+    print(c(n,sum(sampled.bm$weights *
+                  kernel(sampled.bm$points))/number.samples));
+}
+
+integrals <- rep(NA,NN);
+sample.sizes <- rep(NA,NN);
+for (n in seq(1,NN)) {
+    integrals[n] = sum(mc.sims[[n]]$weights *
+                       kernel(sampled.bm$points))/number.samples;
+    sample.sizes[n] = sum(mc.sims[[n]]$weights);
+}
+plot(density(integrals))
+abline(v=integral.exact,col="red");
 
 ### APPROX INTEGRAL ###
 x.0 = problem.parameters$x.ic;

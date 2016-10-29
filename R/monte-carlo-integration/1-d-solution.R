@@ -40,13 +40,14 @@ sample.bounded.bm.automatic <- function(problem.parameters,
     out = NULL;
     out$weights = rep(NA, number.samples);
     out$points = rep(NA, number.samples);
+    out$counts = rep(NA, number.samples);
     
     t = problem.parameters$t;
     sigma = sqrt(problem.parameters$sigma.2);
 
     for (i in seq(1,number.samples)) {
-        path = rep(0,100);
-        times = rep(0,100);
+        ## path = rep(0,100);
+        ## times = rep(0,100);
         x.current = problem.parameters$x.ic;
         t.current = 0;
         d = min(abs(problem.parameters$a-x.current),
@@ -58,8 +59,8 @@ sample.bounded.bm.automatic <- function(problem.parameters,
         weight = 1;
         count = 1;
 
-        path[count]=x.current;
-        times[count]=t.current;
+        ## path[count]=x.current;
+        ## times[count]=t.current;
         
         while (t.current < (t-dt.min)) {
             count = count + 1;
@@ -84,20 +85,21 @@ sample.bounded.bm.automatic <- function(problem.parameters,
                 stop("Outside boundary again; time step too big!!");
             }
 
-            if (count < length(path)) {
-                path[count] = x.current;
-                times[count] = t.current;
-            } else {
-                path = c(path, rep(0,100));
-                path[count] = x.current;
-                times[count] = t.current;
-            }
+            ## if (count < length(path)) {
+            ##     path[count] = x.current;
+            ##     times[count] = t.current;
+            ## } else {
+            ##     path = c(path, rep(0,100));
+            ##     path[count] = x.current;
+            ##     times[count] = t.current;
+            ## }
         }
         ## plot(times[1:count], path[1:count], type="l",
         ##      ylim = c(problem.parameters$a,
         ##               problem.parameters$b))
         out$weights[i] = weight;
         out$points[i] = x.current;
+        out$counts[i] = count;
     }
     return (out);
 }
