@@ -2,12 +2,12 @@ rm(list=ls());
 source("1-d-solution.R");
 
 problem.parameters = NULL;
-problem.parameters$a = -1;
+problem.parameters$a = 0;
 problem.parameters$b = 1;
 problem.parameters$x.ic = 0.8;
 problem.parameters$number.terms = 1000;
 problem.parameters$sigma.2 = 1;
-problem.parameters$t = 0.1;
+problem.parameters$t = 0.05;
 
 alpha.beta <- select.alpha.beta(problem.parameters);
 alpha <- alpha.beta$alpha;
@@ -20,8 +20,11 @@ beta <- alpha.beta$beta;
 ## ## ## 
 C = 1/0.133086;
 K = 3;
+## kernel <- function(x) {
+##     return (C*exp(-1/(1-x^2)));
+## }
 kernel <- function(x) {
-    return (C*exp(-1/(1-x^2)));
+    return (dbeta(x,alpha,beta));
 }
 x = seq(problem.parameters$a+0.001,problem.parameters$b-0.001,length.out = 100);
 
@@ -48,7 +51,7 @@ integral.exact <- sum(univariate.solution(seq(0,N-1)*dx+problem.parameters$a,
 
 ### MC INTEGRAL ###
 number.samples = 5;
-NN = 1000;
+NN = 200;
 mc.sims <- vector(mode="list", length=NN);
 for (n in seq(1,NN)) {
     sampled.bm <- sample.bounded.bm.automatic(problem.parameters,
@@ -68,32 +71,18 @@ integrals <- rep(NA,NN);
 sample.sizes <- rep(NA,NN);
 for (n in seq(1,NN)) {
     integrals[n] = sum(mc.sims[[n]]$weights *
-                       kernel(sampled.bm$points))/number.samples;
+                       kernel(mc.sims[[n]]$points))/number.samples;
     sample.sizes[n] = sum(mc.sims[[n]]$weights);
 }
 plot(density(integrals));
 abline(v=integral.exact,col="red");
 plot(integrals);
 
-### APPROX INTEGRAL ###
-x.0 = problem.parameters$x.ic;
-t = problem.parameters$t;
-sigma2 = problem.parameters$sigma.2;
-
-for (K in seq(1,2)) {
-    integral.approx = kernel(x.0);
-    for (k in seq(1,K)) {
-        integral.approx = integral.approx +
-        t^k/factorial(k)*(0.5*sigma2)^k*kernel.deriv.poly(x.0,k,kernel);
-    }
-    print(100*abs((integral.exact - integral.approx)/integral.exact));
-}
-
-poly.degree.x = 2;
+poly.degree.x = 3;
 x.pow.integral.vec <- x.power.integral.vector(problem.parameters,
-                                          2*(poly.degree.x+1),
-                                          alpha,
-                                          beta);
+                                              2*(poly.degree.x+1),
+                                              alpha,
+                                              beta);
 ## poly bases ##
 polynomials.table <- vector(mode="list", length=poly.degree.x+1);
 for (i in seq(1,poly.degree.x+1)) {
@@ -198,6 +187,34 @@ plot(x,univariate.solution(x,problem.parameters),
 lines(x,approx.solution);
 
 ### COEFFICIENTS APPROX ###
+coefs.approx = rep(NA, poly.degree.x+1);
+number.samples = 500;
+for (i in seq(1,poly.degree.x+1)) {
+    sampled.bm <- sample.bounded.bm.automatic(problem.parameters,
+                                              delta.t.min=1e-6,
+                                              number.samples=number.samples);
+    plot(density(sampled.bm$points));
+    integral=sum(sampled.bm$weights*
+                 basis.function(sampled.bm$points,i))/number.samples;
+    print(c(n,integral));
+    coefs.approx[i] = integral;
+}
+
+approx.solution.mc = rep(0,length(x));
+for (i in seq(1,poly.degree.x+1)) {
+    approx.solution.mc = approx.solution.mc +
+        coefs.approx[i]*basis.function(x,i);
+}
+
+plot(x,univariate.solution(x,problem.parameters),
+     type="l",
+     col="red");
+lines(x,approx.solution);
+lines(x,approx.solution.mc, col="green");
+
+plot(coefs.exact,type="l");
+lines(coefs.approx,col="red");
+
 polynomial.kernel <- mpoly(list(c("x"=alpha-1, coef=1/beta(alpha,beta))))*
     (mpoly(list(c("x"=0, coef=1))) - mpoly(list(c("x"=1, coef=1))) )^(beta-1);
 
