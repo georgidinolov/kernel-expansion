@@ -25,8 +25,6 @@ kernel <- function(x) {
 }
 x = seq(problem.parameters$a+0.001,problem.parameters$b-0.001,length.out = 100);
 
-
-
 plot(x, kernel(x),type="l",
      ylim = c(min(c(univariate.solution(x,problem.parameters),
                     kernel(x))),
@@ -49,14 +47,15 @@ integral.exact <- sum(univariate.solution(seq(0,N-1)*dx+problem.parameters$a,
                       dx);
 
 ### MC INTEGRAL ###
-number.samples = 100;
-NN = 100;
+number.samples = 5;
+NN = 1000;
 mc.sims <- vector(mode="list", length=NN);
 for (n in seq(1,NN)) {
-    ## sampled.bm <- sample.bounded.bm.automatic(problem.parameters, dt=1e-7,
-    ##                                           number.samples=number.samples);
-    sampled.bm <- sample.bounded.bm.accept.reject(problem.parameters, delta.t=1e-5,
-                                                  number.samples=number.samples);
+    sampled.bm <- sample.bounded.bm.automatic(problem.parameters,
+                                              delta.t.min=1e-7,
+                                              number.samples=number.samples);
+    ## sampled.bm <- sample.bounded.bm.accept.reject(problem.parameters, delta.t=1e-6,
+    ##                                               number.samples=number.samples);
 
     plot(density(sampled.bm$points));
 
@@ -74,6 +73,7 @@ for (n in seq(1,NN)) {
 }
 plot(density(integrals));
 abline(v=integral.exact,col="red");
+plot(integrals);
 
 ### APPROX INTEGRAL ###
 x.0 = problem.parameters$x.ic;
@@ -90,7 +90,6 @@ for (K in seq(1,2)) {
 }
 
 poly.degree.x = 2;
-
 x.pow.integral.vec <- x.power.integral.vector(problem.parameters,
                                           2*(poly.degree.x+1),
                                           alpha,
