@@ -1,4 +1,83 @@
 library("mpoly");
+coefs.approx.mc <- function(problem.parameters,
+                            poly.degree.x,
+                            number.samples,
+                            delta.t.min) {
+    coefs.approx = rep(NA, poly.degree.x+1);
+    for (i in seq(1,poly.degree.x+1)) {
+        sampled.bm <- sample.bounded.bm.automatic(problem.parameters,
+                                                  delta.t.min=1e-7,
+                                                  number.samples=number.samples);
+        plot(density(sampled.bm$points));
+        integral=sum(sampled.bm$weights*
+                     basis.function(sampled.bm$points,i))/number.samples;
+        print(c(n,integral));
+        coefs.approx[i] = integral;
+    }
+    return (coefs.approx);
+}
+
+coefs.approx.path.integral.mc <- function(problem.parameters,
+                                          poly.degree.x,
+                                          number.samples,
+                                          delta.t) {
+    coefs.approx = rep(NA, poly.degree.x+1);
+    for (i in seq(1,poly.degree.x+1)) {
+        basis.function.polynomial = basis.function.poly(i);
+        sampled.bm <-
+            sample.bounded.bm.path.integral.accept.reject(problem.parameters,
+                                                          delta.t,
+                                                          number.samples,
+                                                          basis.function.polynomial);
+        plot(density(sampled.bm$points));
+        integral=sum(sampled.bm$weights*sampled.bm$integrals)/number.samples;
+        print(c(i,integral));
+        coefs.approx[i] = integral;
+    }
+    return (coefs.approx);
+}
+
+sample.bounded.bm.path.integral.accept.reject <- function(problem.parameters,
+                                                          delta.t,
+                                                          number.samples,
+                                                          basis.function.polynomial) {
+    out = NULL;
+    out$weights = rep(NA, number.samples);
+    out$points = rep(NA, number.samples);
+    out$integrals = rep(NA, number.samples);
+    
+    t = seq(delta.t, problem.parameters$t, by = delta.t);
+    sigma = sqrt(problem.parameters$sigma.2);
+    ff <- as.function(deriv(deriv(basis.function.polynomial, "x"), "x"),
+                      vector=FALSE);
+
+    for (i in seq(1,number.samples)) {
+        x.current = problem.parameters$x.ic;
+        es <- rnorm(n=length(t));
+        weight = 1;
+        integral = 0;
+        
+        for (j in seq(1,length(t))) {
+            x.previous = x.current;
+            t.current = t[j];
+            x.current = x.previous + sigma*sqrt(delta.t)*es[j];
+            integral = integral +
+                0.5*sigma^2*
+                ff((x.previous+x.current)/2)*delta.t;
+            if (x.current <= problem.parameters$a ||
+                x.current >= problem.parameters$b ) {
+                x.current = x.previous - sigma*sqrt(delta.t)*es[j];
+                weight = 0;
+                break;
+            }
+        }
+        out$weights[i] = weight;
+        out$points[i] = x.current;
+        out$integrals[i] = integral +
+            as.function(basis.function.polynomial, vector=F)(problem.parameters$x.ic);
+    }
+    return (out);
+}
 
 sample.bounded.bm.accept.reject <- function(problem.parameters,
                                             delta.t,
