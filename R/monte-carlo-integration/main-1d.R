@@ -145,8 +145,8 @@ plot(x,univariate.solution(x,problem.parameters),
 lines(x,approx.solution);
 
 ### COEFFICIENTS APPROX ###
-number.samples = 100;
-delta.t.min=1e-7;
+number.samples = 500;
+delta.t.min=1e-6;
 coefs.approx.1 <- coefs.approx.mc(problem.parameters,
                                   poly.degree.x,
                                   number.samples,
@@ -177,8 +177,8 @@ lines(coefs.approx.1,col="red");
 lines(coefs.approx.2,col="red");
 
 ### COEFFICIENTS APPROX PATH INTEGRAL ###
-number.samples = 50;
-delta.t = 1e-6;
+number.samples = 5;
+delta.t = 1e-7;
 coefs.approx.1 <- coefs.approx.path.integral.mc(problem.parameters,
                                                 poly.degree.x,
                                                 number.samples,

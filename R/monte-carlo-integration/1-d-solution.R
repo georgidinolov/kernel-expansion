@@ -11,7 +11,7 @@ coefs.approx.mc <- function(problem.parameters,
         plot(density(sampled.bm$points));
         integral=sum(sampled.bm$weights*
                      basis.function(sampled.bm$points,i))/number.samples;
-        print(c(n,integral));
+        print(c(i,integral));
         coefs.approx[i] = integral;
     }
     return (coefs.approx);
@@ -24,7 +24,7 @@ coefs.approx.path.integral.mc <- function(problem.parameters,
     coefs.approx = rep(NA, poly.degree.x+1);
     for (i in seq(1,poly.degree.x+1)) {
         basis.function.polynomial = basis.function.poly(i);
-        sampled.bm <-
+        sampled.bm =
             sample.bounded.bm.path.integral.accept.reject(problem.parameters,
                                                           delta.t,
                                                           number.samples,
@@ -74,7 +74,8 @@ sample.bounded.bm.path.integral.accept.reject <- function(problem.parameters,
         out$weights[i] = weight;
         out$points[i] = x.current;
         out$integrals[i] = integral +
-            as.function(basis.function.polynomial, vector=F)(problem.parameters$x.ic);
+            as.function(basis.function.polynomial, vector=FALSE)(
+                problem.parameters$x.ic);
     }
     return (out);
 }
@@ -164,7 +165,7 @@ sample.bounded.bm.automatic <- function(problem.parameters,
         d = min(abs(problem.parameters$a-x.current),
                 abs(problem.parameters$b-x.current));
         delta.t = min((max(delta.t.min,
-        (d/(sigma*3))^2)),
+        (d/(sigma*2))^2)),
         t-t.current);
         
         weight = 1;
@@ -193,7 +194,8 @@ sample.bounded.bm.automatic <- function(problem.parameters,
 
             if (x.current <= problem.parameters$a ||
                 x.current >= problem.parameters$b ) {
-                stop("Outside boundary again; time step too big!!");
+                warning("Outside boundary again; time step too big!!");
+                break;
             }
 
             ## if (count < length(path)) {
