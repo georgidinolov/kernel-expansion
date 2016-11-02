@@ -28,11 +28,9 @@ basis.function.init.dt <- function(means,variances,t.0s,i) {
 basis.function.init.dx <- function(means,variances,t.0s,i) {
     current.basis.function.dx <- function(x,t) {
         return (dbeta(x,2,2)*
-                -dnorm(x,mean=means[i],
-                       sd=sqrt(variances[i]*(t+t.0s[i])))*
-                (x-means[i])/
-                (sqrt(2*pi)*variances[i]*(t+t.0s[i])*
-                 sqrt(variances[i]*(t+t.0s[i]))) +
+                dnorm(x,mean=means[i],
+                      sd=sqrt(variances[i]*(t+t.0s[i])))*
+                -1*(x-means[i])/(variances[i]*(t+t.0s[i])) +
                 1/beta(2,2)*((1-x) - x)*
                 dnorm(x,mean=means[i],
                        sd=sqrt(variances[i]*(t+t.0s[i]))));

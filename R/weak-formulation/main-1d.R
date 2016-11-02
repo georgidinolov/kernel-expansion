@@ -1,5 +1,6 @@
 rm(list=ls());
 source("1-d-solution.R");
+library("pencopula");
 
 problem.parameters = NULL;
 problem.parameters$a = 0;
@@ -27,14 +28,15 @@ t.0s = rep(problem.parameters$t*(20e-1),
 for (n in seq(1,n.basis)) {
     current.basis = basis.function.init(means,variances,t.0s,n);
     if (n==1) {
-        plot(x, current.basis(x,problem.parameters$t), type="l",col="red");
+        plot(x, current.basis(x,problem.parameters$t), type="l",col="red",
+             lty="dashed");
     } else {
         lines(x, current.basis(x,problem.parameters$t), col="red",
               lty="dashed");
     }
 }
 lines(x,univariate.solution(x,problem.parameters),col="black");
-lines(x,0.6*current.basis(x,problem.parameters$t), lty="dashed",col="red");
+lines(x,0.8*current.basis(x,problem.parameters$t), lty="solid",col="red");
 
 ### testing the path integral START ###
 for (n in seq(1,n.basis)) {
@@ -127,8 +129,70 @@ univariate.solution.approx <- function(x,coefs) {
 
 plot(x,univariate.solution(x,problem.parameters),type="l", col="red");
 lines(x,univariate.solution.approx(x,coefs.exact));
-
 ### coefs approx END ###
+
+### ### ### ### ### ### ###
+### ODE approach START ###
+stiff.mat <- matrix(nrow=n.basis, ncol=n.basis);
+dx = (problem.parameters$b-problem.parameters$a)/length(x);
+for (i in seq(1,n.basis)) {
+    current.basis.dx.i = basis.function.init.dx(means,variances,t.0s,i);
+
+    for (j in seq(i,n.basis)) {
+        current.basis.dx.j = basis.function.init.dx(means,variances,t.0s,j);
+
+        stiff.matrix.entry = sum(current.basis.dx.i(x,problem.parameters$t)*
+                                 current.basis.dx.j(x,problem.parameters$t)*dx);
+        print(c(i,j,stiff.matrix.entry));
+        stiff.mat[i,j]=1/2*problem.parameters$sigma.2*stiff.matrix.entry;
+        stiff.mat[j,i]=1/2*problem.parameters$sigma.2*stiff.matrix.entry;
+    }
+}
+
+mass.mat <- matrix(nrow=n.basis, ncol=n.basis);
+dx = (problem.parameters$b-problem.parameters$a)/length(x);
+for (i in seq(1,n.basis)) {
+    current.basis.i = basis.function.init(means,variances,t.0s,i);
+
+    for (j in seq(i,n.basis)) {
+        current.basis.j = basis.function.init(means,variances,t.0s,j);
+
+        mass.matrix.entry = sum(current.basis.i(x,problem.parameters$t)*
+                                 current.basis.j(x,problem.parameters$t)*dx);
+        print(c(i,j,mass.matrix.entry));
+        mass.mat[i,j]=1/2*problem.parameters$sigma.2*mass.matrix.entry;
+        mass.mat[j,i]=1/2*problem.parameters$sigma.2*mass.matrix.entry;
+    }
+}
+
+U = chol(mass.mat);
+
+eig <- eigen(solve(mass.mat)*stiff.mat);
+
+IC.vec <- rep(0,n.basis);
+for (i in seq(1,n.basis)) {
+    IC.vec[i] = basis.function.init(means,variances,t.0s,i)(problem.parameters$x.ic,
+        problem.parameters$t);
+}
+IC.approx <- function(x,IC.vec) {
+    out = rep(0,length(x));
+    for (n in seq(1,n.basis)) {
+        out = out +
+            IC.vec[n]*basis.function.init(means,variances,t.0s,n)(x,
+                problem.parameters$t);
+    }
+    return (out);
+}
+plot(x, IC.approx(x,IC.vec), type="l");
+
+coefs = eig$vectors %*% diag(exp(-eig$values * problem.parameters$t)) %*%
+    t(eig$vectors) %*% IC.vec
+
+plot(x,univariate.solution(x,problem.parameters),type="l", col="red");
+lines(x,univariate.solution.approx(x,coefs));
+### MASS MATRIX END ###
+
+### ODE approach END ###
 
 alpha.beta <- select.alpha.beta(problem.parameters);
 alpha <- alpha.beta$alpha;
