@@ -1,5 +1,6 @@
 library("mpoly");
 library("pencopula");
+library("Matrix");
 
 IC.approx <- function(x,IC.vec) {
     out = rep(0,length(x));

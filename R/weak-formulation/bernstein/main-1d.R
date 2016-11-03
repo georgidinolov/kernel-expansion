@@ -4,7 +4,7 @@ source("1-d-solution.R");
 problem.parameters = NULL;
 problem.parameters$a = 0;
 problem.parameters$b = 1;
-problem.parameters$x.ic = 0.8;
+problem.parameters$x.ic = 0.9;
 problem.parameters$number.terms = 1000;
 problem.parameters$sigma.2 = 1;
 problem.parameters$t = 0.1;
@@ -12,7 +12,7 @@ problem.parameters$t = 0.1;
 x = seq(problem.parameters$a,problem.parameters$b,
         length.out = 1000);
 
-n.basis = 2;
+n.basis = 10;
 for (n in seq(1,n.basis)) {
     current.basis <- basis.function.init(n, n.basis);
     if (n==1) {
@@ -121,7 +121,7 @@ lines(x,univariate.solution(x,problem.parameters),col="black");
 ### ### ### ### ### ### ###
 ### ODE approach START ###
 stiff.mat <- matrix(nrow=n.basis, ncol=n.basis);
-dx = 1e-6;
+dx = 1e-5;
 x = seq(problem.parameters$a, problem.parameters$b, by=dx);
 for (i in seq(1,n.basis)) {
     current.basis.dx.i = basis.function.init.dx(i,n.basis);
@@ -158,6 +158,7 @@ for (i in seq(1,n.basis)) {
 ## eig <- eigen(A);
 ## eig <- eigen(stiff.mat / ((problem.parameters$b-problem.parameters$a)/2));
 eig <- eigen(solve(mass.mat) %*% stiff.mat);
+eig <- eigen(stiff.mat);
 
 b = rep(NA, n.basis);
 for (i in seq(1,n.basis)) {
@@ -165,13 +166,24 @@ for (i in seq(1,n.basis)) {
     b[i] = current.basis(problem.parameters$x.ic);
 }
 IC.vec = solve(mass.mat, b);
+IC.vec = rep(0,n.basis);
+IC.vec[round((n.basis + 1) * problem.parameters$x.ic)] = (n.basis + 1);
 
 x=seq(problem.parameters$a,problem.parameters$b,length.out=1000);
 plot(x, IC.approx(x,IC.vec), type="l");
 
-coefs = t(eig$vectors) %*% diag(exp(-eig$values * problem.parameters$t)) %*%
-    (eig$vectors) %*% IC.vec
+coefs = (eig$vectors) %*% diag(exp(-eig$values * problem.parameters$t)) %*%
+    t(eig$vectors) %*% IC.vec;
 
+coefs = t(eig$vectors) %*% IC.vec
+for (n in seq(1,n.basis)) {
+    if (n==1) {
+        plot(x, coefs[n]*basis.function.init(n,n.basis)(x),
+             type="l");
+    } else {
+        lines(x,coefs[n]*basis.function.init(n,n.basis)(x));
+    }
+}
 ## coefs = rep(NA,n.basis);
 ## for (n in seq(1,n.basis)) {
 ##     coefs[n] = univariate.solution(n/(n.basis+1),problem.parameters)
@@ -179,8 +191,8 @@ coefs = t(eig$vectors) %*% diag(exp(-eig$values * problem.parameters$t)) %*%
 
 par(mfrow=c(2,1));
 plot(x,univariate.solution(x,problem.parameters),type="l", col="red");
-plot(x,univariate.solution.approx(x,coefs),type="l")
-lines(x,univariate.solution(x,problem.parameters), col="red");;
+plot(x,univariate.solution.approx(x,coefs),type="l");
+lines(x,univariate.solution(x,problem.parameters), col="red");
 
 
 ### ODE approach END ###
