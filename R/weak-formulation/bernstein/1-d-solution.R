@@ -13,25 +13,27 @@ IC.approx <- function(x,IC.vec) {
 univariate.solution.approx <- function(x,coefs) {
     out = rep(0,length(x));
     for (n in seq(1,n.basis)) {
+        current.basis = basis.function.init(n, n.basis);
         out = out +
-            coefs[n]*basis.function.init(n, n.basis)(x);
+            coefs[n]*current.basis(x);
     }
     return (out);
 }
 
 basis.function.init <- function(n,n.basis) {
     ## length of all input vectors must be the same!
-    print(c((1+n), (1+(n.basis-n+1))));
+
     current.basis.function <- function(x) {
-        return (x^(n)*(1-x)^(1+(n.basis-n)));
+        ## return (x^(n)*(1-x)^(1+(n.basis-n)));
+        return (choose(n.basis+1,n)*(x^(n)*(1-x)^(1+n.basis-n)));
     }
     return (current.basis.function);
 }
 
 basis.function.init.dx <- function(n, n.basis) {
     current.basis.function.dx <- function(x) {
-        return (n*x^(n-1)*(1-x)^(1+(n.basis-n)) -
-                (1+(n.basis-n))*x^n*(1-x)^(1+(n.basis-n-1)));
+        return (choose(n.basis+1,n)*(n*x^(n-1)*(1-x)^(1+(n.basis-n)) -
+                (1+(n.basis-n))*x^n*(1-x)^(1+(n.basis-n-1))));
 
     }
     return (current.basis.function.dx);
