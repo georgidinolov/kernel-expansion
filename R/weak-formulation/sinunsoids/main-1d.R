@@ -5,14 +5,14 @@ problem.parameters = NULL;
 problem.parameters$a = 0;
 problem.parameters$b = 1;
 problem.parameters$x.ic = 0.8;
-problem.parameters$number.terms = 1000;
+problem.parameters$number.terms = 15;
 problem.parameters$sigma.2 = 1;
 problem.parameters$t = 0.1;
 
 x = seq(problem.parameters$a+0.001,problem.parameters$b-0.001,
-        length.out = 100000);
+        length.out = 1000);
 
-n.basis = 5;
+n.basis = 15;
 means = c(rep(problem.parameters$x.ic,n.basis));
 variances = rep(problem.parameters$sigma.2,n.basis);
 t.0s = seq(problem.parameters$t*1, 50*problem.parameters$t*(1-1e-3),
@@ -133,7 +133,8 @@ lines(x,0.8*current.basis(x), lty="solid",col="red");
 ### ### ### ### ### ### ###
 ### ODE approach START ###
 stiff.mat <- matrix(nrow=n.basis, ncol=n.basis);
-dx = (problem.parameters$b-problem.parameters$a)/length(x);
+dx = 1e-6;
+x = seq(problem.parameters$a, problem.parameters$b, by=dx);
 for (i in seq(1,n.basis)) {
     current.basis.dx.i = basis.function.init.dx(i,n.basis);
 
@@ -149,7 +150,6 @@ for (i in seq(1,n.basis)) {
 }
 
 mass.mat <- matrix(nrow=n.basis, ncol=n.basis);
-dx = (problem.parameters$b-problem.parameters$a)/length(x);
 for (i in seq(1,n.basis)) {
     current.basis.i = basis.function.init(i,n.basis);
 
@@ -159,37 +159,35 @@ for (i in seq(1,n.basis)) {
         mass.matrix.entry = sum(current.basis.i(x)*
                                  current.basis.j(x)*dx);
         print(c(i,j,mass.matrix.entry));
-        mass.mat[i,j]=1/2*problem.parameters$sigma.2*mass.matrix.entry;
-        mass.mat[j,i]=1/2*problem.parameters$sigma.2*mass.matrix.entry;
+        mass.mat[i,j]=mass.matrix.entry;
+        mass.mat[j,i]=mass.matrix.entry;
     }
 }
 
-L = t(chol(mass.mat));
-X = forwardsolve(L,stiff.mat);
-A = backsolve(t(L),X);
-eig <- eigen(A);
-eig <- eigen(stiff.mat);
+## L = t(chol(mass.mat));
+## X = forwardsolve(L,stiff.mat);
+## A = backsolve(t(L),X);
+## eig <- eigen(A);
+## eig <- eigen(stiff.mat / ((problem.parameters$b-problem.parameters$a)/2));
+eig <- eigen(solve(mass.mat) %*% stiff.mat);
 
 b = rep(NA, n.basis);
 for (i in seq(1,n.basis)) {
-    b[i] = basis.function.init(i,n.basis)(problem.parameters$x.ic);
+    current.basis = basis.function.init(i,n.basis);
+    b[i] = current.basis(problem.parameters$x.ic);
 }
-IC.vec = solve(stiff.mat, b);
-IC.approx <- function(x,IC.vec) {
-    out = rep(0,length(x));
-    for (n in seq(1,n.basis)) {
-        out = out +
-            IC.vec[n]*basis.function.init(n,n.basis)(x);
-    }
-    return (out);
-}
+IC.vec = solve(mass.mat, b);
+
+x=seq(problem.parameters$a,problem.parameters$b,length.out=1000);
 plot(x, IC.approx(x,IC.vec), type="l");
 
-coefs = eig$vectors %*% diag(exp(-eig$values * problem.parameters$t)) %*%
-    t(eig$vectors) %*% IC.vec
+coefs = t(eig$vectors) %*% diag(exp(-eig$values * problem.parameters$t)) %*%
+    (eig$vectors) %*% IC.vec
 
-plot(x,univariate.solution(x,problem.parameters),type="l", col="red");
-lines(x,univariate.solution.approx(x,coefs));
+plot(x,univariate.solution.sin(x,problem.parameters),type="l", col="red");
+lines(x,univariate.solution.approx(x,coefs),lty="dashed");
+lines(x,univariate.solution.sin(x,problem.parameters), col="green",
+      lty="dashed");
 ### MASS MATRIX END ###
 
 ### ODE approach END ###

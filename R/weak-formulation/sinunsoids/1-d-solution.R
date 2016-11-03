@@ -1,6 +1,15 @@
 library("mpoly");
 library("pencopula");
 
+IC.approx <- function(x,IC.vec) {
+    out = rep(0,length(x));
+    for (n in seq(1,n.basis)) {
+        out = out +
+            IC.vec[n]*basis.function.init(n,n.basis)(x);
+    }
+    return (out);
+}
+
 univariate.solution.approx <- function(x,coefs) {
     out = rep(0,length(x));
     for (n in seq(1,n.basis)) {
@@ -12,8 +21,9 @@ univariate.solution.approx <- function(x,coefs) {
 
 basis.function.init <- function(n,n.basis) {
     ## length of all input vectors must be the same!
+    L = (problem.parameters$b-problem.parameters$a);
     current.basis.function <- function(x) {
-        return (x^(1+n)*(1-x)^(1+(n.basis-n+1)));
+        return (sin(pi/L*n*x));
     }
     return (current.basis.function);
 }
@@ -32,9 +42,10 @@ basis.function.init.dt <- function(means,variances,t.0s,i) {
 }
 
 basis.function.init.dx <- function(n, n.basis) {
+    L = (problem.parameters$b-problem.parameters$a);
     current.basis.function.dx <- function(x) {
-        return ((1+n)*x^(n)*(1-x)^(1+(n.basis-n+1)) +
-                (1+(n.basis-n+1))*x^(n+1)*(1-x)^(1+(n.basis-n)));
+        return (cos(pi/L*n*x)*
+                pi*n/L)
 
     }
     return (current.basis.function.dx);
@@ -387,9 +398,37 @@ univariate.solution <- function(x, problem.parameters) {
 
     out = rep(NA, length(x));
     for (i in seq(1,length(x))) {
-        out[i] = sum(dnorm(x[i], mean=v1, sd=sqrt(variance)) - dnorm(x[i], mean=v2, sd=sqrt(variance)));
+        out[i] = sum(dnorm(x[i], mean=v1, sd=sqrt(variance))-
+                     dnorm(x[i], mean=v2, sd=sqrt(variance)));
     }
     
+    return (out);
+};
+
+univariate.solution.sin <- function(x, problem.parameters) {
+    a = problem.parameters$a;
+    b = problem.parameters$b;
+    x.ic = problem.parameters$x.ic;
+    t = problem.parameters$t;
+    sigma.2 = problem.parameters$sigma.2;
+    number.terms = problem.parameters$number.terms;
+    
+    if ( x.ic < a || x.ic > b) {
+        stop ("x.ic not in boundaries");
+    }
+
+    L = problem.parameters$b - problem.parameters$a;
+    eig.vals = -0.5*sigma.2*(pi/L*seq(1,number.terms))^2;
+    ic.coef = sin(pi/L*seq(1,number.terms) * x.ic);
+    
+    out = rep(0, length(x));
+    for (i in seq(1,number.terms)) {
+        out = out +
+            exp(eig.vals[i]*t)*
+            sin(pi*i/L*x.ic)/(L/2)*
+            sin(pi*i/L*x);
+    }
+    plot(x,out,type="l");
     return (out);
 };
 
