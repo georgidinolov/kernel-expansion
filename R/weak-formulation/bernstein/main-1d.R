@@ -194,5 +194,4 @@ plot(x,univariate.solution(x,problem.parameters),type="l", col="red");
 plot(x,univariate.solution.approx(x,coefs),type="l");
 lines(x,univariate.solution(x,problem.parameters), col="red");
 
-
 ### ODE approach END ###
