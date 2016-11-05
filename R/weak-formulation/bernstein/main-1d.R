@@ -12,7 +12,7 @@ problem.parameters$t = 0.1;
 x = seq(problem.parameters$a,problem.parameters$b,
         length.out = 1000);
 
-n.basis = 10;
+n.basis = 5;
 for (n in seq(1,n.basis)) {
     current.basis <- basis.function.init(n, n.basis);
     if (n==1) {
@@ -158,7 +158,7 @@ for (i in seq(1,n.basis)) {
 ## eig <- eigen(A);
 ## eig <- eigen(stiff.mat / ((problem.parameters$b-problem.parameters$a)/2));
 eig <- eigen(solve(mass.mat) %*% stiff.mat);
-eig <- eigen(stiff.mat);
+## eig <- eigen(stiff.mat);
 
 b = rep(NA, n.basis);
 for (i in seq(1,n.basis)) {
@@ -175,23 +175,53 @@ plot(x, IC.approx(x,IC.vec), type="l");
 coefs = (eig$vectors) %*% diag(exp(-eig$values * problem.parameters$t)) %*%
     t(eig$vectors) %*% IC.vec;
 
-coefs = t(eig$vectors) %*% IC.vec
-for (n in seq(1,n.basis)) {
-    if (n==1) {
-        plot(x, coefs[n]*basis.function.init(n,n.basis)(x),
-             type="l");
-    } else {
-        lines(x,coefs[n]*basis.function.init(n,n.basis)(x));
-    }
-}
+## coefs = t(eig$vectors) %*% IC.vec
+## for (n in seq(1,n.basis)) {
+##     if (n==1) {
+##         plot(x, coefs[n]*basis.function.init(n,n.basis)(x),
+##              type="l");
+##     } else {
+##         lines(x,coefs[n]*basis.function.init(n,n.basis)(x));
+##     }
+## }
 ## coefs = rep(NA,n.basis);
 ## for (n in seq(1,n.basis)) {
 ##     coefs[n] = univariate.solution(n/(n.basis+1),problem.parameters)
 ## }
 
-par(mfrow=c(2,1));
-plot(x,univariate.solution(x,problem.parameters),type="l", col="red");
+## par(mfrow=c(2,1));
+## plot(x,univariate.solution(x,problem.parameters),type="l", col="red");
 plot(x,univariate.solution.approx(x,coefs),type="l");
 lines(x,univariate.solution(x,problem.parameters), col="red");
-
 ### ODE approach END ###
+
+### SNAPSHOT APPROACH START ###
+for (i in seq(1,n.basis)) {
+    funct = basis.function.init.dx.dx(i,n.basis);
+    if (i==1) {
+        par(mfrow=c(2,1));
+        plot(x, funct(x), type="l");
+    } else {
+        lines(x, basis.function.init.dx.dx(i,n.basis)(x), type="l");
+    }
+}
+
+### checking for convergence in expectation ###
+n.samples <- 1000;
+bm.samples = sample.bounded.bm.automatic(problem.parameters=problem.parameters,
+                                         delta.t.min=1e-8,
+                                         number.samples=n.samples);
+second.deriv.means <- rep(NA, n.basis);
+for (i in seq(1,n.basis)) {
+    dxxbasis = basis.function.init.dx.dx(i,n.basis);
+    second.deriv.means[i] = -1/2*problem.parameters$sigma.2*
+        sum(bm.samples$weights *
+            dxxbasis(bm.samples$points)) /
+        n.samples;
+}
+plot(second.deriv.means,type="l");
+coefs = solve(stiff.mat, second.deriv.means);
+
+plot(x,univariate.solution(x,problem.parameters),type="l");
+lines(x,univariate.solution.approx(x,coefs), col="red");
+### SNAPSHOT APPROACH END ###

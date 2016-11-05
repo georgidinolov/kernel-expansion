@@ -23,7 +23,7 @@ univariate.solution.approx <- function(x,coefs) {
 
 basis.function.init <- function(n,n.basis) {
     ## length of all input vectors must be the same!
-
+    print(c(n,1+n.basis-n));
     current.basis.function <- function(x) {
         ## return (x^(n)*(1-x)^(1+(n.basis-n)));
         return (choose(n.basis+1,n)*(x^(n)*(1-x)^(1+n.basis-n)));
@@ -33,11 +33,24 @@ basis.function.init <- function(n,n.basis) {
 
 basis.function.init.dx <- function(n, n.basis) {
     current.basis.function.dx <- function(x) {
-        return (choose(n.basis+1,n)*(n*x^(n-1)*(1-x)^(1+(n.basis-n)) -
-                (1+(n.basis-n))*x^n*(1-x)^(1+(n.basis-n-1))));
+        return (choose(n.basis+1,n)*(n*x^max(0,n-1)*(1-x)^(1+(n.basis-n)) -
+                (1+(n.basis-n))*x^n*(1-x)^max(0,1+(n.basis-n-1))));
 
     }
     return (current.basis.function.dx);
+}
+
+basis.function.init.dx.dx <- function(n, n.basis) {
+
+    current.basis.function.dx.dx <- function(x) {
+        return (choose(n.basis+1,n)*(
+                (n>=2)*( n*(n-1)*x^(n-2) * (1-x)^(n.basis-n+1) ) +
+                -2*(n>=1)*(n.basis-n+1>=1)*( n*x^(n-1)*(n.basis-n+1)*
+                                             (1-x)^(n.basis-n)) +
+                (n.basis-n+1>=2) * ((n.basis-n+1)*(n.basis-n)*
+                                    x^n * (1-x)^(n.basis-n-1))));
+    }
+    return (current.basis.function.dx.dx);
 }
 
 coefs.approx.mc <- function(problem.parameters,
@@ -254,6 +267,7 @@ sample.bounded.bm.automatic <- function(problem.parameters,
         out$weights[i] = weight;
         out$points[i] = x.current;
         out$counts[i] = count;
+        print(i);
     }
     return (out);
 }
