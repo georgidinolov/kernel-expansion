@@ -197,19 +197,18 @@ lines(x,univariate.solution(x,problem.parameters), col="red");
 
 ### SNAPSHOT APPROACH START ###
 for (i in seq(1,n.basis)) {
-    funct = basis.function.init.dx.dx(i,n.basis);
+    funct = basis.function.init.dx(i,n.basis);
     if (i==1) {
-        par(mfrow=c(2,1));
         plot(x, funct(x), type="l");
     } else {
-        lines(x, basis.function.init.dx.dx(i,n.basis)(x), type="l");
+        lines(x, funct(x), type="l");
     }
 }
 
 ### checking for convergence in expectation ###
-n.samples <- 1000;
+n.samples <- 100;
 bm.samples = sample.bounded.bm.automatic(problem.parameters=problem.parameters,
-                                         delta.t.min=1e-8,
+                                         delta.t.min=1e-7,
                                          number.samples=n.samples);
 second.deriv.means <- rep(NA, n.basis);
 for (i in seq(1,n.basis)) {
@@ -221,7 +220,13 @@ for (i in seq(1,n.basis)) {
 }
 plot(second.deriv.means,type="l");
 coefs = solve(stiff.mat, second.deriv.means);
+coefs = lm.derivs$coefficients[2]*seq(1,n.basis) + lm.derivs$coefficients[1] +
+    0.15;
 
 plot(x,univariate.solution(x,problem.parameters),type="l");
 lines(x,univariate.solution.approx(x,coefs), col="red");
 ### SNAPSHOT APPROACH END ###
+
+lm.derivs <- lm(second.deriv.means ~ seq(1,n.basis));
+plot(second.deriv.means,type="l");
+abline(a=lm.derivs$coefficients[1], b=lm.derivs$coefficients[2]);

@@ -40,6 +40,7 @@ basis.function.init.dx <- function(n, n.basis) {
     return (current.basis.function.dx);
 }
 
+
 basis.function.init.dx.dx <- function(n, n.basis) {
 
     current.basis.function.dx.dx <- function(x) {
