@@ -7,12 +7,12 @@ problem.parameters$b = 1;
 problem.parameters$x.ic = 0.9;
 problem.parameters$number.terms = 1000;
 problem.parameters$sigma.2 = 1;
-problem.parameters$t = 0.1;
+problem.parameters$t = 0.5;
 
 x = seq(problem.parameters$a,problem.parameters$b,
         length.out = 1000);
 
-n.basis = 5;
+n.basis = 10;
 for (n in seq(1,n.basis)) {
     current.basis <- basis.function.init(n, n.basis);
     if (n==1) {
@@ -206,27 +206,42 @@ for (i in seq(1,n.basis)) {
 }
 
 ### checking for convergence in expectation ###
-n.samples <- 100;
-bm.samples = sample.bounded.bm.automatic(problem.parameters=problem.parameters,
-                                         delta.t.min=1e-7,
-                                         number.samples=n.samples);
-second.deriv.means <- rep(NA, n.basis);
-for (i in seq(1,n.basis)) {
-    dxxbasis = basis.function.init.dx.dx(i,n.basis);
-    second.deriv.means[i] = -1/2*problem.parameters$sigma.2*
-        sum(bm.samples$weights *
-            dxxbasis(bm.samples$points)) /
-        n.samples;
-}
-plot(second.deriv.means,type="l");
-coefs = solve(stiff.mat, second.deriv.means);
-coefs = lm.derivs$coefficients[2]*seq(1,n.basis) + lm.derivs$coefficients[1] +
-    0.15;
-
 plot(x,univariate.solution(x,problem.parameters),type="l");
-lines(x,univariate.solution.approx(x,coefs), col="red");
-### SNAPSHOT APPROACH END ###
+K = 1;
+solutions <- matrix(nrow = K, ncol = length(x));
+solutions.sum <- rep(0,length(x));
+for (k in seq(1,K)) {
+    n.samples <- 1000;
+        bm.samples =
+            sample.bounded.bm.automatic(problem.parameters=problem.parameters,
+                                        delta.t.min=0.5e-6,
+                                        number.samples=n.samples);
+    second.deriv.means <- rep(NA, n.basis);
+    for (i in seq(1,n.basis)) {
 
-lm.derivs <- lm(second.deriv.means ~ seq(1,n.basis));
+        dxxbasis = basis.function.init.dx.dx(i,n.basis);
+        second.deriv.means[i] = -1/2*problem.parameters$sigma.2*
+            sum(bm.samples$weights *
+                dxxbasis(bm.samples$points)) /
+            n.samples;
+    }
+    lm.derivs <- lm(second.deriv.means ~ seq(1,n.basis));
+
+    coefs = solve(stiff.mat, second.deriv.means);
+    ## coefs[which(coefs<0)] = 0;
+    ## coefs = solve(stiff.mat, lm.derivs$coefficients[2]*seq(1,n.basis)+
+    ##               lm.derivs$coefficients[1]);
+
+    solutions[k,] = univariate.solution.approx(x,coefs);
+    solutions.sum = solutions.sum + solutions[k,];
+    lines(x,univariate.solution.approx(x,coefs), col="red");
+}
+lines(x,univariate.solution(x,problem.parameters),type="l");
+lines(x,solutions.sum/K,col="green")
+
+### SNAPSHOT APPROACH END ###
+plot(x, coefs[1]*basis.function.init(1,n.basis)(x),type="l");
+lines(x,coefs[2]*basis.function.init(2,n.basis)(x),type="l");
+
 plot(second.deriv.means,type="l");
 abline(a=lm.derivs$coefficients[1], b=lm.derivs$coefficients[2]);

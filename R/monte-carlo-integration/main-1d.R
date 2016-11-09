@@ -24,7 +24,7 @@ K = 3;
 ##     return (C*exp(-1/(1-x^2)));
 ## }
 kernel <- function(x) {
-    return (dbeta(x,alpha,beta));
+    return (dbeta(x,alpha+1,beta+1));
 }
 
 kernel.poly = mpoly(list(c("x"=alpha-1,coef=1))) *
@@ -43,7 +43,7 @@ lines(x,
       kernel(x),
       col="green");
 
-poly.degree.x = 2;
+poly.degree.x = 4;
 x.pow.integral.vec <- x.power.integral.vector(problem.parameters,
                                               2*(poly.degree.x+1),
                                               alpha,
@@ -119,6 +119,64 @@ for (i in seq(1,poly.degree.x+1)) {
         basis.function(x,i);                        
 }
 plot(x,IC, type = "l");
+
+stiff.mat <- matrix(nrow=poly.degree.x+1, ncol=poly.degree.x+1);
+dx = 1e-5;
+x = seq(problem.parameters$a, problem.parameters$b, by=dx);
+for (i in seq(1,poly.degree.x+1)) {
+    current.basis.dx.i = as.function(deriv(basis.function.poly(i=i),"x"),
+                                     vector=FALSE);
+
+    for (j in seq(i,poly.degree.x+1)) {
+        current.basis.dx.j = as.function(deriv(basis.function.poly(i=j),"x"),
+                                     vector=FALSE);
+
+        stiff.matrix.entry = sum(current.basis.dx.i(x)*
+                                 current.basis.dx.j(x)*dx);
+        print(c(i,j,stiff.matrix.entry));
+        stiff.mat[i,j]=1/2*problem.parameters$sigma.2*stiff.matrix.entry;
+        stiff.mat[j,i]=1/2*problem.parameters$sigma.2*stiff.matrix.entry;
+    }
+}
+
+mass.mat <- matrix(nrow=poly.degree.x+1, ncol=poly.degree.x+1);
+for (i in seq(1,poly.degree.x+1)) {
+    current.basis.i = as.function(basis.function.poly(i=i),
+                                  vector=FALSE);
+
+    for (j in seq(i,poly.degree.x+1)) {
+        current.basis.j = as.function(basis.function.poly(i=j),
+                                  vector=FALSE);
+
+        mass.matrix.entry = sum(current.basis.i(x)*
+                                 current.basis.j(x)*dx);
+        print(c(i,j,mass.matrix.entry));
+        mass.mat[i,j]=mass.matrix.entry;
+        mass.mat[j,i]=mass.matrix.entry;
+    }
+}
+eig <- eigen(solve(mass.mat) %*% stiff.mat);
+
+b = rep(NA, poly.degree.x+1);
+for (i in seq(1,poly.degree.x+1)) {
+    b[i] = basis.function(problem.parameters$x.ic,i);
+}
+IC.vec = solve(mass.mat, b);
+IC.vec = b;
+
+x=seq(problem.parameters$a,problem.parameters$b,length.out=1000);
+plot(x, IC.vec[1]*basis.function(x,1)+
+        IC.vec[2]*basis.function(x,2)+
+        IC.vec[3]*basis.function(x,3)+
+        IC.vec[4]*basis.function(x,4),
+     type="l");
+
+coefs = (eig$vectors) %*%
+    diag(exp(-eig$values * problem.parameters$t)) %*%
+    t(eig$vectors) %*% IC.vec;
+
+plot(x,univariate.solution.approx(x,coefs),type="l");
+lines(x,univariate.solution(x,problem.parameters), col="red");
 
 ### COEFFICIENTS EXACT ### (REIMANN INTEGRALS)
 N = 1000;

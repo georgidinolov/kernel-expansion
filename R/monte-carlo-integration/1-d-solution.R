@@ -1,4 +1,14 @@
 library("mpoly");
+
+univariate.solution.approx <- function(x,coefs) {
+    out = rep(0,length(x));
+    for (n in seq(1,poly.degree.x + 1)) {
+        out = out +
+            coefs[n]*basis.function(x,n);
+    }
+    return (out);
+}
+
 coefs.approx.mc <- function(problem.parameters,
                             poly.degree.x,
                             number.samples,

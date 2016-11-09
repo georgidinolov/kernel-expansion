@@ -23,7 +23,6 @@ univariate.solution.approx <- function(x,coefs) {
 
 basis.function.init <- function(n,n.basis) {
     ## length of all input vectors must be the same!
-    print(c(n,1+n.basis-n));
     current.basis.function <- function(x) {
         ## return (x^(n)*(1-x)^(1+(n.basis-n)));
         return (choose(n.basis+1,n)*(x^(n)*(1-x)^(1+n.basis-n)));
