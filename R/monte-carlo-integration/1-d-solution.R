@@ -9,17 +9,20 @@ gram.schmidt <- function(problem.parameters, function.list,
     K <- length(function.list);
     out = vector(mode = "list", length=K);
     for (k in seq(1,K)) {
-        current.function = function.list[[k]];
         if (k==1) {
             ## only normalize
-            norm = sqrt(sum(current.function(x)^2)*dx);
+            norm = sqrt(sum(function.list[[k]](x)^2)*dx);
+            out[[k]] <- function(x) {
+                return( function.list[[k]](x)/norm );
+            }
         } else {
+            projections <- rep(NA, k-1);
+            for (l in seq(1,k-1)) {
+                projections[l] = sum(out[[l]](x)*current.function(x)*
+                                             dx);
+            }
             
         }
-        new.current.function <- function(x) {
-            return (current.function(x)/norm);
-        }
-        out[[k]] = new.current.function;
     }
     return (out);
 }

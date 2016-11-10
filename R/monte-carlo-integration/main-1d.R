@@ -27,12 +27,54 @@ kernel <- function(x) {
     return (dbeta(x,alpha,beta));
 }
 
-function.list = vector(mode="list", length=1);
+function.list = vector(mode="list", length=2);
 function.list[[1]] = kernel;
+function.list[[2]] = function(x) { return (x*kernel(x)) };
+
+## gram schmidt ##
+dx = 0.001;
+x = seq(problem.parameters$a,
+        problem.parameters$b,
+        by=dx);
+K <- length(function.list);
+norms <- rep(NA, K);
+coefficients <- matrix(nrow=K, ncol=K);
+orthonormal.function.list <- vector(mode="list",
+                                    length=K);
+
+for (k in seq(1,K)) {
+    if (k==1) {
+        ## only normalize
+        norm = sqrt(sum(function.list[[k]](x)^2)*dx);
+        coefficients[k,k] = 1;
+        norms[k] = norm;
+        orthonormal.function.list[[k]] =
+            function.list[[k]](x)/norm;
+    } else {
+        for (l in seq(1,k-1)) {
+            coefficients[k,l] = -sum(orthonormal.function.list[[l]]*
+                                     function.list[[k]](x)*dx);
+        }
+        coefficients[k,k] = 1;
+
+        orthonormal.function.list[[k]] =
+            function.list[[k]](x);
+        for (l in seq(1,k-1)) {
+            orthonormal.function.list[[k]] =
+                orthonormal.function.list[[k]] +
+                coefficients[k,l]*orthonormal.function.list[[l]];
+        }
+    }
+}
+
+
+
 orthonormal.function.list <- gram.schmidt(problem.parameters,function.list,dx=0.001);
                                           
 plot(function.list[[1]](x),type="l");
 lines(orthonormal.function.list[[1]](x),col="green",
+      lty="dashed");
+lines(function.list[[2]](x),col="black",
       lty="dashed");
 
 kernel.poly = mpoly(list(c("x"=alpha-1,coef=1))) *
