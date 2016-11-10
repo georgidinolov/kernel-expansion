@@ -24,7 +24,7 @@ K = 3;
 ##     return (C*exp(-1/(1-x^2)));
 ## }
 kernel <- function(x) {
-    return (dbeta(x,alpha+1,beta+1));
+    return (dbeta(x,alpha,beta));
 }
 
 kernel.poly = mpoly(list(c("x"=alpha-1,coef=1))) *
@@ -43,7 +43,7 @@ lines(x,
       kernel(x),
       col="green");
 
-poly.degree.x = 4;
+poly.degree.x = 5;
 x.pow.integral.vec <- x.power.integral.vector(problem.parameters,
                                               2*(poly.degree.x+1),
                                               alpha,
@@ -165,18 +165,28 @@ IC.vec = solve(mass.mat, b);
 IC.vec = b;
 
 x=seq(problem.parameters$a,problem.parameters$b,length.out=1000);
-plot(x, IC.vec[1]*basis.function(x,1)+
-        IC.vec[2]*basis.function(x,2)+
-        IC.vec[3]*basis.function(x,3)+
-        IC.vec[4]*basis.function(x,4),
-     type="l");
+IC <- rep(0,length(x));
+for (i in seq(1,poly.degree.x+1)) {
+    IC = IC +
+        IC.vec[i]*basis.function(x,i);
+}
+plot(x, IC, type="l");
 
-coefs = (eig$vectors) %*%
-    diag(exp(-eig$values * problem.parameters$t)) %*%
-    t(eig$vectors) %*% IC.vec;
+coefs = (eig$vectors) %*% diag(exp(-eig$values * problem.parameters$t)) %*% t(eig$vectors) %*% IC.vec;
 
-plot(x,univariate.solution.approx(x,coefs),type="l");
-lines(x,univariate.solution(x,problem.parameters), col="red");
+TT = 10000;
+dt = problem.parameters$t/TT;
+expAdt = (eig$vectors) %*% diag(exp(-eig$values * TT*dt)) %*% t(eig$vectors);
+A = solve(mass.mat) %*% stiff.mat;
+expAdt.approx.dt =
+    diag(1,poly.degree.x+1) - A*dt - 0.5*A^2*dt^2;
+expAdt.approx = expAdt.approx.dt^TT;
+
+coefs.approx = expAdt.approx %*% IC.vec;
+
+plot(x,univariate.solution.approx(x,coefs.approx),type="l");
+lines(x,univariate.solution(x,problem.parameters), col="red",
+      lty="dashed");
 
 ### COEFFICIENTS EXACT ### (REIMANN INTEGRALS)
 N = 1000;
