@@ -27,6 +27,14 @@ kernel <- function(x) {
     return (dbeta(x,alpha,beta));
 }
 
+function.list = vector(mode="list", length=1);
+function.list[[1]] = kernel;
+orthonormal.function.list <- gram.schmidt(problem.parameters,function.list,dx=0.001);
+                                          
+plot(function.list[[1]](x),type="l");
+lines(orthonormal.function.list[[1]](x),col="green",
+      lty="dashed");
+
 kernel.poly = mpoly(list(c("x"=alpha-1,coef=1))) *
     mpoly(list(c("x"=0,coef=1),c("x"=1,coef=-1)))
 x = seq(problem.parameters$a+0.001,problem.parameters$b-0.001,length.out = 100);

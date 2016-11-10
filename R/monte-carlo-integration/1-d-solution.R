@@ -1,4 +1,28 @@
 library("mpoly");
+## performing gram-schmidt orthogonalization on the list of functions
+## provided.
+gram.schmidt <- function(problem.parameters, function.list,
+                         dx) {
+    x = seq(problem.parameters$a,
+            problem.parameters$b,
+            by=dx);
+    K <- length(function.list);
+    out = vector(mode = "list", length=K);
+    for (k in seq(1,K)) {
+        current.function = function.list[[k]];
+        if (k==1) {
+            ## only normalize
+            norm = sqrt(sum(current.function(x)^2)*dx);
+        } else {
+            
+        }
+        new.current.function <- function(x) {
+            return (current.function(x)/norm);
+        }
+        out[[k]] = new.current.function;
+    }
+    return (out);
+}
 
 univariate.solution.approx <- function(x,coefs) {
     out = rep(0,length(x));
