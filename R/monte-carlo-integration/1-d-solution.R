@@ -27,11 +27,11 @@ gram.schmidt <- function(problem.parameters, function.list,
     return (out);
 }
 
-univariate.solution.approx <- function(x,coefs) {
+univariate.solution.approx <- function(coefs) {
     out = rep(0,length(x));
-    for (n in seq(1,poly.degree.x + 1)) {
+    for (n in seq(1,K)) {
         out = out +
-            coefs[n]*basis.function(x,n);
+            coefs[n]*orthonormal.function.list[[n]];
     }
     return (out);
 }
