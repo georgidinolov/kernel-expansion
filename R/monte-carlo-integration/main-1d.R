@@ -4,7 +4,7 @@ source("1-d-solution.R");
 problem.parameters = NULL;
 problem.parameters$a = 0;
 problem.parameters$b = 1;
-problem.parameters$x.ic = 0.8;
+problem.parameters$x.ic = 0.2;
 problem.parameters$number.terms = 1000;
 problem.parameters$sigma.2 = 1;
 problem.parameters$t = 0.1;
