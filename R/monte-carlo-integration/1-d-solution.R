@@ -36,6 +36,30 @@ univariate.solution.approx <- function(coefs) {
     return (out);
 }
 
+univariate.solution.approx.dt <- function(coefs,A) {
+    coefs.dt = -A %*% coefs;
+    out = rep(0,length(x));
+    for (n in seq(1,K)) {
+        out = out +
+            coefs.dt[n]*orthonormal.function.list[[n]];
+    }
+    return (out);
+}
+
+univariate.solution.approx.dx.dx <- function(coefs) {
+    out = rep(0,length(x));
+    for (n in seq(1,K)) {
+        y = orthonormal.function.list[[n]];
+        y.m.dx = y[-length(x)];
+        y.p.dx = y[-1];
+        y.dx.dx = (y.p.dx[-1]-
+            2*y[seq(2,length(x)-1)] +
+            y.m.dx[-length(y.m.dx)])/dx^2;
+        out = out + coefs[n]*y.dx.dx;
+    }
+    return (out);
+}
+
 coefs.approx.mc <- function(problem.parameters,
                             poly.degree.x,
                             number.samples,
@@ -123,7 +147,6 @@ sample.bounded.bm.accept.reject <- function(problem.parameters,
     out = NULL;
     out$weights = rep(NA, number.samples);
     out$points = rep(NA, number.samples);
-    
     t = seq(delta.t, problem.parameters$t, by = delta.t);
     sigma = sqrt(problem.parameters$sigma.2);
 

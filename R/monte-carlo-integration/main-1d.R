@@ -7,7 +7,7 @@ problem.parameters$b = 1;
 problem.parameters$x.ic = 0.8;
 problem.parameters$number.terms = 1000;
 problem.parameters$sigma.2 = 1;
-problem.parameters$t = 0.3;
+problem.parameters$t = 0.1;
 
 alpha.beta <- select.alpha.beta(problem.parameters);
 alpha <- alpha.beta$alpha;
@@ -27,7 +27,7 @@ kernel <- function(x) {
     return ((x-problem.parameters$a)*(problem.parameters$b-x));
 }
 
-function.list = vector(mode="list", length=8);
+function.list = vector(mode="list", length=6);
 function.list[[1]] = kernel;
 function.list[[2]] = function(x) { return (x*kernel(x)) };
 function.list[[3]] = function(x) { return (x*(1-x)*dnorm(x)) };
@@ -183,14 +183,26 @@ expAdt.approx =
     diag(1,K) - A*dt;
 eig.approx <- eigen(expAdt.approx);
 
-plot(x,univariate.solution.approx(eig.approx$vectors %*%
-                                  diag(eig.approx$values^TT) %*%
-                                  t(eig.approx$vectors) %*% 
-                                   IC.vec),
+coefs.approx = eig.approx$vectors %*%
+    diag(eig.approx$values^TT) %*%
+    t(eig.approx$vectors) %*% 
+    IC.vec;
+
+plot(x,univariate.solution.approx(coefs.approx),
       col="red", type="l");
 lines(x,univariate.solution.approx(coefs),col="green",lty="dashed");
 lines(x,univariate.solution(x,problem.parameters), lty=4);
-
-problem.parameters$a=-1000;
-lines(x,univariate.solution(x,problem.parameters));
 ### APPROX APPROX SOLUTION END ###
+
+### CHECKING PDE START ###
+plot(x,univariate.solution.approx.dt(coefs, A),type="l", col="red");
+lines(x,0.5*(problem.parameters$sigma.2)*
+        univariate.solution.approx.dx.dx(coefs),
+      lty="dashed");
+
+difference2 = (univariate.solution.approx.dt(coefs.approx, A)-
+                0.5*(problem.parameters$sigma.2)*
+                univariate.solution.approx.dx.dx(coefs.approx))^2;
+norm.diff2 = sum(difference2*dx);
+print(norm.diff2);
+### CHECKING PDE END ###
