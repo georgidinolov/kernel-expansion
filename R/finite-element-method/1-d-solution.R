@@ -753,12 +753,16 @@ blackbox <- function(log.sigma2.mu.vector, problem.parameters, dx,
         t(eig$vectors) %*% IC.vec;
     
     if (PLOT.SOLUTION) {
+        png(filename=paste("solution-K-", K, ".png", sep=""),
+            width=1200, height=1200,res=300);
+        par(mar = c(5,4,2,1));
         plot(x,univariate.solution.approx(coefs,x,
                                           orthonormal.function.list,K),type="l",
-             xlab="x",
+             xlab=paste("K=",K,sep=""),
              ylab=paste("q(x,t), t=", problem.parameters$t, sep=""));
         lines(x,univariate.solution(x,problem.parameters), col="green",
               lty="dashed", lwd = 2);
+        dev.off();
     }
     ## ## APPROX SOLUTION END ###
 

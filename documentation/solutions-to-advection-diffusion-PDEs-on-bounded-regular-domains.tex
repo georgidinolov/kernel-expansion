@@ -436,9 +436,10 @@ $\{\psi_k(x)\}_{k=1}^K$. Obviously, sparsity in
 $\{ \psi_k(x) \}_{k=1}^K$ makes calculating the solution easy.
 
 \subsection{Basis Element Choice}
-It is known the family of Gaussian pdfs is dense in $L_2(\mathbb{R})$
-(See exercise 3.6 in \cite{zeidler1997math-phys}). This motivates the
-choice for the family of basis elements we will use for this problem:
+It is known that the family of Gaussian pdfs is dense in
+$L_2(\mathbb{R})$ (See exercise 3.6 in
+\cite{zeidler1997math-phys}). This motivates the choice for the family
+of basis elements that we will use for this problem:
 \begin{align}
   \left\{ (x-a)(b-x)\phi(x|\mu_k, \sigma^2_k) \right\}_{k=1}^K,& & \phi(x|\mu_k,\sigma^2_k) &= \frac{1}{\sqrt{2\pi \sigma^2_k}}\exp\left\{-\frac{1}{2\sigma^2_k}(x-\mu_k)^2 \right\}.
 \end{align}
@@ -447,7 +448,7 @@ each basis element obeys the boundary conditions. We have to prove the
 the above family of basis elements is dense in $L_2(\Omega)$.
 
 The choice of $(\mu_k, \sigma_k^2)$ is up to us. However, for a fixed
-$K$, can choose a (locally) optimum sequences of
+$K$, we can choose a (locally) optimum sequences of
 $(\mu_k, \sigma^2_k)_{k=1}^K$ in the following way. Given
 $(\mu_k, \sigma^2_k)_{k=1}^K$, we can first follow Gram-Schmidt to
 make the basis elements orthonormal, then use the solution in
@@ -460,7 +461,48 @@ This norm will tell us approximately how closely the weak solution
 $q_K(x,t)$ solves the original problem in the classical sense. We can
 then use \texttt{R}'s \texttt{optim} to search over the space
 $(\mu_k, \sigma^2_k)_{k=1}^K$ for the best sequence by minimizing
-(\ref{eq:criterion}), given some starting point.
+(\ref{eq:criterion}), given some starting point. In this case, the
+starting point for $\mu_k$ are evenly spaced points on the domain
+$[a,b]$, including the boundaries. The starting point for the basis
+variances are all $\sigma_k^2 = 0.05$. We can see in Figure
+(\ref{fig:optimized-sols}) that already for $K=6$ the approximate
+solution reaches a qualitatively reasonble accuracy, and certainly
+good enough for effective maximum likelihood estimation.
+
+\begin{figure}
+  \centering
+  \begin{tabular}{ccc}
+    \begin{minipage}{0.25\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{{../R/finite-element-method/solution-K-4}.png}
+    \end{minipage}
+    & \begin{minipage}{0.25\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{{../R/finite-element-method/solution-K-5}.png}
+    \end{minipage}
+    & \begin{minipage}{0.25\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{{../R/finite-element-method/solution-K-6}.png}
+    \end{minipage} \\
+    \begin{minipage}{0.25\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{{../R/finite-element-method/solution-K-7}.png}
+    \end{minipage}
+    & \begin{minipage}{0.25\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{{../R/finite-element-method/solution-K-10}.png}
+    \end{minipage}
+    & \begin{minipage}{0.25\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{{../R/finite-element-method/solution-K-15}.png}
+    \end{minipage}
+  \end{tabular}
+  \caption{Approximate solution (solid black) and true solution
+    (dashed green) for different number $K$ of optimally chosen basis
+    elements
+    $\left\{ (a-x)(b-x)\phi(x|\mu_k, \sigma_k^2) \right\}_{k=1}^K$.}
+  \label{fig:optimized-sols}
+\end{figure}
 
 \bibliographystyle{plainnat}
 % \bibliographystyle{bka}

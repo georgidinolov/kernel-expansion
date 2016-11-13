@@ -9,13 +9,13 @@ problem.parameters$number.terms = 1000;
 problem.parameters$sigma.2 = 1;
 problem.parameters$t = 0.1;
 
-log.sigma2.vector = log(rep(0.13,8));
+log.sigma2.vector = log(rep(0.1,15));
 mu.vector = seq(problem.parameters$a,
                 problem.parameters$b,
                 length.out=length(log.sigma2.vector));
 log.sigma2.mu.vector = c(log.sigma2.vector,
                          mu.vector);
-dx = 0.0001;
+dx = 0.00001;
 bb = blackbox(log.sigma2.mu.vector, problem.parameters, dx,TRUE);
 print(bb);
 

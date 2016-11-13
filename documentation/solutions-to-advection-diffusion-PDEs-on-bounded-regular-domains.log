@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2016.10.17)  12 NOV 2016 17:34
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2016.10.17)  13 NOV 2016 14:24
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -888,34 +888,87 @@ sion > 4. Object streams disabled now.
 [1
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}] [2] [3] [4] [5]
+<../R/finite-element-method/solution-K-4.png, id=33, 289.08pt x 289.08pt>
+File: ../R/finite-element-method/solution-K-4.png Graphic file (type png)
+
+<use ../R/finite-element-method/solution-K-4.png>
+Package pdftex.def Info: ../R/finite-element-method/solution-K-4.png used on in
+put line 476.
+(pdftex.def)             Requested size: 135.50624pt x 135.5059pt.
+
+<../R/finite-element-method/solution-K-5.png, id=34, 289.08pt x 289.08pt>
+File: ../R/finite-element-method/solution-K-5.png Graphic file (type png)
+
+<use ../R/finite-element-method/solution-K-5.png>
+Package pdftex.def Info: ../R/finite-element-method/solution-K-5.png used on in
+put line 480.
+(pdftex.def)             Requested size: 135.50624pt x 135.5059pt.
+
+<../R/finite-element-method/solution-K-6.png, id=35, 289.08pt x 289.08pt>
+File: ../R/finite-element-method/solution-K-6.png Graphic file (type png)
+
+<use ../R/finite-element-method/solution-K-6.png>
+Package pdftex.def Info: ../R/finite-element-method/solution-K-6.png used on in
+put line 484.
+(pdftex.def)             Requested size: 135.50624pt x 135.5059pt.
+
+<../R/finite-element-method/solution-K-7.png, id=36, 289.08pt x 289.08pt>
+File: ../R/finite-element-method/solution-K-7.png Graphic file (type png)
+
+<use ../R/finite-element-method/solution-K-7.png>
+Package pdftex.def Info: ../R/finite-element-method/solution-K-7.png used on in
+put line 488.
+(pdftex.def)             Requested size: 135.50624pt x 135.5059pt.
+
+<../R/finite-element-method/solution-K-10.png, id=37, 289.08pt x 289.08pt>
+File: ../R/finite-element-method/solution-K-10.png Graphic file (type png)
+
+<use ../R/finite-element-method/solution-K-10.png>
+Package pdftex.def Info: ../R/finite-element-method/solution-K-10.png used on i
+nput line 492.
+(pdftex.def)             Requested size: 135.50624pt x 135.5059pt.
+
+<../R/finite-element-method/solution-K-15.png, id=38, 289.08pt x 289.08pt>
+File: ../R/finite-element-method/solution-K-15.png Graphic file (type png)
+
+<use ../R/finite-element-method/solution-K-15.png>
+Package pdftex.def Info: ../R/finite-element-method/solution-K-15.png used on i
+nput line 496.
+(pdftex.def)             Requested size: 135.50624pt x 135.5059pt.
+
 (./solutions-to-advection-diffusion-PDEs-on-bounded-regular-domains.bbl)
-[6] (./solutions-to-advection-diffusion-PDEs-on-bounded-regular-domains.aux) ) 
+[6 <../R/finite-element-method/solution-K-4.png (PNG copy)> <../R/finite-elemen
+t-method/solution-K-5.png (PNG copy)> <../R/finite-element-method/solution-K-6.
+png (PNG copy)> <../R/finite-element-method/solution-K-7.png (PNG copy)> <../R/
+finite-element-method/solution-K-10.png (PNG copy)> <../R/finite-element-method
+/solution-K-15.png (PNG copy)>]
+(./solutions-to-advection-diffusion-PDEs-on-bounded-regular-domains.aux) ) 
 Here is how much of TeX's memory you used:
- 24569 strings out of 493029
- 602807 string characters out of 6136233
+ 24606 strings out of 493029
+ 604172 string characters out of 6136233
  790912 words of memory out of 5000000
- 27607 multiletter control sequences out of 15000+600000
+ 27636 multiletter control sequences out of 15000+600000
  47736 words of font info for 108 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  55i,16n,77p,783b,609s stack positions out of 5000i,500n,10000p,200000b,80000s
-{
-/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/share/texlive/t
-exmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/texmf-d
-ist/fonts/type1/public/amsfonts/cmextra/cmex9.pfb></usr/share/texlive/texmf-dis
-t/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/font
-s/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1
-/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/publi
-c/amsfonts/symbols/msbm10.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/co
-urier/ucrr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/palatino/uplb8a
-.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/palatino/uplr8a.pfb></usr/s
-hare/texlive/texmf-dist/fonts/type1/urw/palatino/uplri8a.pfb></usr/share/texliv
-e/texmf-dist/fonts/type1/urw/symbol/usyr.pfb></usr/share/texlive/texmf-dist/fon
-ts/type1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/ti
-mes/utmri8a.pfb>
+{/usr
+/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/share/texlive/texmf
+-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/texmf-dist/
+fonts/type1/public/amsfonts/cmextra/cmex9.pfb></usr/share/texlive/texmf-dist/fo
+nts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/ty
+pe1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/pub
+lic/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/am
+sfonts/symbols/msbm10.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/courie
+r/ucrr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/palatino/uplb8a.pfb
+></usr/share/texlive/texmf-dist/fonts/type1/urw/palatino/uplr8a.pfb></usr/share
+/texlive/texmf-dist/fonts/type1/urw/palatino/uplri8a.pfb></usr/share/texlive/te
+xmf-dist/fonts/type1/urw/symbol/usyr.pfb></usr/share/texlive/texmf-dist/fonts/t
+ype1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/
+utmri8a.pfb>
 Output written on solutions-to-advection-diffusion-PDEs-on-bounded-regular-doma
-ins.pdf (6 pages, 164960 bytes).
+ins.pdf (6 pages, 539068 bytes).
 PDF statistics:
- 77 PDF objects out of 1000 (max. 8388607)
+ 83 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
- 13 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 43 words of extra memory for PDF output out of 10000 (max. 10000000)
 
