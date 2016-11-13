@@ -358,7 +358,33 @@ we have that
       P_{k,0}(x)P_{k,1}'(x) \right] } \]
 
 \section{Mesh-Free Finite Element Method}
+Here we take a similar approach, where we seek the \textit{weak
+  solution} of the PDE (\ref{eq:pde}) - (\ref{eq:bc}). A weak solution
+is any function $q_{weak}(x,t)$ where, for any
+$\phi(x) \in C^{\infty}_0(\Omega)$,
+\begin{align}
+  \displaystyle \int_\Omega \partial_t q_{weak}(x,t) \phi(x)\, dx -
+  \frac{1}{2}\sigma^2 \displaystyle \int_\Omega \partial^2_x q_{weak}(x,t) \phi(x)\,dx = 0. \label{eq:weak-sol}
+\end{align}
+We can relax the definition of a weak solution in the following
+way. Consider a countable family of functions
+$\left\{\psi_k(x)\right\}_{k=1}^\infty$ dense in the space of all
+$L_2(\Omega)$ functions. It can be shown that a function is a weak
+solution to the problem if (\ref{eq:weak-sol}) holds for each
+$\psi_k(x)$. In other words,
+\begin{align*}
+  \displaystyle \int_\Omega \partial_t q_{weak}(x,t) \psi_k(x)\, dx -
+  \frac{1}{2}\sigma^2 \displaystyle \int_\Omega \partial^2_x q_{weak}(x,t) \psi_k(x)\,dx = 0.
+\end{align*}
 
+It should be noted that each element $\psi_k(x)$
+need not be $C^\infty_0(\Omega)$. In fact, under the Ritz method,
+$\psi_k(x) \in C^1_0(\Omega)$ in the weak sense.
+
+In application, we restrict ourselves to a subset of $\{\psi_k(x)\}_{k=1}^\infty$:
+\[
+  \{\psi_k(x)\}_{k=1}^K.
+\]
 
 \bibliographystyle{plainnat}
 % \bibliographystyle{bka}
