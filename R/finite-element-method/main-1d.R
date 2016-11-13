@@ -7,7 +7,7 @@ problem.parameters$b = 1;
 problem.parameters$x.ic = 0.2;
 problem.parameters$number.terms = 1000;
 problem.parameters$sigma.2 = 1;
-problem.parameters$t = 0.3;
+problem.parameters$t = 0.1;
 
 log.sigma2.vector = log(rep(0.13,8));
 mu.vector = seq(problem.parameters$a,
@@ -15,14 +15,19 @@ mu.vector = seq(problem.parameters$a,
                 length.out=length(log.sigma2.vector));
 log.sigma2.mu.vector = c(log.sigma2.vector,
                          mu.vector);
-dx = 0.001;
+dx = 0.0001;
 bb = blackbox(log.sigma2.mu.vector, problem.parameters, dx,TRUE);
 print(bb);
 
+# Start the clock!
+ptm <- proc.time();
 opt.bases = optim(par=log.sigma2.mu.vector, fn=blackbox,
                   problem.parameters = problem.parameters,
                   dx = dx,
                   PLOT.SOLUTION=FALSE);
+# Stop the clock
+end.time <- proc.time() - ptm;
+ave.function.call.time = end.time[3]/opt.bases$counts[1];
 
 log.sigma2.mu.vector = opt.bases$par;
 bb = blackbox(log.sigma2.mu.vector, problem.parameters, dx,TRUE);

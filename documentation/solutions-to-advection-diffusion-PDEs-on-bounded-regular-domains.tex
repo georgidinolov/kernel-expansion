@@ -429,11 +429,38 @@ The matrix $A$ is symmetric, so that an eigendecomposition for it
 exists. Moreover, the solution to the system of ODEs in
 (\ref{eq:solution-ode}) is given by
 \begin{align}
-  \xi(t) &= e^{-\frac{1}{2}\sigma^2\, At}\xi(0), & \xi_k(0) &= \displaystyle \int_\Omega \psi_k(x)\delta(x-x_0)\,dx = \psi_k(x_0), & q_K(x,t) &= \psi(x)^T \xi(t) = \psi(x)^T \left( e^{-\frac{1}{2}\sigma^2\, At} \right) \xi(0).
+  \xi(t) &= e^{-\frac{1}{2}\sigma^2\, At}\xi(0), & \xi_k(0) &= \displaystyle \int_\Omega \psi_k(x)\delta(x-x_0)\,dx = \psi_k(x_0), & q_K(x,t) &= \psi(x)^T \xi(t) = \psi(x)^T \left( e^{-\frac{1}{2}\sigma^2\, At} \right) \xi(0). \label{eq:solution}
 \end{align}
 The definition for $\xi(0)$ can be derived from the orthonormality of
 $\{\psi_k(x)\}_{k=1}^K$. Obviously, sparsity in
 $\{ \psi_k(x) \}_{k=1}^K$ makes calculating the solution easy.
+
+\subsection{Basis Element Choice}
+It is known the family of Gaussian pdfs is dense in $L_2(\mathbb{R})$
+(See exercise 3.6 in \cite{zeidler1997math-phys}). This motivates the
+choice for the family of basis elements we will use for this problem:
+\begin{align}
+  \left\{ (x-a)(b-x)\phi(x|\mu_k, \sigma^2_k) \right\}_{k=1}^K,& & \phi(x|\mu_k,\sigma^2_k) &= \frac{1}{\sqrt{2\pi \sigma^2_k}}\exp\left\{-\frac{1}{2\sigma^2_k}(x-\mu_k)^2 \right\}.
+\end{align}
+Multiplying the Gaussian densities $\phi$ by $(x-a)(b-x)$ ensures that
+each basis element obeys the boundary conditions. We have to prove the
+the above family of basis elements is dense in $L_2(\Omega)$.
+
+The choice of $(\mu_k, \sigma_k^2)$ is up to us. However, for a fixed
+$K$, can choose a (locally) optimum sequences of
+$(\mu_k, \sigma^2_k)_{k=1}^K$ in the following way. Given
+$(\mu_k, \sigma^2_k)_{k=1}^K$, we can first follow Gram-Schmidt to
+make the basis elements orthonormal, then use the solution in
+(\ref{eq:solution}) to compute the weak solution $q_K(x,t)$ for each
+$x \in \Omega$. Then we can compute
+\begin{equation}
+  \left\| \partial_t q_K(x,t) - \frac{1}{2}\sigma^2 \partial^2_{x} q_K(x,t) \right\|_{2,\Omega}. \label{eq:criterion}
+\end{equation}
+This norm will tell us approximately how closely the weak solution
+$q_K(x,t)$ solves the original problem in the classical sense. We can
+then use \texttt{R}'s \texttt{optim} to search over the space
+$(\mu_k, \sigma^2_k)_{k=1}^K$ for the best sequence by minimizing
+(\ref{eq:criterion}), given some starting point.
 
 \bibliographystyle{plainnat}
 % \bibliographystyle{bka}

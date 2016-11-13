@@ -754,7 +754,9 @@ blackbox <- function(log.sigma2.mu.vector, problem.parameters, dx,
     
     if (PLOT.SOLUTION) {
         plot(x,univariate.solution.approx(coefs,x,
-                                          orthonormal.function.list,K),type="l");
+                                          orthonormal.function.list,K),type="l",
+             xlab="x",
+             ylab=paste("q(x,t), t=", problem.parameters$t, sep=""));
         lines(x,univariate.solution(x,problem.parameters), col="green",
               lty="dashed", lwd = 2);
     }
