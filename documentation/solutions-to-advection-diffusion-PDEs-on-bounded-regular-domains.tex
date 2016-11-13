@@ -367,24 +367,73 @@ $\phi(x) \in C^{\infty}_0(\Omega)$,
   \frac{1}{2}\sigma^2 \displaystyle \int_\Omega \partial^2_x q_{weak}(x,t) \phi(x)\,dx = 0. \label{eq:weak-sol}
 \end{align}
 We can relax the definition of a weak solution in the following
-way. Consider a countable family of functions
+way. Consider a countable family of functions, or elements,
 $\left\{\psi_k(x)\right\}_{k=1}^\infty$ dense in the space of all
 $L_2(\Omega)$ functions. It can be shown that a function is a weak
 solution to the problem if (\ref{eq:weak-sol}) holds for each
 $\psi_k(x)$. In other words,
-\begin{align*}
+\begin{align}
   \displaystyle \int_\Omega \partial_t q_{weak}(x,t) \psi_k(x)\, dx -
-  \frac{1}{2}\sigma^2 \displaystyle \int_\Omega \partial^2_x q_{weak}(x,t) \psi_k(x)\,dx = 0.
-\end{align*}
+  \frac{1}{2}\sigma^2 \displaystyle \int_\Omega \partial^2_x q_{weak}(x,t) \psi_k(x)\,dx = 0. \label{eq:weak-sol-projection}
+\end{align}
 
-It should be noted that each element $\psi_k(x)$
-need not be $C^\infty_0(\Omega)$. In fact, under the Ritz method,
-$\psi_k(x) \in C^1_0(\Omega)$ in the weak sense.
-
-In application, we restrict ourselves to a subset of $\{\psi_k(x)\}_{k=1}^\infty$:
+It should be noted that each element $\psi_k(x)$ need not be
+$C^\infty_0(\Omega)$. In fact, under the Ritz method,
+$\psi_k(x) \in C^1_0(\Omega)$ in the weak sense. As long as the basis
+elements are dense in $L_2$ and they satisfy the boundary conditions,
+we can solve the problem in the weak formulation. This can be proved
+using Friedrichs' mollification (See exercise 2.12 in
+\cite{zeidler1997math-phys}). Furthermore, we can show that the weak
+solution converges to the classical solution. In application, we
+restrict ourselves to a subset of $\{\psi_k(x)\}_{k=1}^\infty$:
 \[
-  \{\psi_k(x)\}_{k=1}^K.
+  \{\psi_k(x)\}_{k=1}^K,
 \]
+applying (\ref{eq:weak-sol-projection}) only to elements $\psi_1(x)$
+through $\psi_K(x)$. For the purposes of this section, we will work
+with a finite family of basis elements which are orthonormal (this can
+be achieved by following the Gram-Schmidt procedure outlined
+above). Further, we impose the form for the approximate solution $q_K(x,t)$:
+\[
+  q_K(x,t) = \sum_{k=1}^K \xi_k(t) \psi_k(x).
+\]
+Plugging into (\ref{eq:weak-sol-projection}),
+\begin{align*}
+  \displaystyle \int_\Omega \sum_{k=1}^K (\partial_t\xi_k(t))\psi_k(x) \psi_l(x)\, dx -
+  \frac{1}{2}\sigma^2 \displaystyle \int_\Omega \sum_{k=1}^K \xi_k(t)(\partial^2_x\psi_k(x))  \psi_l(x)\,dx &= 0, \\
+  \sum_{k=1}^K (\partial_t\xi_k(t)) \displaystyle \int_\Omega \psi_k(x) \psi_l(x)\, dx -
+  \frac{1}{2}\sigma^2 \sum_{k=1}^K \xi_k(t) \displaystyle \int_\Omega (\partial^2_x\psi_k(x))  \psi_l(x)\,dx &= 0.
+\end{align*}
+Using the boundary conditions and integration by parts,
+\[
+  \displaystyle \int_\Omega (\partial^2_x\psi_k(x)) \psi_l(x)\,dx = -\displaystyle \int_\Omega \partial_x\psi_k(x)\partial_x\psi_l(x)\,dx.
+\]
+Using the orthonormality of $\psi_k(x)$,
+\[
+  \displaystyle \int_\Omega \psi_k(x) \psi_l(x)\, dx = \delta(k-l).
+\]
+The solution condition then becomes
+\begin{align}
+  \sum_{k=1}^K (\partial_t\xi_k(t)) \delta(k-l) +
+  \frac{1}{2}\sigma^2 \sum_{k=1}^K \xi_k(t) \displaystyle \int_\Omega \partial_x\psi_k(x)) \partial_x\psi_l(x)\,dx &= 0. \label{eq:solution-condition}
+\end{align}
+Defining
+\begin{align*}
+  \xi(t) &= (\xi_1(t), \ldots, \xi_K(t))^T, & \psi(x) &= (\psi_1(x), \ldots, \psi_K(x))^T,
+\end{align*}
+condition (\ref{eq:solution-condition}) sets up the system of equations
+\begin{align}
+  \partial_t \xi(t) &= -\frac{1}{2}\sigma^2 A\xi(t), & [A]_{ij} &= \displaystyle \int_\Omega \partial_x\psi_i(x)) \partial_x\psi_j(x)\,dx. \label{eq:solution-ode}
+\end{align}
+The matrix $A$ is symmetric, so that an eigendecomposition for it
+exists. Moreover, the solution to the system of ODEs in
+(\ref{eq:solution-ode}) is given by
+\begin{align}
+  \xi(t) &= e^{-\frac{1}{2}\sigma^2\, At}\xi(0), & \xi_k(0) &= \displaystyle \int_\Omega \psi_k(x)\delta(x-x_0)\,dx = \psi_k(x_0), & q_K(x,t) &= \psi(x)^T \xi(t) = \psi(x)^T \left( e^{-\frac{1}{2}\sigma^2\, At} \right) \xi(0).
+\end{align}
+The definition for $\xi(0)$ can be derived from the orthonormality of
+$\{\psi_k(x)\}_{k=1}^K$. Obviously, sparsity in
+$\{ \psi_k(x) \}_{k=1}^K$ makes calculating the solution easy.
 
 \bibliographystyle{plainnat}
 % \bibliographystyle{bka}
