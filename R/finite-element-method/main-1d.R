@@ -9,43 +9,54 @@ problem.parameters$number.terms = 1000;
 problem.parameters$sigma.2 = 1;
 problem.parameters$t = 0.1;
 
-log.sigma2.vector = log(rep(0.1,15));
-mu.vector = seq(problem.parameters$a,
-                problem.parameters$b,
-                length.out=length(log.sigma2.vector));
-log.sigma2.mu.vector = c(log.sigma2.vector,
-                         mu.vector);
-dx = 0.00001;
-bb = blackbox(log.sigma2.mu.vector, problem.parameters, dx,TRUE);
-print(bb);
+Ks = seq(4,15);
 
-# Start the clock!
-ptm <- proc.time();
-opt.bases = optim(par=log.sigma2.mu.vector, fn=blackbox,
-                  problem.parameters = problem.parameters,
-                  dx = dx,
-                  PLOT.SOLUTION=FALSE);
-# Stop the clock
-end.time <- proc.time() - ptm;
-ave.function.call.time = end.time[3]/opt.bases$counts[1];
+L2.remainders.before = rep(NA, length(Ks));
+L2.diff.before = rep(NA, length(Ks));
 
-log.sigma2.mu.vector = opt.bases$par;
-bb = blackbox(log.sigma2.mu.vector, problem.parameters, dx,TRUE);
+L2.remainders.after = rep(NA, length(Ks));
+L2.diff.after = rep(NA, length(Ks));
 
-dev.off();
-K = length(log.sigma2.mu.vector)/2;
-x = seq(10*problem.parameters$a,
-        10*problem.parameters$b,
-        length.out=1000);
-for (k in seq(1,K)) {
-    if (k==1) {
-        plot(x, dnorm(x,mean=log.sigma2.mu.vector[k+K],
-                      sd=sqrt(exp(log.sigma2.mu.vector[k]))),
-             type="l")
-    } else {
-        lines(x, dnorm(x,mean=log.sigma2.mu.vector[k+K],
-                      sd=sqrt(exp(log.sigma2.mu.vector[k]))));
-    }
+ave.function.call.time.vec = rep(NA,length(Ks));
+log.sigma2.mu.vector.list = vector(mode="list",
+                                   length=length(Ks));
+
+for (i in seq(1,length(Ks))) {
+    K = Ks[i];
+    log.sigma2.vector = log(rep(((problem.parameters$b-problem.parameters$a)/K)^2,
+                                K));
+    mu.vector = seq(problem.parameters$a,
+                    problem.parameters$b,
+                    length.out=length(log.sigma2.vector));
+    log.sigma2.mu.vector = c(log.sigma2.vector,
+                             mu.vector);
+    dx = 0.0001;
+    bb = blackbox(log.sigma2.mu.vector, problem.parameters, dx,TRUE,TRUE);
+    L2.remainders.before[i] = bb;
+    L2.diff.before[i] = blackbox(log.sigma2.mu.vector, problem.parameters,
+                                 dx,
+                                 FALSE,
+                                 FALSE);
+
+    ## Start the clock!
+    ptm <- proc.time();
+    opt.bases = optim(par=log.sigma2.mu.vector, fn=blackbox,
+                      problem.parameters = problem.parameters,
+                      dx = dx,
+                      PLOT.SOLUTION=FALSE,
+                      MINIMIZE.REMAINDER=TRUE);
+    end.time <- proc.time() - ptm;
+    ## Stop the clock
+    ave.function.call.time = end.time[3]/opt.bases$counts[1];
+    ave.function.call.time.vec[i] = ave.function.call.time;
+
+    log.sigma2.mu.vector = opt.bases$par;
+    log.sigma2.mu.vector.list[[i]] = log.sigma2.mu.vector;
+    bb = blackbox(log.sigma2.mu.vector, problem.parameters, dx,TRUE,TRUE);
+    
+    L2.remainders.after[i] = bb;
+    L2.diff.after[i] = blackbox(log.sigma2.mu.vector, problem.parameters,
+                                dx,
+                                FALSE,
+                                FALSE)
 }
-abline(v=c(problem.parameters$a,problem.parameters$b),
-       col="red");
