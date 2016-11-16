@@ -2,7 +2,7 @@
 #PBS -u gdinolov
 #PBS -N kernel-expansion-1d
 #PBS -l nodes=1:ppn=1
-#PBS -q orig
+#PBS -q new
 
 cd /share/Arbeit/gdinolov/kernel-expansion/R/finite-element-method/
 

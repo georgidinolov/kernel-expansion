@@ -1,4 +1,3 @@
-library("mpoly");
 ## performing gram-schmidt orthogonalization on the list of functions
 ## provided.
 gram.schmidt <- function(problem.parameters, function.list,
