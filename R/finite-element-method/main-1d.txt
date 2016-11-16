@@ -1,0 +1,9 @@
+#PBS -S /bin/bash
+#PBS -u gdinolov
+#PBS -N kernel-expansion-1d
+#PBS -l nodes=1:ppn=1
+#PBS -q orig
+
+cd /share/Arbeit/gdinolov/kernel-expansion/R/finite-element-method/
+
+R CMD BATCH main-1d.R
