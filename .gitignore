@@ -8,3 +8,5 @@
 *.blg
 *.Rhistory
 *#
+*.log*
+*.aux*
