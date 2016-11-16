@@ -9,7 +9,7 @@ problem.parameters$number.terms = 1000;
 problem.parameters$sigma.2 = 1;
 problem.parameters$t = 0.1;
 
-Ks = seq(4,15);
+Ks = seq(4,5);
 
 L2.remainders.before = rep(NA, length(Ks));
 L2.diff.before = rep(NA, length(Ks));
@@ -60,3 +60,9 @@ for (i in seq(1,length(Ks))) {
                                 FALSE,
                                 FALSE)
 }
+
+save(file="optimization-results.Rdata",
+     list=c("Ks","L2.remainders.before","L2.diff.before",
+            "L2.remainders.after","L2.diff.after",
+            "ave.function.call.time.vec",
+            "log.sigma2.mu.vector.list"));
