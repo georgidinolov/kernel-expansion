@@ -67,6 +67,7 @@ save(file="optimization-results.Rdata",
             "ave.function.call.time.vec",
             "log.sigma2.mu.vector.list"));
 
+pdf("optimization-results.pdf");
 par(mfrow=c(2,1));
 par(mar = c(5,4,2,1));
 plot(Ks, log(L2.remainders.before),
@@ -86,3 +87,4 @@ plot(Ks, log(L2.diff.before),
      xlab = "",
      main = "log(L^2) norm of difference between approximate and true solutions");
 lines(Ks, log(L2.diff.after),col="red");
+dev.off();
