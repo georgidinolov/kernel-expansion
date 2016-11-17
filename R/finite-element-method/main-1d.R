@@ -30,7 +30,7 @@ for (i in seq(1,length(Ks))) {
                     length.out=length(log.sigma2.vector));
     log.sigma2.mu.vector = c(log.sigma2.vector,
                              mu.vector);
-    dx = 0.0001;
+    dx = 0.00001;
     bb = blackbox(log.sigma2.mu.vector, problem.parameters, dx,TRUE,TRUE);
     L2.remainders.before[i] = bb;
     L2.diff.before[i] = blackbox(log.sigma2.mu.vector, problem.parameters,
@@ -65,7 +65,8 @@ save(file="optimization-results.Rdata",
      list=c("Ks","L2.remainders.before","L2.diff.before",
             "L2.remainders.after","L2.diff.after",
             "ave.function.call.time.vec",
-            "log.sigma2.mu.vector.list"));
+            "log.sigma2.mu.vector.list",
+	    "dx"));
 
 pdf("optimization-results.pdf");
 par(mfrow=c(2,1));
