@@ -66,3 +66,23 @@ save(file="optimization-results.Rdata",
             "L2.remainders.after","L2.diff.after",
             "ave.function.call.time.vec",
             "log.sigma2.mu.vector.list"));
+
+par(mfrow=c(2,1));
+par(mar = c(5,4,2,1));
+plot(Ks, log(L2.remainders.before),
+     type="l",
+     ylim = c(min(log(L2.remainders.before),log(L2.remainders.after)),
+              max(log(L2.remainders.before),log(L2.remainders.after))),
+     ylab = "",
+     xlab = "K",
+     main = "log(L^2) norm of remainder term");
+lines(Ks, log(L2.remainders.after),col="red");
+
+plot(Ks, log(L2.diff.before),
+     type="l",
+     ylim = c(min(log(L2.diff.before),log(L2.diff.after)),
+              max(log(L2.diff.before),log(L2.diff.after))),
+     ylab = "",
+     xlab = "",
+     main = "log(L^2) norm of difference between approximate and true solutions");
+lines(Ks, log(L2.diff.after),col="red");
