@@ -620,10 +620,26 @@ The above expression is the probability
   b, \tau_a \in [t_n, t], \tau_b \in [0,t_1] | X_0 = x_0), 
 \]
 where $\tau_a(\tau_b)$ is the time when $X_t$ reaches boundary
-$a\,\, (b)$. Indeed, we can write down
+$a\,\, (b)$. This motives us to write down
 \[
+  q(x,t | \tau_a \in \Delta t_k, \tau_b \in \Delta t_l ) =
+  -\int_\Omega \cdots \int_\Omega \frac{\partial}{\partial a} \left[
+    \psi^T(x)\left(I - \frac{1}{2}\sigma^2 A\Delta t\right) \psi(x_n)
+  \right] \cdots \frac{\partial}{\partial b}\left[
+    \psi^T(x_{1})\left(I - \frac{1}{2}\sigma^2 A\Delta t\right)
+    \psi(x_{0})\right] dx_{n}\cdots dx_1.
+\]
+Therefore, in the context of MCMC, if we introduce the auxiliary
+variables $\tau_a, \tau_b$, we can make evaluations of the likelihood
+much faster. The next questions is, therefore, how to sample the
+hitting times $\tau_a$ and $\tau_b$.
 
-  \]
+\subsection{Sampling hitting times}
+Let $\tau$ be the first hitting time for $\Omega$. By definition of our solution $q(x,t)$,
+\begin{align*}
+  P(\tau > t) &= \int_\Omega q(x,t) dx \Rightarrow P(\tau \leq t) = 1 - \int_\Omega q(x,t) dx \\
+  p(\tau = t) &= -\frac{\partial}{\partial t}\int_\Omega q(x,t) dx
+\end{align*}
 
 \bibliographystyle{plainnat}
 % \bibliographystyle{bka}
