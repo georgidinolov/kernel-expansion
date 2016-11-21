@@ -495,6 +495,16 @@ good enough for effective maximum likelihood estimation.
     & \begin{minipage}{0.25\textwidth}
       \centering
       \includegraphics[width=1\linewidth]{{../R/finite-element-method/solution-K-15}.png}
+    \end{minipage} \\
+    \begin{minipage}{0.25\textwidth}
+      \centering
+    \end{minipage}
+    & \begin{minipage}{0.25\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{{../R/finite-element-method/optimization-results}.pdf}
+    \end{minipage}
+    & \begin{minipage}{0.25\textwidth}
+      \centering
     \end{minipage}
   \end{tabular}
   \caption{Approximate solution (solid black) and true solution
@@ -503,6 +513,117 @@ good enough for effective maximum likelihood estimation.
     $\left\{ (a-x)(b-x)\phi(x|\mu_k, \sigma_k^2) \right\}_{k=1}^K$.}
   \label{fig:optimized-sols}
 \end{figure}
+
+\subsection{Path-Integral Formulation and Differentiation With Respect
+  to Boundaries}
+The Taylor expansion of the semigroup operator in (\ref{eq:solution})
+can be used to obtain the path-integral form for this problem:
+\begin{align}
+  \xi(t+\Delta t) &= e^{-\frac{1}{2}\sigma^2\, A\Delta t}\xi(t) \approx \left(I - \frac{1}{2}\sigma^2\, A \Delta t \right) \xi(t), \nonumber \\
+  \Rightarrow q(x,t+\Delta t) &\approx \psi^T(x) \left(I - \frac{1}{2}\sigma^2\, A \Delta t \right) \xi(t), \label{eq:plus-dt}
+\end{align}
+for a small enought $\Delta t$. We will lend (\ref{eq:plus-dt}) a
+\textit{probabilistic} interpretation. First, if we recall that the
+elements in $\psi(x)$ are orthonormal, we will notice that the matrix
+\[
+  \displaystyle \int_\Omega \psi(x)\psi^T(x) dx = I.
+\]
+Therefore, we can re-write (\ref{eq:plus-dt}) as
+\begin{align*}
+  q(x,t+\Delta t) &\approx \psi^T(x) \left(I - \frac{1}{2}\sigma^2\, A \Delta t \right) \xi(t), \\
+                  &= \psi^T(x) \left(I - \frac{1}{2}\sigma^2\, A \Delta t \right) e^{-\frac{1}{2}\sigma^2\, A t} \xi(0), \\
+                  &= \displaystyle \int_\Omega \psi^T(x)
+                    \left(I - \frac{1}{2}\sigma^2\, A \Delta t \right) \psi(y) \psi^T(y)
+                    e^{-\frac{1}{2}\sigma^2\, A t} \xi(0) dy, \\
+\end{align*}
+The first and second parts in the integral are the probabilities
+\begin{align*}
+  P(X_{t+\Delta t} &= x, a < X_t < b, \forall t \in [t,t+\Delta t] |
+                     X_t = y) \approx \psi^T(x) \left(I - \frac{1}{2}\sigma^2\, A \Delta
+                     t \right) \psi(y) \\
+  P(X_t &= y, a < X_t < b, \forall t \in [0,t] | X_0 = x_0) = \psi^T(y) e^{-\frac{1}{2}\sigma^2\, A t} \xi(0) \\
+  \Rightarrow \displaystyle \int_\Omega P(X_{t+\Delta t} &= x, a < X_t < b, \forall t \in [t,t+\Delta t] |
+                                                           X_t = y) P(X_t = y, a < X_t < b,
+                                                           \forall t \in [0,t] | X_0 = x_0) dy \\
+                   &\approx \displaystyle \int_\Omega \psi^T(x)
+                    \left(I - \frac{1}{2}\sigma^2\, A \Delta t \right) \psi(y) \psi^T(y)
+                    e^{-\frac{1}{2}\sigma^2\, A t} \xi(0) dy
+\end{align*}
+In general, again for small enough $\Delta t$,
+\begin{align}
+  P(X_t &= x, a < X_t < b, \forall t \in [0,t] | X_0 = x_0)
+          \approx q_K(x,t) \approx \nonumber \\
+        &\approx \int_\Omega \cdots \int_\Omega
+          \left[ \psi^T(x)\left(I - \frac{1}{2}\sigma^2 A\Delta t\right)
+          \psi(x_n) \right]
+          \left[ \psi^T(x_{n-1})\left(I - \frac{1}{2}\sigma^2 A\Delta t\right)
+          \psi(x_{n-2})\right] \cdots
+          \left[ \psi^T(x_{1})\left(I - \frac{1}{2}\sigma^2 A\Delta t\right)
+          \psi(x_{0})\right] dx_{n}\cdots dx_1 \label{eq:path-integral}
+\end{align}
+Equation (\ref{eq:path-integral}) is the \textbf{path integral
+  formulation} for the solution to the initial-BV problem. We can
+reduce (\ref{eq:path-integral}) to
+\[
+  q_K(x,t) \approx \psi^T(x) \left(I - \frac{1}{2}\sigma^2A\Delta t
+  \right)^{t/\Delta t} \psi(x_0).
+\]
+
+Before we take derivatives with respect to the boundaries, first note
+\[
+  P(X_t = x, a < X_t < b, \forall t \in [0,t] | X_0 = x_0) = P(X_t=x,
+  \max_{t'\in [0,t]} \left\{ X_{t'} \right\} < b, \min_{t'\in [0,t]}
+  \left\{ X_{t'} \right\} > a | X_0 = x_0) = q(x,t).
+\]
+Hence,
+\begin{equation}
+  P\left(X_t = x, \max_{t'\in [0,t]} \left\{ X_{t'} \right\} = b, \min_{t'\in [0,t]}
+  \left\{ X_{t'} \right\} = a | X_0 = x_0\right) =
+  -\frac{\partial^2}{\partial a \partial b} q(x,t).
+\end{equation}
+This is what we are after. To compute the derivative, we can do
+\begin{equation}
+  -\frac{\partial^2}{\partial a \partial b} q(x,t) \approx
+  -\frac{\partial^2}{\partial a \partial b} \left( \psi(x)^T \left( e^{-\frac{1}{2}\sigma^2\, At} \right) \psi(0) \right) \approx
+  -\frac{\partial^2}{\partial a \partial b}
+  \left(\psi^T(x) \left(I - \frac{1}{2}\sigma^2A\Delta t
+    \right)^{t/\Delta t} \psi(x_0) \right).
+\end{equation}
+The above derivatives are expensive to compute. Moreover, at a first
+glance, they have no immediate probabilistic interpretation. However,
+under the path-integral formulation, they do. From
+(\ref{eq:path-integral})
+\begin{align}
+  -\frac{\partial^2}{\partial a \partial b} q_K(x,t) = \int_\Omega \cdots \int_\Omega
+  -\frac{\partial^2}{\partial a \partial b} \left(
+  \left[ \psi^T(x)\left(I - \frac{1}{2}\sigma^2 A\Delta t\right)
+  \psi(x_n) \right]
+  \cdots
+  \left[ \psi^T(x_{1})\left(I - \frac{1}{2}\sigma^2 A\Delta t\right)
+  \psi(x_{0})\right] \right) dx_{n}\cdots dx_1.
+\end{align}
+Note that I have placed the derivatives on the inside of the
+integral. This follows from the Dominated Convergence Theorem since
+the derivatives are bounded over $\Omega$. This is not cheaper than
+the other representations, however, consider one of the elements in
+the sum of derivatives:
+\[
+  -\int_\Omega \cdots \int_\Omega \frac{\partial}{\partial a} \left[
+    \psi^T(x)\left(I - \frac{1}{2}\sigma^2 A\Delta t\right) \psi(x_n)
+  \right] \cdots \frac{\partial}{\partial b}\left[
+    \psi^T(x_{1})\left(I - \frac{1}{2}\sigma^2 A\Delta t\right)
+    \psi(x_{0})\right] dx_{n}\cdots dx_1.
+\]
+The above expression is the probability
+\[
+  P(X_t = x, \min\left\{ X_t \right\} = a, \max\left\{ X_t \right\} =
+  b, \tau_a \in [t_n, t], \tau_b \in [0,t_1] | X_0 = x_0), 
+\]
+where $\tau_a(\tau_b)$ is the time when $X_t$ reaches boundary
+$a\,\, (b)$. Indeed, we can write down
+\[
+
+  \]
 
 \bibliographystyle{plainnat}
 % \bibliographystyle{bka}
