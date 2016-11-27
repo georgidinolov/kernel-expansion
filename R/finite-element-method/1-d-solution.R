@@ -1,5 +1,11 @@
 ## performing gram-schmidt orthogonalization on the list of functions
 ## provided.
+basis.function <- function(x, function.params, problem.parameters) {
+    out = (x-problem.parameters$a)*(problem.parameters$b-x)*
+        dnorm(x,function.params[1],sqrt(function.params[2]));
+    return (out);
+}
+
 norm.raw.function <- function(function.params, a, b) {
     mu = function.params[1];
     sigma2 = function.params[2];
@@ -666,9 +672,10 @@ blackbox <- function(log.sigma2.mu.vector, problem.parameters, dx,
     for (k in seq(1,K)) {
         if (k==1) {
             ## only normalize
-            norm = norm.raw.function(raw.function.list[[1]],
-                                     problem.parameters$a,
-                                     problem.parameters$b);
+            norm = sqrt(project(raw.function.list[[1]],
+                                raw.function.list[[1]],
+                                problem.parameters$a,
+                                problem.parameters$b));
             coefficients[k,k] = 1/norm;
             norms[k] = norm;
             
@@ -683,35 +690,47 @@ blackbox <- function(log.sigma2.mu.vector, problem.parameters, dx,
                                                  b=problem.parameters$b))});
             
             coefficients[k,k] = 1;
-            
-            for (l in seq(1,k-1)) {
-                orthonormal.function.list[[k]] =
-                    orthonormal.function.list[[k]] +
-                    coefficients[k,l]*orthonormal.function.list[[l]];
+
+            norm2 = 0;
+            for (l1 in seq(1,k)) {
+                for (l2 in seq(1,k)) {
+                    norm2 = norm2 +
+                        coefficients[k,l1]*
+                        coefficients[k,l2]*
+                        project(raw.function.list[[l1]],
+                                raw.function.list[[l2]],
+                                problem.parameters$a,
+                                problem.parameters$b);
+                }
             }
-            norm = sqrt(sum(orthonormal.function.list[[k]]^2*dx));
+            norm = sqrt(norm2);
             norms[k] = norm;
-            orthonormal.function.list[[k]] =
-                orthonormal.function.list[[k]]/norm;
+            coefficients[k,] = coefficients[k,]/norm;
         }
     }
 ### gram schmidt END ###
     
-    ## ## plotting orthonormal bases START ###
-    ## if (PLOT.SOLUTION) {
-    ##     for (k in seq(1,K)) {
-    ##         if (k==1) {
-    ##             plot(x, orthonormal.function.list[[1]],
-    ##                  type = "l",
-    ##                  ylim = c(-max(orthonormal.function.list[[1]]),
-    ##                           max(orthonormal.function.list[[1]])));
-                
-    ##         } else {
-    ##             lines(x, orthonormal.function.list[[k]]);
-    ##         }
-    ##     }
-    ## }
-    ## ## plotting orthonormal bases END ###
+    ## plotting orthonormal bases START ###
+    if (PLOT.SOLUTION) {
+        for (k in seq(1,K)) {
+            X = sapply(seq(1,K), function(y,x)
+                   {return (coefficients[k,y]*
+                            basis.function(x,
+                                           raw.function.list[[y]],
+                                           problem.parameters))},
+                   x);
+            y = apply(X,1,sum);
+            
+            if (k==1) {
+                plot(x, y,
+                     type = "l",
+                     ylim = c(-max(y),max(y)));
+            } else {
+                lines(x, y);
+            }
+        }
+    }
+    ## plotting orthonormal bases END ###
 
     ## ## check orthogonality START ###
     ##     orthogonality.matrix <- matrix(nrow=K,
