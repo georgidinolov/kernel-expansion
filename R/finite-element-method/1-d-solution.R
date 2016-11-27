@@ -1,5 +1,39 @@
 ## performing gram-schmidt orthogonalization on the list of functions
 ## provided.
+norm.raw.function <- function(function.params, a, b) {
+    mu = function.params[1];
+    sigma2 = function.params[2];
+    M.1 = mu;
+    M.2 = mu^2 + sigma2;
+    M.3 = mu^3 + 3*mu*sigma2;
+    M.4 = mu^4 + 6*mu^2*sigma2 + 3*sigma2^2;
+
+    out = sqrt((M.4 - M.3*(2*b+2*a) + M.2*(a^2+b^2) +
+                M.1*(2*a*b^2+2*b*a^2) + a^2*b^2) /
+               sqrt(4*pi*sigma2));
+    return (out);
+}
+
+project <- function(raw.function.params.1, raw.function.params.2, a, b) {
+    mu.1 = raw.function.params.1[1];
+    sigma2.1 = raw.function.params.1[2];
+    mu.2 = raw.function.params.2[1];
+    sigma2.2 = raw.function.params.2[2];
+
+    sigma2 = 1/(1/sigma2.1 + 1/sigma2.2);
+    mu = sigma2 * (mu.1/sigma2.1 + mu.2/sigma2.2);
+
+    M.1 = mu;
+    M.2 = mu^2 + sigma2;
+    M.3 = mu^3 + 3*mu*sigma2;
+    M.4 = mu^4 + 6*mu^2*sigma2 + 3*sigma2^2;
+
+    out = (M.4 - M.3*(2*b+2*a) + M.2*(a^2+b^2) +
+           M.1*(2*a*b^2+2*b*a^2) + a^2*b^2) /
+        sqrt(2*pi*(sigma2.1 + sigma2.2));
+    return (out);
+}
+    
 gram.schmidt <- function(problem.parameters, function.list,
                          dx) {
     x = seq(problem.parameters$a,
@@ -625,29 +659,30 @@ blackbox <- function(log.sigma2.mu.vector, problem.parameters, dx,
         ## }
         ## ## PLOTTING BASES END ###
     }
-
+    
     norms <- rep(NA, K);
-    coefficients <- matrix(nrow=K, ncol=K);
-    orthonormal.function.list <- vector(mode="list",
-                                        length=K);
+    coefficients <- matrix(0, nrow=K, ncol=K);
     
     for (k in seq(1,K)) {
         if (k==1) {
             ## only normalize
-            norm = sqrt(sum(function.list[[k]]^2*dx))
-            coefficients[k,k] = 1;
+            norm = norm.raw.function(raw.function.list[[1]],
+                                     problem.parameters$a,
+                                     problem.parameters$b);
+            coefficients[k,k] = 1/norm;
             norms[k] = norm;
-            orthonormal.function.list[[k]] =
-                function.list[[k]]/norm;
-        } else {
-            for (l in seq(1,k-1)) {
-                coefficients[k,l] = -sum(orthonormal.function.list[[l]]*
-                                         function.list[[k]]*dx);
-            }
-            coefficients[k,k] = 1;
             
-            orthonormal.function.list[[k]] =
-                function.list[[k]];
+        } else {
+            coefficients[k,seq(1,k-1)] =
+                sapply(seq(1,k-1),
+                       function (x) {-sum(coefficients[x,]*
+                                          sapply(raw.function.list,
+                                                 function(x,y,a,b) {project(x,y,a,b)},
+                                                 raw.function.list[[k]],
+                                                 a=problem.parameters$a,
+                                                 b=problem.parameters$b))});
+            
+            coefficients[k,k] = 1;
             
             for (l in seq(1,k-1)) {
                 orthonormal.function.list[[k]] =
