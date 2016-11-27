@@ -604,7 +604,7 @@ blackbox <- function(log.sigma2.mu.vector, problem.parameters, dx,
     source("1-d-solution.R");
     K = length(log.sigma2.mu.vector)/2;
     sigma2.vector = exp(log.sigma2.mu.vector[seq(1,K)]);
-    mu.vectro = log.sigma2.mu.vector[seq(K+1,2*K)];
+    mu.vector = log.sigma2.mu.vector[seq(K+1,2*K)];
     ## gram schmidt START ##
     x = seq(problem.parameters$a,
             problem.parameters$b,
