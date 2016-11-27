@@ -610,10 +610,9 @@ blackbox <- function(log.sigma2.mu.vector, problem.parameters, dx,
             problem.parameters$b,
             by=dx);
 
-    function.list = vector(mode="list", length=K);
+    raw.function.list = vector(mode="list", length=K);
     for (k in seq(1,K)) {
-        function.list[[k]] = (x-problem.parameters$a)*(problem.parameters$b-x)*
-            dnorm(x,mean=mu.vector[k],sd=sqrt(sigma2.vector[k]));
+        raw.function.list[[k]] = c(mu.vector[k], sigma2.vector[k]);
         ## ## PLOTTING BASES START ###
         ## if (PLOT.SOLUTION) {
         ##     if (k==1) {

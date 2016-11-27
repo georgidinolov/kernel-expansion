@@ -1,6 +1,7 @@
 \documentclass[10pt]{article}
 \pdfminorversion=4
 
+\usepackage[toc,page]{appendix}
 \usepackage{amssymb}
 \usepackage{pslatex,palatino,avant,graphicx,color}
 \usepackage{colortbl}
@@ -640,6 +641,33 @@ Let $\tau$ be the first hitting time for $\Omega$. By definition of our solution
   P(\tau > t) &= \int_\Omega q(x,t) dx \Rightarrow P(\tau \leq t) = 1 - \int_\Omega q(x,t) dx \\
   p(\tau = t) &= -\frac{\partial}{\partial t}\int_\Omega q(x,t) dx
 \end{align*}
+
+\begin{appendices}
+  \section{Calculation}
+  \begin{align*}
+    \tilde{\psi}_k(x) &= (x-a)(b-x)\phi(x|\mu_k, \sigma_k^2) \\
+    \displaystyle
+    \int_\Omega \tilde{\psi}_k(x)^2 dx &= \displaystyle
+                                         \int_\Omega (x-a)^2(b-x)^2
+                                         \phi(x|\mu_k, \sigma_k^2)^2 \,dx \\
+                      &= \displaystyle
+                        \int_\Omega (x-a)^2(b-x)^2
+                        \frac{\phi(x|\mu_k, \sigma_k^2/2)}{\sqrt{4\pi \sigma_k^2}}
+                        \,dx\\
+                      &= \displaystyle
+                        \int_\Omega (x^2-2ax+a^2)(b^2 - 2xb + x^2)
+                        \frac{\phi(x|\mu_k, \sigma_k^2/2)}{\sqrt{4\pi \sigma_k^2}}
+                        \,dx\\
+                      &= \frac{1}{\sqrt{4\pi \sigma_k^2}} \displaystyle \int_\Omega
+                        (x^4 - x^3(2b+2a) + x^2(a^2+b^2) + x(2ab^2 + 2ba^2) + a^2b^2)
+                        \phi(x|\mu_k, \sigma_k^2/2)\,dx \\
+                      &= \frac{1}{\sqrt{4\pi \sigma_k^2}}\left(
+                        M_4 - M_3(2b+2a) + M_2(a^2+b^2) + M_1(2ab^2 + 2ba^2) + a^2b^2
+                        \right) \\
+    M_k &:= \displaystyle \int_\Omega x^k \phi(x | \mu_k , \sigma^2_k/2)\,dx
+  \end{align*}
+\end{appendices}
+
 
 \bibliographystyle{plainnat}
 % \bibliographystyle{bka}
