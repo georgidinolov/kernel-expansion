@@ -644,6 +644,138 @@ Let $\tau$ be the first hitting time for $\Omega$. By definition of our solution
 
 \begin{appendices}
   \section{Calculation}
+  First consider the product
+  \begin{align*}
+    \phi(x|\mu_k, \sigma^2_k)
+    \phi(x|\mu_l, \sigma^2_l) &= \frac{1}{\sqrt{2\pi \sigma^2_k}} \cdot
+                                \frac{1}{\sqrt{2\pi \sigma^2_l}} \cdot
+                                \exp\left\{-\frac{1}{2}\left[
+                                \frac{(x-\mu_k)^2}{\sigma_k^2} +
+                                \frac{(x-\mu_l)^2}{\sigma_l^2}
+                                \right] \right\} \\
+                              %%%
+                              &=  \frac{1}{\sqrt{2\pi}
+                                \sqrt{\sigma^2_k+\sigma^2_l}} \cdot
+                                \exp\left\{-\frac{1}{2}\left[
+                                \frac{x^2 - 2x\mu_k + \mu_k^2}{\sigma^2_k}
+                                +
+                                \frac{x^2 - 2x\mu_l + \mu_l^2}{\sigma^2_l}
+                                \right] \right\} \\
+                              %%% 
+                              &= \frac{1}{\sqrt{2\pi}
+                                \sqrt{\sigma^2_k+\sigma^2_l}} \cdot
+                              %%% 
+                                \exp\left\{-\frac{1}{2}\left[
+                                x^2\left(\frac{1}{\sigma^2_k} +
+                                \frac{1}{\sigma_l^2}\right) -
+                                2x\left(\frac{\mu_k}{\sigma^2_k} +
+                                \frac{\mu_l}{\sigma^2_l}\right)
+                                +
+                                \left(\frac{\mu_k^2}{\sigma_k^2} +
+                                \frac{\mu_l^2}{\sigma^2_l}\right)
+                                \right] \right\} \\
+                              %%%
+                              &= \frac{1}{\sqrt{2\pi}
+                                \sqrt{\sigma^2_k+\sigma^2_l}} \cdot
+                              %%%
+                                \exp\left\{
+                                -\frac{1}{2}\left(
+                                \frac{\mu_k^2}{\sigma_k^2} +
+                                \frac{\mu_l^2}{\sigma_l^2}
+                                \right)
+                                \right\} \cdot
+                                %%% 
+                                \exp\left\{
+                                -\frac{1}{2}\left[
+                                x^2\left(\frac{1}{\sigma^2_k} +
+                                \frac{1}{\sigma_l^2}\right) -
+                                2x\left(\frac{\mu_k}{\sigma^2_k} +
+                                \frac{\mu_l}{\sigma^2_l}\right)
+                                \right]\right\} \\
+                              %%% 
+                              &=\frac{1}{\sqrt{2\pi}
+                                \sqrt{\sigma^2_k+\sigma^2_l}} \cdot
+                              %%%
+                                \exp\left\{
+                                -\frac{1}{2}\left(
+                                \frac{\mu_k^2}{\sigma_k^2} +
+                                \frac{\mu_l^2}{\sigma_l^2}
+                                \right)
+                                \right\} \\
+                              &\qquad \times \exp\left\{
+                                -\frac{1}{2}
+                                \left(\frac{1}{\sigma^2_k} +
+                                \frac{1}{\sigma_l^2}\right)
+                                \left[
+                                x -
+                                \left(\frac{1}{\sigma^2_k} +
+                                \frac{1}{\sigma_l^2}\right)^{-1}
+                                \left(\frac{\mu_k}{\sigma^2_k} +
+                                \frac{\mu_l}{\sigma^2_l}\right)
+                                \right]^2\right\} \\
+                              &\qquad \times \exp\left\{
+                                -\frac{1}{2}
+                                \left(\frac{1}{\sigma^2_k} +
+                                \frac{1}{\sigma_l^2}\right)^{-1}
+                                \left(\frac{\mu_k}{\sigma^2_k} +
+                                \frac{\mu_l}{\sigma^2_l}\right)^2
+                                \right\} \\
+                              &=\frac{1}{\sqrt{2\pi}
+                                \sqrt{\sigma^2_k+\sigma^2_l}} \cdot
+                              %%%
+                                \exp\left\{
+                                -\frac{1}{2}\left(
+                                \frac{\mu_k^2}{\sigma_k^2} +
+                                \frac{\mu_l^2}{\sigma_l^2}
+                                \right)
+                                \right\} \cdot
+                                \exp\left\{
+                                -\frac{1}{2}
+                                \left(\frac{1}{\sigma^2_k} +
+                                \frac{1}{\sigma_l^2}\right)^{-1}
+                                \left(\frac{\mu_k}{\sigma^2_k} +
+                                \frac{\mu_l}{\sigma^2_l}\right)^2
+                                \right\} \\
+                              &\qquad \times \sqrt{2\pi}
+                                \sqrt{\left(\frac{1}{\sigma^2_k} +
+                                \frac{1}{\sigma^2_l}\right)^{-1}} \cdot
+                                \phi\left(x \left|
+                                \left(\frac{1}{\sigma^2_k} +
+                                \frac{1}{\sigma^2_l} \right)^{-1}
+                                \left(\frac{\mu_k}{\sigma_k^2} +
+                                \frac{\mu_l}{\sigma^2_l}\right),
+                                \left(\frac{1}{\sigma^2_k} +
+                                \frac{1}{\sigma^2_l} \right)^{-1}
+                                \right. \right)  \\
+                              &:= C(\mu_k, \sigma_k^2; \mu_l, \sigma^2_l)
+                                \phi\left(x \left|
+                                \left(\frac{1}{\sigma^2_k} +
+                                \frac{1}{\sigma^2_l} \right)^{-1}
+                                \left(\frac{\mu_k}{\sigma_k^2} +
+                                \frac{\mu_l}{\sigma^2_l}\right),
+                                \left(\frac{1}{\sigma^2_k} +
+                                \frac{1}{\sigma^2_l} \right)^{-1}
+                                \right. \right) \\
+    C(\mu_k, \sigma_k^2; \mu_l, \sigma^2_l) &:= \frac{\sqrt{\left(
+                                              \frac{1}{\sigma^2_k}+
+                                              \frac{1}{\sigma^2_l}
+                                              \right)^{-1}}}
+                                              {\sqrt{\sigma^2_k+\sigma^2_l}} \cdot
+                                              %%% 
+                                              \exp\left\{
+                                              -\frac{1}{2}\left(
+                                              \frac{\mu_k^2}{\sigma_k^2} +
+                                              \frac{\mu_l^2}{\sigma_l^2}
+                                              \right)
+                                              \right\} \cdot
+                                              \exp\left\{
+                                              -\frac{1}{2}
+                                              \left(\frac{1}{\sigma^2_k} +
+                                              \frac{1}{\sigma_l^2}\right)^{-1}
+                                              \left(\frac{\mu_k}{\sigma^2_k} +
+                                              \frac{\mu_l}{\sigma^2_l}\right)^2
+                                              \right\}
+  \end{align*}
   \begin{align*}
     \tilde{\psi}_k(x) &= (x-a)(b-x)\phi(x|\mu_k, \sigma_k^2) \\
     \displaystyle
