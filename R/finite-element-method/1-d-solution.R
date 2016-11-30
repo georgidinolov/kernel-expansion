@@ -1,5 +1,22 @@
 ## performing gram-schmidt orthogonalization on the list of functions
 ## provided.
+product.coefficient <- function(raw.function.params.1,
+                                raw.function.params.2) {
+    mu.1 = raw.function.params.1[1];
+    sigma2.1 = raw.function.params.1[2];
+    mu.2 = raw.function.params.2[1];
+    sigma2.2 = raw.function.params.2[2];
+
+    out = sqrt(1 /
+               (4*pi^2*
+                (sigma2.1 * sigma2.2))) *
+        exp(-0.5*(mu.1^2/sigma2.1+mu.2^2/sigma2.2)) *
+        exp(0.5*
+            (1/sigma2.1 + 1/sigma2.2)^(-1)*
+            (mu.1/sigma2.1 + mu.2/sigma2.2)^2);
+    return (out);
+}
+
 basis.function <- function(x, function.params, problem.parameters) {
     out = (x-problem.parameters$a)*(problem.parameters$b-x)*
         dnorm(x,function.params[1],sqrt(function.params[2]));
@@ -8,15 +25,34 @@ basis.function <- function(x, function.params, problem.parameters) {
 
 norm.raw.function <- function(function.params, a, b) {
     mu = function.params[1];
-    sigma2 = function.params[2];
-    M.1 = mu;
-    M.2 = mu^2 + sigma2;
-    M.3 = mu^3 + 3*mu*sigma2;
-    M.4 = mu^4 + 6*mu^2*sigma2 + 3*sigma2^2;
+    sigma2 = function.params[2]/2;
+    PP = pnorm(q=b,
+               mean=mu,
+               sd=sqrt(sigma2))-
+        pnorm(q=a,
+              mean=mu,
+              sd=sqrt(sigma2));
+    alpha = (a-mu)/sqrt(sigma2);
+    beta = (b-mu)/sqrt(sigma2);
+               
+    L.1 = 1;
+    L.2 = (dnorm(beta)-dnorm(alpha))/
+        (pnorm(beta)-pnorm(alpha));
+    L.3 = -(beta^2*dnorm(beta)-alpha^2*dnorm(alpha))/
+        (pnorm(beta)-pnorm(alpha)) + 2*L.1;
+    L.4 = -(beta^3*dnorm(beta)-alpha^3*dnorm(alpha))/
+        (pnorm(beta)-pnorm(alpha)) + 3*L.2;
 
-    out = sqrt((M.4 - M.3*(2*b+2*a) + M.2*(a^2+b^2) +
-                M.1*(2*a*b^2+2*b*a^2) + a^2*b^2) /
-               sqrt(4*pi*sigma2));
+    M.1 = L.1*PP;
+    M.2 = L.2*PP;
+    M.3 = L.3*PP;
+    M.4 = L.4*PP;
+    
+    out = sqrt((M.4 - M.3*(2*b+2*a) +
+                M.2*(a^2+b^2+4*a*b) -
+                M.1*(2*a*b^2+2*b*a^2) + a^2*b^2) *
+               product.coefficient(function.params,
+                                   function.params))
     return (out);
 }
 

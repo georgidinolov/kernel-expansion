@@ -1,6 +1,31 @@
 rm(list=ls());
 source("1-d-solution.R");
 
+plot(x,
+(x-problem.parameters$a)^2*
+(problem.parameters$b-x)^2*
+     dnorm(x,raw.function.list[[1]][1],
+		sqrt(raw.function.list[[1]][2]))^2, type="l");
+				 
+lines(x, (x-problem.parameters$a)^2*
+         (problem.parameters$b-x)^2*
+         product.coefficient(raw.function.list[[1]], raw.function.list[[1]])*
+         dnorm(x,raw.function.list[[1]][1],
+               sqrt(raw.function.list[[1]][2]/2)), col = "red",
+      lty="dashed")
+
+lines(x, basis.function(x=x,
+                        function.params=raw.function.list[[1]],
+                        problem.parameters=problem.parameters)^2,
+      col = "green")
+
+norm.raw.function(function.params=raw.function.list[[1]],
+                  a=problem.parameters$a,
+                  b=problem.parameters$b);
+sqrt(sum(basis.function(x=x,
+                   function.params=raw.function.list[[1]],
+                   problem.parameters=problem.parameters)^2*dx))
+
 problem.parameters = NULL;
 problem.parameters$a = -1;
 problem.parameters$b = 1;
@@ -19,7 +44,7 @@ L2.diff.after = rep(NA, length(Ks));
 
 ave.function.call.time.vec = rep(NA,length(Ks));
 log.sigma2.mu.vector.list = vector(mode="list",
-                                   length=length(Ks));
+                                   length=length(Ks));n
 
 for (i in seq(1,length(Ks))) {
     K = Ks[i];

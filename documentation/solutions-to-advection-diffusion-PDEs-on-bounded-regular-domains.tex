@@ -654,16 +654,16 @@ Let $\tau$ be the first hitting time for $\Omega$. By definition of our solution
                                 \frac{(x-\mu_l)^2}{\sigma_l^2}
                                 \right] \right\} \\
                               %%%
-                              &=  \frac{1}{\sqrt{2\pi}
-                                \sqrt{\sigma^2_k+\sigma^2_l}} \cdot
+                              &=  \frac{1}{\sqrt{4\pi^2}
+                                \sqrt{\sigma^2_k\sigma^2_l}} \cdot
                                 \exp\left\{-\frac{1}{2}\left[
                                 \frac{x^2 - 2x\mu_k + \mu_k^2}{\sigma^2_k}
                                 +
                                 \frac{x^2 - 2x\mu_l + \mu_l^2}{\sigma^2_l}
                                 \right] \right\} \\
                               %%% 
-                              &= \frac{1}{\sqrt{2\pi}
-                                \sqrt{\sigma^2_k+\sigma^2_l}} \cdot
+                              &= \frac{1}{\sqrt{4\pi^2}
+                                \sqrt{\sigma^2_k\sigma^2_l}} \cdot
                               %%% 
                                 \exp\left\{-\frac{1}{2}\left[
                                 x^2\left(\frac{1}{\sigma^2_k} +
@@ -675,8 +675,8 @@ Let $\tau$ be the first hitting time for $\Omega$. By definition of our solution
                                 \frac{\mu_l^2}{\sigma^2_l}\right)
                                 \right] \right\} \\
                               %%%
-                              &= \frac{1}{\sqrt{2\pi}
-                                \sqrt{\sigma^2_k+\sigma^2_l}} \cdot
+                              &= \frac{1}{\sqrt{4\pi^2}
+                                \sqrt{\sigma^2_k\sigma^2_l}} \cdot
                               %%%
                                 \exp\left\{
                                 -\frac{1}{2}\left(
@@ -693,8 +693,8 @@ Let $\tau$ be the first hitting time for $\Omega$. By definition of our solution
                                 \frac{\mu_l}{\sigma^2_l}\right)
                                 \right]\right\} \\
                               %%% 
-                              &=\frac{1}{\sqrt{2\pi}
-                                \sqrt{\sigma^2_k+\sigma^2_l}} \cdot
+                              &=\frac{1}{\sqrt{4\pi^2}
+                                \sqrt{\sigma^2_k\sigma^2_l}} \cdot
                               %%%
                                 \exp\left\{
                                 -\frac{1}{2}\left(
@@ -714,14 +714,14 @@ Let $\tau$ be the first hitting time for $\Omega$. By definition of our solution
                                 \frac{\mu_l}{\sigma^2_l}\right)
                                 \right]^2\right\} \\
                               &\qquad \times \exp\left\{
-                                -\frac{1}{2}
+                                \frac{1}{2}
                                 \left(\frac{1}{\sigma^2_k} +
                                 \frac{1}{\sigma_l^2}\right)^{-1}
                                 \left(\frac{\mu_k}{\sigma^2_k} +
                                 \frac{\mu_l}{\sigma^2_l}\right)^2
                                 \right\} \\
-                              &=\frac{1}{\sqrt{2\pi}
-                                \sqrt{\sigma^2_k+\sigma^2_l}} \cdot
+                              &=\frac{1}{\sqrt{4\pi^2}
+                                \sqrt{\sigma^2_k\sigma^2_l}} \cdot
                               %%%
                                 \exp\left\{
                                 -\frac{1}{2}\left(
@@ -730,16 +730,13 @@ Let $\tau$ be the first hitting time for $\Omega$. By definition of our solution
                                 \right)
                                 \right\} \cdot
                                 \exp\left\{
-                                -\frac{1}{2}
+                                \frac{1}{2}
                                 \left(\frac{1}{\sigma^2_k} +
                                 \frac{1}{\sigma_l^2}\right)^{-1}
                                 \left(\frac{\mu_k}{\sigma^2_k} +
                                 \frac{\mu_l}{\sigma^2_l}\right)^2
                                 \right\} \\
-                              &\qquad \times \sqrt{2\pi}
-                                \sqrt{\left(\frac{1}{\sigma^2_k} +
-                                \frac{1}{\sigma^2_l}\right)^{-1}} \cdot
-                                \phi\left(x \left|
+                              &\qquad \times \ker\left(x \left|
                                 \left(\frac{1}{\sigma^2_k} +
                                 \frac{1}{\sigma^2_l} \right)^{-1}
                                 \left(\frac{\mu_k}{\sigma_k^2} +
@@ -748,7 +745,7 @@ Let $\tau$ be the first hitting time for $\Omega$. By definition of our solution
                                 \frac{1}{\sigma^2_l} \right)^{-1}
                                 \right. \right)  \\
                               &:= C(\mu_k, \sigma_k^2; \mu_l, \sigma^2_l)
-                                \phi\left(x \left|
+                                \ker\left(x \left|
                                 \left(\frac{1}{\sigma^2_k} +
                                 \frac{1}{\sigma^2_l} \right)^{-1}
                                 \left(\frac{\mu_k}{\sigma_k^2} +
@@ -756,11 +753,8 @@ Let $\tau$ be the first hitting time for $\Omega$. By definition of our solution
                                 \left(\frac{1}{\sigma^2_k} +
                                 \frac{1}{\sigma^2_l} \right)^{-1}
                                 \right. \right) \\
-    C(\mu_k, \sigma_k^2; \mu_l, \sigma^2_l) &:= \frac{\sqrt{\left(
-                                              \frac{1}{\sigma^2_k}+
-                                              \frac{1}{\sigma^2_l}
-                                              \right)^{-1}}}
-                                              {\sqrt{\sigma^2_k+\sigma^2_l}} \cdot
+    C(\mu_k, \sigma_k^2; \mu_l, \sigma^2_l) &:= \frac{1}
+                                              {\sqrt{4\pi^2\sigma^2_k\sigma^2_l}} \cdot
                                               %%% 
                                               \exp\left\{
                                               -\frac{1}{2}\left(
@@ -769,13 +763,14 @@ Let $\tau$ be the first hitting time for $\Omega$. By definition of our solution
                                               \right)
                                               \right\} \cdot
                                               \exp\left\{
-                                              -\frac{1}{2}
+                                              \frac{1}{2}
                                               \left(\frac{1}{\sigma^2_k} +
                                               \frac{1}{\sigma_l^2}\right)^{-1}
                                               \left(\frac{\mu_k}{\sigma^2_k} +
                                               \frac{\mu_l}{\sigma^2_l}\right)^2
-                                              \right\}
+                                              \right\} \label{eq:C}
   \end{align*}
+  
   \begin{align*}
     \tilde{\psi}_k(x) &= (x-a)(b-x)\phi(x|\mu_k, \sigma_k^2) \\
     \displaystyle
@@ -784,18 +779,22 @@ Let $\tau$ be the first hitting time for $\Omega$. By definition of our solution
                                          \phi(x|\mu_k, \sigma_k^2)^2 \,dx \\
                       &= \displaystyle
                         \int_\Omega (x-a)^2(b-x)^2
-                        \frac{\phi(x|\mu_k, \sigma_k^2/2)}{\sqrt{4\pi \sigma_k^2}}
+                        C(\mu_k, \sigma_k^2;\mu_k, \sigma_k^2)
+                        \phi(x|\mu_k, \sigma_k^2/2)
                         \,dx\\
-                      &= \displaystyle
+                      &= C(\mu_k, \sigma_k^2;\mu_k, \sigma_k^2)\displaystyle
                         \int_\Omega (x^2-2ax+a^2)(b^2 - 2xb + x^2)
-                        \frac{\phi(x|\mu_k, \sigma_k^2/2)}{\sqrt{4\pi \sigma_k^2}}
+                        \phi(x|\mu_k, \sigma_k^2/2)
                         \,dx\\
-                      &= \frac{1}{\sqrt{4\pi \sigma_k^2}} \displaystyle \int_\Omega
-                        (x^4 - x^3(2b+2a) + x^2(a^2+b^2) + x(2ab^2 + 2ba^2) + a^2b^2)
+                      &= C(\mu_k, \sigma_k^2;\mu_k, \sigma_k^2)
+                        \displaystyle \int_\Omega
+                        (x^4 - x^3(2b+2a) + x^2(a^2+b^2+4ab) -
+                        x(2ab^2 + 2ba^2) + a^2b^2)
                         \phi(x|\mu_k, \sigma_k^2/2)\,dx \\
-                      &= \frac{1}{\sqrt{4\pi \sigma_k^2}}\left(
-                        M_4 - M_3(2b+2a) + M_2(a^2+b^2) + M_1(2ab^2 + 2ba^2) + a^2b^2
-                        \right) \\
+                      &= C(\mu_k, \sigma_k^2;\mu_k, \sigma_k^2)
+                        \left(M_4 - M_3(2b+2a) +
+                        M_2(a^2+b^2+4ab) - M_1(2ab^2 + 2ba^2) +
+                        a^2b^2 \right) \\
     M_k &:= \displaystyle \int_\Omega x^k \phi(x | \mu_k , \sigma^2_k/2)\,dx
   \end{align*}
 \end{appendices}
