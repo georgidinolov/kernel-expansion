@@ -1,4 +1,5 @@
 rm(list=ls());
+
 source("1-d-solution.R");
 
 plot(x,
