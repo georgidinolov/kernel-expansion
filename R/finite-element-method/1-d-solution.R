@@ -8,8 +8,7 @@ product.coefficient <- function(raw.function.params.1,
     sigma2.2 = raw.function.params.2[2];
 
     out = sqrt(1 /
-               (4*pi^2*
-                (sigma2.1 * sigma2.2))) *
+               (4*pi^2*(sigma2.1 * sigma2.2))) *
         exp(-0.5*(mu.1^2/sigma2.1+mu.2^2/sigma2.2)) *
         exp(0.5*
             (1/sigma2.1 + 1/sigma2.2)^(-1)*
@@ -26,33 +25,40 @@ basis.function <- function(x, function.params, problem.parameters) {
 norm.raw.function <- function(function.params, a, b) {
     mu = function.params[1];
     sigma2 = function.params[2]/2;
-    PP = pnorm(q=b,
-               mean=mu,
-               sd=sqrt(sigma2))-
-        pnorm(q=a,
-              mean=mu,
-              sd=sqrt(sigma2));
+
     alpha = (a-mu)/sqrt(sigma2);
     beta = (b-mu)/sqrt(sigma2);
-               
-    L.1 = 1;
-    L.2 = (dnorm(beta)-dnorm(alpha))/
-        (pnorm(beta)-pnorm(alpha));
-    L.3 = -(beta^2*dnorm(beta)-alpha^2*dnorm(alpha))/
-        (pnorm(beta)-pnorm(alpha)) + 2*L.1;
-    L.4 = -(beta^3*dnorm(beta)-alpha^3*dnorm(alpha))/
-        (pnorm(beta)-pnorm(alpha)) + 3*L.2;
 
-    M.1 = L.1*PP;
-    M.2 = L.2*PP;
-    M.3 = L.3*PP;
-    M.4 = L.4*PP;
+    PP = pnorm(beta) - pnorm(alpha);
     
-    out = sqrt((M.4 - M.3*(2*b+2*a) +
-                M.2*(a^2+b^2+4*a*b) -
-                M.1*(2*a*b^2+2*b*a^2) + a^2*b^2) *
+    Ls = rep(NA,5);
+    for (i in seq(1,5)) {
+        if (i==1) {
+            Ls[i] = 1;
+        } else if (i==2) {
+            Ls[i] = -(dnorm(beta)-dnorm(alpha))/
+                PP;
+        } else {
+            Ls[i] = -(beta^(i-2)*dnorm(beta)-alpha^(i-2)*dnorm(alpha))/
+                PP + (i-2)*Ls[i-2];        
+        }
+    }
+    
+    Ms = sapply(seq(0,4),
+                function(k) {sum(choose(k,seq(0,k))*
+                                 sqrt(sigma2)^(seq(0,k))*
+                                 mu^(k-seq(0,k))*
+                                 Ls[seq(0,k)+1])});
+        
+    Ms = Ms*PP*sqrt(2*pi*sigma2);
+    
+    out = sqrt((Ms[5] -
+                Ms[4]*2*(a + b) +
+                Ms[3]*(a^2 + b^2 + 4*a*b) -
+                Ms[2]*2*(a*b^2 + b*a^2) +
+                Ms[1]*a^2*b^2) *
                product.coefficient(function.params,
-                                   function.params))
+                                   function.params));
     return (out);
 }
 

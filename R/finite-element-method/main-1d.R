@@ -1,31 +1,70 @@
 rm(list=ls());
-
 source("1-d-solution.R");
 
+function.params = raw.function.list[[1]];
+a = problem.parameters$a;
+b = problem.parameters$b;
+
+mu = function.params[1];
+sigma2 = function.params[2]/2;
+
+alpha = (a-mu)/sqrt(sigma2);
+beta = (b-mu)/sqrt(sigma2);
+
+PP = pnorm(beta) - pnorm(alpha);
+
+Ls = rep(NA,5);
+for (i in seq(1,5)) {
+    if (i==1) {
+        Ls[i] = 1;
+    } else if (i==2) {
+        Ls[i] = -(dnorm(beta)-dnorm(alpha))/
+            PP;
+    } else {
+        Ls[i] = -(beta^(i-2)*dnorm(beta)-alpha^(i-2)*dnorm(alpha))/
+            PP + (i-2)*Ls[i-2];        
+    }
+}
+
+Ms = sapply(seq(0,4),
+            function(k) {sum(choose(k,seq(0,k))*
+                             sqrt(sigma2)^(seq(0,k))*
+                             mu^(k-seq(0,k))*
+                             Ls[seq(0,k)+1])});
+Ms = Ms*PP;
+
+plot(x,1/sqrt(4*pi^2*function.params[2]^2)*
+       exp(-0.5/function.params[2]*(x-function.params[1])^2)^2,
+     type="l");
+
+lines(x, product.coefficient(function.params,function.params)*
+         exp(-0.5/(function.params[2]/2)*
+             (x-function.params[1])^2),
+      col = "red",
+      lty="dashed");
+
 plot(x,
-(x-problem.parameters$a)^2*
-(problem.parameters$b-x)^2*
-     dnorm(x,raw.function.list[[1]][1],
-		sqrt(raw.function.list[[1]][2]))^2, type="l");
-				 
-lines(x, (x-problem.parameters$a)^2*
-         (problem.parameters$b-x)^2*
-         product.coefficient(raw.function.list[[1]], raw.function.list[[1]])*
-         dnorm(x,raw.function.list[[1]][1],
-               sqrt(raw.function.list[[1]][2]/2)), col = "red",
-      lty="dashed")
+     exp(-0.5/(function.params[2]/2)*
+         (x-function.params[1])^2),
+     type="l")
 
-lines(x, basis.function(x=x,
-                        function.params=raw.function.list[[1]],
-                        problem.parameters=problem.parameters)^2,
-      col = "green")
+lines(x, dnorm(x,function.params[1],
+                 sqrt(function.params[2]))^2,
+      col = "green");
 
-norm.raw.function(function.params=raw.function.list[[1]],
-                  a=problem.parameters$a,
-                  b=problem.parameters$b);
-sqrt(sum(basis.function(x=x,
-                   function.params=raw.function.list[[1]],
-                   problem.parameters=problem.parameters)^2*dx))
+I1 = sum(dnorm(x,function.params[1],
+               sqrt(function.params[2]))^2)*dx;
+
+I2 = sum(exp(-1/(2*sigma2)*(x-mu)^2))*dx;
+
+abs(I1 - product.coefficient(function.params,
+                             function.params)*
+    I2) <= 1e-15;
+Ms[1] * sqrt(2*pi*sigma2);
+
+norm.raw.function(function.params, a,b);
+sqrt(sum((x-a)^2*(b-x)^2*dnorm(x,function.params[1],
+                          sqrt(function.params[2]))^2)*dx);
 
 problem.parameters = NULL;
 problem.parameters$a = -1;
@@ -45,7 +84,7 @@ L2.diff.after = rep(NA, length(Ks));
 
 ave.function.call.time.vec = rep(NA,length(Ks));
 log.sigma2.mu.vector.list = vector(mode="list",
-                                   length=length(Ks));n
+                                   length=length(Ks));
 
 for (i in seq(1,length(Ks))) {
     K = Ks[i];
