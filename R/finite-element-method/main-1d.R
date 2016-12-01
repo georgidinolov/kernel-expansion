@@ -63,8 +63,9 @@ abs(I1 - product.coefficient(function.params,
 Ms[1] * sqrt(2*pi*sigma2);
 
 norm.raw.function(function.params, a,b);
-sqrt(sum((x-a)^2*(b-x)^2*dnorm(x,function.params[1],
-                          sqrt(function.params[2]))^2)*dx);
+sqrt(sum((x-a)^2*(b-x)^2*
+         dnorm(x,function.params[1],
+               sqrt(function.params[2]))^2)*dx);
 
 problem.parameters = NULL;
 problem.parameters$a = -1;

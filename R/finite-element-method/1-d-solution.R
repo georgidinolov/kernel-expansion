@@ -71,14 +71,39 @@ project <- function(raw.function.params.1, raw.function.params.2, a, b) {
     sigma2 = 1/(1/sigma2.1 + 1/sigma2.2);
     mu = sigma2 * (mu.1/sigma2.1 + mu.2/sigma2.2);
 
-    M.1 = mu;
-    M.2 = mu^2 + sigma2;
-    M.3 = mu^3 + 3*mu*sigma2;
-    M.4 = mu^4 + 6*mu^2*sigma2 + 3*sigma2^2;
+    alpha = (a-mu)/sqrt(sigma2);
+    beta = (b-mu)/sqrt(sigma2);
 
-    out = (M.4 - M.3*(2*b+2*a) + M.2*(a^2+b^2) +
-           M.1*(2*a*b^2+2*b*a^2) + a^2*b^2) /
-        sqrt(2*pi*(sigma2.1 + sigma2.2));
+    PP = pnorm(beta) - pnorm(alpha);
+    
+    Ls = rep(NA,5);
+    for (i in seq(1,5)) {
+        if (i==1) {
+            Ls[i] = 1;
+        } else if (i==2) {
+            Ls[i] = -(dnorm(beta)-dnorm(alpha))/
+                PP;
+        } else {
+            Ls[i] = -(beta^(i-2)*dnorm(beta)-alpha^(i-2)*dnorm(alpha))/
+                PP + (i-2)*Ls[i-2];        
+        }
+    }
+    
+    Ms = sapply(seq(0,4),
+                function(k) {sum(choose(k,seq(0,k))*
+                                 sqrt(sigma2)^(seq(0,k))*
+                                 mu^(k-seq(0,k))*
+                                 Ls[seq(0,k)+1])});
+        
+    Ms = Ms*PP*sqrt(2*pi*sigma2);
+    
+    out = (Ms[5] -
+           Ms[4]*2*(a + b) +
+           Ms[3]*(a^2 + b^2 + 4*a*b) -
+           Ms[2]*2*(a*b^2 + b*a^2) +
+           Ms[1]*a^2*b^2) *
+        product.coefficient(raw.function.params.1,
+                            raw.function.params.2);
     return (out);
 }
     
@@ -707,6 +732,18 @@ blackbox <- function(log.sigma2.mu.vector, problem.parameters, dx,
         ## }
         ## ## PLOTTING BASES END ###
     }
+
+    raw.inner.products <- matrix(nrow=K,ncol=K);
+    for (k in seq(1,K)) {
+        for (l in seq(k,K)) {
+            raw.inner.products[k,l] = project(raw.function.list[[k]],
+                                              raw.function.list[[l]],
+                                              problem.parameters$a,
+                                              problem.parameters$b);
+            
+            raw.inner.products[l,k] = raw.inner.products[k,l];
+        }
+    }
     
     norms <- rep(NA, K);
     coefficients <- matrix(0, nrow=K, ncol=K);
@@ -714,10 +751,7 @@ blackbox <- function(log.sigma2.mu.vector, problem.parameters, dx,
     for (k in seq(1,K)) {
         if (k==1) {
             ## only normalize
-            norm = sqrt(project(raw.function.list[[1]],
-                                raw.function.list[[1]],
-                                problem.parameters$a,
-                                problem.parameters$b));
+            norm = sqrt(raw.inner.products[1,1]);
             coefficients[k,k] = 1/norm;
             norms[k] = norm;
             
@@ -750,7 +784,7 @@ blackbox <- function(log.sigma2.mu.vector, problem.parameters, dx,
             coefficients[k,] = coefficients[k,]/norm;
         }
     }
-### gram schmidt END ###
+    ## gram schmidt END ###
     
     ## plotting orthonormal bases START ###
     if (PLOT.SOLUTION) {
@@ -774,18 +808,18 @@ blackbox <- function(log.sigma2.mu.vector, problem.parameters, dx,
     }
     ## plotting orthonormal bases END ###
 
-    ## ## check orthogonality START ###
-    ##     orthogonality.matrix <- matrix(nrow=K,
-    ##                                    ncol=K);
-    ##     for (n in seq(1,K)) {
-    ##         for (m in seq(1,K)) {
-    ##             orthogonality.matrix[n,m] =
-    ##                 sum(orthonormal.function.list[[n]]*
-    ##                     orthonormal.function.list[[m]]*dx);
-    ##         }
-    ##     }
-    ##     print(orthogonality.matrix);
-    ## ## check orthogonality START ###
+    ## check orthogonality START ###
+    orthogonality.matrix <- matrix(nrow=K,
+                                   ncol=K);
+    for (n in seq(1,K)) {
+        for (m in seq(1,K)) {
+            orthogonality.matrix[n,m] =
+                sum(orthonormal.function.list[[n]]*
+                    orthonormal.function.list[[m]]*dx);
+        }
+    }
+    print(orthogonality.matrix);
+    ## check orthogonality END ###
 
     ## ## check representation of IC START ##
     ## IC <- rep(0, length(x));
