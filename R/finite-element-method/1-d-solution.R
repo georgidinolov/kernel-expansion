@@ -733,6 +733,7 @@ blackbox <- function(log.sigma2.mu.vector, problem.parameters, dx,
         ## ## PLOTTING BASES END ###
     }
 
+    ## TODO(georgi): This can be vectorized.
     raw.inner.products <- matrix(nrow=K,ncol=K);
     for (k in seq(1,K)) {
         for (l in seq(k,K)) {
@@ -756,6 +757,9 @@ blackbox <- function(log.sigma2.mu.vector, problem.parameters, dx,
             norms[k] = norm;
             
         } else {
+            for (l in seq(1,k-1)) {
+                
+            }
             coefficients[k,seq(1,k-1)] =
                 sapply(seq(1,k-1),
                        function (x) {-sum(coefficients[x,]*
