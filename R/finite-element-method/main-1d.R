@@ -39,17 +39,38 @@ for (i in seq(1,length(Ks))) {
                                  FALSE);
 
     ## Start the clock!
-    ptm <- proc.time();
-    opt.bases = optim(par=log.sigma2.mu.vector,
-                      method=c("CG"),
-                      fn=blackbox,
-                      problem.parameters = problem.parameters,
-                      dx = dx,
-                      PLOT.SOLUTION=FALSE,
-                      MINIMIZE.REMAINDER=TRUE);
-    end.time <- proc.time() - ptm;
+    system.time(
+        ## opt.bases <- optim(par=log.sigma2.mu.vector,
+        ##               fn=blackbox,
+        ##               problem.parameters = problem.parameters,
+        ##               dx = dx,
+        ##               PLOT.SOLUTION=FALSE,
+        ##               MINIMIZE.REMAINDER=TRUE,
+        ##               control = list(maxit=40))
+    opt.bases.2 <- optim(par=opt.bases$par,
+                         method=c("BFGS"),
+                         fn=blackbox,
+                         problem.parameters = problem.parameters,
+                         dx = dx,
+                         PLOT.SOLUTION=FALSE,
+                         MINIMIZE.REMAINDER=TRUE,
+                         control=list(c(trace=TRUE)))
+    );
     ## Stop the clock
-    ave.function.call.time = end.time[3]/opt.bases$counts[1];
+
+    system.time(
+        opt.bases <- optim(par=log.sigma2.mu.vector,
+              ## method=c("BFGS"),
+              fn=blackbox,
+              problem.parameters = problem.parameters,
+              dx = dx,
+              PLOT.SOLUTION=FALSE,
+              MINIMIZE.REMAINDER=TRUE)
+    )
+    ## Stop the clock
+    
+    ave.function.call.time = end.time[3]/(opt.bases$counts[1]+
+                                          opt.bases.2$counts[1]);
     ave.function.call.time.vec[i] = ave.function.call.time;
 
     log.sigma2.mu.vector = opt.bases$par;
