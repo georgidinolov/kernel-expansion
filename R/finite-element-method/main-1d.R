@@ -38,16 +38,15 @@ for (i in seq(1,length(Ks))) {
                                  FALSE,
                                  FALSE);
 
-ptm <- proc.time();				     				 				 
-        opt.bases <- optim(par=log.sigma2.mu.vector,
-              ## method=c("BFGS"),
-              fn=blackbox,
-              problem.parameters = problem.parameters,
-              dx = dx,
-              PLOT.SOLUTION=FALSE,
-              MINIMIZE.REMAINDER=TRUE);
-    
-end.time <- proc.time()-ptm;
+    ptm <- proc.time();				 
+    opt.bases <- optim(par=log.sigma2.mu.vector,
+                       ## method=c("BFGS"),
+                       fn=blackbox,
+                       problem.parameters = problem.parameters,
+                       dx = dx,
+                       PLOT.SOLUTION=FALSE,
+                       MINIMIZE.REMAINDER=TRUE);
+    end.time <- proc.time()-ptm;
     ## Stop the clock
     
     ave.function.call.time = end.time[3]/(opt.bases$counts[1]);

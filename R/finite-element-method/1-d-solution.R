@@ -153,18 +153,32 @@ univariate.solution.approx.dt <- function(coefs,A,x,K,
     return (out);
 }
 
-univariate.solution.approx.dx.dx <- function(coefs,x,K,
-                                             orthonormal.function.list) {
-    out = rep(0,length(x)-2);
+univariate.solution.approx.dx.dx <- function(coefficients,x,K,
+                                             raw.function.list,
+                                             problem.parameters) {
+    out = rep(0,length(x));
     for (n in seq(1,K)) {
-        y = orthonormal.function.list[[n]];
-        y.m.dx = y[-length(x)];
-        y.p.dx = y[-1];
-        y.dx.dx = (y.p.dx[-1]-
-            2*y[seq(2,length(x)-1)] +
-            y.m.dx[-length(y.m.dx)])/dx^2;
-        out = out + coefs[n]*y.dx.dx;
+
+        for (m in seq(1,K)) {
+            out = out +
+                coefficients[n,m]*
+                ((problem.parameters$b-x)*
+                 dnorm(x,
+                       raw.function.list[[m]][1],
+                       sqrt(raw.function.list[[m]][2])) -
+                 (x-problem.parameters$a)*
+                 dnorm(x,
+                       raw.function.list[[m]][1],
+                       sqrt(raw.function.list[[m]][2])) +
+                 (x-problem.parameters$a)*(problem.parameters$b-x)*
+                 dnorm(x,
+                       raw.function.list[[m]][1],
+                       sqrt(raw.function.list[[m]][2]))*
+                 -1/raw.function.list[[m]][2]);
+        }
+        
     }
+    
     return (out);
 }
 
@@ -935,11 +949,14 @@ blackbox <- function(log.sigma2.mu.vector, problem.parameters, dx,
     if (MINIMIZE.REMAINDER) {
         difference2 =
             (univariate.solution.approx.dt(coefs, A, x, K,
-                                           orthonormal.function.list)[-c(1,
-                                                                         length(x))]-
+                                           orthonormal.function.list) -
              0.5*(problem.parameters$sigma.2)*
-             univariate.solution.approx.dx.dx(coefs, x, K,
-                                              orthonormal.function.list))^2;
+             univariate.solution.approx.dx.dx(coefficients=coefficients,
+                                              x=x,
+                                              K=K,
+                                              raw.function.list=raw.function.list,
+                                              problem.parameters=problem.parameters
+                                              ))^2;
         norm.diff2 = sum(difference2*dx);
         ## print(norm.diff2);
         ## ## CHECKING PDE END ###
