@@ -165,20 +165,38 @@ univariate.solution.approx.dt <- function(coefs,A,x,K,
     return (out);
 }
 
-univariate.solution.approx.dx.dx <- function(coefficients,x,K,
+
+univariate.solution.approx.dx.dx.numeric <- function(coefs,x,K,
+                                                     orthonormal.function.list) {
+    out = rep(0,length(x)-2);
+    for (n in seq(1,K)) {
+        y = orthonormal.function.list[[n]];
+        y.m.dx = y[-length(x)];
+        y.p.dx = y[-1];
+        y.dx.dx = (y.p.dx[-1]-
+            2*y[seq(2,length(x)-1)] +
+            y.m.dx[-length(y.m.dx)])/dx^2;
+        out = out + coefs[n]*y.dx.dx;
+    }
+    return (out);
+}
+
+univariate.solution.approx.dx.dx <- function(coefs,
+                                             coefficients,x,K,
                                              raw.function.list,
                                              problem.parameters) {
     a = problem.parameters$a;
     b = problem.parameters$b;
     out = rep(0,length(x));
     for (n in seq(1,K)) {
-        
+
+        Psi = rep(0,length(x));
         for (m in seq(1,K)) {
             mu = raw.function.list[[m]][1];
             sigma2 = raw.function.list[[m]][2];
             sigma = sqrt(sigma2);
             
-            out = out +
+            Psi = Psi +
                 ##
                 coefficients[n,m]*dnorm(x,mu,sigma)*
                 (-1 +
@@ -197,6 +215,7 @@ univariate.solution.approx.dx.dx <- function(coefficients,x,K,
                  ##
                  (x-a)*(b-x)*(x-mu)^2/(sigma2)^2)
         }
+        out = out + coefs[n]*Psi;
     }
     return (out);
 }
@@ -970,7 +989,8 @@ blackbox <- function(log.sigma2.mu.vector, problem.parameters, dx,
             (univariate.solution.approx.dt(coefs, A, x, K,
                                            orthonormal.function.list) -
              0.5*(problem.parameters$sigma.2)*
-             univariate.solution.approx.dx.dx(coefficients=coefficients,
+             univariate.solution.approx.dx.dx(coefs=coefs,
+                                              coefficients=coefficients,
                                               x=x,
                                               K=K,
                                               raw.function.list=raw.function.list,
