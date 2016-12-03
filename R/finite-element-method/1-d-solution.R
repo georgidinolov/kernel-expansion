@@ -962,12 +962,8 @@ blackbox <- function(log.sigma2.mu.vector, problem.parameters, dx,
     
     stiff.mat <- matrix(nrow=K,ncol=K);
     for (i in seq(1,K)) {
-        current.basis.dx.i = (orthonormal.function.list[[i]][-1]-
-                              orthonormal.function.list[[i]][-length(x)])/dx
-        
         for (j in seq(i,K)) {
-            current.basis.dx.j = (orthonormal.function.list[[j]][-1]-
-                                  orthonormal.function.list[[j]][-length(x)])/dx
+	    
             
             stiff.matrix.entry = sum(current.basis.dx.i*
                                      current.basis.dx.j*dx);
