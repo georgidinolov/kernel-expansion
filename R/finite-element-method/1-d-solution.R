@@ -168,29 +168,36 @@ univariate.solution.approx.dt <- function(coefs,A,x,K,
 univariate.solution.approx.dx.dx <- function(coefficients,x,K,
                                              raw.function.list,
                                              problem.parameters) {
+    a = problem.parameters$a;
+    b = problem.parameters$b;
     out = rep(0,length(x));
     for (n in seq(1,K)) {
-
-        for (m in seq(1,K)) {
-            out = out +
-                coefficients[n,m]*
-                ((problem.parameters$b-x)*
-                 dnorm(x,
-                       raw.function.list[[m]][1],
-                       sqrt(raw.function.list[[m]][2])) -
-                 (x-problem.parameters$a)*
-                 dnorm(x,
-                       raw.function.list[[m]][1],
-                       sqrt(raw.function.list[[m]][2])) +
-                 (x-problem.parameters$a)*(problem.parameters$b-x)*
-                 dnorm(x,
-                       raw.function.list[[m]][1],
-                       sqrt(raw.function.list[[m]][2]))*
-                 -1/raw.function.list[[m]][2]*(x-raw.function.list[[m]][1]));
-        }
         
+        for (m in seq(1,K)) {
+            mu = raw.function.list[[m]][1];
+            sigma2 = raw.function.list[[m]][2];
+            sigma = sqrt(sigma2);
+            
+            out = out +
+                ##
+                coefficients[n,m]*dnorm(x,mu,sigma)*
+                (-1 +
+                 ##
+                 (b-x)*-1*(x-mu)/sigma2 +
+                 ##
+                 -1 +
+                 ##
+                 -(x-a)*-1*(x-mu)/sigma2 +
+                 ##
+                 (b-x)*-1*(x-mu)/sigma2 +
+                 ##
+                 -(x-a)*-1*(x-mu)/sigma2 +
+                 ##
+                 (x-a)*(b-x)*-1/sigma2 + 
+                 ##
+                 (x-a)*(b-x)*(x-mu)^2/(sigma2)^2)
+        }
     }
-    
     return (out);
 }
 
