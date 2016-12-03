@@ -9,7 +9,7 @@ problem.parameters$number.terms = 1000;
 problem.parameters$sigma.2 = 1;
 problem.parameters$t = 0.1;
 
-Ks = seq(4,10);
+Ks = seq(4,6);
 
 L2.remainders.before = rep(NA, length(Ks));
 L2.diff.before = rep(NA, length(Ks));
@@ -39,7 +39,7 @@ for (i in seq(1,length(Ks))) {
                                  FALSE);
 
     ptm <- proc.time();				 
-    opt.bases.pre <- optim(par=log.sigma2.mu.vector,
+    opt.bases <- optim(par=log.sigma2.mu.vector,
                        fn=blackbox,
                        problem.parameters = problem.parameters,
                        dx = dx,
@@ -56,8 +56,7 @@ for (i in seq(1,length(Ks))) {
     end.time <- proc.time()-ptm;
     ## Stop the clock
     
-    ave.function.call.time = end.time[3]/(opt.bases$counts[1]+
-					  opt.bases.pre$counts[1]);
+    ave.function.call.time = end.time[3]/(opt.bases$counts[1]);
     ave.function.call.time.vec[i] = ave.function.call.time;
 
     log.sigma2.mu.vector = opt.bases$par;

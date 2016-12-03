@@ -1,5 +1,17 @@
 ## performing gram-schmidt orthogonalization on the list of functions
 ## provided.
+deriv.cross.term.intergral <- function(m, l,
+                                       raw.function.list,
+                                       problem.parameters) {
+    a=problem.parameters$a;
+    b=problem.parameters$b;
+    
+    ## term 1: \[ (b-x)^2 * N(x|mu_m, sigma^2_m) * N(x|mu_l, sigma^2_l) =
+    ##            (b^2-2bx+x^2) * product.coef * ker(x| (1/sigma^2_m + 1/sigma^2_l)^{-1}(mu_m/sigma^2_m + mu_l/sigma^2_l,
+    ##                                                  (1/sigma^2_m + 1/sigma^2_l)^{-1}) \]
+    
+}
+
 product.coefficient <- function(raw.function.params.1,
                                 raw.function.params.2) {
     mu.1 = raw.function.params.1[1];
@@ -174,7 +186,7 @@ univariate.solution.approx.dx.dx <- function(coefficients,x,K,
                  dnorm(x,
                        raw.function.list[[m]][1],
                        sqrt(raw.function.list[[m]][2]))*
-                 -1/raw.function.list[[m]][2]);
+                 -1/raw.function.list[[m]][2]*(x-raw.function.list[[m]][1]));
         }
         
     }
