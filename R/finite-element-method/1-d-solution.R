@@ -801,6 +801,7 @@ blackbox <- function(log.sigma2.mu.vector, problem.parameters, dx,
     
     norms <- rep(NA, K);
     coefficients <- matrix(0, nrow=K, ncol=K);
+    moments <- array(data=NA, dim=c(K,K,4));
 
     ## gram-schmidt START ##
     for (k in seq(1,K)) {
@@ -840,6 +841,14 @@ blackbox <- function(log.sigma2.mu.vector, problem.parameters, dx,
         }
     }
     ## gram schmidt END ###
+
+    ## ## ## ## ## ## ## ## ##
+    ## moment matrix START  ##
+    for (k in seq(1,K)) {
+
+
+    ## moment matrix END ##	
+    ## ## ## ## ## ## ## ##
     
     ## plotting orthonormal bases START ###
     if (PLOT.SOLUTION) {
