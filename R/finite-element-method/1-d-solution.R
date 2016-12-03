@@ -801,7 +801,7 @@ blackbox <- function(log.sigma2.mu.vector, problem.parameters, dx,
     
     norms <- rep(NA, K);
     coefficients <- matrix(0, nrow=K, ncol=K);
-    moments <- array(data=NA, dim=c(K,K,4));
+    moments <- array(data=NA, dim=c(K,K,5));
 
     ## gram-schmidt START ##
     for (k in seq(1,K)) {
@@ -845,8 +845,45 @@ blackbox <- function(log.sigma2.mu.vector, problem.parameters, dx,
     ## ## ## ## ## ## ## ## ##
     ## moment matrix START  ##
     for (k in seq(1,K)) {
+    	for (l in seq(1,K)) {
+	    
+	    sigma2 = 1/(1/raw.function.list[[k]][2]+
+	    	        1/raw.function.list[[l]][2]);
+	    mu = sigma2 *
+	       (raw.function.list[[k]][1]/raw.function.list[[k]][2]+
+		raw.function.list[[l]][1]/raw.function.list[[l]][2]);
 
 
+    	    alpha = (problem.parameters$a-mu)/sqrt(sigma2);
+    	    beta = (problem.parameters$$b-mu)/sqrt(sigma2);
+
+    	    PP = pnorm(beta) - pnorm(alpha);
+    
+	    Ls = rep(NA,5);
+    	    for (i in seq(1,5)) {
+            	if (i==1) {
+            	   Ls[i] = 1;
+        	 } else if (i==2) {
+            	   Ls[i] = -(dnorm(beta)-dnorm(alpha))/
+                   	   PP;
+        } else {
+            Ls[i] = -(beta^(i-2)*dnorm(beta)-alpha^(i-2)*dnorm(alpha))/
+                PP + (i-2)*Ls[i-2];        
+        }
+    }
+    
+    Ms = sapply(seq(0,4),
+                function(k) {sum(choose(k,seq(0,k))*
+                                 sqrt(sigma2)^(seq(0,k))*
+                                 mu^(k-seq(0,k))*
+                                 Ls[seq(0,k)+1])});
+        
+    Ms = Ms*PP*sqrt(2*pi*sigma2);
+    
+    	    moments[k,l,] = Ms;
+
+	}	
+    }
     ## moment matrix END ##	
     ## ## ## ## ## ## ## ##
     
