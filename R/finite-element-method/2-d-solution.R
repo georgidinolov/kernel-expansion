@@ -172,48 +172,23 @@ norm.raw.function <- function(function.params, a, b) {
     return (out);
 }
 
-project <- function(raw.function.params.1, raw.function.params.2, a, b) {
-    mu.1 = raw.function.params.1[1];
-    sigma2.1 = raw.function.params.1[2];
-    mu.2 = raw.function.params.2[1];
-    sigma2.2 = raw.function.params.2[2];
-
-    sigma2 = 1/(1/sigma2.1 + 1/sigma2.2);
-    mu = sigma2 * (mu.1/sigma2.1 + mu.2/sigma2.2);
-
-    alpha = (a-mu)/sqrt(sigma2);
-    beta = (b-mu)/sqrt(sigma2);
-
-    PP = pnorm(beta) - pnorm(alpha);
+project <- function(raw.function.params.1,
+                    raw.function.params.2,
+                    problem.parameters,
+                    x,y) {
     
-    Ls = rep(NA,5);
-    for (i in seq(1,5)) {
-        if (i==1) {
-            Ls[i] = 1;
-        } else if (i==2) {
-            Ls[i] = -(dnorm(beta)-dnorm(alpha))/
-                PP;
-        } else {
-            Ls[i] = -(beta^(i-2)*dnorm(beta)-alpha^(i-2)*dnorm(alpha))/
-                PP + (i-2)*Ls[i-2];        
-        }
-    }
+    mu.1.x = raw.function.params.1[1];
+    mu.1.y = raw.function.params.1[2];
+    sigma2.1.x = raw.function.params.1[3];
+    sigma2.1.y = raw.function.params.1[4];
+
+    mu.2.x = raw.function.params.2[1];
+    mu.2.y = raw.function.params.2[2];
+    sigma2.2.x = raw.function.params.2[3];
+    sigma2.2.y = raw.function.params.2[4];
+
+    out = 
     
-    Ms = sapply(seq(0,4),
-                function(k) {sum(choose(k,seq(0,k))*
-                                 sqrt(sigma2)^(seq(0,k))*
-                                 mu^(k-seq(0,k))*
-                                 Ls[seq(0,k)+1])});
-        
-    Ms = Ms*PP*sqrt(2*pi*sigma2);
-    
-    out = (Ms[5] -
-           Ms[4]*2*(a + b) +
-           Ms[3]*(a^2 + b^2 + 4*a*b) -
-           Ms[2]*2*(a*b^2 + b*a^2) +
-           Ms[1]*a^2*b^2) *
-        product.coefficient(raw.function.params.1,
-                            raw.function.params.2);
     return (out);
 }
     
@@ -858,18 +833,27 @@ apply.generator <- function(poly, k, problem.parameters.x) {
 blackbox <- function(log.sigma2.mu.vector, problem.parameters, dx,
                      PLOT.SOLUTION,
                      MINIMIZE.REMAINDER) {
-    K = length(log.sigma2.mu.vector)/2;
-    sigma2.vector = exp(log.sigma2.mu.vector[seq(1,K)]);
-    mu.vector = log.sigma2.mu.vector[seq(K+1,2*K)];
+    source("1-d-solution.R");
+    K = length(log.sigma2.mu.vector)/4;
+    sigma2.vector = exp(log.sigma2.mu.vector[seq(1,2*K)]);
+    mu.vector = log.sigma2.mu.vector[seq(2*K+1,4*K)];
 
     ## gram schmidt START ##
-    x = seq(problem.parameters$a,
-            problem.parameters$b,
+    x = seq(problem.parameters$ax,
+            problem.parameters$bx,
             by=dx);
+    y = seq(problem.parameters$ay,
+            problem.parameters$by,
+            by=dy);
 
     raw.function.list = vector(mode="list", length=K);
     for (k in seq(1,K)) {
-        raw.function.list[[k]] = c(mu.vector[k], sigma2.vector[k]);
+        ## means, xy
+        ## vars, xy
+        raw.function.list[[k]] = c(mu.vector[2*(k-1)+1],
+                                   mu.vector[2*k],
+                                   sigma2.vector[2*(k-1)+1],
+                                   sigma2.vector[2*k]);
         ## ## PLOTTING BASES START ###
         ## if (PLOT.SOLUTION) {
         ##     if (k==1) {
