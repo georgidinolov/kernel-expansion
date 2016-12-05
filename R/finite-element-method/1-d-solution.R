@@ -105,7 +105,9 @@ deriv.cross.term.intergral <- function(m, l,
         moments[m,l,6]*((2*((a + b) + mu.l + mu.m))))/
         (sigma2.m*sigma2.l);
 
-    return ( sum(apply(X=terms, MARGIN=1, FUN =sum)) );
+    return ( product.coefficient(raw.function.list[[m]],
+                                 raw.function.list[[l]])*
+             sum(apply(X=terms, MARGIN=1, FUN =sum)) );
 }
 
 product.coefficient <- function(raw.function.params.1,
@@ -1079,6 +1081,7 @@ blackbox <- function(log.sigma2.mu.vector, problem.parameters, dx,
         }
     }
     
+
     mass.mat <- matrix(nrow=K,ncol=K);
     for (i in seq(1,K)) {
         for (j in seq(i,K)) {
