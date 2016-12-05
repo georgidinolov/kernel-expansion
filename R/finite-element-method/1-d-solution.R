@@ -1046,9 +1046,10 @@ blackbox <- function(log.sigma2.mu.vector, problem.parameters, dx,
     ## SYSTEM MATRICES START ###
     orthonormal.function.list = vector(mode="list",
                                        length=K);
+    derivative.function.list = vector(mode="list",
+                                      length=K);
     for (k in seq(1,K)) {
         Psi = rep(0,length(x));
-
         for (m in seq(1,K)) {
             Psi = Psi +
                 coefficients[k,m]*basis.function(x,
@@ -1056,35 +1057,53 @@ blackbox <- function(log.sigma2.mu.vector, problem.parameters, dx,
                                                  problem.parameters);
         }
         orthonormal.function.list[[k]] = Psi;
+
+        derivative.function.list[[k]] =
+            ((problem.parameters$b-x)+
+             ##
+             -(x-problem.parameters$a)+
+             ##
+             -(x-problem.parameters$a)*
+             (problem.parameters$b-x)*
+             (x-raw.function.list[[k]][1])/
+             raw.function.list[[k]][2])*
+            dnorm(x,
+                  raw.function.list[[k]][1],
+                  sqrt(raw.function.list[[k]][2]));
+        
     }
 
     stiff.mat <- matrix(nrow=K,ncol=K);
     stiff.mat.numeric <- matrix(nrow=K,ncol=K);
     
     for (i in seq(1,K)) {
-        current.basis.dx.i = (orthonormal.function.list[[i]][-1]-
-                              orthonormal.function.list[[i]][-length(x)])/dx;
+        current.basis.dx.i.numeric = (orthonormal.function.list[[i]][-1]-
+                                      orthonormal.function.list[[i]][-length(x)])/dx;
+        current.basis.dx.i.analytic =
+            apply(sapply(seq(1,K),
+                         function(x) {coefficients[i,x]*
+                                          derivative.function.list[[x]]}),
+                  1, sum);
         
         for (j in seq(i,K)) {
-            current.basis.dx.j = (orthonormal.function.list[[j]][-1]-
-                                  orthonormal.function.list[[j]][-length(x)])/dx;
+            current.basis.dx.j.numeric =
+                (orthonormal.function.list[[j]][-1]-
+                 orthonormal.function.list[[j]][-length(x)])/dx;
+
+            current.basis.dx.j.analytic =
+            apply(sapply(seq(1,K),
+                         function(x) {coefficients[j,x]*
+                                          derivative.function.list[[x]]}),
+                  1, sum);
             
-            stiff.matrix.entry.numeric = sum(current.basis.dx.i*
-                                             current.basis.dx.j*dx);
+            stiff.matrix.entry.numeric = sum(current.basis.dx.i.numeric*
+                                             current.basis.dx.j.numeric*dx);
+
+            stiff.matrix.entry = sum(current.basis.dx.i.analytic*
+                                     current.basis.dx.j.analytic)*dx;
+                
             
-            entry = 0;
-            for (k in seq(1,K)) {
-                for (l in seq(1,K)) {
-                    entry = entry +
-                        coefficients[i,k]*coefficients[j,l]*
-                        deriv.cross.term.intergral(k,l,
-                                                   raw.function.list,
-                                                   problem.parameters,
-                                                   moments);
-                }
-            }
-            
-            stiff.matrix.entry = entry;
+          
             ## print(c(i,j,stiff.matrix.entry));
             stiff.mat[i,j]=1/2*problem.parameters$sigma.2*stiff.matrix.entry;
             stiff.mat[j,i]=1/2*problem.parameters$sigma.2*stiff.matrix.entry;
@@ -1111,7 +1130,7 @@ blackbox <- function(log.sigma2.mu.vector, problem.parameters, dx,
     ## SYSTEM MATRICES END ###
     
     ## ## eigenvalues START ###
-    eig <- eigen(stiff.mat.numeric);
+    eig <- eigen(stiff.mat);
     ## ## eigenvalues END ###
     
     ## ## ICs START ###
