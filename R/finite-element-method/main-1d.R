@@ -9,12 +9,12 @@ problem.parameters$by = 1;
 problem.parameters$x.ic = 0.2;
 problem.parameters$y.ic = 0.0;
 problem.parameters$number.terms = 1000;
-problem.parameters$sigma.2.x = 0.1;
-problem.parameters$sigma.2.y = 0.1;
-problem.parameters$rho = 0.1;
-problem.parameters$t = 0.5;
+problem.parameters$sigma.2.x = 0.5;
+problem.parameters$sigma.2.y = 0.0001;
+problem.parameters$rho = 0.0;
+problem.parameters$t = 0.001;
 
-Ks = seq(4,4);
+Ks = seq(5,5);
 
 L2.remainders.before = rep(NA, length(Ks));
 L2.diff.before = rep(NA, length(Ks));
@@ -31,13 +31,14 @@ for (i in seq(1,length(Ks))) {
     log.sigma2.vector=log(
         rep(c(((problem.parameters$bx-problem.parameters$ax)/K)^2,
         ((problem.parameters$by-problem.parameters$ay)/K)^2),
-        K));
+        K)) +
+        rep(log(2), 2*K);
     mu.vector = seq(problem.parameters$ax,
                     problem.parameters$bx,
                     length.out=length(log.sigma2.vector)/2);
 
     mu.vector = unlist(lapply(X=mu.vector, function(x) {c(x,x)}));
-    mu.vector = c(-1,-1, -1,1, 1,-1, 1,1);
+    mu.vector = c(-0.8,-0.8, -0.8,0.8, 0.8,-0.8, 0.8,0.8, 0,0);
     
     log.sigma2.mu.vector = c(log.sigma2.vector,
                              mu.vector);
