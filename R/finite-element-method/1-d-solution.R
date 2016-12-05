@@ -2,14 +2,110 @@
 ## provided.
 deriv.cross.term.intergral <- function(m, l,
                                        raw.function.list,
-                                       problem.parameters) {
+                                       problem.parameters,
+                                       moments) {
     a=problem.parameters$a;
     b=problem.parameters$b;
+
+    mu.m = raw.function.list[[m]][1];
+    sigma2.m = raw.function.list[[m]][2];
+    mu.l = raw.function.list[[l]][1];
+    sigma2.l = raw.function.list[[l]][2];
     
-    ## term 1: \[ (b-x)^2 * N(x|mu_m, sigma^2_m) * N(x|mu_l, sigma^2_l) =
-    ##            (b^2-2bx+x^2) * product.coef * ker(x| (1/sigma^2_m + 1/sigma^2_l)^{-1}(mu_m/sigma^2_m + mu_l/sigma^2_l,
-    ##                                                  (1/sigma^2_m + 1/sigma^2_l)^{-1}) \]
-    
+    sigma2 = (1/raw.function.list[[m]][2] +
+              1/raw.function.list[[l]][2])^(-1);
+    mu = sigma2*(raw.function.list[[m]][1]/
+                 raw.function.list[[m]][2] +
+                 raw.function.list[[l]][1]/
+                 raw.function.list[[l]][2]);
+    C = product.coefficient(raw.function.list[[m]],
+                            raw.function.list[[l]]);
+    terms = matrix(nrow = 3, ncol = 3);
+    ## term 1: \[ (b-x)^2 * N(x|mu_m, sigma^2_m) * N(x|mu_l,
+    ##            sigma^2_l) =
+    ##            (b^2-2bx+x^2) *
+    ##            product.coef * ker(x| (1/sigma^2_m +
+    ##            1/sigma^2_l)^{-1}(mu_m/sigma^2_m + mu_l/sigma^2_l,
+    ##            (1/sigma^2_m + 1/sigma^2_l)^{-1}) \]
+    terms[1,1] = b^2*moments[m,l,1] -2*b*moments[m,l,2] + moments[m,l,3];
+
+    ## term 2: \[ (b-x)*-(x-a) * N(x|mu_m, sigma^2_m) * N(x|mu_l,
+    ##            sigma^2_l) =
+    ##            (-bx + ba + x^2 - xa) *
+    ##            product.coef * ker(x| (1/sigma^2_m +
+    ##            1/sigma^2_l)^{-1}(mu_m/sigma^2_m + mu_l/sigma^2_l,
+    ##            (1/sigma^2_m + 1/sigma^2_l)^{-1}) \]
+
+    terms[1,2] =
+        a*b*moments[m,l,1] - a*moments[m,l,2] - b*moments[m,l,2] + moments[m,l,3];
+
+    ## term 3: \[ (b-x)*(x-a)*-(x-mu_l)/sigma^2_l * N(x|mu_m, sigma^2_m) * N(x|mu_l,
+    ##            sigma^2_l) =
+    ## (-a b μ_l + a b x - a x^2 + a μ_l x - b x^2 + b μ_l x + x^3 - μ_l x^2)
+    ##                  /sigma^2_l *
+    ##            product.coef * ker(x| (1/sigma^2_m +
+    ##            1/sigma^2_l)^{-1}(mu_m/sigma^2_m + mu_l/sigma^2_l,
+    ##            (1/sigma^2_m + 1/sigma^2_l)^{-1}) \]
+
+    terms[1,3] = (-a*b^2*mu.l*moments[m,l,1]+
+        b*moments[m,l,2]*(mu.l*(2*a + b) + a*b) +
+        moments[m,l,3]*(-mu.l*(a + 2*b) - b*(2*a + b)) +
+        moments[m,l,4]*(a + 2*b + mu.l) -
+        moments[m,l,5])/sigma2.l;
+
+    ## term 4
+    terms[2,1] = terms[1,2];
+
+    ## terms 5: \[ -1^2*(x-a)^2 * N(x|mu_m, sigma^2_m) * N(x|mu_l,sigma^2_l) =
+    ##             (x^2 - 2xa + a^2) *
+    ##             N(x|mu_m, sigma^2_m) * N(x|mu_l,sigma^2_l) \]
+    terms[2,2] = moments[m,l,3] - 2*a*moments[m,l,2] + a^2*moments[m,l,1];
+
+    ## terms 6: \[ -1*(x-a)^2*(b-x)*-1*(x-mu_l)/sigma^2_l *
+    ##                N(x|mu_m, sigma^2_m) * N(x|mu_l,sigma^2_l) =
+    ## -a^2 b μ_l + a x (μ_l (a + 2 b) + a b) +
+    ##  x^2 (-μ_l (2 a + b) - a (a + 2 b)) +
+    ##  x^3 (2 a + b + μ_l) -
+    ##  x^4 * all the rest \]
+    terms[2,3] = (-a^2*b*mu.l*moments[m,l,1] +
+        a*moments[m,l,2]*(mu.l*(a + 2*b) + a*b) +
+        moments[m,l,3]*(-mu.l*(2*a + b) - a*(a + 2*b)) +
+        moments[m,l,4]*(2*a + b + mu.l) -
+        moments[m,l,5])/sigma2.l;
+
+    ## term 7: \[ (x-a)*(b-x)^2*-1*(x-mu_m)/sigma^2_m *
+    ##                N(x|mu_m, sigma^2_m) * N(x|mu_l,sigma^2_l) =
+    ## -(a b^2 μ_m)/σ^2 + (b x (μ_m (2 a + b) + a b))/σ^2 -
+    ##  (x^2 (μ_m (a + 2 b) + b (2 a + b)))/σ^2 +
+    ##  (x^3 (a + 2 b + μ_m))/σ^2 - x^4/σ^2
+    terms[3,1] = (-(a*b^2*mu.m)*moments[m,l,1] +
+        (b*moments[m,l,2]*(mu.m*(2*a + b) + a*b)) -
+        (moments[m,l,3]*(mu.m*(a + 2*b) + b*(2*a + b))) +
+        (moments[m,l,4]*(a + 2*b + mu.m)) -
+        moments[m,l,5]) /
+        sigma2.m;
+
+    ## term 8:
+    terms[3,2] = (-(a^2*b*mu.m)*moments[m,l,1] +
+        moments[m,l,2]*(a*(mu.m*(a + 2*b) + a*b)) -
+        moments[m,l,3]*((mu.m*(2*a + b) + a*(a + 2*b))) +
+        (moments[m,l,4]*(2*a + b + mu.m)) -
+        moments[m,l,5]) /
+        sigma2.m;
+
+    ## term 9:
+    terms[3,3] = (moments[m,l,1]*(a^2*b^2*mu.l*mu.m) -
+        moments[m,l,2]*(a*b*(mu.l*(2*mu.m*(a + b) + a*b) + a*b*mu.m)) +
+        moments[m,l,3]*((mu.l*(mu.m*(a^2 + 4*a*b + b^2) +
+                               2*a*b*(a + b)) + a*b*(2*mu.m*(a + b) + a*b))) -
+        moments[m,l,4]*((mu.l*(a^2 + 2*mu.m*(a + b) + 4*a*b + b^2) +
+                         mu.m*(a^2 + 4*a*b + b^2) + 2*a*b*(a + b))) +
+        moments[m,l,5]*((a^2 + mu.l*(2*(a + b) + mu.m) + 2*mu.m*(a + b) +
+                         4*a*b + b^2)) -
+        moments[m,l,6]*((2*((a + b) + mu.l + mu.m))))/
+        (sigma2.m*sigma2.l);
+
+    return ( sum(apply(X=terms, MARGIN=1, FUN =sum)) );
 }
 
 product.coefficient <- function(raw.function.params.1,
@@ -801,7 +897,7 @@ blackbox <- function(log.sigma2.mu.vector, problem.parameters, dx,
     
     norms <- rep(NA, K);
     coefficients <- matrix(0, nrow=K, ncol=K);
-    moments <- array(data=NA, dim=c(K,K,5));
+    moments <- array(data=NA, dim=c(K,K,6));
 
     ## gram-schmidt START ##
     for (k in seq(1,K)) {
@@ -850,38 +946,38 @@ blackbox <- function(log.sigma2.mu.vector, problem.parameters, dx,
 	    sigma2 = 1/(1/raw.function.list[[k]][2]+
 	    	        1/raw.function.list[[l]][2]);
 	    mu = sigma2 *
-	       (raw.function.list[[k]][1]/raw.function.list[[k]][2]+
-		raw.function.list[[l]][1]/raw.function.list[[l]][2]);
-
-
+                (raw.function.list[[k]][1]/raw.function.list[[k]][2]+
+                 raw.function.list[[l]][1]/raw.function.list[[l]][2]);
+            
+            
     	    alpha = (problem.parameters$a-mu)/sqrt(sigma2);
-    	    beta = (problem.parameters$$b-mu)/sqrt(sigma2);
-
+    	    beta = (problem.parameters$b-mu)/sqrt(sigma2);
+            
     	    PP = pnorm(beta) - pnorm(alpha);
-    
-	    Ls = rep(NA,5);
-    	    for (i in seq(1,5)) {
+            
+	    Ls = rep(NA,6);
+    	    for (i in seq(1,6)) {
             	if (i==1) {
-            	   Ls[i] = 1;
-        	 } else if (i==2) {
-            	   Ls[i] = -(dnorm(beta)-dnorm(alpha))/
-                   	   PP;
-        } else {
-            Ls[i] = -(beta^(i-2)*dnorm(beta)-alpha^(i-2)*dnorm(alpha))/
-                PP + (i-2)*Ls[i-2];        
-        }
-    }
-    
-    Ms = sapply(seq(0,4),
-                function(k) {sum(choose(k,seq(0,k))*
-                                 sqrt(sigma2)^(seq(0,k))*
-                                 mu^(k-seq(0,k))*
-                                 Ls[seq(0,k)+1])});
-        
-    Ms = Ms*PP*sqrt(2*pi*sigma2);
-    
+                    Ls[i] = 1;
+                } else if (i==2) {
+                    Ls[i] = -(dnorm(beta)-dnorm(alpha))/
+                        PP;
+                } else {
+                    Ls[i] = -(beta^(i-2)*dnorm(beta)-alpha^(i-2)*dnorm(alpha))/
+                        PP + (i-2)*Ls[i-2];        
+                }
+            }
+            
+            Ms = sapply(seq(0,5),
+                        function(k) {sum(choose(k,seq(0,k))*
+                                         sqrt(sigma2)^(seq(0,k))*
+                                         mu^(k-seq(0,k))*
+                                         Ls[seq(0,k)+1])});
+            
+            Ms = Ms*PP*sqrt(2*pi*sigma2);
+            
     	    moments[k,l,] = Ms;
-
+            
 	}	
     }
     ## moment matrix END ##	
@@ -963,10 +1059,20 @@ blackbox <- function(log.sigma2.mu.vector, problem.parameters, dx,
     stiff.mat <- matrix(nrow=K,ncol=K);
     for (i in seq(1,K)) {
         for (j in seq(i,K)) {
-	    
+
+            entry = 0;
+            for (k in seq(1,K)) {
+                for (l in seq(1,K)) {
+                    entry = entry +
+                        coefficients[i,k]*coefficients[j,l]*
+                        deriv.cross.term.intergral(k,l,
+                                                   raw.function.list,
+                                                   problem.parameters,
+                                                   moments);
+                }
+            }
             
-            stiff.matrix.entry = sum(current.basis.dx.i*
-                                     current.basis.dx.j*dx);
+            stiff.matrix.entry = entry;
             ## print(c(i,j,stiff.matrix.entry));
             stiff.mat[i,j]=1/2*problem.parameters$sigma.2*stiff.matrix.entry;
             stiff.mat[j,i]=1/2*problem.parameters$sigma.2*stiff.matrix.entry;
