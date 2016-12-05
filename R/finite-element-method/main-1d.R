@@ -7,12 +7,12 @@ problem.parameters$bx = 1;
 problem.parameters$ay = -1;
 problem.parameters$by = 1;
 problem.parameters$x.ic = 0.2;
-problem.parameters$y.ic = 0.2;
+problem.parameters$y.ic = 0.0;
 problem.parameters$number.terms = 1000;
-problem.parameters$sigma.2.x = 1;
-problem.parameters$sigma.2.y = 1;
-problem.parameters$rho = 0.2;
-problem.parameters$t = 1.5;
+problem.parameters$sigma.2.x = 0.1;
+problem.parameters$sigma.2.y = 0.1;
+problem.parameters$rho = 0.1;
+problem.parameters$t = 0.5;
 
 Ks = seq(4,4);
 
@@ -37,7 +37,7 @@ for (i in seq(1,length(Ks))) {
                     length.out=length(log.sigma2.vector)/2);
 
     mu.vector = unlist(lapply(X=mu.vector, function(x) {c(x,x)}));
-    mu.vector = c(-1,-1, -1,1, -1,1, 1,1);
+    mu.vector = c(-1,-1, -1,1, 1,-1, 1,1);
     
     log.sigma2.mu.vector = c(log.sigma2.vector,
                              mu.vector);
@@ -84,31 +84,31 @@ for (i in seq(1,length(Ks))) {
     ##                             FALSE)
 }
 
-save(file="optimization-results.Rdata",
-     list=c("Ks","L2.remainders.before","L2.diff.before",
-            "L2.remainders.after","L2.diff.after",
-            "ave.function.call.time.vec",
-            "log.sigma2.mu.vector.list",
-	    "dx"));
+## save(file="optimization-results.Rdata",
+##      list=c("Ks","L2.remainders.before","L2.diff.before",
+##             "L2.remainders.after","L2.diff.after",
+##             "ave.function.call.time.vec",
+##             "log.sigma2.mu.vector.list",
+## 	    "dx"));
 
-pdf("optimization-results.pdf");
-par(mfrow=c(2,1));
-par(mar = c(5,4,2,1));
-plot(Ks, log(L2.remainders.before),
-     type="l",
-     ylim = c(min(log(L2.remainders.before),log(L2.remainders.after)),
-              max(log(L2.remainders.before),log(L2.remainders.after))),
-     ylab = "",
-     xlab = "K",
-     main = "log(L^2) norm of remainder term");
-lines(Ks, log(L2.remainders.after),col="red");
+## pdf("optimization-results.pdf");
+## par(mfrow=c(2,1));
+## par(mar = c(5,4,2,1));
+## plot(Ks, log(L2.remainders.before),
+##      type="l",
+##      ylim = c(min(log(L2.remainders.before),log(L2.remainders.after)),
+##               max(log(L2.remainders.before),log(L2.remainders.after))),
+##      ylab = "",
+##      xlab = "K",
+##      main = "log(L^2) norm of remainder term");
+## lines(Ks, log(L2.remainders.after),col="red");
 
-plot(Ks, log(L2.diff.before),
-     type="l",
-     ylim = c(min(log(L2.diff.before),log(L2.diff.after)),
-              max(log(L2.diff.before),log(L2.diff.after))),
-     ylab = "",
-     xlab = "",
-     main = "log(L^2) norm of difference between approximate and true solutions");
-lines(Ks, log(L2.diff.after),col="red");
-dev.off();
+## plot(Ks, log(L2.diff.before),
+##      type="l",
+##      ylim = c(min(log(L2.diff.before),log(L2.diff.after)),
+##               max(log(L2.diff.before),log(L2.diff.after))),
+##      ylab = "",
+##      xlab = "",
+##      main = "log(L^2) norm of difference between approximate and true solutions");
+## lines(Ks, log(L2.diff.after),col="red");
+## dev.off();

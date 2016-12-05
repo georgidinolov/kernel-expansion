@@ -1392,8 +1392,12 @@ blackbox <- function(log.sigma2.mu.vector, problem.parameters,
     y.ic.index = which(abs(y-problem.parameters$y.ic)<=dy/2)
     b = rep(NA, K);
     for (i in seq(1,K)) {
-        b[i] = basis.function(x[x.ic.index], y[y.ic.index],
-                              raw.function.list[[k]], problem.parameters);
+        b[i] = sum(sapply( seq(1,K),
+                          function(k) {coefficients[i,k]*
+                                           basis.function(x[x.ic.index],
+                                                          y[y.ic.index],
+                                                          raw.function.list[[k]],
+                                                          problem.parameters)}));
     }
     ## IC.vec = solve(mass.mat, b);
     IC.vec = b;
