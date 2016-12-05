@@ -11,9 +11,10 @@ problem.parameters$y.ic = 0.2;
 problem.parameters$number.terms = 1000;
 problem.parameters$sigma.2.x = 1;
 problem.parameters$sigma.2.y = 1;
-problem.parameters$t = 0.1;
+problem.parameters$rho = 0.2;
+problem.parameters$t = 1.5;
 
-Ks = seq(4,6);
+Ks = seq(4,4);
 
 L2.remainders.before = rep(NA, length(Ks));
 L2.diff.before = rep(NA, length(Ks));
@@ -35,7 +36,8 @@ for (i in seq(1,length(Ks))) {
                     problem.parameters$bx,
                     length.out=length(log.sigma2.vector)/2);
 
-    mu.vector = unlist(lapply(X=mu.vector, function(x) {c(x,x)}))
+    mu.vector = unlist(lapply(X=mu.vector, function(x) {c(x,x)}));
+    mu.vector = c(-1,-1, -1,1, -1,1, 1,1);
     
     log.sigma2.mu.vector = c(log.sigma2.vector,
                              mu.vector);
@@ -44,42 +46,42 @@ for (i in seq(1,length(Ks))) {
     
     bb = blackbox(log.sigma2.mu.vector, problem.parameters, dx, dy,
                   TRUE,TRUE);
-    L2.remainders.before[i] = bb;
-    L2.diff.before[i] = blackbox(log.sigma2.mu.vector, problem.parameters,
-                                 dx,
-                                 FALSE,
-                                 FALSE);
+    ## L2.remainders.before[i] = bb;
+    ## L2.diff.before[i] = blackbox(log.sigma2.mu.vector, problem.parameters,
+    ##                              dx,
+    ##                              FALSE,
+    ##                              FALSE);
 
-    ptm <- proc.time();				 
-    opt.bases <- optim(par=log.sigma2.mu.vector,
-                       fn=blackbox,
-                       problem.parameters = problem.parameters,
-                       dx = dx,
-                       PLOT.SOLUTION=FALSE,
-                       MINIMIZE.REMAINDER=TRUE);
-
+    ## ptm <- proc.time();				 
     ## opt.bases <- optim(par=log.sigma2.mu.vector,
-    ## 			method=c("BFGS"),
     ##                    fn=blackbox,
     ##                    problem.parameters = problem.parameters,
     ##                    dx = dx,
     ##                    PLOT.SOLUTION=FALSE,
     ##                    MINIMIZE.REMAINDER=TRUE);
-    end.time <- proc.time()-ptm;
-    ## Stop the clock
-    
-    ave.function.call.time = end.time[3]/(opt.bases$counts[1]);
-    ave.function.call.time.vec[i] = ave.function.call.time;
 
-    log.sigma2.mu.vector = opt.bases$par;
-    log.sigma2.mu.vector.list[[i]] = log.sigma2.mu.vector;
-    bb = blackbox(log.sigma2.mu.vector, problem.parameters, dx,TRUE,TRUE);
+    ## ## opt.bases <- optim(par=log.sigma2.mu.vector,
+    ## ## 			method=c("BFGS"),
+    ## ##                    fn=blackbox,
+    ## ##                    problem.parameters = problem.parameters,
+    ## ##                    dx = dx,
+    ## ##                    PLOT.SOLUTION=FALSE,
+    ## ##                    MINIMIZE.REMAINDER=TRUE);
+    ## end.time <- proc.time()-ptm;
+    ## ## Stop the clock
     
-    L2.remainders.after[i] = bb;
-    L2.diff.after[i] = blackbox(log.sigma2.mu.vector, problem.parameters,
-                                dx,
-                                FALSE,
-                                FALSE)
+    ## ave.function.call.time = end.time[3]/(opt.bases$counts[1]);
+    ## ave.function.call.time.vec[i] = ave.function.call.time;
+
+    ## log.sigma2.mu.vector = opt.bases$par;
+    ## log.sigma2.mu.vector.list[[i]] = log.sigma2.mu.vector;
+    ## bb = blackbox(log.sigma2.mu.vector, problem.parameters, dx,TRUE,TRUE);
+    
+    ## L2.remainders.after[i] = bb;
+    ## L2.diff.after[i] = blackbox(log.sigma2.mu.vector, problem.parameters,
+    ##                             dx,
+    ##                             FALSE,
+    ##                             FALSE)
 }
 
 save(file="optimization-results.Rdata",

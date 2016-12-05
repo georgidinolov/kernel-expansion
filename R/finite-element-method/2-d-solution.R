@@ -127,12 +127,21 @@ product.coefficient <- function(raw.function.params.1,
 }
 
 basis.function <- function(x,y, function.params, problem.parameters) {
-    out = (x-problem.parameters$ax)*(problem.parameters$bx-x)*
+
+    out = (x-problem.parameters$ax)*(problem.parameters$bx-x)*    
         (y-problem.parameters$ay)*(problem.parameters$by-y)*
         dnorm(x,function.params[1],sqrt(function.params[3]))*
         dnorm(x,function.params[2],sqrt(function.params[4]));
     return (out);
 }
+
+basis.function.xy <- function(x,y,function.params,problem.parameters) {
+    return( cbind(sapply(x,
+                         function(x,y) {basis.function(x,y,
+                                                       function.params,
+                                                       problem.parameters)}, y)))
+}
+    
 
 norm.raw.function <- function(function.params, a, b) {
     mu = function.params[1];
@@ -476,6 +485,25 @@ univariate.solution.approx <- function(coefs,x,orthonormal.function.list,K) {
     for (n in seq(1,K)) {
         out = out +
             coefs[n]*orthonormal.function.list[[n]];
+    }
+    return (out);
+}
+
+bivariate.solution.approx <- function(coefficients,
+                                      coefs,
+                                      x,y,
+                                      raw.function.list,
+                                      problem.parameters) {
+    
+    out = matrix(0, ncol=length(y),nrow=length(x));
+    for (n in seq(1,length(raw.function.list))) {
+        for (m in seq(1,length(raw.function.list))) {
+            out = out +
+                coefs[n]*
+                coefficients[n,m]*basis.function.xy(x,y,
+                                                    raw.function.list[[m]],
+                                                    problem.parameters)
+        }
     }
     return (out);
 }
@@ -1087,7 +1115,7 @@ blackbox <- function(log.sigma2.mu.vector, problem.parameters,
                      dx, dy,
                      PLOT.SOLUTION,
                      MINIMIZE.REMAINDER) {
-    source("1-d-solution.R");
+    source("2-d-solution.R");
     K = length(log.sigma2.mu.vector)/4;
     sigma2.vector = exp(log.sigma2.mu.vector[seq(1,2*K)]);
     mu.vector = log.sigma2.mu.vector[seq(2*K+1,4*K)];
@@ -1227,14 +1255,14 @@ blackbox <- function(log.sigma2.mu.vector, problem.parameters,
                                            function.params=raw.function.list[[y]],
                                            problem.parameters=problem.parameters))},
                    x);
-            y = apply(X,1,sum);
+            yy = apply(X,1,sum);
             
             if (k==1) {
-                plot(x, y,
+                plot(x, yy,
                      type = "l",
                      ylim = c(-max(y),max(y)));
             } else {
-                lines(x, y);
+                lines(x, yy);
             }
         }
     }
@@ -1314,12 +1342,6 @@ blackbox <- function(log.sigma2.mu.vector, problem.parameters,
                               x,y,dx,dy);
         }
     }
-
-    derivatives.matrix =
-        derivative.xx.matrix +
-        derivative.yy.matrix +
-        0.5*(derivative.xy.matrix+
-             derivative.yx.matrix);
         
     stiff.mat <- matrix(nrow=K,ncol=K);
     for (i in seq(1,K)) {
@@ -1327,29 +1349,38 @@ blackbox <- function(log.sigma2.mu.vector, problem.parameters,
             
             stiff.matrix.entry = 
                 as.double(coefficients[i,] %*%
-                          (derivatives.matrix %*%
+                          (-0.5*
+                           problem.parameters$sigma.2.x*
+                           derivative.xx.matrix +
+                           -problem.parameters$rho*
+                           sqrt(problem.parameters$sigma.2.x)*
+                           sqrt(problem.parameters$sigma.2.y)*
+                           0.5*(derivative.xy.matrix+
+                                derivative.yx.matrix) +
+                           -0.5*problem.parameters$sigma.2.y*
+                           derivative.yy.matrix) %*%
                           coefficients[,j]);
 
 
                 
             ## print(c(i,j,stiff.matrix.entry));
-            stiff.mat[i,j]=1/2*problem.parameters$sigma.2*stiff.matrix.entry;
-            stiff.mat[j,i]=1/2*problem.parameters$sigma.2*stiff.matrix.entry;
+            stiff.mat[i,j]=stiff.matrix.entry;
+            stiff.mat[j,i]=stiff.matrix.entry;
         }
     }
     
 
-    mass.mat <- matrix(nrow=K,ncol=K);
-    for (i in seq(1,K)) {
-        for (j in seq(i,K)) {
-            mass.matrix.entry = sum(orthonormal.function.list[[i]]*
-                                    orthonormal.function.list[[j]]*
-                                    dx);
-            ## print(c(i,j,mass.matrix.entry));
-            mass.mat[i,j]=mass.matrix.entry;
-            mass.mat[j,i]=mass.matrix.entry;
-        }
-    }
+    ## mass.mat <- matrix(nrow=K,ncol=K);
+    ## for (i in seq(1,K)) {
+    ##     for (j in seq(i,K)) {
+    ##         mass.matrix.entry = sum(orthonormal.function.list[[i]]*
+    ##                                 orthonormal.function.list[[j]]*
+    ##                                 dx);
+    ##         ## print(c(i,j,mass.matrix.entry));
+    ##         mass.mat[i,j]=mass.matrix.entry;
+    ##         mass.mat[j,i]=mass.matrix.entry;
+    ##     }
+    ## }
     ## SYSTEM MATRICES END ###
     
     ## ## eigenvalues START ###
@@ -1357,62 +1388,76 @@ blackbox <- function(log.sigma2.mu.vector, problem.parameters,
     ## ## eigenvalues END ###
     
     ## ## ICs START ###
-    ic.index = which(abs(x-problem.parameters$x.ic)<=dx/2)
+    x.ic.index = which(abs(x-problem.parameters$x.ic)<=dx/2)
+    y.ic.index = which(abs(y-problem.parameters$y.ic)<=dy/2)
     b = rep(NA, K);
     for (i in seq(1,K)) {
-        b[i] = orthonormal.function.list[[i]][ic.index];
+        b[i] = basis.function(x[x.ic.index], y[y.ic.index],
+                              raw.function.list[[k]], problem.parameters);
     }
-    IC.vec = solve(mass.mat, b);
+    ## IC.vec = solve(mass.mat, b);
+    IC.vec = b;
     ## ## ICs END ###
     
     ## ## APPROX SOLUTION START ###
     coefs = (eig$vectors) %*%
-        diag(exp(-eig$values * problem.parameters$t)) %*%
+        diag(exp(eig$values * problem.parameters$t)) %*%
         t(eig$vectors) %*% IC.vec;
 
-    if (PLOT.SOLUTION) {
-        exact.solution = univariate.solution(x,problem.parameters);
-        png(filename=paste("solution-K-", K, ".png", sep=""),
-            width=1200, height=1200,res=300);
-        par(mar = c(5,4,2,1));
-        plot(x,univariate.solution.approx(coefs,x,
-                                          orthonormal.function.list,K),type="l",
-             xlab=paste("K=",K,sep=""),
-             ylab=paste("q(x,t), t=", problem.parameters$t, sep=""));
-        lines(x, exact.solution, col="green",
-              lty="dashed", lwd = 2);
-        dev.off();
-    }
-    ## ## APPROX SOLUTION END ###
+    approx.sol <- bivariate.solution.approx(coefficients=coefficients,
+                                            coefs=coefs,
+                                            x=x[seq(1,length(x),by=10)],
+                                            y=y[seq(1,length(x),by=10)],
+                                            raw.function.list=raw.function.list,
+                                            problem.parameters=problem.parameters);
 
-    ## ## CHECKING PDE START ###
-    A = solve(mass.mat) %*% stiff.mat;
-    ## plot(x,univariate.solution.approx.dt(coefs, A),type="l", col="red");
-    ## lines(x,0.5*(problem.parameters$sigma.2)*
-    ##         univariate.solution.approx.dx.dx(coefs),
-    ##       lty="dashed");
+    filled.contour(x[seq(1,length(x),by=10)],
+          y[seq(1,length(x),by=10)],
+          approx.sol);
+    
+    ## if (PLOT.SOLUTION) {
+    ##     exact.solution = univariate.solution(x,problem.parameters);
+    ##     png(filename=paste("solution-K-", K, ".png", sep=""),
+    ##         width=1200, height=1200,res=300);
+    ##     par(mar = c(5,4,2,1));
+    ##     plot(x,univariate.solution.approx(coefs,x,
+    ##                                       orthonormal.function.list,K),type="l",
+    ##          xlab=paste("K=",K,sep=""),
+    ##          ylab=paste("q(x,t), t=", problem.parameters$t, sep=""));
+    ##     lines(x, exact.solution, col="green",
+    ##           lty="dashed", lwd = 2);
+    ##     dev.off();
+    ## }
+    ## ## ## APPROX SOLUTION END ###
 
-    if (MINIMIZE.REMAINDER) {
-        difference2 =
-            (univariate.solution.approx.dt(coefs, A, x, K,
-                                           orthonormal.function.list) -
-             0.5*(problem.parameters$sigma.2)*
-             univariate.solution.approx.dx.dx(coefs=coefs,
-                                              coefficients=coefficients,
-                                              x=x,
-                                              K=K,
-                                              raw.function.list=raw.function.list,
-                                              problem.parameters=problem.parameters
-                                              ))^2;
-        norm.diff2 = sum(difference2*dx);
-        ## print(norm.diff2);
-        ## ## CHECKING PDE END ###
-        return (norm.diff2);
-    } else {
-        exact.solution = univariate.solution(x,problem.parameters);
-        difference = sum((univariate.solution.approx(coefs,x,
-                                                orthonormal.function.list,K) -
-                          exact.solution)^2*dx);
-        return (difference);
-    }
+    ## ## ## CHECKING PDE START ###
+    ## A = solve(mass.mat) %*% stiff.mat;
+    ## ## plot(x,univariate.solution.approx.dt(coefs, A),type="l", col="red");
+    ## ## lines(x,0.5*(problem.parameters$sigma.2)*
+    ## ##         univariate.solution.approx.dx.dx(coefs),
+    ## ##       lty="dashed");
+
+    ## if (MINIMIZE.REMAINDER) {
+    ##     difference2 =
+    ##         (univariate.solution.approx.dt(coefs, A, x, K,
+    ##                                        orthonormal.function.list) -
+    ##          0.5*(problem.parameters$sigma.2)*
+    ##          univariate.solution.approx.dx.dx(coefs=coefs,
+    ##                                           coefficients=coefficients,
+    ##                                           x=x,
+    ##                                           K=K,
+    ##                                           raw.function.list=raw.function.list,
+    ##                                           problem.parameters=problem.parameters
+    ##                                           ))^2;
+    ##     norm.diff2 = sum(difference2*dx);
+    ##     ## print(norm.diff2);
+    ##     ## ## CHECKING PDE END ###
+    ##     return (norm.diff2);
+    ## } else {
+    ##     exact.solution = univariate.solution(x,problem.parameters);
+    ##     difference = sum((univariate.solution.approx(coefs,x,
+    ##                                             orthonormal.function.list,K) -
+    ##                       exact.solution)^2*dx);
+    ##     return (difference);
+    ## }
 }
