@@ -126,9 +126,11 @@ product.coefficient <- function(raw.function.params.1,
     return (out);
 }
 
-basis.function <- function(x, function.params, problem.parameters) {
-    out = (x-problem.parameters$a)*(problem.parameters$b-x)*
-        dnorm(x,function.params[1],sqrt(function.params[2]));
+basis.function <- function(x,y, function.params, problem.parameters) {
+    out = (x-problem.parameters$ax)*(problem.parameters$bx-x)*
+        (y-problem.parameters$ay)*(problem.parameters$by-y)*
+        dnorm(x,function.params[1],sqrt(function.params[3]))*
+        dnorm(x,function.params[2],sqrt(function.params[4]));
     return (out);
 }
 
@@ -175,7 +177,13 @@ norm.raw.function <- function(function.params, a, b) {
 project <- function(raw.function.params.1,
                     raw.function.params.2,
                     problem.parameters,
-                    x,y) {
+                    x,y,
+                    dx,dy) {
+    
+    ax = problem.parameters$ax;
+    bx = problem.parameters$bx;
+    ay = problem.parameters$ay;
+    by = problem.parameters$by;
     
     mu.1.x = raw.function.params.1[1];
     mu.1.y = raw.function.params.1[2];
@@ -187,8 +195,253 @@ project <- function(raw.function.params.1,
     sigma2.2.x = raw.function.params.2[3];
     sigma2.2.y = raw.function.params.2[4];
 
-    out = 
+    integral.x = sum((x-ax)^2*
+                     (bx-x)^2*
+                     dnorm(x,mu.1.x,sqrt(sigma2.1.x))*
+                     dnorm(x,mu.2.x,sqrt(sigma2.2.x)))*dx;
+
+    integral.y = sum((y-ay)^2*
+                     (by-y)^2*
+                     dnorm(y,mu.1.y,sqrt(sigma2.1.y))*
+                     dnorm(y,mu.2.y,sqrt(sigma2.2.y)))*dy;
     
+    out = integral.x * integral.y;
+    return (out);
+}
+
+project.dx.dx <- function(raw.function.params.1,
+                          raw.function.params.2,
+                          problem.parameters,
+                          x,y,
+                          dx,dy) {
+    
+    ax = problem.parameters$ax;
+    bx = problem.parameters$bx;
+    ay = problem.parameters$ay;
+    by = problem.parameters$by;
+    
+    mu.1.x = raw.function.params.1[1];
+    mu.1.y = raw.function.params.1[2];
+    sigma2.1.x = raw.function.params.1[3];
+    sigma2.1.y = raw.function.params.1[4];
+
+    mu.2.x = raw.function.params.2[1];
+    mu.2.y = raw.function.params.2[2];
+    sigma2.2.x = raw.function.params.2[3];
+    sigma2.2.y = raw.function.params.2[4];
+
+    deriv.x.1 = ((problem.parameters$bx-x)+
+                 ##
+                 -(x-problem.parameters$ax)+
+                 ##
+                 -(x-problem.parameters$ax)*
+                 (problem.parameters$bx-x)*
+                 (x-mu.1.x)/
+                 sigma2.1.x)*
+        dnorm(x,
+              raw.function.params.1[1],
+              sqrt(raw.function.params.1[3]));
+
+    deriv.x.2 = ((problem.parameters$bx-x)+
+                 ##
+                 -(x-problem.parameters$ax)+
+                 ##
+                 -(x-problem.parameters$ax)*
+                 (problem.parameters$bx-x)*
+                 (x-raw.function.params.2[1])/
+                 raw.function.params.2[3])*
+        dnorm(x,
+              raw.function.params.2[1],
+              sqrt(raw.function.params.2[3]));
+    
+    
+    integral.x = sum(deriv.x.1*deriv.x.2)*dx;
+
+    integral.y = sum((y-ay)^2*
+                     (by-y)^2*
+                     dnorm(y,mu.1.y,sqrt(sigma2.1.y))*
+                     dnorm(y,mu.2.y,sqrt(sigma2.2.y)))*dy;
+    
+    out = integral.x * integral.y;
+    return (out);
+}
+
+project.dy.dy <- function(raw.function.params.1,
+                          raw.function.params.2,
+                          problem.parameters,
+                          x,y,
+                          dx,dy) {
+    
+    ax = problem.parameters$ax;
+    bx = problem.parameters$bx;
+    ay = problem.parameters$ay;
+    by = problem.parameters$by;
+    
+    mu.1.x = raw.function.params.1[1];
+    mu.1.y = raw.function.params.1[2];
+    sigma2.1.x = raw.function.params.1[3];
+    sigma2.1.y = raw.function.params.1[4];
+
+    mu.2.x = raw.function.params.2[1];
+    mu.2.y = raw.function.params.2[2];
+    sigma2.2.x = raw.function.params.2[3];
+    sigma2.2.y = raw.function.params.2[4];
+
+    deriv.y.1 = ((problem.parameters$by-y)+
+                 ##
+                 -(y-problem.parameters$ay)+
+                 ##
+                 -(y-problem.parameters$ay)*
+                 (problem.parameters$by-y)*
+                 (y-mu.1.y)/
+                 sigma2.1.y)*
+        dnorm(y,
+              mu.1.y,
+              sqrt(sigma2.1.y));
+
+    deriv.y.2 = ((problem.parameters$by-y)+
+                 ##
+                 -(y-problem.parameters$ay)+
+                 ##
+                 -(y-problem.parameters$ay)*
+                 (problem.parameters$by-y)*
+                 (y-mu.2.y)/
+                 sigma2.2.y)*
+        dnorm(y,
+              mu.2.y,
+              sqrt(sigma2.2.y));
+    
+    
+    integral.y = sum(deriv.y.1*deriv.y.2)*dx;
+
+    integral.x = sum((x-ax)^2*
+                     (bx-x)^2*
+                     dnorm(x,mu.1.x,sqrt(sigma2.1.x))*
+                     dnorm(x,mu.2.x,sqrt(sigma2.2.x)))*dx;
+    
+    out = integral.x * integral.y;
+    return (out);
+}
+
+project.dx.dy <- function(raw.function.params.1,
+                          raw.function.params.2,
+                          problem.parameters,
+                          x,y,
+                          dx,dy) {
+    
+    ax = problem.parameters$ax;
+    bx = problem.parameters$bx;
+    ay = problem.parameters$ay;
+    by = problem.parameters$by;
+    
+    mu.1.x = raw.function.params.1[1];
+    mu.1.y = raw.function.params.1[2];
+    sigma2.1.x = raw.function.params.1[3];
+    sigma2.1.y = raw.function.params.1[4];
+
+    mu.2.x = raw.function.params.2[1];
+    mu.2.y = raw.function.params.2[2];
+    sigma2.2.x = raw.function.params.2[3];
+    sigma2.2.y = raw.function.params.2[4];
+
+    deriv.x.1 = ((problem.parameters$bx-x)+
+                 ##
+                 -(x-problem.parameters$ax)+
+                 ##
+                 -(x-problem.parameters$ax)*
+                 (problem.parameters$bx-x)*
+                 (x-mu.1.x)/
+                 sigma2.1.x)*
+        dnorm(x,
+              mu.1.x,
+              sqrt(sigma2.1.x));
+
+    deriv.y.2 = ((problem.parameters$by-y)+
+                 ##
+                 -(y-problem.parameters$ay)+
+                 ##
+                 -(y-problem.parameters$ay)*
+                 (problem.parameters$by-y)*
+                 (y-mu.2.y)/
+                 sigma2.2.y)*
+        dnorm(y,
+              mu.2.y,
+              sqrt(sigma2.2.y));
+    
+    
+    integral.x = sum(deriv.x.1*
+                     (x-ax)*(bx-x)*
+                     dnorm(x,mu.2.x*sqrt(sigma2.2.x)))*
+        dx;
+
+    integral.y = sum((y-ay)*
+                     (by-y)*
+                     dnorm(y,mu.1.y,sqrt(sigma2.1.y))*
+                     deriv.y.2)*
+        dy;
+    
+    out = integral.x * integral.y;
+    return (out);
+}
+
+project.dy.dx <- function(raw.function.params.1,
+                          raw.function.params.2,
+                          problem.parameters,
+                          x,y,
+                          dx,dy) {
+    
+    ax = problem.parameters$ax;
+    bx = problem.parameters$bx;
+    ay = problem.parameters$ay;
+    by = problem.parameters$by;
+    
+    mu.1.x = raw.function.params.1[1];
+    mu.1.y = raw.function.params.1[2];
+    sigma2.1.x = raw.function.params.1[3];
+    sigma2.1.y = raw.function.params.1[4];
+
+    mu.2.x = raw.function.params.2[1];
+    mu.2.y = raw.function.params.2[2];
+    sigma2.2.x = raw.function.params.2[3];
+    sigma2.2.y = raw.function.params.2[4];
+
+    deriv.x.2 = ((problem.parameters$bx-x)+
+                 ##
+                 -(x-problem.parameters$ax)+
+                 ##
+                 -(x-problem.parameters$ax)*
+                 (problem.parameters$bx-x)*
+                 (x-mu.2.x)/
+                 sigma2.2.x)*
+        dnorm(x,
+              mu.2.x,
+              sqrt(sigma2.2.x));
+
+    deriv.y.1 = ((problem.parameters$by-y)+
+                 ##
+                 -(y-problem.parameters$ay)+
+                 ##
+                 -(y-problem.parameters$ay)*
+                 (problem.parameters$by-y)*
+                 (y-mu.1.y)/
+                 sigma2.1.y)*
+        dnorm(y,
+              mu.1.y,
+              sqrt(sigma2.1.y));
+    
+    
+    integral.x = sum(deriv.x.2*
+                     (x-ax)*(bx-x)*
+                     dnorm(x,mu.1.x*sqrt(sigma2.1.x)))*
+        dx;
+
+    integral.y = sum((y-ay)*
+                     (by-y)*
+                     dnorm(y,mu.2.y,sqrt(sigma2.2.y))*
+                     deriv.y.1)*
+        dy;
+    
+    out = integral.x * integral.y;
     return (out);
 }
     
@@ -830,7 +1083,8 @@ apply.generator <- function(poly, k, problem.parameters.x) {
 }
 
 
-blackbox <- function(log.sigma2.mu.vector, problem.parameters, dx,
+blackbox <- function(log.sigma2.mu.vector, problem.parameters,
+                     dx, dy,
                      PLOT.SOLUTION,
                      MINIMIZE.REMAINDER) {
     source("1-d-solution.R");
@@ -873,9 +1127,8 @@ blackbox <- function(log.sigma2.mu.vector, problem.parameters, dx,
         for (l in seq(k,K)) {
             raw.inner.products[k,l] = project(raw.function.list[[k]],
                                               raw.function.list[[l]],
-                                              problem.parameters$a,
-                                              problem.parameters$b);
-            
+                                              problem.parameters,
+                                              x,y,dx,dy);
             raw.inner.products[l,k] = raw.inner.products[k,l];
         }
     }
@@ -910,10 +1163,7 @@ blackbox <- function(log.sigma2.mu.vector, problem.parameters, dx,
                     norm2 = norm2 +
                         coefficients[k,l1]*
                         coefficients[k,l2]*
-                        project(raw.function.list[[l1]],
-                                raw.function.list[[l2]],
-                                problem.parameters$a,
-                                problem.parameters$b);
+                        raw.inner.products[l1,l2];
                 }
             }
             norm = sqrt(norm2);
@@ -923,59 +1173,59 @@ blackbox <- function(log.sigma2.mu.vector, problem.parameters, dx,
     }
     ## gram schmidt END ###
 
-    ## ## ## ## ## ## ## ## ##
-    ## moment matrix START  ##
-    for (k in seq(1,K)) {
-    	for (l in seq(1,K)) {
+    ## ## ## ## ## ## ## ## ## ##
+    ## ## moment matrix START  ##
+    ## for (k in seq(1,K)) {
+    ## 	for (l in seq(1,K)) {
 	    
-	    sigma2 = 1/(1/raw.function.list[[k]][2]+
-	    	        1/raw.function.list[[l]][2]);
-	    mu = sigma2 *
-                (raw.function.list[[k]][1]/raw.function.list[[k]][2]+
-                 raw.function.list[[l]][1]/raw.function.list[[l]][2]);
+    ##         sigma2 = 1/(1/raw.function.list[[k]][2]+
+    ##         	        1/raw.function.list[[l]][2]);
+    ##         mu = sigma2 *
+    ##             (raw.function.list[[k]][1]/raw.function.list[[k]][2]+
+    ##              raw.function.list[[l]][1]/raw.function.list[[l]][2]);
             
             
-    	    alpha = (problem.parameters$a-mu)/sqrt(sigma2);
-    	    beta = (problem.parameters$b-mu)/sqrt(sigma2);
+    ## 	    alpha = (problem.parameters$a-mu)/sqrt(sigma2);
+    ## 	    beta = (problem.parameters$b-mu)/sqrt(sigma2);
             
-    	    PP = pnorm(beta) - pnorm(alpha);
+    ## 	    PP = pnorm(beta) - pnorm(alpha);
             
-	    Ls = rep(NA,6);
-    	    for (i in seq(1,6)) {
-            	if (i==1) {
-                    Ls[i] = 1;
-                } else if (i==2) {
-                    Ls[i] = -(dnorm(beta)-dnorm(alpha))/
-                        PP;
-                } else {
-                    Ls[i] = -(beta^(i-2)*dnorm(beta)-alpha^(i-2)*dnorm(alpha))/
-                        PP + (i-2)*Ls[i-2];        
-                }
-            }
+    ##         Ls = rep(NA,6);
+    ## 	    for (i in seq(1,6)) {
+    ##         	if (i==1) {
+    ##                 Ls[i] = 1;
+    ##             } else if (i==2) {
+    ##                 Ls[i] = -(dnorm(beta)-dnorm(alpha))/
+    ##                     PP;
+    ##             } else {
+    ##                 Ls[i] = -(beta^(i-2)*dnorm(beta)-alpha^(i-2)*dnorm(alpha))/
+    ##                     PP + (i-2)*Ls[i-2];        
+    ##             }
+    ##         }
             
-            Ms = sapply(seq(0,5),
-                        function(k) {sum(choose(k,seq(0,k))*
-                                         sqrt(sigma2)^(seq(0,k))*
-                                         mu^(k-seq(0,k))*
-                                         Ls[seq(0,k)+1])});
+    ##         Ms = sapply(seq(0,5),
+    ##                     function(k) {sum(choose(k,seq(0,k))*
+    ##                                      sqrt(sigma2)^(seq(0,k))*
+    ##                                      mu^(k-seq(0,k))*
+    ##                                      Ls[seq(0,k)+1])});
             
-            Ms = Ms*PP*sqrt(2*pi*sigma2);
+    ##         Ms = Ms*PP*sqrt(2*pi*sigma2);
             
-    	    moments[k,l,] = Ms;
+    ## 	    moments[k,l,] = Ms;
             
-	}	
-    }
-    ## moment matrix END ##	
-    ## ## ## ## ## ## ## ##
+    ##     }	
+    ## }
+    ## ## moment matrix END ##	
+    ## ## ## ## ## ## ## ## ##
     
     ## plotting orthonormal bases START ###
     if (PLOT.SOLUTION) {
         for (k in seq(1,K)) {
             X = sapply(seq(1,K), function(y,x)
                    {return (coefficients[k,y]*
-                            basis.function(x,
-                                           raw.function.list[[y]],
-                                           problem.parameters))},
+                            basis.function(x=x,y=0.5,
+                                           function.params=raw.function.list[[y]],
+                                           problem.parameters=problem.parameters))},
                    x);
             y = apply(X,1,sum);
             
@@ -1027,74 +1277,64 @@ blackbox <- function(log.sigma2.mu.vector, problem.parameters, dx,
     ## ## check representation of IC END ###
 
     ## SYSTEM MATRICES START ###
-    orthonormal.function.list = vector(mode="list",
-                                       length=K);
-    derivative.function.list = vector(mode="list",
-                                      length=K);
+    derivative.xx.matrix <- matrix(nrow = K,
+                                   ncol = K);
+    derivative.yy.matrix <- matrix(nrow = K,
+                                   ncol = K);
+    derivative.xy.matrix <- matrix(nrow = K,
+                                   ncol = K);
+    derivative.yx.matrix <- matrix(nrow = K,
+                                   ncol = K);
     for (k in seq(1,K)) {
-        Psi = rep(0,length(x));
-        for (m in seq(1,K)) {
-            Psi = Psi +
-                coefficients[k,m]*basis.function(x,
-                                                 raw.function.list[[m]],
-                                                 problem.parameters);
-        }
-        orthonormal.function.list[[k]] = Psi;
+        for (l in seq(1,K)) {
 
-        derivative.function.list[[k]] =
-            ((problem.parameters$b-x)+
-             ##
-             -(x-problem.parameters$a)+
-             ##
-             -(x-problem.parameters$a)*
-             (problem.parameters$b-x)*
-             (x-raw.function.list[[k]][1])/
-             raw.function.list[[k]][2])*
-            dnorm(x,
-                  raw.function.list[[k]][1],
-                  sqrt(raw.function.list[[k]][2]));
-        
+            derivative.xx.matrix[k,l] =
+                project.dx.dx(raw.function.list[[k]],
+                              raw.function.list[[l]],
+                              problem.parameters,
+                              x,y,dx,dy);
+                                                
+            
+            derivative.yy.matrix[k,l] =
+                project.dy.dy(raw.function.list[[k]],
+                              raw.function.list[[l]],
+                              problem.parameters,
+                              x,y,dx,dy);
+            
+            derivative.xy.matrix[k,l] =
+                project.dx.dy(raw.function.list[[k]],
+                              raw.function.list[[l]],
+                              problem.parameters,
+                              x,y,dx,dy);
+
+            derivative.yx.matrix[k,l] =
+                project.dy.dx(raw.function.list[[k]],
+                              raw.function.list[[l]],
+                              problem.parameters,
+                              x,y,dx,dy);
+        }
     }
 
-    stiff.mat <- matrix(nrow=K,ncol=K);
-    stiff.mat.numeric <- matrix(nrow=K,ncol=K);
-    
-    for (i in seq(1,K)) {
-        current.basis.dx.i.numeric = (orthonormal.function.list[[i]][-1]-
-                                      orthonormal.function.list[[i]][-length(x)])/dx;
-        current.basis.dx.i.analytic =
-            apply(sapply(seq(1,K),
-                         function(x) {coefficients[i,x]*
-                                          derivative.function.list[[x]]}),
-                  1, sum);
+    derivatives.matrix =
+        derivative.xx.matrix +
+        derivative.yy.matrix +
+        0.5*(derivative.xy.matrix+
+             derivative.yx.matrix);
         
+    stiff.mat <- matrix(nrow=K,ncol=K);
+    for (i in seq(1,K)) {
         for (j in seq(i,K)) {
-            current.basis.dx.j.numeric =
-                (orthonormal.function.list[[j]][-1]-
-                 orthonormal.function.list[[j]][-length(x)])/dx;
-
-            current.basis.dx.j.analytic =
-            apply(sapply(seq(1,K),
-                         function(x) {coefficients[j,x]*
-                                          derivative.function.list[[x]]}),
-                  1, sum);
             
-            stiff.matrix.entry.numeric = sum(current.basis.dx.i.numeric*
-                                             current.basis.dx.j.numeric*dx);
+            stiff.matrix.entry = 
+                as.double(coefficients[i,] %*%
+                          (derivatives.matrix %*%
+                          coefficients[,j]);
 
-            stiff.matrix.entry = sum(current.basis.dx.i.analytic*
-                                     current.basis.dx.j.analytic)*dx;
+
                 
-            
-          
             ## print(c(i,j,stiff.matrix.entry));
             stiff.mat[i,j]=1/2*problem.parameters$sigma.2*stiff.matrix.entry;
             stiff.mat[j,i]=1/2*problem.parameters$sigma.2*stiff.matrix.entry;
-
-            stiff.mat.numeric[i,j]=1/2*problem.parameters$sigma.2*
-                stiff.matrix.entry.numeric;
-            stiff.mat.numeric[j,i]=1/2*problem.parameters$sigma.2*
-                stiff.matrix.entry.numeric;
         }
     }
     
