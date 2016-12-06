@@ -131,7 +131,7 @@ basis.function <- function(x,y, function.params, problem.parameters) {
     out = (x-problem.parameters$ax)*(problem.parameters$bx-x)*    
         (y-problem.parameters$ay)*(problem.parameters$by-y)*
         dnorm(x,function.params[1],sqrt(function.params[3]))*
-        dnorm(x,function.params[2],sqrt(function.params[4]));
+        dnorm(y,function.params[2],sqrt(function.params[4]));
     return (out);
 }
 
@@ -1172,18 +1172,14 @@ blackbox <- function(log.sigma2.mu.vector, problem.parameters,
             norm = sqrt(raw.inner.products[1,1]);
             coefficients[k,k] = 1/norm;
             norms[k] = norm;
-            
         } else {
-            Cs = sapply(seq(1,k-1),
+            Cs = sapply(seq(1,K),
                         function(x) {
-                            sum(raw.inner.products[k,]*
-                                coefficients[x,])
-                        });
-            
-            for (m in seq(1,K)) {
-                coefficients[k,m] = 1*(k==m) -
-                    sum(Cs*coefficients[seq(1,k-1),m]);
-            }
+                            sum(t(t(coefficients[seq(1,k-1),])*
+                                  raw.inner.products[k,])*
+                                coefficients[seq(1,k-1),x])});
+            Cs[k] = Cs[k]-1;
+            coefficients[k,] = -Cs;
                         
             norm2 = 0;
             for (l1 in seq(1,k)) {
@@ -1368,7 +1364,6 @@ blackbox <- function(log.sigma2.mu.vector, problem.parameters,
             stiff.mat[j,i]=stiff.matrix.entry;
         }
     }
-    
 
     ## mass.mat <- matrix(nrow=K,ncol=K);
     ## for (i in seq(1,K)) {
@@ -1404,19 +1399,25 @@ blackbox <- function(log.sigma2.mu.vector, problem.parameters,
     ## ## ICs END ###
     
     ## ## APPROX SOLUTION START ###
-    coefs = (eig$vectors) %*%
-        diag(exp(eig$values * problem.parameters$t)) %*%
-        t(eig$vectors) %*% IC.vec;
+    if (K==1) {
+        coefs = (eig$vectors) *
+            as.double(exp(eig$values * problem.parameters$t)) *
+            t(eig$vectors) * IC.vec;
+    } else {
+        coefs = (eig$vectors) %*%
+            diag(exp(eig$values * problem.parameters$t)) %*%
+            t(eig$vectors) %*% IC.vec;
+    }
 
     approx.sol <- bivariate.solution.approx(coefficients=coefficients,
                                             coefs=coefs,
-                                            x=x[seq(1,length(x),by=10)],
-                                            y=y[seq(1,length(x),by=10)],
+                                            x=x[seq(1,length(x),by=2)],
+                                            y=y[seq(1,length(y),by=2)],
                                             raw.function.list=raw.function.list,
                                             problem.parameters=problem.parameters);
 
-    filled.contour(x[seq(1,length(x),by=10)],
-          y[seq(1,length(x),by=10)],
+    contour(x[seq(1,length(x),by=2)],
+          y[seq(1,length(x),by=2)],
           approx.sol);
     
     ## if (PLOT.SOLUTION) {
