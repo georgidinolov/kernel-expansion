@@ -1129,7 +1129,7 @@ blackbox <- function(log.sigma2.mu.vector, problem.parameters, dx,
     ## SYSTEM MATRICES END ###
     
     ## ## eigenvalues START ###
-    eig <- eigen(stiff.mat);
+    eig <- eigen(stiff.mat.numeric);
     ## ## eigenvalues END ###
     
     ## ## ICs START ###

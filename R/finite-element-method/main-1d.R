@@ -1,18 +1,13 @@
 rm(list=ls());
-source("2-d-solution.R");
+source("1-d-solution.R");
 
 problem.parameters = NULL;
-problem.parameters$ax = -1;
-problem.parameters$bx = 1;
-problem.parameters$ay = -1;
-problem.parameters$by = 1;
+problem.parameters$a = -1;
+problem.parameters$b = 1;
 problem.parameters$x.ic = 0.2;
-problem.parameters$y.ic = 0.0;
 problem.parameters$number.terms = 1000;
-problem.parameters$sigma.2.x = 0.5;
-problem.parameters$sigma.2.y = 0.0001;
-problem.parameters$rho = 0.0;
-problem.parameters$t = 0.001;
+problem.parameters$sigma.2 = 0.5;
+problem.parameters$t = 0.2;
 
 Ks = seq(5,5);
 
@@ -29,23 +24,15 @@ log.sigma2.mu.vector.list = vector(mode="list",
 for (i in seq(1,length(Ks))) {
     K=Ks[i];
     log.sigma2.vector=log(
-        rep(c(((problem.parameters$bx-problem.parameters$ax)/K)^2,
-        ((problem.parameters$by-problem.parameters$ay)/K)^2),
-        K)) +
-        rep(log(2), 2*K);
-    mu.vector = seq(problem.parameters$ax,
-                    problem.parameters$bx,
-                    length.out=length(log.sigma2.vector)/2);
-
-    mu.vector = unlist(lapply(X=mu.vector, function(x) {c(x,x)}));
-    mu.vector = c(-0.8,-0.8, -0.8,0.8, 0.8,-0.8, 0.8,0.8, 0,0);
+        rep((problem.parameters$b-problem.parameters$a)^2/K, K));
+    mu.vector = seq(problem.parameters$a,
+                    problem.parameters$b,
+                    length.out=K);
     
     log.sigma2.mu.vector = c(log.sigma2.vector,
                              mu.vector);
     dx = 0.001;
-    dy = 0.001;
-    
-    bb = blackbox(log.sigma2.mu.vector, problem.parameters, dx, dy,
+    bb = blackbox(log.sigma2.mu.vector, problem.parameters, dx,
                   TRUE,TRUE);
     ## L2.remainders.before[i] = bb;
     ## L2.diff.before[i] = blackbox(log.sigma2.mu.vector, problem.parameters,
