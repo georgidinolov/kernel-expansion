@@ -7,9 +7,9 @@ problem.parameters$b = 1;
 problem.parameters$x.ic = 0.2;
 problem.parameters$number.terms = 1000;
 problem.parameters$sigma.2 = 1.5;
-problem.parameters$t = 0.2;
+problem.parameters$t = 0.1;
 
-Ks = seq(5,5);
+Ks = seq(5,10);
 
 L2.remainders.before = rep(NA, length(Ks));
 L2.diff.before = rep(NA, length(Ks));
