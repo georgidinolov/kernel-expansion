@@ -1,222 +1,5 @@
 ## performing gram-schmidt orthogonalization on the list of functions
 ## provided.
-deriv.cross.term.intergral <- function(m, l,
-                                       raw.function.list,
-                                       problem.parameters,
-                                       moments) {
-    a=problem.parameters$a;
-    b=problem.parameters$b;
-
-    mu.m = raw.function.list[[m]][1];
-    sigma2.m = raw.function.list[[m]][2];
-    mu.l = raw.function.list[[l]][1];
-    sigma2.l = raw.function.list[[l]][2];
-    
-    sigma2 = (1/raw.function.list[[m]][2] +
-              1/raw.function.list[[l]][2])^(-1);
-    mu = sigma2*(raw.function.list[[m]][1]/
-                 raw.function.list[[m]][2] +
-                 raw.function.list[[l]][1]/
-                 raw.function.list[[l]][2]);
-    C = product.coefficient(raw.function.list[[m]],
-                            raw.function.list[[l]]);
-    terms = matrix(nrow = 3, ncol = 3);
-    ## term 1: \[ (b-x)^2 * N(x|mu_m, sigma^2_m) * N(x|mu_l,
-    ##            sigma^2_l) =
-    ##            (b^2-2bx+x^2) *
-    ##            product.coef * ker(x| (1/sigma^2_m +
-    ##            1/sigma^2_l)^{-1}(mu_m/sigma^2_m + mu_l/sigma^2_l,
-    ##            (1/sigma^2_m + 1/sigma^2_l)^{-1}) \]
-    terms[1,1] = b^2*moments[m,l,1] -2*b*moments[m,l,2] + moments[m,l,3];
-
-    ## term 2: \[ (b-x)*-(x-a) * N(x|mu_m, sigma^2_m) * N(x|mu_l,
-    ##            sigma^2_l) =
-    ##            (-bx + ba + x^2 - xa) *
-    ##            product.coef * ker(x| (1/sigma^2_m +
-    ##            1/sigma^2_l)^{-1}(mu_m/sigma^2_m + mu_l/sigma^2_l,
-    ##            (1/sigma^2_m + 1/sigma^2_l)^{-1}) \]
-
-    terms[1,2] =
-        a*b*moments[m,l,1] - a*moments[m,l,2] - b*moments[m,l,2] + moments[m,l,3];
-
-    ## term 3: \[ (b-x)*(x-a)*-(x-mu_l)/sigma^2_l * N(x|mu_m, sigma^2_m) * N(x|mu_l,
-    ##            sigma^2_l) =
-    ## (-a b μ_l + a b x - a x^2 + a μ_l x - b x^2 + b μ_l x + x^3 - μ_l x^2)
-    ##                  /sigma^2_l *
-    ##            product.coef * ker(x| (1/sigma^2_m +
-    ##            1/sigma^2_l)^{-1}(mu_m/sigma^2_m + mu_l/sigma^2_l,
-    ##            (1/sigma^2_m + 1/sigma^2_l)^{-1}) \]
-
-    terms[1,3] = (-a*b^2*mu.l*moments[m,l,1]+
-        b*moments[m,l,2]*(mu.l*(2*a + b) + a*b) +
-        moments[m,l,3]*(-mu.l*(a + 2*b) - b*(2*a + b)) +
-        moments[m,l,4]*(a + 2*b + mu.l) -
-        moments[m,l,5])/sigma2.l;
-
-    ## term 4
-    terms[2,1] = terms[1,2];
-
-    ## terms 5: \[ -1^2*(x-a)^2 * N(x|mu_m, sigma^2_m) * N(x|mu_l,sigma^2_l) =
-    ##             (x^2 - 2xa + a^2) *
-    ##             N(x|mu_m, sigma^2_m) * N(x|mu_l,sigma^2_l) \]
-    terms[2,2] = moments[m,l,3] - 2*a*moments[m,l,2] + a^2*moments[m,l,1];
-
-    ## terms 6: \[ -1*(x-a)^2*(b-x)*-1*(x-mu_l)/sigma^2_l *
-    ##                N(x|mu_m, sigma^2_m) * N(x|mu_l,sigma^2_l) =
-    ## -a^2 b μ_l + a x (μ_l (a + 2 b) + a b) +
-    ##  x^2 (-μ_l (2 a + b) - a (a + 2 b)) +
-    ##  x^3 (2 a + b + μ_l) -
-    ##  x^4 * all the rest \]
-    terms[2,3] = (-a^2*b*mu.l*moments[m,l,1] +
-        a*moments[m,l,2]*(mu.l*(a + 2*b) + a*b) +
-        moments[m,l,3]*(-mu.l*(2*a + b) - a*(a + 2*b)) +
-        moments[m,l,4]*(2*a + b + mu.l) -
-        moments[m,l,5])/sigma2.l;
-
-    ## term 7: \[ (x-a)*(b-x)^2*-1*(x-mu_m)/sigma^2_m *
-    ##                N(x|mu_m, sigma^2_m) * N(x|mu_l,sigma^2_l) =
-    ## -(a b^2 μ_m)/σ^2 + (b x (μ_m (2 a + b) + a b))/σ^2 -
-    ##  (x^2 (μ_m (a + 2 b) + b (2 a + b)))/σ^2 +
-    ##  (x^3 (a + 2 b + μ_m))/σ^2 - x^4/σ^2
-    terms[3,1] = (-(a*b^2*mu.m)*moments[m,l,1] +
-        (b*moments[m,l,2]*(mu.m*(2*a + b) + a*b)) -
-        (moments[m,l,3]*(mu.m*(a + 2*b) + b*(2*a + b))) +
-        (moments[m,l,4]*(a + 2*b + mu.m)) -
-        moments[m,l,5]) /
-        sigma2.m;
-
-    ## term 8:
-    terms[3,2] = (-(a^2*b*mu.m)*moments[m,l,1] +
-        moments[m,l,2]*(a*(mu.m*(a + 2*b) + a*b)) -
-        moments[m,l,3]*((mu.m*(2*a + b) + a*(a + 2*b))) +
-        (moments[m,l,4]*(2*a + b + mu.m)) -
-        moments[m,l,5]) /
-        sigma2.m;
-
-    ## term 9:
-    terms[3,3] = (moments[m,l,1]*(a^2*b^2*mu.l*mu.m) -
-        moments[m,l,2]*(a*b*(mu.l*(2*mu.m*(a + b) + a*b) + a*b*mu.m)) +
-        moments[m,l,3]*((mu.l*(mu.m*(a^2 + 4*a*b + b^2) +
-                               2*a*b*(a + b)) + a*b*(2*mu.m*(a + b) + a*b))) -
-        moments[m,l,4]*((mu.l*(a^2 + 2*mu.m*(a + b) + 4*a*b + b^2) +
-                         mu.m*(a^2 + 4*a*b + b^2) + 2*a*b*(a + b))) +
-        moments[m,l,5]*((a^2 + mu.l*(2*(a + b) + mu.m) + 2*mu.m*(a + b) +
-                         4*a*b + b^2)) -
-        moments[m,l,6]*((2*((a + b) + mu.l + mu.m))))/
-        (sigma2.m*sigma2.l);
-
-    return ( product.coefficient(raw.function.list[[m]],
-                                 raw.function.list[[l]])*
-             sum(apply(X=terms, MARGIN=1, FUN =sum)) );
-}
-
-product.coefficient <- function(raw.function.params.1,
-                                raw.function.params.2) {
-    mu.1 = raw.function.params.1[1];
-    sigma2.1 = raw.function.params.1[2];
-    mu.2 = raw.function.params.2[1];
-    sigma2.2 = raw.function.params.2[2];
-
-    out = sqrt(1 /
-               (4*pi^2*(sigma2.1 * sigma2.2))) *
-        exp(-0.5*(mu.1^2/sigma2.1+mu.2^2/sigma2.2)) *
-        exp(0.5*
-            (1/sigma2.1 + 1/sigma2.2)^(-1)*
-            (mu.1/sigma2.1 + mu.2/sigma2.2)^2);
-    return (out);
-}
-
-basis.function <- function(x, function.params, problem.parameters) {
-    out = (x-problem.parameters$a)*(problem.parameters$b-x)*
-        dnorm(x,function.params[1],sqrt(function.params[2]));
-    return (out);
-}
-
-norm.raw.function <- function(function.params, a, b) {
-    mu = function.params[1];
-    sigma2 = function.params[2]/2;
-
-    alpha = (a-mu)/sqrt(sigma2);
-    beta = (b-mu)/sqrt(sigma2);
-
-    PP = pnorm(beta) - pnorm(alpha);
-    
-    Ls = rep(NA,5);
-    for (i in seq(1,5)) {
-        if (i==1) {
-            Ls[i] = 1;
-        } else if (i==2) {
-            Ls[i] = -(dnorm(beta)-dnorm(alpha))/
-                PP;
-        } else {
-            Ls[i] = -(beta^(i-2)*dnorm(beta)-alpha^(i-2)*dnorm(alpha))/
-                PP + (i-2)*Ls[i-2];        
-        }
-    }
-    
-    Ms = sapply(seq(0,4),
-                function(k) {sum(choose(k,seq(0,k))*
-                                 sqrt(sigma2)^(seq(0,k))*
-                                 mu^(k-seq(0,k))*
-                                 Ls[seq(0,k)+1])});
-        
-    Ms = Ms*PP*sqrt(2*pi*sigma2);
-    
-    out = sqrt((Ms[5] -
-                Ms[4]*2*(a + b) +
-                Ms[3]*(a^2 + b^2 + 4*a*b) -
-                Ms[2]*2*(a*b^2 + b*a^2) +
-                Ms[1]*a^2*b^2) *
-               product.coefficient(function.params,
-                                   function.params));
-    return (out);
-}
-
-project <- function(raw.function.params.1, raw.function.params.2, a, b) {
-    mu.1 = raw.function.params.1[1];
-    sigma2.1 = raw.function.params.1[2];
-    mu.2 = raw.function.params.2[1];
-    sigma2.2 = raw.function.params.2[2];
-
-    sigma2 = 1/(1/sigma2.1 + 1/sigma2.2);
-    mu = sigma2 * (mu.1/sigma2.1 + mu.2/sigma2.2);
-
-    alpha = (a-mu)/sqrt(sigma2);
-    beta = (b-mu)/sqrt(sigma2);
-
-    PP = pnorm(beta) - pnorm(alpha);
-    
-    Ls = rep(NA,5);
-    for (i in seq(1,5)) {
-        if (i==1) {
-            Ls[i] = 1;
-        } else if (i==2) {
-            Ls[i] = -(dnorm(beta)-dnorm(alpha))/
-                PP;
-        } else {
-            Ls[i] = -(beta^(i-2)*dnorm(beta)-alpha^(i-2)*dnorm(alpha))/
-                PP + (i-2)*Ls[i-2];        
-        }
-    }
-    
-    Ms = sapply(seq(0,4),
-                function(k) {sum(choose(k,seq(0,k))*
-                                 sqrt(sigma2)^(seq(0,k))*
-                                 mu^(k-seq(0,k))*
-                                 Ls[seq(0,k)+1])});
-        
-    Ms = Ms*PP*sqrt(2*pi*sigma2);
-    
-    out = (Ms[5] -
-           Ms[4]*2*(a + b) +
-           Ms[3]*(a^2 + b^2 + 4*a*b) -
-           Ms[2]*2*(a*b^2 + b*a^2) +
-           Ms[1]*a^2*b^2) *
-        product.coefficient(raw.function.params.1,
-                            raw.function.params.2);
-    return (out);
-}
-    
 gram.schmidt <- function(problem.parameters, function.list,
                          dx) {
     x = seq(problem.parameters$a,
@@ -263,9 +46,8 @@ univariate.solution.approx.dt <- function(coefs,A,x,K,
     return (out);
 }
 
-
-univariate.solution.approx.dx.dx.numeric <- function(coefs,x,K,
-                                                     orthonormal.function.list) {
+univariate.solution.approx.dx.dx <- function(coefs,x,K,
+                                             orthonormal.function.list) {
     out = rep(0,length(x)-2);
     for (n in seq(1,K)) {
         y = orthonormal.function.list[[n]];
@@ -275,45 +57,6 @@ univariate.solution.approx.dx.dx.numeric <- function(coefs,x,K,
             2*y[seq(2,length(x)-1)] +
             y.m.dx[-length(y.m.dx)])/dx^2;
         out = out + coefs[n]*y.dx.dx;
-    }
-    return (out);
-}
-
-univariate.solution.approx.dx.dx <- function(coefs,
-                                             coefficients,x,K,
-                                             raw.function.list,
-                                             problem.parameters) {
-    a = problem.parameters$a;
-    b = problem.parameters$b;
-    out = rep(0,length(x));
-    for (n in seq(1,K)) {
-
-        Psi = rep(0,length(x));
-        for (m in seq(1,K)) {
-            mu = raw.function.list[[m]][1];
-            sigma2 = raw.function.list[[m]][2];
-            sigma = sqrt(sigma2);
-            
-            Psi = Psi +
-                ##
-                coefficients[n,m]*dnorm(x,mu,sigma)*
-                (-1 +
-                 ##
-                 (b-x)*-1*(x-mu)/sigma2 +
-                 ##
-                 -1 +
-                 ##
-                 -(x-a)*-1*(x-mu)/sigma2 +
-                 ##
-                 (b-x)*-1*(x-mu)/sigma2 +
-                 ##
-                 -(x-a)*-1*(x-mu)/sigma2 +
-                 ##
-                 (x-a)*(b-x)*-1/sigma2 + 
-                 ##
-                 (x-a)*(b-x)*(x-mu)^2/(sigma2)^2)
-        }
-        out = out + coefs[n]*Psi;
     }
     return (out);
 }
@@ -854,6 +597,7 @@ apply.generator <- function(poly, k, problem.parameters.x) {
     }
 }
 
+
 blackbox <- function(log.sigma2.mu.vector, problem.parameters, dx,
                      PLOT.SOLUTION,
                      MINIMIZE.REMAINDER) {
@@ -1036,7 +780,7 @@ blackbox <- function(log.sigma2.mu.vector, problem.parameters, dx,
                                            orthonormal.function.list)[-c(1,
                                                                          length(x))]-
              0.5*(problem.parameters$sigma.2)*
-             univariate.solution.approx.dx.dx.numeric(coefs, x, K,
+             univariate.solution.approx.dx.dx(coefs, x, K,
                                               orthonormal.function.list))^2;
         norm.diff2 = sum(difference2*dx);
             print(norm.diff2);
