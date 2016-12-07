@@ -854,22 +854,22 @@ apply.generator <- function(poly, k, problem.parameters.x) {
     }
 }
 
-
 blackbox <- function(log.sigma2.mu.vector, problem.parameters, dx,
                      PLOT.SOLUTION,
                      MINIMIZE.REMAINDER) {
+    source("1-d-solution.R");
     K = length(log.sigma2.mu.vector)/2;
     sigma2.vector = exp(log.sigma2.mu.vector[seq(1,K)]);
-    mu.vector = log.sigma2.mu.vector[seq(K+1,2*K)];
-
+    mu.vectro = log.sigma2.mu.vector[seq(K+1,2*K)];
     ## gram schmidt START ##
     x = seq(problem.parameters$a,
             problem.parameters$b,
             by=dx);
 
-    raw.function.list = vector(mode="list", length=K);
+    function.list = vector(mode="list", length=K);
     for (k in seq(1,K)) {
-        raw.function.list[[k]] = c(mu.vector[k], sigma2.vector[k]);
+        function.list[[k]] = (x-problem.parameters$a)*(problem.parameters$b-x)*
+            dnorm(x,mean=mu.vector[k],sd=sqrt(sigma2.vector[k]));
         ## ## PLOTTING BASES START ###
         ## if (PLOT.SOLUTION) {
         ##     if (k==1) {
@@ -883,153 +883,70 @@ blackbox <- function(log.sigma2.mu.vector, problem.parameters, dx,
         ## ## PLOTTING BASES END ###
     }
 
-    ## TODO(georgi): This can be vectorized.
-    raw.inner.products <- matrix(nrow=K,ncol=K);
-    for (k in seq(1,K)) {
-        for (l in seq(k,K)) {
-            raw.inner.products[k,l] = project(raw.function.list[[k]],
-                                              raw.function.list[[l]],
-                                              problem.parameters$a,
-                                              problem.parameters$b);
-            
-            raw.inner.products[l,k] = raw.inner.products[k,l];
-        }
-    }
-    
     norms <- rep(NA, K);
-    coefficients <- matrix(0, nrow=K, ncol=K);
-    moments <- array(data=NA, dim=c(K,K,6));
-
-    ## gram-schmidt START ##
+    coefficients <- matrix(nrow=K, ncol=K);
+    orthonormal.function.list <- vector(mode="list",
+                                        length=K);
+    
     for (k in seq(1,K)) {
         if (k==1) {
             ## only normalize
-            norm = sqrt(raw.inner.products[1,1]);
-            coefficients[k,k] = 1/norm;
+            norm = sqrt(sum(function.list[[k]]^2*dx))
+            coefficients[k,k] = 1;
             norms[k] = norm;
-            
+            orthonormal.function.list[[k]] =
+                function.list[[k]]/norm;
         } else {
-            Cs = sapply(seq(1,k-1),
-                        function(x) {
-                            sum(raw.inner.products[k,]*
-                                coefficients[x,])
-                        });
+            for (l in seq(1,k-1)) {
+                coefficients[k,l] = -sum(orthonormal.function.list[[l]]*
+                                         function.list[[k]]*dx);
+            }
+            coefficients[k,k] = 1;
             
-            for (m in seq(1,K)) {
-                coefficients[k,m] = 1*(k==m) -
-                    sum(Cs*coefficients[seq(1,k-1),m]);
+            orthonormal.function.list[[k]] =
+                function.list[[k]];
+            
+            for (l in seq(1,k-1)) {
+                orthonormal.function.list[[k]] =
+                    orthonormal.function.list[[k]] +
+                    coefficients[k,l]*orthonormal.function.list[[l]];
             }
-                        
-            norm2 = 0;
-            for (l1 in seq(1,k)) {
-                for (l2 in seq(1,k)) {
-                    norm2 = norm2 +
-                        coefficients[k,l1]*
-                        coefficients[k,l2]*
-                        project(raw.function.list[[l1]],
-                                raw.function.list[[l2]],
-                                problem.parameters$a,
-                                problem.parameters$b);
-                }
-            }
-            norm = sqrt(norm2);
+            norm = sqrt(sum(orthonormal.function.list[[k]]^2*dx));
             norms[k] = norm;
-            coefficients[k,] = coefficients[k,]/norm;
+            orthonormal.function.list[[k]] =
+                orthonormal.function.list[[k]]/norm;
         }
     }
-    ## gram schmidt END ###
-
-    ## ## ## ## ## ## ## ## ##
-    ## moment matrix START  ##
-    for (k in seq(1,K)) {
-    	for (l in seq(1,K)) {
-	    
-	    sigma2 = 1/(1/raw.function.list[[k]][2]+
-	    	        1/raw.function.list[[l]][2]);
-	    mu = sigma2 *
-                (raw.function.list[[k]][1]/raw.function.list[[k]][2]+
-                 raw.function.list[[l]][1]/raw.function.list[[l]][2]);
-            
-            
-    	    alpha = (problem.parameters$a-mu)/sqrt(sigma2);
-    	    beta = (problem.parameters$b-mu)/sqrt(sigma2);
-            
-    	    PP = pnorm(beta) - pnorm(alpha);
-            
-	    Ls = rep(NA,6);
-    	    for (i in seq(1,6)) {
-            	if (i==1) {
-                    Ls[i] = 1;
-                } else if (i==2) {
-                    Ls[i] = -(dnorm(beta)-dnorm(alpha))/
-                        PP;
-                } else {
-                    Ls[i] = -(beta^(i-2)*dnorm(beta)-alpha^(i-2)*dnorm(alpha))/
-                        PP + (i-2)*Ls[i-2];        
-                }
-            }
-            
-            Ms = sapply(seq(0,5),
-                        function(k) {sum(choose(k,seq(0,k))*
-                                         sqrt(sigma2)^(seq(0,k))*
-                                         mu^(k-seq(0,k))*
-                                         Ls[seq(0,k)+1])});
-            
-            Ms = Ms*PP*sqrt(2*pi*sigma2);
-            
-    	    moments[k,l,] = Ms;
-            
-	}	
-    }
-    ## moment matrix END ##	
-    ## ## ## ## ## ## ## ##
+### gram schmidt END ###
     
-    ## plotting orthonormal bases START ###
-    if (PLOT.SOLUTION) {
-        for (k in seq(1,K)) {
-            X = sapply(seq(1,K), function(y,x)
-                   {return (coefficients[k,y]*
-                            basis.function(x,
-                                           raw.function.list[[y]],
-                                           problem.parameters))},
-                   x);
-            y = apply(X,1,sum);
-            
-            if (k==1) {
-                plot(x, y,
-                     type = "l",
-                     ylim = c(-max(y),max(y)));
-            } else {
-                lines(x, y);
-            }
-        }
-    }
-    ## plotting orthonormal bases END ###
-
-    ## ## check orthogonality START ###
-    ## orthogonality.matrix <- matrix(nrow=K,
-    ##                                ncol=K);
-    ## for (n in seq(1,K)) {
-    ##     for (m in seq(n,K)) {
-
-    ##         norm = 0;
-    ##         for (l1 in seq(1,K)) {
-    ##             for (l2 in seq(1,K)) {
-    ##                 norm = norm +
-    ##                     project(raw.function.list[[l1]],
-    ##                             raw.function.list[[l2]],
-    ##                             problem.parameters$a,
-    ##                             problem.parameters$b) *
-    ##                     coefficients[n,l1]*coefficients[m,l2];
-    ##             }
+    ## ## plotting orthonormal bases START ###
+    ## if (PLOT.SOLUTION) {
+    ##     for (k in seq(1,K)) {
+    ##         if (k==1) {
+    ##             plot(x, orthonormal.function.list[[1]],
+    ##                  type = "l",
+    ##                  ylim = c(-max(orthonormal.function.list[[1]]),
+    ##                           max(orthonormal.function.list[[1]])));
+                
+    ##         } else {
+    ##             lines(x, orthonormal.function.list[[k]]);
     ##         }
-            
-    ##         orthogonality.matrix[n,m] =
-    ##             norm;
     ##     }
     ## }
-    ## print(orthogonality.matrix);
-    ## ## check orthogonality END ###
+    ## ## plotting orthonormal bases END ###
+
+    ## ## check orthogonality START ###
+    ##     orthogonality.matrix <- matrix(nrow=K,
+    ##                                    ncol=K);
+    ##     for (n in seq(1,K)) {
+    ##         for (m in seq(1,K)) {
+    ##             orthogonality.matrix[n,m] =
+    ##                 sum(orthonormal.function.list[[n]]*
+    ##                     orthonormal.function.list[[m]]*dx);
+    ##         }
+    ##     }
+    ##     print(orthogonality.matrix);
+    ## ## check orthogonality START ###
 
     ## ## check representation of IC START ##
     ## IC <- rep(0, length(x));
@@ -1042,79 +959,24 @@ blackbox <- function(log.sigma2.mu.vector, problem.parameters, dx,
     ## plot(x,IC, type = "l");
     ## ## check representation of IC END ###
 
-    ## SYSTEM MATRICES START ###
-    orthonormal.function.list = vector(mode="list",
-                                       length=K);
-    derivative.function.list = vector(mode="list",
-                                      length=K);
-    for (k in seq(1,K)) {
-        Psi = rep(0,length(x));
-        for (m in seq(1,K)) {
-            Psi = Psi +
-                coefficients[k,m]*basis.function(x,
-                                                 raw.function.list[[m]],
-                                                 problem.parameters);
-        }
-        orthonormal.function.list[[k]] = Psi;
-
-        derivative.function.list[[k]] =
-            ((problem.parameters$b-x)+
-             ##
-             -(x-problem.parameters$a)+
-             ##
-             -(x-problem.parameters$a)*
-             (problem.parameters$b-x)*
-             (x-raw.function.list[[k]][1])/
-             raw.function.list[[k]][2])*
-            dnorm(x,
-                  raw.function.list[[k]][1],
-                  sqrt(raw.function.list[[k]][2]));
-        
-    }
-
+    ## SYSTEM MATRICES START ### 
     stiff.mat <- matrix(nrow=K,ncol=K);
-    stiff.mat.numeric <- matrix(nrow=K,ncol=K);
-    
     for (i in seq(1,K)) {
-        current.basis.dx.i.numeric = (orthonormal.function.list[[i]][-1]-
-                                      orthonormal.function.list[[i]][-length(x)])/dx;
-        current.basis.dx.i.analytic =
-            apply(sapply(seq(1,K),
-                         function(x) {coefficients[i,x]*
-                                          derivative.function.list[[x]]}),
-                  1, sum);
+        current.basis.dx.i = (orthonormal.function.list[[i]][-1]-
+                              orthonormal.function.list[[i]][-length(x)])/dx
         
         for (j in seq(i,K)) {
-            current.basis.dx.j.numeric =
-                (orthonormal.function.list[[j]][-1]-
-                 orthonormal.function.list[[j]][-length(x)])/dx;
-
-            current.basis.dx.j.analytic =
-            apply(sapply(seq(1,K),
-                         function(x) {coefficients[j,x]*
-                                          derivative.function.list[[x]]}),
-                  1, sum);
+            current.basis.dx.j = (orthonormal.function.list[[j]][-1]-
+                                  orthonormal.function.list[[j]][-length(x)])/dx
             
-            stiff.matrix.entry.numeric = sum(current.basis.dx.i.numeric*
-                                             current.basis.dx.j.numeric*dx);
-
-            stiff.matrix.entry = sum(current.basis.dx.i.analytic*
-                                     current.basis.dx.j.analytic)*dx;
-                
-            
-          
+            stiff.matrix.entry = sum(current.basis.dx.i*
+                                     current.basis.dx.j*dx);
             ## print(c(i,j,stiff.matrix.entry));
             stiff.mat[i,j]=1/2*problem.parameters$sigma.2*stiff.matrix.entry;
             stiff.mat[j,i]=1/2*problem.parameters$sigma.2*stiff.matrix.entry;
-
-            stiff.mat.numeric[i,j]=1/2*problem.parameters$sigma.2*
-                stiff.matrix.entry.numeric;
-            stiff.mat.numeric[j,i]=1/2*problem.parameters$sigma.2*
-                stiff.matrix.entry.numeric;
         }
     }
     
-
     mass.mat <- matrix(nrow=K,ncol=K);
     for (i in seq(1,K)) {
         for (j in seq(i,K)) {
@@ -1129,7 +991,7 @@ blackbox <- function(log.sigma2.mu.vector, problem.parameters, dx,
     ## SYSTEM MATRICES END ###
     
     ## ## eigenvalues START ###
-    eig <- eigen(stiff.mat.numeric);
+    eig <- eigen(solve(mass.mat) %*% stiff.mat);
     ## ## eigenvalues END ###
     
     ## ## ICs START ###
@@ -1171,17 +1033,13 @@ blackbox <- function(log.sigma2.mu.vector, problem.parameters, dx,
     if (MINIMIZE.REMAINDER) {
         difference2 =
             (univariate.solution.approx.dt(coefs, A, x, K,
-                                           orthonormal.function.list) -
+                                           orthonormal.function.list)[-c(1,
+                                                                         length(x))]-
              0.5*(problem.parameters$sigma.2)*
-             univariate.solution.approx.dx.dx(coefs=coefs,
-                                              coefficients=coefficients,
-                                              x=x,
-                                              K=K,
-                                              raw.function.list=raw.function.list,
-                                              problem.parameters=problem.parameters
-                                              ))^2;
+             univariate.solution.approx.dx.dx.numeric(coefs, x, K,
+                                              orthonormal.function.list))^2;
         norm.diff2 = sum(difference2*dx);
-        ## print(norm.diff2);
+            print(norm.diff2);
         ## ## CHECKING PDE END ###
         return (norm.diff2);
     } else {
