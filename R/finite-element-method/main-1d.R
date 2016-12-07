@@ -9,7 +9,7 @@ problem.parameters$number.terms = 1000;
 problem.parameters$sigma.2 = 1.5;
 problem.parameters$t = 0.1;
 
-Ks = seq(5,10);
+Ks = seq(5,20);
 
 L2.remainders.before = rep(NA, length(Ks));
 L2.diff.before = rep(NA, length(Ks));
@@ -31,7 +31,7 @@ for (i in seq(1,length(Ks))) {
     
     log.sigma2.mu.vector = c(log.sigma2.vector,
                              mu.vector);
-    dx = 0.001;
+    dx = 0.0001;
     bb = blackbox(log.sigma2.mu.vector,
                   problem.parameters,
                   dx,
