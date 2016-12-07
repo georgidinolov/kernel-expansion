@@ -1263,12 +1263,13 @@ blackbox <- function(log.sigma2.mu.vector, problem.parameters,
     }
     
     ## gram schmidt END ###
-    for (k in seq(1,K)) {
-        for (l in seq(1,K)) {
-            print(sum(apply(orthonormal.function.list[[k]]*
-                      orthonormal.function.list[[l]],1,sum))*dx*dy);
-        }
-    }
+
+    ## for (k in seq(1,K)) {
+    ##     for (l in seq(1,K)) {
+    ##         print(sum(apply(orthonormal.function.list[[k]]*
+    ##                   orthonormal.function.list[[l]],1,sum))*dx*dy);
+    ##     }
+    ## }
 
     ## ## ## ## ## ## ## ## ## ##
     ## ## moment matrix START  ##
@@ -1438,6 +1439,7 @@ blackbox <- function(log.sigma2.mu.vector, problem.parameters,
             stiff.mat[j,i]=stiff.matrix.entry;
         }
     }
+    print(stiff.mat);
 
     mass.mat <- matrix(nrow=K,ncol=K);
     for (i in seq(1,K)) {
@@ -1463,12 +1465,18 @@ blackbox <- function(log.sigma2.mu.vector, problem.parameters,
     y.ic.index = which(abs(y-problem.parameters$y.ic)<=dy/2)
     b = rep(NA, K);
     for (i in seq(1,K)) {
-        b[i] = sum(sapply( seq(1,K),
-                          function(k) {coefficients[i,k]*
-                                           basis.function(problem.parameters$x.ic,
-                                                          problem.parameters$y.ic,
-                                                          raw.function.list[[k]],
-                                                          problem.parameters)}));
+        b[i] =
+            sum(sapply( seq(1,K),
+                       function(x) {coefficients[i,x]*
+                                        ## (problem.parameters$x.ic-problem.parameters$ax)*
+                                        ## (problem.parameters$bx-problem.parameters$x.ic)*
+                                        ## dnorm(problem.parameters$x.ic,
+                                        ##       raw.function.list[[k]][1],
+                                        ##       sqrt(raw.function.list[[k]][3]))}));
+                                        basis.function(problem.parameters$x.ic,
+                                                       problem.parameters$y.ic,
+                                                       raw.function.list[[x]],
+                                                       problem.parameters)}));
     }
     ## IC.vec = solve(mass.mat, b);
     IC.vec = solve(mass.mat, b);
