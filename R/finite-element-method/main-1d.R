@@ -37,8 +37,8 @@ for (i in seq(1,length(Ks))) {
                   dx,
                   TRUE,
                   TRUE);
-    ## L2.remainders.before[i] = bb;
-    ## L2.diff.before[i] = blackbox(log.sigma2.mu.vector, problem.parameters,
+    L2.remainders.before[i] = bb;
+    L2.diff.before[i] = blackbox(log.sigma2.mu.vector, problem.parameters,
     ##                              dx,
     ##                              FALSE,
     ##                              FALSE);
