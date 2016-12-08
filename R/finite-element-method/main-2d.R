@@ -6,22 +6,16 @@ problem.parameters$ax = -1;
 problem.parameters$bx = 1;
 problem.parameters$ay = -1;
 problem.parameters$by = 1;
-problem.parameters$x.ic = 0.2;
-problem.parameters$y.ic = 0.2;
+problem.parameters$x.ic = 0.5;
+problem.parameters$y.ic = 0.5;
 problem.parameters$number.terms = 1000;
-problem.parameters$sigma.2.x = 1e0;
-problem.parameters$sigma.2.y = 1e0;
-problem.parameters$rho = 0.0;
-problem.parameters$t = 0.1;
+problem.parameters$sigma.2.x = 2e0;
+problem.parameters$sigma.2.y = 2e0;
+problem.parameters$rho = -0.7;
+problem.parameters$t = 0.2;
 
-problem.parameters$a = problem.parameters$ax;
-problem.parameters$b = problem.parameters$bx;
-problem.parameters$sigma.2 = problem.parameters$sigma.2.x;
-
-K=2;
-
-log.sigma2.vector=log(rep(c(1,1), 2*K)) +
-    rep(log(1), 2*2*K);
+K=10;
+log.sigma2.vector=log(rep(1,K));
 
 ## if (K==1) {
 ##     mu.vector = c(problem.parameters$x.ic,
@@ -39,18 +33,24 @@ log.sigma2.vector=log(rep(c(1,1), 2*K)) +
 ## }
 
 mu.xs = c(seq(problem.parameters$ax, problem.parameters$bx,
-              length.out = K),
-          rep(0,K));
-mu.ys = c(rep(0,K),
-          seq(problem.parameters$ax, problem.parameters$bx,
               length.out = K));
-mu.vector = unlist(lapply(seq(1,2*K), function(x) {c(mu.xs[x], mu.ys[x])}));
 
-log.sigma2.mu.vector = c(log.sigma2.vector,
-                         mu.vector);
+mu.ys = c(seq(problem.parameters$ax, problem.parameters$bx,
+              length.out = K));
+
+log.sigma2.xs = log(rep(((problem.parameters$bx-
+                          problem.parameters$ax)/K)^2,
+                        K));
+log.sigma2.ys = log(rep(((problem.parameters$by-
+                          problem.parameters$ay)/K)^2,
+                        K));
+
 dx = 0.001;
 dy = 0.001;
-bb = blackbox(log.sigma2.mu.vector, problem.parameters, dx, dy,
+bb = blackbox(mu.xs, mu.ys,
+              log.sigma2.xs, log.sigma2.ys,
+              problem.parameters,
+              dx, dy,
               TRUE,TRUE);
 
 ## points(mu.vector[seq(2,2*K,by=2)], mu.vector[seq(1,2*K,by=2)], col="red")

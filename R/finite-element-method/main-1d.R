@@ -4,12 +4,12 @@ source("1-d-solution.R");
 problem.parameters = NULL;
 problem.parameters$a = -1;
 problem.parameters$b = 1;
-problem.parameters$x.ic = 0.2;
+problem.parameters$x.ic = 0.0;
 problem.parameters$number.terms = 1000;
 problem.parameters$sigma.2 = 1;
 problem.parameters$t = 0.1;
 
-Ks = seq(4,20);
+Ks = seq(3,20);
 
 L2.remainders.before = rep(NA, length(Ks));
 L2.diff.before = rep(NA, length(Ks));
@@ -30,7 +30,7 @@ for (i in seq(1,length(Ks))) {
                     length.out=length(log.sigma2.vector));
     log.sigma2.mu.vector = c(log.sigma2.vector,
                              mu.vector);
-    dx = 0.0001;
+    dx = 0.001;
     bb = blackbox(log.sigma2.mu.vector, problem.parameters, dx,TRUE,TRUE);
     ## L2.remainders.before[i] = bb;
     ## L2.diff.before[i] = blackbox(log.sigma2.mu.vector, problem.parameters,
