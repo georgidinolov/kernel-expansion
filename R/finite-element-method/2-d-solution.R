@@ -498,10 +498,11 @@ univariate.solution.approx <- function(coefs,x,orthonormal.function.list,K) {
 bivariate.solution.approx <- function(orthonormal.function.list.x,
                                       orthonormal.function.list.y,
                                       K,
+                                      k.xy.hash,
                                       coefs) {
-    for (k.prime in seq(1,K^2)) {
-        k.x = floor((k.prime-1)/K)+1;
-        k.y = k.prime - floor((k.prime-1)/K)*K;
+    for (k.prime in seq(1,K)) {
+        k.x = k.xy.hash[1,k.prime];
+        k.y = k.xy.hash[2,k.prime];
 
         if (k.prime == 1) {
             out =
@@ -1139,18 +1140,15 @@ apply.generator <- function(poly, k, problem.parameters.x) {
 }
 
 
-blackbox <- function(mu.xs,
-                     mu.ys,
-                     log.sigma2.xs,
-                     log.sigma2.ys,
+blackbox <- function(mu.log.sigma2.x.pairs.list.unique,
+                     mu.log.sigma2.y.pairs.list.unique,
+                     k.xy.hash,
                      problem.parameters,
                      dx, dy,
                      PLOT.SOLUTION,
                      MINIMIZE.REMAINDER) {
     source("2-d-solution.R");
-    K = length(mu.xs);
-    sigma2.xs = exp(log.sigma2.xs);
-    sigma2.ys = exp(log.sigma2.ys);
+    K = dim(k.xy.hash)[2];
 
     ## gram schmidt START ##
     x = seq(problem.parameters$ax,
@@ -1160,37 +1158,45 @@ blackbox <- function(mu.xs,
             problem.parameters$by,
             by=dy);
 
-    function.list.x = vector(mode="list", length=K);
-    function.list.y = vector(mode="list", length=K);
+    function.list.x = vector(mode="list",
+                             length=length(mu.log.sigma2.x.pairs.list.unique));
+    function.list.y = vector(mode="list",
+                             length=length(mu.log.sigma2.y.pairs.list.unique));
     
-    for (k in seq(1,K)) {
-        mu.x = mu.xs[k];
-        sigma2.x = sigma2.xs[k];
-        mu.y = mu.ys[k];
-        sigma2.y = sigma2.ys[k];
+    for (k in seq(1,max(length(function.list.x),
+                        length(function.list.y)))) {
+        if (k <= length(function.list.x)) {
+            mu.x = mu.log.sigma2.x.pairs.list.unique[[k]][1];
+            sigma2.x = exp(mu.log.sigma2.x.pairs.list.unique[[k]][2]);
 
-        function.list.x[[k]] = (x-problem.parameters$ax)*
-            (problem.parameters$bx-x)*
-            dnorm(x,mean=mu.x,sd=sqrt(sigma2.x));
-
-        function.list.y[[k]] = (y-problem.parameters$ay)*
-            (problem.parameters$by-y)*
-            dnorm(y,mean=mu.y,sd=sqrt(sigma2.y));
+            function.list.x[[k]] = (x-problem.parameters$ax)*
+                (problem.parameters$bx-x)*
+                dnorm(x,mean=mu.x,sd=sqrt(sigma2.x));
+        }
+        if (k <= length(function.list.y)) {
+            mu.y = mu.log.sigma2.y.pairs.list.unique[[k]][1];
+            sigma2.y = exp(
+                mu.log.sigma2.y.pairs.list.unique[[k]][2]);
+            
+            function.list.y[[k]] = (y-problem.parameters$ay)*
+                (problem.parameters$by-y)*
+                dnorm(y,mean=mu.y,sd=sqrt(sigma2.y));
+        }
     }
     
     ## PLOTTING BASES START ###
     par(mfrow=c(2,1));
     if (PLOT.SOLUTION) {
-        for (k in seq(1,K)) {
+        for (k in seq(1,length(function.list.x))) {
             if (k==1) {
                 plot(x,function.list.x[[k]],type="l",
-                     ylim = c(0,3*max(function.list.x[[k]])));
+                     ylim = c(0,2*max(function.list.x[[k]])));
             } else {
                 lines(x,function.list.x[[k]]);
             }
         }
         
-        for (k in seq(1,K)) {
+        for (k in seq(1,length(function.list.y))) {
             if (k==1) {
                 plot(y,function.list.y[[k]],type="l",
                      ylim = c(0,3*max(function.list.y[[k]])));
@@ -1199,19 +1205,23 @@ blackbox <- function(mu.xs,
             }
         }
     }
-    ## PLOTTING BASES END ### 
-
-    norms.x <- rep(NA, K);
-    norms.y <- rep(NA, K);
-    coefficients.x <- matrix(0, nrow=K, ncol=K);
-    coefficients.y <- matrix(0, nrow=K, ncol=K);
-    orthonormal.function.list.x = vector(mode="list",
-                                         length=K);
-    orthonormal.function.list.y = vector(mode="list",
-                                         length=K);
+    ## PLOTTING BASES END ###
     
-    ## gram-schmidt START ##
-    for (k in seq(1,K)) {
+    K.x = length(function.list.x);
+    K.y = length(function.list.y);
+    
+    norms.x <- rep(NA, K.x);
+    norms.y <- rep(NA, K.y);
+    coefficients.x <- matrix(0, nrow=K.x, ncol=K.x);
+    coefficients.y <- matrix(0, nrow=K.y, ncol=K.y);
+    
+    orthonormal.function.list.x = vector(mode="list",
+                                         length=K.x);
+    orthonormal.function.list.y = vector(mode="list",
+                                         length=K.y);
+    
+    ## gram-schmidt X START ##
+    for (k in seq(1,K.x)) {
         if (k==1) {
             ## only normalize
             norm.x = sqrt(sum(function.list.x[[k]]^2)*dx);
@@ -1219,7 +1229,43 @@ blackbox <- function(mu.xs,
             norms.x[k] = norm.x;
             orthonormal.function.list.x[[k]] =
                 function.list.x[[k]]/norm.x;
+        } else {
+            for (l in seq(1,k-1)) {
+                coefficients.x[k,l] = -sum(orthonormal.function.list.x[[l]]*
+                                           function.list.x[[k]]*dx);
+            }
+            
+            coefficients.x[k,k] = 1;
+            orthonormal.function.list.x[[k]] = function.list.x[[k]];
 
+            for (l in seq(1,k-1)) {
+                orthonormal.function.list.x[[k]] =
+                    orthonormal.function.list.x[[k]] +
+                    coefficients.x[k,l]*orthonormal.function.list.x[[l]];
+            }
+            
+            norm.x = sqrt(sum(orthonormal.function.list.x[[k]]^2*dx));
+            
+            norms.x[k] = norm.x;
+            
+            orthonormal.function.list.x[[k]] =
+                orthonormal.function.list.x[[k]]/norm.x;
+        }
+    }
+
+    ortho.mat.X <- matrix(nrow=K.x, ncol=K.x);
+    for (k in seq(1,K.x)) {
+        for ( l in seq(1,K.x)) {
+             ortho.mat.X[k,l] <- sum(orthonormal.function.list.x[[k]]*
+                                     orthonormal.function.list.x[[l]]) *dx;
+        }
+    }
+    ## gram schmidt X END ###
+
+    ## gram-schmidt START ##
+    for (k in seq(1,K.y)) {
+        if (k==1) {
+            ## only normalize
             norm.y = sqrt(sum(function.list.y[[k]]^2)*dy);
             coefficients.y[k,k] = 1/norm.y;
             norms.y[k] = norm.y;
@@ -1227,35 +1273,23 @@ blackbox <- function(mu.xs,
                 function.list.y[[k]]/norm.y;
         } else {
             for (l in seq(1,k-1)) {
-                coefficients.x[k,l] = -sum(orthonormal.function.list.x[[l]]*
-                                           function.list.x[[k]]*dx);
                 coefficients.y[k,l] = -sum(orthonormal.function.list.y[[l]]*
                                            function.list.y[[k]]*dy);
             }
             
-            coefficients.x[k,k] = 1;
             coefficients.y[k,k] = 1;
-            orthonormal.function.list.x[[k]] = function.list.x[[k]];
             orthonormal.function.list.y[[k]] = function.list.y[[k]];
 
             for (l in seq(1,k-1)) {
-                orthonormal.function.list.x[[k]] =
-                    orthonormal.function.list.x[[k]] +
-                    coefficients.x[k,l]*orthonormal.function.list.x[[l]];
-
                 orthonormal.function.list.y[[k]] =
                     orthonormal.function.list.y[[k]] +
                     coefficients.y[k,l]*orthonormal.function.list.y[[l]];
             }
             
-            norm.x = sqrt(sum(orthonormal.function.list.x[[k]]^2*dx));
             norm.y = sqrt(sum(orthonormal.function.list.y[[k]]^2*dy));
             
-            norms.x[k] = norm.x;
             norms.y[k] = norm.y;
             
-            orthonormal.function.list.x[[k]] =
-                orthonormal.function.list.x[[k]]/norm.x;
             orthonormal.function.list.y[[k]] =
                 orthonormal.function.list.y[[k]]/norm.y;
         }
@@ -1265,7 +1299,7 @@ blackbox <- function(mu.xs,
     ## PLOTTING BASES START ###
     if (PLOT.SOLUTION) {
         par(mfrow=c(2,1));
-        for (k in seq(1,K)) {
+        for (k in seq(1,K.x)) {
             if (k==1) {
                 plot(x,orthonormal.function.list.x[[k]],type="l",
                      ylim = c(-1*max(orthonormal.function.list.x[[k]]),
@@ -1275,7 +1309,7 @@ blackbox <- function(mu.xs,
             }
         }
         
-        for (k in seq(1,K)) {
+        for (k in seq(1,K.y)) {
             if (k==1) {
                 plot(y,orthonormal.function.list.y[[k]],type="l",
                      ylim = c(-1*max(orthonormal.function.list.y[[k]]),
@@ -1287,44 +1321,44 @@ blackbox <- function(mu.xs,
     }
     ## PLOTTING BASES END ### 
 
-    for (k.prime in seq(1,K^2)) {
-        k.x = floor((k.prime-1)/K)+1;
-        k.y = k.prime - floor((k.prime-1)/K)*K;
+    for (k.prime in seq(1,K)) {
+        k.x = k.xy.hash[1,k.prime];
+        k.y = k.xy.hash[2,k.prime];
                 
-        for (l.prime in seq(1,K^2)) {
-            l.x = floor((l.prime-1)/K)+1;
-            l.y = l.prime - floor((l.prime-1)/K)*K;
+        for (l.prime in seq(1,K)) {
+            l.x = k.xy.hash[1,l.prime];
+            l.y = k.xy.hash[2,l.prime];
             
             print(sum(orthonormal.function.list.x[[k.x]]*
                       orthonormal.function.list.x[[l.x]])*dx *
                   sum(orthonormal.function.list.y[[k.y]]*
-                      orthonormal.function.list.y[[l.y]])*dx);
+                      orthonormal.function.list.y[[l.y]])*dy);
         }
     }
 
     ## SYSTEM MATRICES START ##
-    derivative.xx.matrix <- matrix(nrow = K^2,
-                                   ncol = K^2);
-    derivative.yy.matrix <- matrix(nrow = K^2,
-                                   ncol = K^2);
+    derivative.xx.matrix <- matrix(nrow = K,
+                                   ncol = K);
+    derivative.yy.matrix <- matrix(nrow = K,
+                                   ncol = K);
     derivative.xy.matrix <- matrix(0,
-                                   nrow = K^2,
-                                   ncol = K^2);
+                                   nrow = K,
+                                   ncol = K);
     derivative.yx.matrix <- matrix(0,
-                                   nrow = K^2,
-                                   ncol = K^2);
-    for (k.prime in seq(1,K^2)) {
-        k.x = floor((k.prime-1)/K)+1;
-        k.y = k.prime - floor((k.prime-1)/K)*K;
+                                   nrow = K,
+                                   ncol = K);
+    for (k.prime in seq(1,K)) {
+        k.x = k.xy.hash[1,k.prime];
+        k.y = k.xy.hash[2,k.prime];
 
         current.basis.dx.k = (orthonormal.function.list.x[[k.x]][-1]-
                               orthonormal.function.list.x[[k.x]][-length(x)])/dx;
         current.basis.dy.k = (orthonormal.function.list.y[[k.y]][-1]-
                               orthonormal.function.list.y[[k.y]][-length(y)])/dy;
         
-        for (l.prime in seq(1,K^2)) {
-            l.x = floor((l.prime-1)/K)+1;
-            l.y = l.prime - floor((l.prime-1)/K)*K;
+        for (l.prime in seq(1,K)) {
+            l.x = k.xy.hash[1,l.prime];
+            l.y = k.xy.hash[2,l.prime];
             
             current.basis.dx.l = (orthonormal.function.list.x[[l.x]][-1]-
                                   orthonormal.function.list.x[[l.x]][-length(x)])/dx;
@@ -1359,8 +1393,8 @@ blackbox <- function(mu.xs,
     }
     ## SYSTEM MATRICES END ##
         
-    stiff.mat <- matrix(nrow=K^2,
-                        ncol=K^2);
+    stiff.mat <- matrix(nrow=K,
+                        ncol=K);
     stiff.mat = -0.5*
                  problem.parameters$sigma.2.x*
                  derivative.xx.matrix +
@@ -1372,14 +1406,16 @@ blackbox <- function(mu.xs,
                  -0.5*problem.parameters$sigma.2.y*
                  derivative.yy.matrix;
 
-    mass.mat <- matrix(nrow=K^2,ncol=K^2);
-    for (k.prime in seq(1,K^2)) {
-        k.x = floor((k.prime-1)/K)+1;
-        k.y = k.prime - floor((k.prime-1)/K)*K;
+    mass.mat <- matrix(nrow=K,
+                       ncol=K);
+    
+    for (k.prime in seq(1,K)) {
+        k.x = k.xy.hash[1,k.prime];
+        k.y = k.xy.hash[2,k.prime];
         
-        for (l.prime in seq(1,K^2)) {
-            l.x = floor((l.prime-1)/K)+1;
-            l.y = l.prime - floor((l.prime-1)/K)*K;
+        for (l.prime in seq(1,K)) {
+            l.x = k.xy.hash[1,l.prime];
+            l.y = k.xy.hash[2,l.prime];
                         
             mass.matrix.entry =
                 sum(orthonormal.function.list.x[[k.x]]*
@@ -1401,10 +1437,10 @@ blackbox <- function(mu.xs,
     ## ## ICs START ###
     x.ic.index = which(abs(x-problem.parameters$x.ic)<=dx/2)
     y.ic.index = which(abs(y-problem.parameters$y.ic)<=dy/2)
-    b = rep(NA, K^2);
-    for (i in seq(1,K^2)) {
-        k.x = floor((i-1)/K)+1;
-        k.y = i - floor((i-1)/K)*K;
+    b = rep(NA, K);
+    for (i in seq(1,K)) {
+        k.x = k.xy.hash[1,i];
+        k.y = k.xy.hash[2,i];
         b[i] = 
             orthonormal.function.list.x[[k.x]][x.ic.index]*
             orthonormal.function.list.y[[k.y]][y.ic.index];
@@ -1425,7 +1461,9 @@ blackbox <- function(mu.xs,
     }
     approx.sol <- bivariate.solution.approx(orthonormal.function.list.x,
                                             orthonormal.function.list.y,
-                                            K,coefs);
+                                            K,
+                                            k.xy.hash,
+                                            coefs);
     
     min.obs = min(apply(approx.sol, 1, min));
     min.index.row = which(apply(approx.sol, 1, min) == min.obs);
@@ -1456,8 +1494,8 @@ blackbox <- function(mu.xs,
          lty="dashed", col = "green");
 
     png("contour.png");
-    ## filled.contour(x,y,approx.sol, nlevels = 50);
-    persp(x,y,approx.sol, theta = pi/2);
+    filled.contour(x,y,approx.sol, nlevels = 50);
+    ## persp(x,y,approx.sol, theta = pi/2);
     ## points(x[min.index.row], y[min.index.col], col="red");
     dev.off();
     

@@ -6,12 +6,12 @@ problem.parameters$ax = -1;
 problem.parameters$bx = 1;
 problem.parameters$ay = -1;
 problem.parameters$by = 1;
-problem.parameters$x.ic = 0.5;
-problem.parameters$y.ic = 0.0;
+problem.parameters$x.ic = 0.2;
+problem.parameters$y.ic = 0.2;
 problem.parameters$number.terms = 1000;
 problem.parameters$sigma.2.x = 2e0;
 problem.parameters$sigma.2.y = 2e0;
-problem.parameters$rho = -0.3;
+problem.parameters$rho = 0.5;
 problem.parameters$t = 0.2;
 
 K=4;
@@ -53,23 +53,81 @@ log.sigma2.ys.2 = unlist(lapply(seq(1,K), function(k){
     rep(log.sigma2.ys[k], K)}));
 
 mus = rbind(mu.xs.2, mu.ys.2);
-
+log.sigma2s = rbind(log.sigma2.xs.2, log.sigma2.ys.2);
 ## rotating according to the geometry of the problem
-## theta = atan(-problem.parameters$rho);
-## Rotation.matrix = matrix(nrow=2, ncol=2,
-##                          byrow=FALSE,
-##                          data=c(c(cos(theta),sin(theta)),
-##                                 c(-sin(theta),cos(theta))));
-## mus = Rotation.matrix %*% mus
-## x.inside.ub = which(mus[1,] <= problem.parameters$bx);
-## x.inside.lb = which(mus[1,] => problem.parameters$ax);
+theta = atan(-problem.parameters$rho);
+Rotation.matrix = matrix(nrow=2, ncol=2,
+                         byrow=FALSE,
+                         data=c(c(cos(theta),sin(theta)),
+                                c(-sin(theta),cos(theta))));
+mus = Rotation.matrix %*% mus;
+all.inside <- mus[1,] <= problem.parameters$bx &
+    mus[1,] >= problem.parameters$ax &
+    mus[2,] <= problem.parameters$by &
+    mus[2,] >= problem.parameters$ay;
+plot(mus[1,all.inside], mus[2,all.inside],col="red");
+mus <- mus[,all.inside];
+log.sigma2s <- log.sigma2s[,all.inside];
 
-## plot(mus[1,], mus[2,],col="red");
+mu.log.sigma2.x.pairs.list <-
+    lapply(X=seq(1,length(mus[1,])),
+           function(x) {
+               c(mus[1,x], log.sigma2s[1,x])
+           });
 
+mu.log.sigma2.y.pairs.list <-
+    lapply(X=seq(1,length(mus[1,])),
+           function(x) {
+               c(mus[2,x], log.sigma2s[2,x])
+           });
+
+## hash function ##
+## unique means and variances ##
+## l^2 norms
+l2.norms <- matrix(nrow = length(mu.log.sigma2.x.pairs.list),
+                   ncol = length(mu.log.sigma2.x.pairs.list));
+
+for (k in seq(1,length(mu.log.sigma2.x.pairs.list))) {
+    for (l in seq(1,length(mu.log.sigma2.x.pairs.list))) {
+        l2.norms[k,l] <- sum((mu.log.sigma2.x.pairs.list[[k]] -
+                              mu.log.sigma2.x.pairs.list[[l]])^2)
+    }
+}
+    
+
+mu.log.sigma2.x.pairs.list.unique <- unique(mu.log.sigma2.x.pairs.list);
+mu.log.sigma2.y.pairs.list.unique <- unique(mu.log.sigma2.y.pairs.list);
+
+## simple hash funtion ##
+## k in seq(1,length(mus[1,])) ##
+K = length(mus[1,]);
+simple.hash <- function(k) {
+    mu.log.sigma2.x <- mu.log.sigma2.x.pairs.list[[k]];
+    k.x <-
+        which(unlist(lapply(seq(1,length(mu.log.sigma2.x.pairs.list.unique)),
+                            function(x) {
+                                sqrt(sum((mu.log.sigma2.x -
+                                          mu.log.sigma2.x.pairs.list.unique[[x]])^2))
+                            })) < 1e-16)[1];
+
+    mu.log.sigma2.y <- mu.log.sigma2.y.pairs.list[[k]];
+    k.y <-
+        which(unlist(lapply(seq(1,length(mu.log.sigma2.y.pairs.list.unique)),
+                            function(x) {
+                                sqrt(sum((mu.log.sigma2.y -
+                                          mu.log.sigma2.y.pairs.list.unique[[x]])^2))
+                            })) < 1e-16)[1];
+    return (c(k.x,k.y));
+}
+
+k.xy.hash <- sapply(seq(1,K), function(x) {
+    simple.hash(x) });
+               
 dx = 0.001;
 dy = 0.001;
-bb = blackbox(mu.xs, mu.ys,
-              log.sigma2.xs, log.sigma2.ys,
+bb = blackbox(mu.log.sigma2.x.pairs.list.unique,
+              mu.log.sigma2.y.pairs.list.unique, 
+              k.xy.hash,
               problem.parameters,
               dx, dy,
               TRUE,TRUE);
