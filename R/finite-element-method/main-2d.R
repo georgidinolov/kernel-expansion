@@ -7,14 +7,14 @@ problem.parameters$bx = 1;
 problem.parameters$ay = -1;
 problem.parameters$by = 1;
 problem.parameters$x.ic = 0.5;
-problem.parameters$y.ic = 0.5;
+problem.parameters$y.ic = 0.0;
 problem.parameters$number.terms = 1000;
 problem.parameters$sigma.2.x = 2e0;
 problem.parameters$sigma.2.y = 2e0;
-problem.parameters$rho = -0.7;
+problem.parameters$rho = -0.3;
 problem.parameters$t = 0.2;
 
-K=10;
+K=4;
 log.sigma2.vector=log(rep(1,K));
 
 ## if (K==1) {
@@ -34,16 +34,37 @@ log.sigma2.vector=log(rep(1,K));
 
 mu.xs = c(seq(problem.parameters$ax, problem.parameters$bx,
               length.out = K));
+mu.xs.2 = unlist(lapply(seq(1,K), function(k){rep(mu.xs[k], K)}));
 
 mu.ys = c(seq(problem.parameters$ax, problem.parameters$bx,
               length.out = K));
+mu.ys.2 = rep(mu.ys, K);
 
 log.sigma2.xs = log(rep(((problem.parameters$bx-
                           problem.parameters$ax)/K)^2,
                         K));
+log.sigma2.xs.2 = unlist(lapply(seq(1,K), function(k){
+    rep(log.sigma2.xs[k], K)}));
+
 log.sigma2.ys = log(rep(((problem.parameters$by-
                           problem.parameters$ay)/K)^2,
                         K));
+log.sigma2.ys.2 = unlist(lapply(seq(1,K), function(k){
+    rep(log.sigma2.ys[k], K)}));
+
+mus = rbind(mu.xs.2, mu.ys.2);
+
+## rotating according to the geometry of the problem
+## theta = atan(-problem.parameters$rho);
+## Rotation.matrix = matrix(nrow=2, ncol=2,
+##                          byrow=FALSE,
+##                          data=c(c(cos(theta),sin(theta)),
+##                                 c(-sin(theta),cos(theta))));
+## mus = Rotation.matrix %*% mus
+## x.inside.ub = which(mus[1,] <= problem.parameters$bx);
+## x.inside.lb = which(mus[1,] => problem.parameters$ax);
+
+## plot(mus[1,], mus[2,],col="red");
 
 dx = 0.001;
 dy = 0.001;

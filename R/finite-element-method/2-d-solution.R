@@ -1456,7 +1456,8 @@ blackbox <- function(mu.xs,
          lty="dashed", col = "green");
 
     png("contour.png");
-    filled.contour(x,y,approx.sol, nlevels = 50);
+    ## filled.contour(x,y,approx.sol, nlevels = 50);
+    persp(x,y,approx.sol, theta = pi/2);
     ## points(x[min.index.row], y[min.index.col], col="red");
     dev.off();
     
