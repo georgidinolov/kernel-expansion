@@ -1199,7 +1199,7 @@ blackbox <- function(mu.log.sigma2.x.pairs.list.unique,
         for (k in seq(1,length(function.list.y))) {
             if (k==1) {
                 plot(y,function.list.y[[k]],type="l",
-                     ylim = c(0,3*max(function.list.y[[k]])));
+                     ylim = c(0,2*max(function.list.y[[k]])));
             } else {
                 lines(y,function.list.y[[k]]);
             }
@@ -1256,11 +1256,12 @@ blackbox <- function(mu.log.sigma2.x.pairs.list.unique,
     ortho.mat.X <- matrix(nrow=K.x, ncol=K.x);
     for (k in seq(1,K.x)) {
         for ( l in seq(1,K.x)) {
-             ortho.mat.X[k,l] <- sum(orthonormal.function.list.x[[k]]*
-                                     orthonormal.function.list.x[[l]]) *dx;
+             ortho.mat.X[k,l] <- sum((orthonormal.function.list.x[[k]]*
+                                      orthonormal.function.list.x[[l]])) *dx;
         }
     }
-    ## gram schmidt X END ###
+    print(ortho.mat.X);
+    ## ## gram schmidt X END ###
 
     ## gram-schmidt START ##
     for (k in seq(1,K.y)) {
@@ -1370,7 +1371,6 @@ blackbox <- function(mu.log.sigma2.x.pairs.list.unique,
                     current.basis.dx.l)*dx *
                 sum(orthonormal.function.list.y[[k.y]]*
                     orthonormal.function.list.y[[l.y]])*dy;
-                                                
             
             derivative.yy.matrix[k.prime,l.prime] =
                 sum(orthonormal.function.list.x[[k.x]]*

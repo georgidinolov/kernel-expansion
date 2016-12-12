@@ -6,11 +6,11 @@ problem.parameters$ax = -1;
 problem.parameters$bx = 1;
 problem.parameters$ay = -1;
 problem.parameters$by = 1;
-problem.parameters$x.ic = 0.2;
-problem.parameters$y.ic = 0.2;
+problem.parameters$x.ic = 0.0;
+problem.parameters$y.ic = 0.0;
 problem.parameters$number.terms = 1000;
-problem.parameters$sigma.2.x = 2e0;
-problem.parameters$sigma.2.y = 2e0;
+problem.parameters$sigma.2.x = 5e-1;
+problem.parameters$sigma.2.y = 1e0;
 problem.parameters$rho = 0.5;
 problem.parameters$t = 0.2;
 
@@ -60,11 +60,14 @@ Rotation.matrix = matrix(nrow=2, ncol=2,
                          byrow=FALSE,
                          data=c(c(cos(theta),sin(theta)),
                                 c(-sin(theta),cos(theta))));
+
 mus = Rotation.matrix %*% mus;
-all.inside <- mus[1,] <= problem.parameters$bx &
-    mus[1,] >= problem.parameters$ax &
-    mus[2,] <= problem.parameters$by &
-    mus[2,] >= problem.parameters$ay;
+
+all.inside <- seq(1,length(mus[1,]));
+## all.inside <- mus[1,] <= problem.parameters$bx &
+##     mus[1,] >= problem.parameters$ax &
+##     mus[2,] <= problem.parameters$by &
+##     mus[2,] >= problem.parameters$ay;
 plot(mus[1,all.inside], mus[2,all.inside],col="red");
 mus <- mus[,all.inside];
 log.sigma2s <- log.sigma2s[,all.inside];
@@ -84,19 +87,50 @@ mu.log.sigma2.y.pairs.list <-
 ## hash function ##
 ## unique means and variances ##
 ## l^2 norms
-l2.norms <- matrix(nrow = length(mu.log.sigma2.x.pairs.list),
-                   ncol = length(mu.log.sigma2.x.pairs.list));
+l2.norms.x <- matrix(nrow = length(mu.log.sigma2.x.pairs.list),
+                     ncol = length(mu.log.sigma2.x.pairs.list));
+l2.norms.y <- matrix(nrow = length(mu.log.sigma2.y.pairs.list),
+                     ncol = length(mu.log.sigma2.y.pairs.list));
 
+## TODO(georgid): This can be vectorized.
 for (k in seq(1,length(mu.log.sigma2.x.pairs.list))) {
     for (l in seq(1,length(mu.log.sigma2.x.pairs.list))) {
-        l2.norms[k,l] <- sum((mu.log.sigma2.x.pairs.list[[k]] -
-                              mu.log.sigma2.x.pairs.list[[l]])^2)
+        l2.norms.x[k,l] <- sqrt(sum((mu.log.sigma2.x.pairs.list[[k]] -
+                                     mu.log.sigma2.x.pairs.list[[l]])^2))
     }
 }
-    
+## TODO(georgid): This can be vectorized.
+for (k in seq(1,length(mu.log.sigma2.y.pairs.list))) {
+    for (l in seq(1,length(mu.log.sigma2.y.pairs.list))) {
+        l2.norms.y[k,l] <- sqrt(sum((mu.log.sigma2.y.pairs.list[[k]] -
+                                     mu.log.sigma2.y.pairs.list[[l]])^2))
+    }
+}
 
-mu.log.sigma2.x.pairs.list.unique <- unique(mu.log.sigma2.x.pairs.list);
-mu.log.sigma2.y.pairs.list.unique <- unique(mu.log.sigma2.y.pairs.list);
+x.included <- c();
+for (k in seq(1,length(mu.log.sigma2.x.pairs.list))) {
+    if (k==1) {
+        x.included = c(x.included, k);
+    } else {
+        if (sum(l2.norms.x[k,seq(1,k-1)] <= 1e-15) == 0) {
+            x.included = c(x.included, k);
+        }
+    }
+}
+
+y.included <- c();
+for (k in seq(1,length(mu.log.sigma2.y.pairs.list))) {
+    if (k==1) {
+        y.included = c(y.included, k);
+    } else {
+        if (sum(l2.norms.y[k,seq(1,k-1)] <= 1e-15) == 0) {
+            y.included = c(y.included, k);
+        }
+    }
+}
+
+mu.log.sigma2.x.pairs.list.unique <- mu.log.sigma2.x.pairs.list[x.included];
+mu.log.sigma2.y.pairs.list.unique <- mu.log.sigma2.y.pairs.list[y.included];
 
 ## simple hash funtion ##
 ## k in seq(1,length(mus[1,])) ##
@@ -108,7 +142,7 @@ simple.hash <- function(k) {
                             function(x) {
                                 sqrt(sum((mu.log.sigma2.x -
                                           mu.log.sigma2.x.pairs.list.unique[[x]])^2))
-                            })) < 1e-16)[1];
+                            })) < 1e-15)[1];
 
     mu.log.sigma2.y <- mu.log.sigma2.y.pairs.list[[k]];
     k.y <-
@@ -116,7 +150,7 @@ simple.hash <- function(k) {
                             function(x) {
                                 sqrt(sum((mu.log.sigma2.y -
                                           mu.log.sigma2.y.pairs.list.unique[[x]])^2))
-                            })) < 1e-16)[1];
+                            })) < 1e-15)[1];
     return (c(k.x,k.y));
 }
 
