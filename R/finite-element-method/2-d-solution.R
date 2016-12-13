@@ -1188,6 +1188,8 @@ blackbox <- function(mu.log.sigma2.x.pairs.list.unique,
     par(mfrow=c(2,1));
     if (PLOT.SOLUTION) {
         for (k in seq(1,length(function.list.x))) {
+            ## cat ("Press enter to continue");
+            ## line <- readline();
             if (k==1) {
                 plot(x,function.list.x[[k]],type="l",
                      ylim = c(0,2*max(function.list.x[[k]])));
@@ -1230,19 +1232,27 @@ blackbox <- function(mu.log.sigma2.x.pairs.list.unique,
             orthonormal.function.list.x[[k]] =
                 function.list.x[[k]]/norm.x;
         } else {
+            orthonormal.function.list.x[[k]] = function.list.x[[k]];
             for (l in seq(1,k-1)) {
                 coefficients.x[k,l] = -sum(orthonormal.function.list.x[[l]]*
-                                           function.list.x[[k]]*dx);
-            }
-            
-            coefficients.x[k,k] = 1;
-            orthonormal.function.list.x[[k]] = function.list.x[[k]];
-
-            for (l in seq(1,k-1)) {
+                                           orthonormal.function.list.x[[k]])*dx;
+                
                 orthonormal.function.list.x[[k]] =
                     orthonormal.function.list.x[[k]] +
                     coefficients.x[k,l]*orthonormal.function.list.x[[l]];
+
+                orthonormal.function.list.x[[k]] =
+                    orthonormal.function.list.x[[k]] /
+                    sqrt(sum(orthonormal.function.list.x[[k]]^2)*dx);
             }
+            coefficients.x[k,k] = 1;
+
+            ## orthonormal.function.list.x[[k]] = function.list.x[[k]];
+            ## for (l in seq(1,k-1)) {
+            ##     orthonormal.function.list.x[[k]] =
+            ##         orthonormal.function.list.x[[k]] +
+            ##         coefficients.x[k,l]*orthonormal.function.list.x[[l]];
+            ## }
             
             norm.x = sqrt(sum(orthonormal.function.list.x[[k]]^2*dx));
             
@@ -1250,6 +1260,7 @@ blackbox <- function(mu.log.sigma2.x.pairs.list.unique,
             
             orthonormal.function.list.x[[k]] =
                 orthonormal.function.list.x[[k]]/norm.x;
+            coefficients.x[k,]=coefficients.x[k,]/norm.x;
         }
     }
 
@@ -1273,19 +1284,20 @@ blackbox <- function(mu.log.sigma2.x.pairs.list.unique,
             orthonormal.function.list.y[[k]] =
                 function.list.y[[k]]/norm.y;
         } else {
+            orthonormal.function.list.y[[k]] = function.list.y[[k]];
             for (l in seq(1,k-1)) {
                 coefficients.y[k,l] = -sum(orthonormal.function.list.y[[l]]*
-                                           function.list.y[[k]]*dy);
-            }
-            
-            coefficients.y[k,k] = 1;
-            orthonormal.function.list.y[[k]] = function.list.y[[k]];
-
-            for (l in seq(1,k-1)) {
+                                           orthonormal.function.list.y[[k]])*dy;
+                
                 orthonormal.function.list.y[[k]] =
                     orthonormal.function.list.y[[k]] +
                     coefficients.y[k,l]*orthonormal.function.list.y[[l]];
+
+                orthonormal.function.list.y[[k]] =
+                    orthonormal.function.list.y[[k]] /
+                    sqrt(sum(orthonormal.function.list.y[[k]]^2)*dy);
             }
+            coefficients.y[k,k] = 1;
             
             norm.y = sqrt(sum(orthonormal.function.list.y[[k]]^2*dy));
             
@@ -1295,6 +1307,15 @@ blackbox <- function(mu.log.sigma2.x.pairs.list.unique,
                 orthonormal.function.list.y[[k]]/norm.y;
         }
     }
+
+    ortho.mat.Y <- matrix(nrow=K.y, ncol=K.y);
+    for (k in seq(1,K.y)) {
+        for ( l in seq(1,K.y)) {
+             ortho.mat.Y[k,l] <- sum((orthonormal.function.list.y[[k]]*
+                                      orthonormal.function.list.y[[l]])) *dy;
+        }
+    }
+    print(ortho.mat.Y);
     ## gram schmidt END ###
 
     ## PLOTTING BASES START ###

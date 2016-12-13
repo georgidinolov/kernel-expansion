@@ -1,4 +1,9 @@
 rm(list=ls());
+
+PLOT.SOLUTION=TRUE;
+dx = 0.001;
+dy = 0.001;
+
 source("2-d-solution.R");
 
 problem.parameters = NULL;
@@ -14,7 +19,7 @@ problem.parameters$sigma.2.y = 1e0;
 problem.parameters$rho = 0.5;
 problem.parameters$t = 0.2;
 
-K=4;
+K=6;
 log.sigma2.vector=log(rep(1,K));
 
 ## if (K==1) {
@@ -61,7 +66,12 @@ Rotation.matrix = matrix(nrow=2, ncol=2,
                          data=c(c(cos(theta),sin(theta)),
                                 c(-sin(theta),cos(theta))));
 
-mus = Rotation.matrix %*% mus;
+mus = Rotation.matrix %*% (mus -
+                           rbind(rep(problem.parameters$x.ic, length(mus[1,])),
+                                 rep(problem.parameters$y.ic, length(mus[1,])))) +
+    rbind(rep(problem.parameters$x.ic, length(mus[1,])),
+          rep(problem.parameters$y.ic, length(mus[1,])))
+
 
 all.inside <- seq(1,length(mus[1,]));
 ## all.inside <- mus[1,] <= problem.parameters$bx &
@@ -93,26 +103,69 @@ l2.norms.y <- matrix(nrow = length(mu.log.sigma2.y.pairs.list),
                      ncol = length(mu.log.sigma2.y.pairs.list));
 
 ## TODO(georgid): This can be vectorized.
+x = seq(problem.parameters$ax,
+        problem.parameters$bx,
+        by = dx);
+y = seq(problem.parameters$ay,
+        problem.parameters$by,
+        by = dy);
+
 for (k in seq(1,length(mu.log.sigma2.x.pairs.list))) {
+    
+    k.function = (x-problem.parameters$ax)*
+        (problem.parameters$bx-x)*
+        dnorm(x,
+              mean = mu.log.sigma2.x.pairs.list[[k]][1],
+              sd=sqrt(exp(mu.log.sigma2.x.pairs.list[[k]][2])));
+    
     for (l in seq(1,length(mu.log.sigma2.x.pairs.list))) {
-        l2.norms.x[k,l] <- sqrt(sum((mu.log.sigma2.x.pairs.list[[k]] -
-                                     mu.log.sigma2.x.pairs.list[[l]])^2))
-    }
-}
-## TODO(georgid): This can be vectorized.
-for (k in seq(1,length(mu.log.sigma2.y.pairs.list))) {
-    for (l in seq(1,length(mu.log.sigma2.y.pairs.list))) {
-        l2.norms.y[k,l] <- sqrt(sum((mu.log.sigma2.y.pairs.list[[k]] -
-                                     mu.log.sigma2.y.pairs.list[[l]])^2))
+
+        l.function = (x-problem.parameters$ax)*
+            (problem.parameters$bx-x)*
+            dnorm(x,
+                  mean = mu.log.sigma2.x.pairs.list[[l]][1],
+                  sd=sqrt(exp(mu.log.sigma2.x.pairs.list[[l]][2])));
+        
+        l2.norms.x[k,l] <- sqrt(sum((k.function-
+                                     l.function)^2)*dx);
+        ## if (l2.norms.x[k,l] < 0.1) {
+        ##     plot(x,k.function,type="l");
+        ##     lines(x,l.function,col="red");
+        ## }
     }
 }
 
+## TODO(georgid): This can be vectorized.
+for (k in seq(1,length(mu.log.sigma2.y.pairs.list))) {
+
+    k.function = (y-problem.parameters$ay)*
+        (problem.parameters$by-y)*
+        dnorm(y,
+              mean = mu.log.sigma2.y.pairs.list[[k]][1],
+              sd=sqrt(exp(mu.log.sigma2.y.pairs.list[[k]][2])));
+    
+    for (l in seq(1,length(mu.log.sigma2.y.pairs.list))) {
+
+        l.function = (y-problem.parameters$ay)*
+            (problem.parameters$by-y)*
+            dnorm(y,
+                  mean = mu.log.sigma2.y.pairs.list[[l]][1],
+                  sd=sqrt(exp(mu.log.sigma2.y.pairs.list[[l]][2])));
+
+        
+        l2.norms.y[k,l] <- sqrt(sum((mu.log.sigma2.y.pairs.list[[k]] -
+                                     mu.log.sigma2.y.pairs.list[[l]])^2))
+
+    }
+}
+
+threshold = 1e-1;
 x.included <- c();
 for (k in seq(1,length(mu.log.sigma2.x.pairs.list))) {
     if (k==1) {
         x.included = c(x.included, k);
     } else {
-        if (sum(l2.norms.x[k,seq(1,k-1)] <= 1e-15) == 0) {
+        if (sum(l2.norms.x[k,seq(1,k-1)] <= threshold) == 0) {
             x.included = c(x.included, k);
         }
     }
@@ -123,7 +176,7 @@ for (k in seq(1,length(mu.log.sigma2.y.pairs.list))) {
     if (k==1) {
         y.included = c(y.included, k);
     } else {
-        if (sum(l2.norms.y[k,seq(1,k-1)] <= 1e-15) == 0) {
+        if (sum(l2.norms.y[k,seq(1,k-1)] <= threshold) == 0) {
             y.included = c(y.included, k);
         }
     }
@@ -137,28 +190,30 @@ mu.log.sigma2.y.pairs.list.unique <- mu.log.sigma2.y.pairs.list[y.included];
 K = length(mus[1,]);
 simple.hash <- function(k) {
     mu.log.sigma2.x <- mu.log.sigma2.x.pairs.list[[k]];
+    x.distances <-
+        unlist(lapply(seq(1,length(mu.log.sigma2.x.pairs.list.unique)),
+                      function(x) {
+                          sqrt(sum((mu.log.sigma2.x -
+                                    mu.log.sigma2.x.pairs.list.unique[[x]])^2))
+                      }));
     k.x <-
-        which(unlist(lapply(seq(1,length(mu.log.sigma2.x.pairs.list.unique)),
-                            function(x) {
-                                sqrt(sum((mu.log.sigma2.x -
-                                          mu.log.sigma2.x.pairs.list.unique[[x]])^2))
-                            })) < 1e-15)[1];
+        which(x.distances == min(x.distances))[1];
 
     mu.log.sigma2.y <- mu.log.sigma2.y.pairs.list[[k]];
-    k.y <-
-        which(unlist(lapply(seq(1,length(mu.log.sigma2.y.pairs.list.unique)),
-                            function(x) {
-                                sqrt(sum((mu.log.sigma2.y -
-                                          mu.log.sigma2.y.pairs.list.unique[[x]])^2))
-                            })) < 1e-15)[1];
+    y.distances <-
+        unlist(lapply(seq(1,length(mu.log.sigma2.y.pairs.list.unique)),
+                      function(x) {
+                          sqrt(sum((mu.log.sigma2.y -
+                                    mu.log.sigma2.y.pairs.list.unique[[x]])^2))
+                      }));
+    k.y <-which(y.distances == min(y.distances))[1];
     return (c(k.x,k.y));
 }
 
-k.xy.hash <- sapply(seq(1,K), function(x) {
-    simple.hash(x) });
+k.xy.hash <- sapply(seq(1,K),
+                    function(x) {
+                        simple.hash(x) });
                
-dx = 0.001;
-dy = 0.001;
 bb = blackbox(mu.log.sigma2.x.pairs.list.unique,
               mu.log.sigma2.y.pairs.list.unique, 
               k.xy.hash,
