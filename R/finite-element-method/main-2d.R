@@ -19,7 +19,7 @@ problem.parameters$sigma.2.y = 1e0;
 problem.parameters$rho = 0.5;
 problem.parameters$t = 0.2;
 
-K=6;
+K=7;
 log.sigma2.vector=log(rep(1,K));
 
 ## if (K==1) {
@@ -61,6 +61,7 @@ mus = rbind(mu.xs.2, mu.ys.2);
 log.sigma2s = rbind(log.sigma2.xs.2, log.sigma2.ys.2);
 ## rotating according to the geometry of the problem
 theta = atan(-problem.parameters$rho);
+theta = 0;
 Rotation.matrix = matrix(nrow=2, ncol=2,
                          byrow=FALSE,
                          data=c(c(cos(theta),sin(theta)),
@@ -74,10 +75,10 @@ mus = Rotation.matrix %*% (mus -
 
 
 all.inside <- seq(1,length(mus[1,]));
-## all.inside <- mus[1,] <= problem.parameters$bx &
-##     mus[1,] >= problem.parameters$ax &
-##     mus[2,] <= problem.parameters$by &
-##     mus[2,] >= problem.parameters$ay;
+all.inside <- mus[1,] <= problem.parameters$bx &
+    mus[1,] >= problem.parameters$ax &
+    mus[2,] <= problem.parameters$by &
+    mus[2,] >= problem.parameters$ay;
 plot(mus[1,all.inside], mus[2,all.inside],col="red");
 mus <- mus[,all.inside];
 log.sigma2s <- log.sigma2s[,all.inside];
