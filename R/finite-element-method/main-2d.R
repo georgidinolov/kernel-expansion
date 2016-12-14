@@ -3,9 +3,9 @@ rm(list=ls());
 PLOT.SOLUTION=TRUE;
 dx = 0.001;
 dy = 0.001;
+K=10;
 
 source("2-d-solution.R");
-
 problem.parameters = NULL;
 problem.parameters$ax = -1;
 problem.parameters$bx = 1;
@@ -19,9 +19,7 @@ problem.parameters$sigma.2.y = 1e0;
 problem.parameters$rho = 0.5;
 problem.parameters$t = 0.2;
 
-K=7;
 log.sigma2.vector=log(rep(1,K));
-
 ## if (K==1) {
 ##     mu.vector = c(problem.parameters$x.ic,
 ##                   problem.parameters$y.ic)
