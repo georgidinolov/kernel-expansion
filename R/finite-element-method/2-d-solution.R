@@ -1192,7 +1192,7 @@ blackbox <- function(mu.log.sigma2.x.pairs.list.unique,
             ## line <- readline();
             if (k==1) {
                 plot(x,function.list.x[[k]],type="l",
-                     ylim = c(0,2*max(function.list.x[[k]])));
+                     ylim = c(0,100*max(function.list.x[[k]])));
             } else {
                 lines(x,function.list.x[[k]]);
             }
@@ -1201,7 +1201,7 @@ blackbox <- function(mu.log.sigma2.x.pairs.list.unique,
         for (k in seq(1,length(function.list.y))) {
             if (k==1) {
                 plot(y,function.list.y[[k]],type="l",
-                     ylim = c(0,2*max(function.list.y[[k]])));
+                     ylim = c(0,100*max(function.list.y[[k]])));
             } else {
                 lines(y,function.list.y[[k]]);
             }
@@ -1264,14 +1264,14 @@ blackbox <- function(mu.log.sigma2.x.pairs.list.unique,
         }
     }
 
-    ortho.mat.X <- matrix(nrow=K.x, ncol=K.x);
-    for (k in seq(1,K.x)) {
-        for ( l in seq(1,K.x)) {
-             ortho.mat.X[k,l] <- sum((orthonormal.function.list.x[[k]]*
-                                      orthonormal.function.list.x[[l]])) *dx;
-        }
-    }
-    print(ortho.mat.X);
+    ## ortho.mat.X <- matrix(nrow=K.x, ncol=K.x);
+    ## for (k in seq(1,K.x)) {
+    ##     for ( l in seq(1,K.x)) {
+    ##          ortho.mat.X[k,l] <- sum((orthonormal.function.list.x[[k]]*
+    ##                                   orthonormal.function.list.x[[l]])) *dx;
+    ##     }
+    ## }
+    ## print(ortho.mat.X);
     ## ## gram schmidt X END ###
 
     ## gram-schmidt START ##
@@ -1308,14 +1308,14 @@ blackbox <- function(mu.log.sigma2.x.pairs.list.unique,
         }
     }
 
-    ortho.mat.Y <- matrix(nrow=K.y, ncol=K.y);
-    for (k in seq(1,K.y)) {
-        for ( l in seq(1,K.y)) {
-             ortho.mat.Y[k,l] <- sum((orthonormal.function.list.y[[k]]*
-                                      orthonormal.function.list.y[[l]])) *dy;
-        }
-    }
-    print(ortho.mat.Y);
+    ## ortho.mat.Y <- matrix(nrow=K.y, ncol=K.y);
+    ## for (k in seq(1,K.y)) {
+    ##     for ( l in seq(1,K.y)) {
+    ##          ortho.mat.Y[k,l] <- sum((orthonormal.function.list.y[[k]]*
+    ##                                   orthonormal.function.list.y[[l]])) *dy;
+    ##     }
+    ## }
+    ## print(ortho.mat.Y);
     ## gram schmidt END ###
 
     ## PLOTTING BASES START ###
@@ -1343,20 +1343,20 @@ blackbox <- function(mu.log.sigma2.x.pairs.list.unique,
     }
     ## PLOTTING BASES END ### 
 
-    for (k.prime in seq(1,K)) {
-        k.x = k.xy.hash[1,k.prime];
-        k.y = k.xy.hash[2,k.prime];
+    ## for (k.prime in seq(1,K)) {
+    ##     k.x = k.xy.hash[1,k.prime];
+    ##     k.y = k.xy.hash[2,k.prime];
                 
-        for (l.prime in seq(1,K)) {
-            l.x = k.xy.hash[1,l.prime];
-            l.y = k.xy.hash[2,l.prime];
+    ##     for (l.prime in seq(1,K)) {
+    ##         l.x = k.xy.hash[1,l.prime];
+    ##         l.y = k.xy.hash[2,l.prime];
             
-            print(sum(orthonormal.function.list.x[[k.x]]*
-                      orthonormal.function.list.x[[l.x]])*dx *
-                  sum(orthonormal.function.list.y[[k.y]]*
-                      orthonormal.function.list.y[[l.y]])*dy);
-        }
-    }
+    ##         print(sum(orthonormal.function.list.x[[k.x]]*
+    ##                   orthonormal.function.list.x[[l.x]])*dx *
+    ##               sum(orthonormal.function.list.y[[k.y]]*
+    ##                   orthonormal.function.list.y[[l.y]])*dy);
+    ##     }
+    ## }
 
     ## SYSTEM MATRICES START ##
     derivative.xx.matrix <- matrix(nrow = K,
