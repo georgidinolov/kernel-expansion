@@ -3,7 +3,7 @@ rm(list=ls());
 PLOT.SOLUTION=FALSE;
 dx = 0.01;
 dy = 0.01;
-K=8;
+K=6;
 
 source("2-d-solution.R");
 problem.parameters = NULL;
