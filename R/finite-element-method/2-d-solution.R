@@ -1,3 +1,113 @@
+## sample from process
+sample.process <- function(n.simulations,
+                           n.samples,
+                           dt,
+                           problem.parameters) {
+    
+    n.timesteps <- problem.parameters$t/dt;
+    rho <- problem.parameters$rho;
+    sigma.2.x <- problem.parameters$sigma.2.x;
+    sigma.2.y <- problem.parameters$sigma.2.y;
+
+    output.x <- c();
+    output.y <- c();
+    weights <- rep(1, n.simulations);
+    
+    for (i in seq(1,n.simulations)) {
+        x.current = problem.parameters$x.ic;
+        y.current = problem.parameters$y.ic;
+        weight = 1;
+        for (j in seq(1,n.timesteps)) {
+            
+            dx <- sqrt(dt*sigma.2.x)*rnorm(1);
+            dy <- sigma.2.y/sigma.2.x*rho*
+                (dx) +
+                sqrt((1-rho^2)*sigma.2.y*dt)*rnorm(1);
+            x.new <- x.current + dx;
+            y.new <- y.current + dy;
+
+            ## if (x.new > problem.parameters$bx |
+            ##     x.new < problem.parameters$ax |
+            ##     y.new > problem.parameters$by |
+            ##     y.new < problem.parameters$ay) {
+            ##     print("hit boundary");
+            ##     print(j);
+            ##     break;
+            ## }
+            
+            while (x.new > problem.parameters$bx |
+                   x.new < problem.parameters$ax |
+                   y.new > problem.parameters$by |
+                   y.new < problem.parameters$ay) {
+                       x.direction <- sample(x=c(-1,1),size=1);
+                       y.direction <- sample(x=c(-1,1),size=1);
+                       dx.new <- dx*x.direction;
+                       dy.new <- dy*y.direction;
+                       x.new <- x.current + dx.new;
+                       y.new <- y.current + dy.new;
+                   }
+            if (x.new != x.current+dx |
+                y.new != y.current+dy) {
+                weight = weight/2;
+            }
+            x.current <- x.new;
+            y.current <- y.new;
+        }
+        
+        if (!(x.current > problem.parameters$bx |
+                x.current < problem.parameters$ax |
+                y.current > problem.parameters$by |
+                y.current < problem.parameters$ay)) {
+            output.x = c(output.x, x.current);
+            output.y = c(output.y, y.current);
+        }
+        weights[i] = weight;
+    }
+    
+    unique.samples <- unique(sample(x=seq(1,n.simulations),
+                                    size=100*n.simulations, replace=TRUE,
+                                    prob=weights))
+    while (length(unique.samples) < n.samples) {
+        unique.samples <- unique(sample(x=seq(1,n.simulations),
+                                        size=100*n.simulations, replace=TRUE,
+                                        prob=weights));
+    }
+    unique.samples <- unique.samples[seq(1,n.samples)];
+
+    out <- rbind(output.x[unique.samples],
+                 output.y[unique.samples]);
+    
+    neighbor.distance <- matrix(nrow=n.samples,
+                                ncol=n.samples-1);
+    for (i in seq(1,n.samples)) {
+        if (i==1) {
+            neighbor.distance[i,] <-
+                sapply(seq(2,n.samples),
+                       function(x) {
+                           return(sqrt(sum((out[,i]-out[,x])^2)));
+                       });
+        } else if (i==n.samples) {
+            neighbor.distance[i,] <-
+            sapply(seq(1,n.samples-1),
+                   function(x) {
+                       return(sqrt(sum((out[,i]-out[,x])^2)));
+                   })
+        } else {
+            neighbor.distance[i,] <-
+            sapply(c(seq(1,i-1),
+                     seq(i+1,n.samples)),
+                   function(x) {
+                       return(sqrt(sum((out[,i]-out[,x])^2)));
+                   });
+        }
+    }
+    sigma2s <- ((apply(neighbor.distance, 1, min))*10)^2;
+    output <- NULL;
+    output$mus <- out;
+    output$sigma2s <- sigma2s;
+    return(output);
+}
+
 ## performing gram-schmidt orthogonalization on the list of functions
 ## provided.
 deriv.cross.term.intergral <- function(m, l,
@@ -1192,7 +1302,7 @@ blackbox <- function(mu.log.sigma2.x.pairs.list.unique,
             ## line <- readline();
             if (k==1) {
                 plot(x,function.list.x[[k]],type="l",
-                     ylim = c(0,100*max(function.list.x[[k]])));
+                     ylim = c(0,10*max(function.list.x[[k]])));
             } else {
                 lines(x,function.list.x[[k]]);
             }
@@ -1201,7 +1311,7 @@ blackbox <- function(mu.log.sigma2.x.pairs.list.unique,
         for (k in seq(1,length(function.list.y))) {
             if (k==1) {
                 plot(y,function.list.y[[k]],type="l",
-                     ylim = c(0,100*max(function.list.y[[k]])));
+                     ylim = c(0,10*max(function.list.y[[k]])));
             } else {
                 lines(y,function.list.y[[k]]);
             }
@@ -1495,11 +1605,13 @@ blackbox <- function(mu.log.sigma2.x.pairs.list.unique,
     ## print(min.index.col);
 
     problem.parameters.x = problem.parameters;
+    problem.parameters.x$x.ic = problem.parameters$x.ic;
     problem.parameters.x$a = problem.parameters$ax;
     problem.parameters.x$b = problem.parameters$bx;
     problem.parameters.x$sigma.2 = problem.parameters$sigma.2.x;
 
     problem.parameters.y = problem.parameters;
+    problem.parameters.y$x.ic = problem.parameters$y.ic;
     problem.parameters.y$a = problem.parameters$ay;
     problem.parameters.y$b = problem.parameters$by;
     problem.parameters.y$sigma.2 = problem.parameters$sigma.2.y;
@@ -1511,14 +1623,16 @@ blackbox <- function(mu.log.sigma2.x.pairs.list.unique,
     plot(x,approx.sol[,y.ic.index], type = "l", col = "black", lty="dashed");
     lines(x,true.sol[,y.ic.index], col = "red");
 
-    plot(y,approx.sol[x.ic.index,], type="l",
-         lty="dashed", col = "green");
+    plot(y,approx.sol[x.ic.index,], type="l", lty="dashed", col = "black");
+    lines(y,true.sol[x.ic.index,], col = "red");
 
-    png("contour.png");
-    filled.contour(x,y,approx.sol, nlevels = 50);
-    ## persp(x,y,approx.sol, theta = pi/2);
-    ## points(x[min.index.row], y[min.index.col], col="red");
-    dev.off();
+    if (PLOT.SOLUTION) {
+        png("contour.png");
+        contour(y,x,approx.sol, nlevels = 50);
+        ## persp(x,y,approx.sol, theta = pi/2);
+        ## points(x[min.index.row], y[min.index.col], col="red");
+        dev.off();
+    }
     
     ## if (PLOT.SOLUTION) {
     ##     exact.solution = univariate.solution(x,problem.parameters);
