@@ -101,7 +101,7 @@ sample.process <- function(n.simulations,
                    });
         }
     }
-    sigma2s <- ((apply(neighbor.distance, 1, min))*10)^2;
+    sigma2s <- ((apply(neighbor.distance, 1, min))*0.5)^2;
     output <- NULL;
     output$mus <- out;
     output$sigma2s <- sigma2s;

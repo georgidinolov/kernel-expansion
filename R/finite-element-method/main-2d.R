@@ -3,8 +3,8 @@ rm(list=ls());
 PLOT.SOLUTION=FALSE;
 dx = 0.001;
 dy = 0.001;
-K=5;
-nn = 2;
+K=4;
+nn = 30;
 
 source("2-d-solution.R");
 problem.parameters = NULL;
@@ -17,7 +17,7 @@ problem.parameters$y.ic = 0.9;
 problem.parameters$number.terms = 1000;
 problem.parameters$sigma.2.x = 1e0;
 problem.parameters$sigma.2.y = 1e0;
-problem.parameters$rho = 0.0;
+problem.parameters$rho = -0.8;
 problem.parameters$t = 0.2;
 
 random.mu.sigma2 <- sample.process(n.simulations = nn*10,
@@ -38,15 +38,11 @@ min.index <- which(abs(differences) ==
 
 mu.xs <- mu.xs - differences[min.index];
 
-if (sum(mu.xs == problem.parameters$ax)==0) {
-    mu.xs = c(problem.parameters$ax, mu.xs);
-}
-if (sum(mu.xs == problem.parameters$bx)==0) {
-    mu.xs = c(mu.xs, problem.parameters$bx);
-}
-mu.xs <-
-    mu.xs[mu.xs <= problem.parameters$bx &
-          mu.xs >= problem.parameters$ax]
+## if (sum(mu.xs == problem.parameters$ax)==0) {
+##     mu.xs = c(problem.parameters$ax, mu.xs);
+## }
+## if (sum(mu.xs == problem.parameters$bx)==0) {
+##     mu.xs = c(mu.xs, problem.parameters$bx);
 
 mu.xs.2 = unlist(lapply(seq(1,K), function(k){rep(mu.xs[k], K)}));
 
@@ -63,26 +59,23 @@ min.index <- which(abs(differences) ==
 
 mu.ys <- mu.ys - differences[min.index];
 
-if (sum(mu.ys == problem.parameters$ay)==0) {
-    mu.ys = c(problem.parameters$ay, mu.ys);
-}
-if (sum(mu.ys == problem.parameters$by)==0) {
-    mu.ys = c(mu.ys, problem.parameters$by);
-}
-mu.ys <-
-    mu.ys[mu.ys <= problem.parameters$by &
-          mu.ys >= problem.parameters$ay]
+## if (sum(mu.ys == problem.parameters$ay)==0) {
+##     mu.ys = c(problem.parameters$ay, mu.ys);
+## }
+## if (sum(mu.ys == problem.parameters$by)==0) {
+##     mu.ys = c(mu.ys, problem.parameters$by);
+## }
 
 mu.ys.2 = rep(mu.ys, K);
 
 log.sigma2.xs = log(rep(problem.parameters$sigma.2.x*
-                        problem.parameters$t,
+                        problem.parameters$t*0.1,
                         K));
 log.sigma2.xs.2 = unlist(lapply(seq(1,K), function(k){
     rep(log.sigma2.xs[k], K)}));
 
 log.sigma2.ys = log(rep(problem.parameters$sigma.2.y*
-                        problem.parameters$t,
+                        problem.parameters$t*0.1,
                         K));
 
 log.sigma2.ys.2 = unlist(lapply(seq(1,K), function(k){
@@ -107,21 +100,21 @@ mus = Rotation.matrix %*% (mus -
     rbind(rep(problem.parameters$x.ic, length(mus[1,])),
           rep(problem.parameters$y.ic, length(mus[1,])))
 
-mus <- cbind(c(problem.parameters$x.ic,
-               problem.parameters$y.ic),
-             mus);
+## mus <- cbind(c(problem.parameters$x.ic,
+##                problem.parameters$y.ic),
+##              mus);
 
-log.sigma2s <- cbind(c(log(problem.parameters$sigma.2.x*
-                           problem.parameters$t),
-                       log(problem.parameters$sigma.2.y*
-                           problem.parameters$t)),
-                     log.sigma2s);
+## log.sigma2s <- cbind(c(log(problem.parameters$sigma.2.x*
+##                            problem.parameters$t),
+##                        log(problem.parameters$sigma.2.y*
+##                            problem.parameters$t)),
+##                      log.sigma2s);
 
-## mus = cbind(mus,
-##             random.mu.sigma2$mus);
-## log.sigma2s = cbind(log.sigma2s,
-##                     log(rbind(random.mu.sigma2$sigma2s,
-##                               random.mu.sigma2$sigma2s)));
+mus = cbind(mus,
+            random.mu.sigma2$mus);
+log.sigma2s = cbind(log.sigma2s,
+                    log(rbind(random.mu.sigma2$sigma2s,
+                              random.mu.sigma2$sigma2s)));
 
 all.inside <- seq(1,length(mus[1,]));
 ## all.inside <- mus[1,] <= problem.parameters$bx &
