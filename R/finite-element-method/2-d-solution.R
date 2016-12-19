@@ -1250,16 +1250,158 @@ apply.generator <- function(poly, k, problem.parameters.x) {
 }
 
 
-blackbox <- function(mu.log.sigma2.x.pairs.list.unique,
-                     mu.log.sigma2.y.pairs.list.unique,
-                     k.xy.hash,
+blackbox <- function(log.sigma2,
+                     K,
                      problem.parameters,
                      dx, dy,
                      PLOT.SOLUTION,
                      MINIMIZE.REMAINDER) {
     source("2-d-solution.R");
-    K = dim(k.xy.hash)[2];
+    sigma2=exp(log.sigma2);
+    print(paste("sigma2=",sigma2));
 
+    mu.xs = c(seq(2*problem.parameters$ax, 2*problem.parameters$bx,
+                  length.out = K));
+    
+    mu.xs.2 = unlist(lapply(seq(1,K), function(k){rep(mu.xs[k], K)}));
+    
+    mu.ys = c(seq(2*problem.parameters$ay, 2*problem.parameters$by,
+                  length.out = K));
+    
+    mu.ys.2 = rep(mu.ys, K);
+    
+    log.sigma2.xs = log(rep(sigma2,
+                            K));
+    log.sigma2.xs.2 = unlist(lapply(seq(1,K), function(k){
+        rep(log.sigma2.xs[k], K)}));
+    
+    log.sigma2.ys = log(rep(sigma2,
+                            K));
+    
+    log.sigma2.ys.2 = unlist(lapply(seq(1,K), function(k){
+        rep(log.sigma2.ys[k], K)}));
+    
+    
+    mus = rbind(mu.xs.2, 
+                mu.ys.2);
+    log.sigma2s = rbind(log.sigma2.xs.2, log.sigma2.ys.2);
+    ## rotating according to the geometry of the problem
+    theta = 0;
+    Rotation.matrix = matrix(nrow=2, ncol=2,
+                             byrow=FALSE,
+                             data=c(c(cos(theta),sin(theta)),
+                                    c(-sin(theta),cos(theta))));
+
+    mmm <- min(abs(problem.parameters$ax +
+               (problem.parameters$bx-
+                problem.parameters$ax)/2 -
+               mu.xs));
+    x.location.index =
+        which(abs(problem.parameters$ax +
+                  (problem.parameters$bx-
+                   problem.parameters$ax)/2 -
+                  mu.xs) == mmm)[1]
+
+    mmm <- min(abs(problem.parameters$ay +
+               (problem.parameters$by-
+                problem.parameters$ay)/2 -
+               mu.ys));
+    y.location.index =
+        which(abs(problem.parameters$ay +
+                  (problem.parameters$by-
+                   problem.parameters$ay)/2 -
+                  mu.ys) == mmm)[1]
+    
+    mus = Rotation.matrix %*% (mus -
+                               rbind(rep(mu.xs[x.location.index],
+                                         length(mus[1,])),
+                                     rep(mu.ys[y.location.index],
+                                         length(mus[1,])))) +
+        rbind(rep(mu.xs[x.location.index],
+                  length(mus[1,])),
+              rep(mu.ys[y.location.index],
+                  length(mus[1,])));
+    
+    all.inside <- seq(1,length(mus[1,]));
+    all.inside <- mus[1,] <= problem.parameters$bx &
+        mus[1,] >= problem.parameters$ax &
+        mus[2,] <= problem.parameters$by &
+        mus[2,] >= problem.parameters$ay;
+    
+    plot(mus[1,all.inside], mus[2,all.inside],col="red");
+    mus <- mus[,all.inside];
+    print(paste("number terms = ", length(mus[1,]), sep=""));
+    log.sigma2s <- log.sigma2s[,all.inside];
+    
+    mu.log.sigma2.x.pairs.list <-
+        lapply(X=seq(1,length(mus[1,])),
+               function(x) {
+                   c(mus[1,x], log.sigma2s[1,x])
+               });
+    
+    mu.log.sigma2.y.pairs.list <-
+        lapply(X=seq(1,length(mus[1,])),
+               function(x) {
+                   c(mus[2,x], log.sigma2s[2,x])
+               });
+    
+    mu.x.unique <- mus[1,!duplicated(round(mus[1,],digits=5))];
+    mu.log.sigma2.x.pairs.list.unique <- vector("list");
+    current.index = 1;
+    for (i in seq(1,length(mu.x.unique))) {
+        indeces.mu <- which(mus[1,] == mu.x.unique[i]);
+        log.sigma2.x <- unique(log.sigma2s[1,indeces.mu]);
+        for (j in seq(1,length(log.sigma2.x))) {
+            mu.log.sigma2.x.pairs.list.unique[[current.index]] <-
+                c(mu.x.unique[i],log.sigma2.x[j]);
+            current.index = current.index + 1;
+        }
+    }
+    
+    mu.y.unique <- unique(mus[2,!duplicated(round(mus[2,],digits=5))]);
+    mu.log.sigma2.y.pairs.list.unique <- vector("list");
+    current.indey = 1;
+    for (i in seq(1,length(mu.y.unique))) {
+        indeces.mu <- which(mus[2,] == mu.y.unique[i]);
+        log.sigma2.y <- unique(log.sigma2s[2,indeces.mu]);
+        for (j in seq(1,length(log.sigma2.y))) {
+            mu.log.sigma2.y.pairs.list.unique[[current.indey]] <-
+                c(mu.y.unique[i],log.sigma2.y[j]);
+            current.indey = current.indey + 1;
+        }
+    }
+    
+    
+    ## hash function ##
+    ## unique means and variances ##
+    
+    ## simple hash funtion ##
+    ## k in seq(1,length(mus[1,])) ##
+    simple.hash <- function(k) {
+        mu.log.sigma2.x <- mu.log.sigma2.x.pairs.list[[k]];
+        k.x <-
+            which(unlist(lapply(seq(1,length(mu.log.sigma2.x.pairs.list.unique)),
+                                function(x) {
+                                    return(abs(mu.log.sigma2.x.pairs.list.unique[[x]][1] - mu.log.sigma2.x[1]) < 1e-15 &
+                                           abs(mu.log.sigma2.x.pairs.list.unique[[x]][2] - mu.log.sigma2.x[2]) < 1e-15);
+                                }))==1);
+        
+        mu.log.sigma2.y <- mu.log.sigma2.y.pairs.list[[k]];
+        k.y <-
+            which(unlist(lapply(seq(1,length(mu.log.sigma2.y.pairs.list.unique)),
+                                function(x) {
+                                    return(abs(mu.log.sigma2.y.pairs.list.unique[[x]][1] - mu.log.sigma2.y[1])<1e-15 &
+                                           abs(mu.log.sigma2.y.pairs.list.unique[[x]][2] -mu.log.sigma2.y[2])<1e-15);
+                                }))==1);
+        return (c(k.x,k.y));
+    }
+
+    
+    K = dim(mus)[2];
+    k.xy.hash <- sapply(seq(1,K),
+                        function(x) {
+                            simple.hash(x) });
+    
     ## gram schmidt START ##
     x = seq(problem.parameters$ax,
             problem.parameters$bx,
@@ -1302,7 +1444,7 @@ blackbox <- function(mu.log.sigma2.x.pairs.list.unique,
             ## line <- readline();
             if (k==1) {
                 plot(x,function.list.x[[k]],type="l",
-                     ylim = c(0,10*max(function.list.x[[k]])));
+                     ylim = c(0,1*max(function.list.x[[k]])));
             } else {
                 lines(x,function.list.x[[k]]);
             }
@@ -1373,7 +1515,7 @@ blackbox <- function(mu.log.sigma2.x.pairs.list.unique,
             coefficients.x[k,]=coefficients.x[k,]/norm.x;
         }
     }
-
+    
     ## ortho.mat.X <- matrix(nrow=K.x, ncol=K.x);
     ## for (k in seq(1,K.x)) {
     ##     for ( l in seq(1,K.x)) {
@@ -1426,7 +1568,7 @@ blackbox <- function(mu.log.sigma2.x.pairs.list.unique,
     ##     }
     ## }
     ## print(ortho.mat.Y);
-    ## gram schmidt END ###
+    ## ## gram schmidt END ###
 
     ## PLOTTING BASES START ###
     if (PLOT.SOLUTION) {
@@ -1628,55 +1770,13 @@ blackbox <- function(mu.log.sigma2.x.pairs.list.unique,
 
     if (PLOT.SOLUTION) {
         png("contour.png");
-        contour(y,x,approx.sol, nlevels = 50);
-        ## persp(x,y,approx.sol, theta = pi/2);
-        ## points(x[min.index.row], y[min.index.col], col="red");
+        filled.contour(y,x,approx.sol, nlevels = 50);
         dev.off();
     }
-    
-    ## if (PLOT.SOLUTION) {
-    ##     exact.solution = univariate.solution(x,problem.parameters);
-    ##     png(filename=paste("solution-K-", K, ".png", sep=""),
-    ##         width=1200, height=1200,res=300);
-    ##     par(mar = c(5,4,2,1));
-    ##     plot(x,univariate.solution.approx(coefs,x,
-    ##                                       orthonormal.function.list,K),type="l",
-    ##          xlab=paste("K=",K,sep=""),
-    ##          ylab=paste("q(x,t), t=", problem.parameters$t, sep=""));
-    ##     lines(x, exact.solution, col="green",
-    ##           lty="dashed", lwd = 2);
-    ##     dev.off();
-    ## }
-    ## ## ## APPROX SOLUTION END ###
 
-    ## ## ## CHECKING PDE START ###
-    ## A = solve(mass.mat) %*% stiff.mat;
-    ## ## plot(x,univariate.solution.approx.dt(coefs, A),type="l", col="red");
-    ## ## lines(x,0.5*(problem.parameters$sigma.2)*
-    ## ##         univariate.solution.approx.dx.dx(coefs),
-    ## ##       lty="dashed");
-
-    ## if (MINIMIZE.REMAINDER) {
-    ##     difference2 =
-    ##         (univariate.solution.approx.dt(coefs, A, x, K,
-    ##                                        orthonormal.function.list) -
-    ##          0.5*(problem.parameters$sigma.2)*
-    ##          univariate.solution.approx.dx.dx(coefs=coefs,
-    ##                                           coefficients=coefficients,
-    ##                                           x=x,
-    ##                                           K=K,
-    ##                                           raw.function.list=raw.function.list,
-    ##                                           problem.parameters=problem.parameters
-    ##                                           ))^2;
-    ##     norm.diff2 = sum(difference2*dx);
-    ##     ## print(norm.diff2);
-    ##     ## ## CHECKING PDE END ###
-    ##     return (norm.diff2);
-    ## } else {
-    ##     exact.solution = univariate.solution(x,problem.parameters);
-    ##     difference = sum((univariate.solution.approx(coefs,x,
-    ##                                             orthonormal.function.list,K) -
-    ##                       exact.solution)^2*dx);
-    ##     return (difference);
-    ## }
+    ## ## CHECKING PDE START ###
+    max.difference = max(apply(abs(true.sol-approx.sol),
+                               1,
+                               max));
+    return (max.difference);
 }

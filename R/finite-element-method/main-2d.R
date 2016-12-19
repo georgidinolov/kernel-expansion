@@ -1,10 +1,9 @@
 rm(list=ls());
 
 PLOT.SOLUTION=FALSE;
-dx = 0.001;
-dy = 0.001;
-K=4;
-nn = 30;
+dx = 0.01;
+dy = 0.01;
+K=50;
 
 source("2-d-solution.R");
 problem.parameters = NULL;
@@ -12,313 +11,95 @@ problem.parameters$ax = -1;
 problem.parameters$bx = 1;
 problem.parameters$ay = -1;
 problem.parameters$by = 1;
-problem.parameters$x.ic = -0.9;
-problem.parameters$y.ic = 0.9;
+problem.parameters$x.ic = 0.90;
+problem.parameters$y.ic = 0.90;
 problem.parameters$number.terms = 1000;
-problem.parameters$sigma.2.x = 1e0;
+problem.parameters$sigma.2.x = 1e-1;
 problem.parameters$sigma.2.y = 1e0;
-problem.parameters$rho = -0.8;
-problem.parameters$t = 0.2;
+problem.parameters$rho = 0.0;
+problem.parameters$t = 0.5;
+sigma2 = .05;
 
-random.mu.sigma2 <- sample.process(n.simulations = nn*10,
-                                   n.samples = nn,
-                                   dt=problem.parameters$t*0.01,
-                                   problem.parameters=problem.parameters);
+opt.results <- optim(log(sigma2),
+                     blackbox,
+                     method="Brent",
+                     K=K,
+                     problem.parameters=problem.parameters,
+                     dx=dx,
+                     dy=dy,
+                     PLOT.SOLUTION=TRUE,
+                     MINIMIZE.REMAINDER=TRUE,
+                     lower = -4,
+                     upper = -1,
+                     control=list(maxit=100,
+                                  reltol=5e-2));
 
-mu.xs = c(seq(problem.parameters$ax, problem.parameters$bx,
-              length.out = K));
+sigma2 <- exp(opt.results$par);
+problem.parameters$rho = 0.9;
 
-differences <-
-    sapply(seq(1,length(mu.xs)),
-       function(x) {
-           (mu.xs[x]-problem.parameters$x.ic);
-       });
-min.index <- which(abs(differences) ==
-                   min(abs(differences)));
-
-mu.xs <- mu.xs - differences[min.index];
-
-## if (sum(mu.xs == problem.parameters$ax)==0) {
-##     mu.xs = c(problem.parameters$ax, mu.xs);
-## }
-## if (sum(mu.xs == problem.parameters$bx)==0) {
-##     mu.xs = c(mu.xs, problem.parameters$bx);
-
-mu.xs.2 = unlist(lapply(seq(1,K), function(k){rep(mu.xs[k], K)}));
-
-mu.ys = c(seq(problem.parameters$ax, problem.parameters$bx,
-              length.out = K));
-
-differences <-
-    sapply(seq(1,length(mu.ys)),
-       function(x) {
-           (mu.ys[x]-problem.parameters$y.ic);
-       });
-min.index <- which(abs(differences) ==
-                   min(abs(differences)));
-
-mu.ys <- mu.ys - differences[min.index];
-
-## if (sum(mu.ys == problem.parameters$ay)==0) {
-##     mu.ys = c(problem.parameters$ay, mu.ys);
-## }
-## if (sum(mu.ys == problem.parameters$by)==0) {
-##     mu.ys = c(mu.ys, problem.parameters$by);
-## }
-
-mu.ys.2 = rep(mu.ys, K);
-
-log.sigma2.xs = log(rep(problem.parameters$sigma.2.x*
-                        problem.parameters$t*0.1,
-                        K));
-log.sigma2.xs.2 = unlist(lapply(seq(1,K), function(k){
-    rep(log.sigma2.xs[k], K)}));
-
-log.sigma2.ys = log(rep(problem.parameters$sigma.2.y*
-                        problem.parameters$t*0.1,
-                        K));
-
-log.sigma2.ys.2 = unlist(lapply(seq(1,K), function(k){
-    rep(log.sigma2.ys[k], K)}));
-
-
-
-mus = rbind(mu.xs.2, 
-            mu.ys.2);
-log.sigma2s = rbind(log.sigma2.xs.2, log.sigma2.ys.2);
-## rotating according to the geometry of the problem
-theta = atan(-problem.parameters$rho);
-theta = 0;
-Rotation.matrix = matrix(nrow=2, ncol=2,
-                         byrow=FALSE,
-                         data=c(c(cos(theta),sin(theta)),
-                                c(-sin(theta),cos(theta))));
-
-mus = Rotation.matrix %*% (mus -
-                           rbind(rep(problem.parameters$x.ic, length(mus[1,])),
-                                 rep(problem.parameters$y.ic, length(mus[1,])))) +
-    rbind(rep(problem.parameters$x.ic, length(mus[1,])),
-          rep(problem.parameters$y.ic, length(mus[1,])))
-
-## mus <- cbind(c(problem.parameters$x.ic,
-##                problem.parameters$y.ic),
-##              mus);
-
-## log.sigma2s <- cbind(c(log(problem.parameters$sigma.2.x*
-##                            problem.parameters$t),
-##                        log(problem.parameters$sigma.2.y*
-##                            problem.parameters$t)),
-##                      log.sigma2s);
-
-mus = cbind(mus,
-            random.mu.sigma2$mus);
-log.sigma2s = cbind(log.sigma2s,
-                    log(rbind(random.mu.sigma2$sigma2s,
-                              random.mu.sigma2$sigma2s)));
-
-all.inside <- seq(1,length(mus[1,]));
-## all.inside <- mus[1,] <= problem.parameters$bx &
-##     mus[1,] >= problem.parameters$ax &
-##     mus[2,] <= problem.parameters$by &
-##     mus[2,] >= problem.parameters$ay;
-
-plot(mus[1,all.inside], mus[2,all.inside],col="red");
-mus <- mus[,all.inside];
-log.sigma2s <- log.sigma2s[,all.inside];
-
-mu.log.sigma2.x.pairs.list <-
-    lapply(X=seq(1,length(mus[1,])),
-           function(x) {
-               c(mus[1,x], log.sigma2s[1,x])
-           });
-
-mu.log.sigma2.y.pairs.list <-
-    lapply(X=seq(1,length(mus[1,])),
-           function(x) {
-               c(mus[2,x], log.sigma2s[2,x])
-           });
-
-mu.x.unique <- unique(mus[1,]);
-mu.log.sigma2.x.pairs.list.unique <- vector("list");
-current.index = 1;
-for (i in seq(1,length(mu.x.unique))) {
-    indeces.mu <- which(mus[1,] == mu.x.unique[i]);
-    log.sigma2.x <- unique(log.sigma2s[1,indeces.mu]);
-    for (j in seq(1,length(log.sigma2.x))) {
-        mu.log.sigma2.x.pairs.list.unique[[current.index]] <-
-            c(mu.x.unique[i],log.sigma2.x[j]);
-        current.index = current.index + 1;
-    }
-}
-
-mu.y.unique <- unique(mus[2,]);
-mu.log.sigma2.y.pairs.list.unique <- vector("list");
-current.indey = 1;
-for (i in seq(1,length(mu.y.unique))) {
-    indeces.mu <- which(mus[2,] == mu.y.unique[i]);
-    log.sigma2.y <- unique(log.sigma2s[2,indeces.mu]);
-    for (j in seq(1,length(log.sigma2.y))) {
-        mu.log.sigma2.y.pairs.list.unique[[current.indey]] <-
-            c(mu.y.unique[i],log.sigma2.y[j]);
-        current.indey = current.indey + 1;
-    }
-}
-
-
-## hash function ##
-## unique means and variances ##
-
-## simple hash funtion ##
-## k in seq(1,length(mus[1,])) ##
-K = length(mus[1,]);
-simple.hash <- function(k) {
-    mu.log.sigma2.x <- mu.log.sigma2.x.pairs.list[[k]];
-    k.x <-
-        which(unlist(lapply(seq(1,length(mu.log.sigma2.x.pairs.list.unique)),
-                            function(x) {
-                                return(mu.log.sigma2.x.pairs.list.unique[[x]][1] ==
-                                       mu.log.sigma2.x[1] &
-                                       mu.log.sigma2.x.pairs.list.unique[[x]][2] ==
-                                       mu.log.sigma2.x[2]);
-                            }))==1);
-
-    mu.log.sigma2.y <- mu.log.sigma2.y.pairs.list[[k]];
-    k.y <-
-        which(unlist(lapply(seq(1,length(mu.log.sigma2.y.pairs.list.unique)),
-                            function(x) {
-                                return(mu.log.sigma2.y.pairs.list.unique[[x]][1] ==
-                                       mu.log.sigma2.y[1] &
-                                       mu.log.sigma2.y.pairs.list.unique[[x]][2] ==
-                                       mu.log.sigma2.y[2]);
-                            }))==1);
-    return (c(k.x,k.y));
-}
-
-k.xy.hash <- sapply(seq(1,K),
-                    function(x) {
-                        simple.hash(x) });
-               
-bb = blackbox(mu.log.sigma2.x.pairs.list.unique,
-              mu.log.sigma2.y.pairs.list.unique, 
-              k.xy.hash,
+bb = blackbox(log(sigma2),
+              K=K,
               problem.parameters,
               dx, dy,
               TRUE,TRUE);
 
-## points(mu.vector[seq(2,2*K,by=2)], mu.vector[seq(1,2*K,by=2)], col="red")
+Ks <- seq(10,20,by=1);
+optimal.sigma2s <- rep(NA,length(Ks));
 
-## rm(list=ls());
-## source("2-d-solution.R");
-
-## problem.parameters = NULL;
-## problem.parameters$ax = -1;
-## problem.parameters$bx = 1;
-## problem.parameters$ay = -1;
-## problem.parameters$by = 1;
-## problem.parameters$x.ic = 0.2;
-## problem.parameters$y.ic = 0.0;
-## problem.parameters$number.terms = 1000;
-## problem.parameters$sigma.2.x = 0.5;
-## problem.parameters$sigma.2.y = 0.0001;
-## problem.parameters$rho = 0.0;
-## problem.parameters$t = 0.001;
-
-## Ks = seq(5,5);
-
-## L2.remainders.before = rep(NA, length(Ks));
-## L2.diff.before = rep(NA, length(Ks));
-
-## L2.remainders.after = rep(NA, length(Ks));
-## L2.diff.after = rep(NA, length(Ks));
-
-## ave.function.call.time.vec = rep(NA,length(Ks));
-## log.sigma2.mu.vector.list = vector(mode="list",
-##                                    length=length(Ks));
-
-## for (i in seq(1,length(Ks))) {
-##     K=Ks[i];
-##     log.sigma2.vector=log(
-##         rep(c(((problem.parameters$bx-problem.parameters$ax)/K)^2,
-##         ((problem.parameters$by-problem.parameters$ay)/K)^2),
-##         K)) +
-##         rep(log(2), 2*K);
-##     mu.vector = seq(problem.parameters$ax,
-##                     problem.parameters$bx,
-##                     length.out=length(log.sigma2.vector)/2);
-
-##     mu.vector = unlist(lapply(X=mu.vector, function(x) {c(x,x)}));
-##     mu.vector = c(-0.8,-0.8, -0.8,0.8, 0.8,-0.8, 0.8,0.8, 0,0);
+for (i in seq(1,length(Ks))) {
+    K = Ks[i];
+    sigma2 = 0.4;
+    opt.results <- optim(log(sigma2),
+                         blackbox,
+                         method="Brent",
+                         K=K,
+                         problem.parameters=problem.parameters,
+                         dx=dx,
+                         dy=dy,
+                         PLOT.SOLUTION=TRUE,
+                         MINIMIZE.REMAINDER=TRUE,
+                         lower = -4,
+                         upper = 2,
+                         control=list(maxit=100,
+                                      reltol=5e-2));
     
-##     log.sigma2.mu.vector = c(log.sigma2.vector,
-##                              mu.vector);
-##     dx = 0.001;
-##     dy = 0.001;
-    
-##     bb = blackbox(log.sigma2.mu.vector, problem.parameters, dx, dy,
-##                   TRUE,TRUE);
-##     ## L2.remainders.before[i] = bb;
-##     ## L2.diff.before[i] = blackbox(log.sigma2.mu.vector, problem.parameters,
-##     ##                              dx,
-##     ##                              FALSE,
-##     ##                              FALSE);
+    optimal.sigma2s[i] <- exp(opt.results$par);
+}
 
-##     ## ptm <- proc.time();				 
-##     ## opt.bases <- optim(par=log.sigma2.mu.vector,
-##     ##                    fn=blackbox,
-##     ##                    problem.parameters = problem.parameters,
-##     ##                    dx = dx,
-##     ##                    PLOT.SOLUTION=FALSE,
-##     ##                    MINIMIZE.REMAINDER=TRUE);
+fit <- lm(log(optimal.sigma2s)~Ks);
+plot(Ks, log(optimal.sigma2s));
+abline(a=fit$coefficients[1], b=fit$coefficients[2],
+       col="red");
 
-##     ## ## opt.bases <- optim(par=log.sigma2.mu.vector,
-##     ## ## 			method=c("BFGS"),
-##     ## ##                    fn=blackbox,
-##     ## ##                    problem.parameters = problem.parameters,
-##     ## ##                    dx = dx,
-##     ## ##                    PLOT.SOLUTION=FALSE,
-##     ## ##                    MINIMIZE.REMAINDER=TRUE);
-##     ## end.time <- proc.time()-ptm;
-##     ## ## Stop the clock
-    
-##     ## ave.function.call.time = end.time[3]/(opt.bases$counts[1]);
-##     ## ave.function.call.time.vec[i] = ave.function.call.time;
+K=40;
+bb = blackbox((fit$coefficients[1]+
+               fit$coefficients[2]*K),
+              K=K,
+              problem.parameters,
+              dx, dy,
+              TRUE,TRUE);
 
-##     ## log.sigma2.mu.vector = opt.bases$par;
-##     ## log.sigma2.mu.vector.list[[i]] = log.sigma2.mu.vector;
-##     ## bb = blackbox(log.sigma2.mu.vector, problem.parameters, dx,TRUE,TRUE);
-    
-##     ## L2.remainders.after[i] = bb;
-##     ## L2.diff.after[i] = blackbox(log.sigma2.mu.vector, problem.parameters,
-##     ##                             dx,
-##     ##                             FALSE,
-##     ##                             FALSE)
-## }
+sigma2 <- exp(fit$coefficients[1]+
+              fit$coefficients[2]*K);
+opt.results <- optim(log(sigma2),
+                     blackbox,
+                     method="Brent",
+                     K=K,
+                     problem.parameters=problem.parameters,
+                     dx=dx,
+                     dy=dy,
+                     PLOT.SOLUTION=TRUE,
+                     MINIMIZE.REMAINDER=TRUE,
+                     lower = log(sigma2)-2*summary(fit)$sigma,
+                     upper = log(sigma2)+2*summary(fit)$sigma,
+                     control=list(maxit=100,
+                                  reltol=5e-2));
 
-## ## save(file="optimization-results.Rdata",
-## ##      list=c("Ks","L2.remainders.before","L2.diff.before",
-## ##             "L2.remainders.after","L2.diff.after",
-## ##             "ave.function.call.time.vec",
-## ##             "log.sigma2.mu.vector.list",
-## ## 	    "dx"));
+problem.parameters$x.ic = 0.65;
+problem.parameters$y.ic = 0.05;
 
-## ## pdf("optimization-results.pdf");
-## ## par(mfrow=c(2,1));
-## ## par(mar = c(5,4,2,1));
-## ## plot(Ks, log(L2.remainders.before),
-## ##      type="l",
-## ##      ylim = c(min(log(L2.remainders.before),log(L2.remainders.after)),
-## ##               max(log(L2.remainders.before),log(L2.remainders.after))),
-## ##      ylab = "",
-## ##      xlab = "K",
-## ##      main = "log(L^2) norm of remainder term");
-## ## lines(Ks, log(L2.remainders.after),col="red");
-
-## ## plot(Ks, log(L2.diff.before),
-## ##      type="l",
-## ##      ylim = c(min(log(L2.diff.before),log(L2.diff.after)),
-## ##               max(log(L2.diff.before),log(L2.diff.after))),
-## ##      ylab = "",
-## ##      xlab = "",
-## ##      main = "log(L^2) norm of difference between approximate and true solutions");
-## ## lines(Ks, log(L2.diff.after),col="red");
-## ## dev.off();
+bb = blackbox(opt.results$par,
+              K=K,
+              problem.parameters,
+              dx, dy,
+              TRUE,TRUE);
