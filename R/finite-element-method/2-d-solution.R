@@ -101,10 +101,10 @@ sample.process <- function(n.simulations,
                    });
         }
     }
-    sigma2s <- ((apply(neighbor.distance, 1, min))*0.5)^2;
+    sigma2s <- ((apply(neighbor.distance, 1, min))*1)^2;
     output <- NULL;
     output$mus <- out;
-    output$sigma2s <- sigma2s;
+    output$log.sigma2s <- log(sigma2s);
     return(output);
 }
 
@@ -1251,6 +1251,7 @@ apply.generator <- function(poly, k, problem.parameters.x) {
 
 
 blackbox <- function(log.sigma2,
+                     samples,
                      K,
                      problem.parameters,
                      dx, dy,
@@ -1326,9 +1327,9 @@ blackbox <- function(log.sigma2,
                 samples$mus);
     
     log.sigma2s <- cbind(log.sigma2s,
-                         rbind(log(samples$sigma2s),
-                               log(samples$sigma2s)));
-    
+                         rbind(samples$log.sigma2s,
+                               samples$log.sigma2s));
+
     all.inside <- seq(1,length(mus[1,]));
     all.inside <- mus[1,] <= problem.parameters$bx &
         mus[1,] >= problem.parameters$ax &

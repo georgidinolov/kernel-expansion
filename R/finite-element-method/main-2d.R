@@ -3,7 +3,7 @@ rm(list=ls());
 PLOT.SOLUTION=FALSE;
 dx = 0.01;
 dy = 0.01;
-K=30;
+K=10;
 nn = 10;
 source("2-d-solution.R");
 problem.parameters = NULL;
@@ -11,19 +11,31 @@ problem.parameters$ax = -1;
 problem.parameters$bx = 1;
 problem.parameters$ay = -1;
 problem.parameters$by = 1;
-problem.parameters$x.ic = 0.90;
-problem.parameters$y.ic = 0.90;
+problem.parameters$x.ic = 0.85;
+problem.parameters$y.ic = 0.85;
 problem.parameters$number.terms = 1000;
 problem.parameters$sigma.2.x = 1e-1;
-problem.parameters$sigma.2.y = 1e0;
+problem.parameters$sigma.2.y = 5e-1;
 problem.parameters$rho = 0.0;
 problem.parameters$t = 0.5;
 sigma2 = .05;
+log.sigma2 = log(sigma2);
+samples <- NULL;
+samples$mus <- NULL;
+samples$log.sigma2s <- NULL;
 
+bb <- blackbox(log.sigma2,
+               samples,
+               K=K,
+               problem.parameters,
+               dx, dy,
+               TRUE,
+               TRUE);
 
 opt.results <- optim(log(sigma2),
                      blackbox,
                      method="Brent",
+                     samples=samples,
                      K=K,
                      problem.parameters=problem.parameters,
                      dx=dx,
@@ -35,16 +47,21 @@ opt.results <- optim(log(sigma2),
                      control=list(maxit=100,
                                   reltol=5e-2));
 sigma2 <- exp(opt.results$par);
+log.sigma2 <- log(sigma2);
 
-problem.parameters$rho = -0.9;
+problem.parameters$rho = -0.8;
+nn = 50;
+samples <- NULL;
+samples$mus <- NULL;
+samples$log.sigma2s <- NULL;
 samples <- sample.process(n.simulations=nn*10,
                           n.samples=nn,
                           dt=problem.parameters$t/100,
                           problem.parameters=problem.parameters);
 
-bb <- blackbox(log(sigma2),
+bb <- blackbox(log.sigma2,
+               samples,
                K=K,
-               n.samples = 40,
                problem.parameters,
                dx, dy,
                TRUE,
