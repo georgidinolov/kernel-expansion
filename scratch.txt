@@ -1,0 +1,54 @@
+;; This buffer is for notes you don't want to save, and for Lisp evaluation.
+;; If you want to create a file, visit that file with C-x C-f,
+;; then enter the text in that file's own buffer.
+
+    mu.x.unique <- mus[1,!duplicated(round(mus[1,],digits=5))];
+    mu.log.sigma2.x.pairs.list.unique <- vector("list");
+    current.index = 1;
+    for (i in seq(1,length(mu.x.unique))) {
+        indeces.mu <- which(mus[1,] == mu.x.unique[i]);
+        log.sigma2.x <- unique(log.sigma2s[1,indeces.mu]);
+        for (j in seq(1,length(log.sigma2.x))) {
+            mu.log.sigma2.x.pairs.list.unique[[current.index]] <-
+                c(mu.x.unique[i],log.sigma2.x[j]);
+            current.index = current.index + 1;
+        }
+    }
+    
+    mu.y.unique <- unique(mus[2,!duplicated(round(mus[2,],digits=5))]);
+    mu.log.sigma2.y.pairs.list.unique <- vector("list");
+    current.indey = 1;
+    for (i in seq(1,length(mu.y.unique))) {
+        indeces.mu <- which(mus[2,] == mu.y.unique[i]);
+        log.sigma2.y <- unique(log.sigma2s[2,indeces.mu]);
+        for (j in seq(1,length(log.sigma2.y))) {
+            mu.log.sigma2.y.pairs.list.unique[[current.indey]] <-
+                c(mu.y.unique[i],log.sigma2.y[j]);
+            current.indey = current.indey + 1;
+        }
+    }
+    
+    
+    ## hash function ##
+    ## unique means and variances ##
+    
+    ## simple hash funtion ##
+    ## k in seq(1,length(mus[1,])) ##
+    simple.hash <- function(k) {
+        mu.log.sigma2.x <- mu.log.sigma2.x.pairs.list[[k]];
+        k.x <-
+            which(unlist(lapply(seq(1,length(mu.log.sigma2.x.pairs.list.unique)),
+                                function(x) {
+                                    return(abs(mu.log.sigma2.x.pairs.list.unique[[x]][1] - mu.log.sigma2.x[1]) < 1e-15 &
+                                           abs(mu.log.sigma2.x.pairs.list.unique[[x]][2] - mu.log.sigma2.x[2]) < 1e-15);
+                                }))==1);
+        
+        mu.log.sigma2.y <- mu.log.sigma2.y.pairs.list[[k]];
+        k.y <-
+            which(unlist(lapply(seq(1,length(mu.log.sigma2.y.pairs.list.unique)),
+                                function(x) {
+                                    return(abs(mu.log.sigma2.y.pairs.list.unique[[x]][1] - mu.log.sigma2.y[1])<1e-15 &
+                                           abs(mu.log.sigma2.y.pairs.list.unique[[x]][2] -mu.log.sigma2.y[2])<1e-15);
+                                }))==1);
+        return (c(k.x,k.y));
+    }
