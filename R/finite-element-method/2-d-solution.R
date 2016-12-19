@@ -1321,6 +1321,13 @@ blackbox <- function(log.sigma2,
                   length(mus[1,])),
               rep(mu.ys[y.location.index],
                   length(mus[1,])));
+
+    mus = cbind(mus,
+                samples$mus);
+    
+    log.sigma2s <- cbind(log.sigma2s,
+                         rbind(log(samples$sigma2s),
+                               log(samples$sigma2s)));
     
     all.inside <- seq(1,length(mus[1,]));
     all.inside <- mus[1,] <= problem.parameters$bx &

@@ -3,8 +3,8 @@ rm(list=ls());
 PLOT.SOLUTION=FALSE;
 dx = 0.01;
 dy = 0.01;
-K=50;
-
+K=30;
+nn = 10;
 source("2-d-solution.R");
 problem.parameters = NULL;
 problem.parameters$ax = -1;
@@ -20,6 +20,7 @@ problem.parameters$rho = 0.0;
 problem.parameters$t = 0.5;
 sigma2 = .05;
 
+
 opt.results <- optim(log(sigma2),
                      blackbox,
                      method="Brent",
@@ -33,15 +34,21 @@ opt.results <- optim(log(sigma2),
                      upper = -1,
                      control=list(maxit=100,
                                   reltol=5e-2));
-
 sigma2 <- exp(opt.results$par);
-problem.parameters$rho = 0.9;
 
-bb = blackbox(log(sigma2),
-              K=K,
-              problem.parameters,
-              dx, dy,
-              TRUE,TRUE);
+problem.parameters$rho = -0.9;
+samples <- sample.process(n.simulations=nn*10,
+                          n.samples=nn,
+                          dt=problem.parameters$t/100,
+                          problem.parameters=problem.parameters);
+
+bb <- blackbox(log(sigma2),
+               K=K,
+               n.samples = 40,
+               problem.parameters,
+               dx, dy,
+               TRUE,
+               TRUE);
 
 Ks <- seq(10,20,by=1);
 optimal.sigma2s <- rep(NA,length(Ks));
