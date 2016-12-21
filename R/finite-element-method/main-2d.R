@@ -3,73 +3,66 @@ rm(list=ls());
 PLOT.SOLUTION=FALSE;
 dx = 0.01;
 dy = 0.01;
-K=6;
+K=8;
 
+library("mvtnorm");
 source("2-d-solution.R");
 problem.parameters = NULL;
 problem.parameters$ax = -1;
 problem.parameters$bx = 1;
 problem.parameters$ay = -1;
 problem.parameters$by = 1;
-problem.parameters$x.ic = 0.0;
-problem.parameters$y.ic = 0.0;
+problem.parameters$x.ic = 0.9;
+problem.parameters$y.ic = 0.9;
 problem.parameters$number.terms = 1000;
-problem.parameters$sigma.2.x = 5e-1;
-problem.parameters$sigma.2.y = 1e0;
-problem.parameters$rho = 0.5;
-problem.parameters$t = 0.2;
+problem.parameters$sigma.2.x = 1e-1;
+problem.parameters$sigma.2.y = 1e-1;
+problem.parameters$rho = -0.9;
+problem.parameters$t = 0.5;
 
-log.sigma2.vector=log(rep(1,K));
-## if (K==1) {
-##     mu.vector = c(problem.parameters$x.ic,
-##                   problem.parameters$y.ic)
-    
-## } else {
-##     mu.vector = c(c(problem.parameters$x.ic,
-##                     problem.parameters$y.ic),
-##                   unlist(lapply(seq(1,K-1),
-##                                 function(x)
-##                                 { c(runif(1, problem.parameters$ax,
-##                                           problem.parameters$bx),
-##                                     runif(1, problem.parameters$ay,
-##                                           problem.parameters$by)) })));
-## }
+Lx <- (problem.parameters$bx-problem.parameters$ax)/K;
+Kx.prime <- floor((problem.parameters$x.ic-problem.parameters$ax)/Lx);
+Lx.prime <- (problem.parameters$x.ic-problem.parameters$ax)/Kx.prime;
+
+Ly <- (problem.parameters$by-problem.parameters$ay)/K;
+Ky.prime <- floor((problem.parameters$y.ic-problem.parameters$ay)/Ly);
+Ly.prime <- (problem.parameters$y.ic-problem.parameters$ay)/Ky.prime;
 
 mu.xs = c(seq(problem.parameters$ax, problem.parameters$bx,
-              length.out = K));
+              by = Lx.prime));
 mu.xs.2 = unlist(lapply(seq(1,K), function(k){rep(mu.xs[k], K)}));
 
 mu.ys = c(seq(problem.parameters$ax, problem.parameters$bx,
-              length.out = K));
+              by=Ly.prime));
 mu.ys.2 = rep(mu.ys, K);
 
 log.sigma2.xs = log(rep(((problem.parameters$bx-
-                          problem.parameters$ax)/K)^2,
+                          problem.parameters$ax)/(K))^2,
                         K));
 log.sigma2.xs.2 = unlist(lapply(seq(1,K), function(k){
     rep(log.sigma2.xs[k], K)}));
 
 log.sigma2.ys = log(rep(((problem.parameters$by-
-                          problem.parameters$ay)/K)^2,
+                          problem.parameters$ay)/(K))^2,
                         K));
 log.sigma2.ys.2 = unlist(lapply(seq(1,K), function(k){
     rep(log.sigma2.ys[k], K)}));
 
 mus = rbind(mu.xs.2, mu.ys.2);
 log.sigma2s = rbind(log.sigma2.xs.2, log.sigma2.ys.2);
-## rotating according to the geometry of the problem
-theta = atan(-problem.parameters$rho);
-Rotation.matrix = matrix(nrow=2, ncol=2,
-                         byrow=FALSE,
-                         data=c(c(cos(theta),sin(theta)),
-                                c(-sin(theta),cos(theta))));
+## ## rotating according to the geometry of the problem
+## theta = atan(-problem.parameters$rho);
+## theta = 0;
+## Rotation.matrix = matrix(nrow=2, ncol=2,
+##                          byrow=FALSE,
+##                          data=c(c(cos(theta),sin(theta)),
+##                                 c(-sin(theta),cos(theta))));
 
-mus = Rotation.matrix %*% (mus -
-                           rbind(rep(problem.parameters$x.ic, length(mus[1,])),
-                                 rep(problem.parameters$y.ic, length(mus[1,])))) +
-    rbind(rep(problem.parameters$x.ic, length(mus[1,])),
-          rep(problem.parameters$y.ic, length(mus[1,])))
-
+## mus = Rotation.matrix %*% (mus -
+##                            rbind(rep(problem.parameters$x.ic, length(mus[1,])),
+##                                  rep(problem.parameters$y.ic, length(mus[1,])))) +
+##     rbind(rep(problem.parameters$x.ic, length(mus[1,])),
+##           rep(problem.parameters$y.ic, length(mus[1,])));
 
 all.inside <- seq(1,length(mus[1,]));
 all.inside <- mus[1,] < problem.parameters$bx &
@@ -80,11 +73,19 @@ plot(mus[1,all.inside], mus[2,all.inside],col="red");
 mus <- mus[,all.inside];
 log.sigma2s <- log.sigma2s[,all.inside];
 
-bb = blackbox(mus,
+distances <- apply(mus -
+                   c(problem.parameters$x.ic,
+                     problem.parameters$y.ic),
+                   2,
+                   function(x){sum(x^2)});
+
+sorted.mus <- sort.int(distances,index.return=TRUE);
+
+bb = blackbox(mus[,sorted.mus$ix],
               log.sigma2s,
               problem.parameters,
               dx, dy,
-              FALSE,TRUE);
+              TRUE,TRUE);
 
 ## mu.log.sigma2.x.pairs.list <-
 ##     lapply(X=seq(1,length(mus[1,])),

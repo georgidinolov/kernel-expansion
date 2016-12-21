@@ -127,11 +127,20 @@ product.coefficient <- function(raw.function.params.1,
 }
 
 basis.function <- function(x,y, function.params, problem.parameters) {
-
+    mean <- matrix(nrow=2,ncol=1,c(function.params[1], function.params[2]));
+        sigma <- matrix(nrow=2,ncol=2,
+                    data=c(c(function.params[3],
+                             sqrt(function.params[3]*function.params[4])*
+                             problem.parameters$rho),
+                           c(sqrt(function.params[3]*function.params[4])*
+                             problem.parameters$rho,
+                             function.params[4])));
+    
     out = (x-problem.parameters$ax)*(problem.parameters$bx-x)*    
         (y-problem.parameters$ay)*(problem.parameters$by-y)*
-        dnorm(x,function.params[1],sqrt(function.params[3]))*
-        dnorm(y,function.params[2],sqrt(function.params[4]));
+        dmvnorm(x=matrix(nrow=length(y), ncol=2,data=c(rep(x,length(y)),
+                                                       y)),
+                mean, sigma);
     return (out);
 }
 
@@ -1214,7 +1223,7 @@ blackbox <- function(mus,
     
     orthonormal.function.list = vector(mode="list",
                                          length=K);
-
+    orthonormal.function.list <- function.list;
     ## gram-schmidt START ##
     par(mfrow=c(ceiling(sqrt(K)),
                 ceiling(sqrt(K))));
@@ -1265,17 +1274,7 @@ blackbox <- function(mus,
         }
         print(k);
     }
-
-    ortho.mat <- matrix(nrow=K, ncol=K);
-    for (k in seq(1,K)) {
-        for ( l in seq(1,K)) {
-            ortho.mat[k,l] <- project.numeric(orthonormal.function.list[[k]],
-                                              orthonormal.function.list[[l]],
-                                             dx,dy);
-        }
-    }
-    print(ortho.mat);
-    ## ## gram schmidt END ###
+    ## gram schmidt END ###
 
         
     ## SYSTEM MATRICES START ##
@@ -1352,6 +1351,7 @@ blackbox <- function(mus,
             mass.mat[k.prime,l.prime]=mass.matrix.entry;
         }
     }
+    print(mass.mat);
     ## SYSTEM MATRICES END ###
     
     ## ## eigenvalues START ###
@@ -1411,6 +1411,7 @@ blackbox <- function(mus,
 
     plot(y,approx.sol[x.ic.index,], type="l",
          lty="dashed", col = "green");
+    lines(y,true.sol[x.ic.index,],col="red");
 
     png("contour.png");
     filled.contour(x,y,approx.sol, nlevels = 50);
@@ -1424,7 +1425,7 @@ blackbox <- function(mus,
     ##         width=1200, height=1200,res=300);
     ##     par(mar = c(5,4,2,1));
     ##     plot(x,univariate.solution.approx(coefs,x,
-    ##                                       orthonormal.function.list,K),type="l",
+     ##                                       orthonormal.function.list,K),type="l",
     ##          xlab=paste("K=",K,sep=""),
     ##          ylab=paste("q(x,t), t=", problem.parameters$t, sep=""));
     ##     lines(x, exact.solution, col="green",
