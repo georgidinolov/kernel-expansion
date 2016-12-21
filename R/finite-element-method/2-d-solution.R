@@ -1396,12 +1396,15 @@ blackbox <- function(mus,
     problem.parameters.x$a = problem.parameters$ax;
     problem.parameters.x$b = problem.parameters$bx;
     problem.parameters.x$sigma.2 = problem.parameters$sigma.2.x;
+    problem.parameters.x$x.ic = problem.parameters$x.ic;
 
     problem.parameters.y = problem.parameters;
     problem.parameters.y$a = problem.parameters$ay;
     problem.parameters.y$b = problem.parameters$by;
     problem.parameters.y$sigma.2 = problem.parameters$sigma.2.y;
-    
+    problem.parameters.y$x.ic = problem.parameters$y.ic;
+
+    print(c(problem.parameters.x$t, problem.parameters.y$t));
     true.sol <- univariate.solution(x,problem.parameters.x) %*%
         t(univariate.solution(y,problem.parameters.y));
        
@@ -1441,27 +1444,6 @@ blackbox <- function(mus,
     ## ##         univariate.solution.approx.dx.dx(coefs),
     ## ##       lty="dashed");
 
-    ## if (MINIMIZE.REMAINDER) {
-    ##     difference2 =
-    ##         (univariate.solution.approx.dt(coefs, A, x, K,
-    ##                                        orthonormal.function.list) -
-    ##          0.5*(problem.parameters$sigma.2)*
-    ##          univariate.solution.approx.dx.dx(coefs=coefs,
-    ##                                           coefficients=coefficients,
-    ##                                           x=x,
-    ##                                           K=K,
-    ##                                           raw.function.list=raw.function.list,
-    ##                                           problem.parameters=problem.parameters
-    ##                                           ))^2;
-    ##     norm.diff2 = sum(difference2*dx);
-    ##     ## print(norm.diff2);
-    ##     ## ## CHECKING PDE END ###
-    ##     return (norm.diff2);
-    ## } else {
-    ##     exact.solution = univariate.solution(x,problem.parameters);
-    ##     difference = sum((univariate.solution.approx(coefs,x,
-    ##                                             orthonormal.function.list,K) -
-    ##                       exact.solution)^2*dx);
-    ##     return (difference);
-    ## }
+    difference = sum(apply((true.sol-approx.sol)^2, 1, sum)*dy)*dx
+    return (difference);y
 }
