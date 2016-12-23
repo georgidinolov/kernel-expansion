@@ -3,7 +3,7 @@ rm(list=ls());
 PLOT.SOLUTION=FALSE;
 dx = 0.01;
 dy = 0.01;
-K=5;
+K=8;
 
 library("mvtnorm");
 source("2-d-solution.R");
@@ -104,7 +104,7 @@ blackbox.wrapper <- function(log.C) {
                   log((sqrt(exp(log.sigma2s[,sorted.mus$ix])) *
                        C)^2),
                   problem.parameters,
-                  dx,dy,TRUE,TRUE);
+                  dx,dy,FALSE,TRUE);
     print(c(C,l2));
     return(l2);
 }
@@ -112,4 +112,14 @@ blackbox.wrapper <- function(log.C) {
 opt.results <- optimize(f=blackbox.wrapper,
                         lower = log(0.1),
                         upper = log(K),
-                        tol=1e-3);
+                        tol=1e-2);
+
+C = exp(opt.results$minimum);
+
+problem.parameters$rho = -0.8;
+problem.parameters$x.ic = 0;
+l2 = blackbox(mus[,sorted.mus$ix],
+              log((sqrt(exp(log.sigma2s[,sorted.mus$ix])) *
+                   C)^2),
+              problem.parameters,
+              dx,dy,TRUE,TRUE);
