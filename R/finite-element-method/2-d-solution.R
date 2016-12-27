@@ -1,8 +1,110 @@
 ## sample from process
-sample.process <- function(n.simulations,
-                           n.samples,
+sample.process <- function(n.samples,
                            dt,
-                           problem.parameters) {
+                           problem.parameters.generate.data) {
+
+    n.timesteps <- problem.parameters.generate.data$t/dt;
+    rho <- problem.parameters.generate.data$rho;
+    sigma.2.x <- problem.parameters.generate.data$sigma.2.x;
+    sigma.2.y <- problem.parameters.generate.data$sigma.2.y;
+
+    out <- vector("list", n.samples);
+    
+    for (i in seq(1,n.samples)) {
+        x.current = problem.parameters.generate.data$x.ic;
+        y.current = problem.parameters.generate.data$y.ic;
+
+        ax <- x.current;
+        bx <- x.current;
+        ay <- y.current;
+        by <- y.current;
+        for (j in seq(1,n.timesteps)) {
+            
+            dx <- sqrt(dt*sigma.2.x)*rnorm(1);
+            dy <- sigma.2.y/sigma.2.x*rho*
+                (dx) +
+                sqrt((1-rho^2)*sigma.2.y*dt)*rnorm(1);
+            x.new <- x.current + dx;
+            y.new <- y.current + dy;
+
+            ax <- min(ax, x.new);
+            bx <- max(bx, x.new);
+
+            ay <- min(ay, y.new);
+            by <- max(by, y.new);
+
+            x.current <- x.new;
+            y.current <- y.new;
+        }
+        print(c(ax, 0, x.current, bx));
+        print(c(ay, 0, y.current, by));
+
+        ## STEP 1 ##
+        x.ic <- problem.parameters.generate.data$x.ic / sqrt(sigma.2.x);
+        x.current <- x.current / sqrt(sigma.2.x);
+        ax <- ax / sqrt(sigma.2.x);
+        bx <- bx / sqrt(sigma.2.x);
+        sigma.2.x <- 1;
+        print(c(ax, x.ic, x.current, bx));
+
+        y.ic <- problem.parameters.generate.data$y.ic / sqrt(sigma.2.y);
+        y.current <- y.current / sqrt(sigma.2.y);
+        ay <- ay / sqrt(sigma.2.y);
+        by <- by / sqrt(sigma.2.y);
+        sigma.2.y <- 1;
+        print(c(ay, y.ic, y.current, by));
+        
+
+        ## STEP 2 ##
+        L.x <- bx-ax;
+        x.ic <- x.ic / L.x;
+        x.current <- x.current / L.x;
+        ax <- ax / L.x;
+        bx <- bx / L.x;
+        sigma.2.x <- 1/ (L.x^2);
+        print(c(ax, x.ic, x.current, bx));
+
+        L.y <- by-ay;
+        y.ic <- y.ic / L.y;
+        y.current <- y.current / L.y;
+        ay <- ay / L.y;
+        by <- by / L.y;
+        sigma.2.y <- 1/ (L.y^2);
+        print(c(ay, y.ic, y.current, by));
+
+        ## STEP 3 ##
+        x.ic <- x.ic - ax;
+        x.current <- x.current - ax;
+        bx <- bx - ax;
+        ax <- ax - ax;
+
+        y.ic <- y.ic - ay;
+        y.current <- y.current - ay;
+        by <- by - ay;
+        ay <- ay - ay;
+        
+        print(c(ax, x.ic, x.current, bx));
+        print(c(ay, y.ic, y.current, by));
+        
+        out[[i]] <- problem.parameters.generate.data;
+        out[[i]]$x.ic <- x.ic;
+        out[[i]]$y.ic <- y.ic;
+        out[[i]]$x.fc <- x.current;
+        out[[i]]$y.fc <- y.current;
+        out[[i]]$ax <- ax;
+        out[[i]]$bx <- bx;
+        out[[i]]$ay <- ay;
+        out[[i]]$by <- by;
+        out[[i]]$sigma.2.x <- sigma.2.x;
+        out[[i]]$sigma.2.y <- sigma.2.y;
+    }
+    return (out);
+}
+
+sample.process.boundaries <- function(n.simulations,
+                                      n.samples,
+                                      dt,
+                                      problem.parameters) {
     
     n.timesteps <- problem.parameters$t/dt;
     rho <- problem.parameters$rho;
@@ -1296,29 +1398,15 @@ apply.generator <- function(poly, k, problem.parameters.x) {
     }
 }
 
-
-blackbox <- function(function.list,
-                     problem.parameters,
-                     dx, dy,
-                     PLOT.SOLUTION,
-                     MINIMIZE.REMAINDER) {
-    
-    source("2-d-solution.R");
-    K = length(function.list);
-
-    K.prime = sqrt(K);
-    problem.parameters$K.prime <- K.prime;
-    ## gram schmidt START ##
-    x = seq(problem.parameters$ax,
-            problem.parameters$bx,
-            by=dx);
-    y = seq(problem.parameters$ay,
-            problem.parameters$by,
-            by=dy);
+orthonormal.functions <- function(function.list,
+                                  dx,dy,
+                                  x,y,
+                                  PLOT.SOLUTION) {
+    K <- length(function.list);
     norms <- rep(NA, K);
     coefficients <- matrix(0, nrow=K, ncol=K);
     orthonormal.function.list = vector(mode="list",
-                                         length=K);
+                                       length=K);
     orthonormal.function.list <- function.list;
     ## gram-schmidt START ##
     par(mfrow=c(ceiling(sqrt(K)),
@@ -1368,8 +1456,13 @@ blackbox <- function(function.list,
         print(k);
     }
     ## gram schmidt END ###p
+    return (orthonormal.function.list);
+}
+
+system.matrices <- function(orthonormal.function.list,
+                            dx,dy) {
     
-        
+    K = length(orthonormal.function.list);
     ## SYSTEM MATRICES START ##
     derivative.xx.matrix <- matrix(nrow = K,
                                    ncol = K);
@@ -1417,19 +1510,6 @@ blackbox <- function(function.list,
         print(k);
     }
     ## SYSTEM MATRICES END ##
-        
-    stiff.mat <- matrix(nrow=K,
-                        ncol=K);
-    stiff.mat = -0.5*
-                 problem.parameters$sigma.2.x*
-                 derivative.xx.matrix +
-                 -problem.parameters$rho*
-                 sqrt(problem.parameters$sigma.2.x)*
-                 sqrt(problem.parameters$sigma.2.y)*
-                 0.5*(derivative.xy.matrix+
-                      derivative.yx.matrix) +
-                 -0.5*problem.parameters$sigma.2.y*
-                 derivative.yy.matrix;
 
     mass.mat <- matrix(nrow=K,
                        ncol=K);
@@ -1444,7 +1524,60 @@ blackbox <- function(function.list,
             mass.mat[k.prime,l.prime]=mass.matrix.entry;
         }
     }
-    print(mass.mat);
+
+    out <- NULL;
+    out$derivative.xx.matrix <- derivative.xx.matrix;
+    out$derivative.xy.matrix <- derivative.xy.matrix;
+    out$derivative.yx.matrix <- derivative.yx.matrix;
+    out$derivative.yy.matrix <- derivative.yy.matrix;
+    out$mass.mat <- mass.mat;
+
+    return(out);
+}
+
+blackbox <- function(function.list,
+                     orthonormal.function.list,
+                     system.mats,
+                     problem.parameters,
+                     dx, dy,
+                     PLOT.SOLUTION,
+                     MINIMIZE.REMAINDER) {
+    
+    source("2-d-solution.R");
+    K = length(function.list);
+
+    K.prime = sqrt(K);
+    problem.parameters$K.prime <- K.prime;
+    ## gram schmidt START ##
+    x = seq(problem.parameters$ax,
+            problem.parameters$bx,
+            by=dx);
+    y = seq(problem.parameters$ay,
+            problem.parameters$by,
+            by=dy);
+    
+        
+    ## SYSTEM MATRICES START ##
+    derivative.xx.matrix <- system.mats$derivative.xx.matrix;
+    derivative.yy.matrix <- system.mats$derivative.yy.matrix;
+    derivative.xy.matrix <- system.mats$derivative.xy.matrix;
+    derivative.yx.matrix <- system.mats$derivative.yx.matrix;
+    ## SYSTEM MATRICES END ##
+        
+    stiff.mat <- matrix(nrow=K,
+                        ncol=K);
+    stiff.mat = -0.5*
+                 problem.parameters$sigma.2.x*
+                 derivative.xx.matrix +
+                 -problem.parameters$rho*
+                 sqrt(problem.parameters$sigma.2.x)*
+                 sqrt(problem.parameters$sigma.2.y)*
+                 0.5*(derivative.xy.matrix+
+                      derivative.yx.matrix) +
+                 -0.5*problem.parameters$sigma.2.y*
+                 derivative.yy.matrix;
+
+    mass.mat <- system.mats$mass.mat;
     ## SYSTEM MATRICES END ###
     
     ## ## eigenvalues START ###
