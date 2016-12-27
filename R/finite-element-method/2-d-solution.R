@@ -141,7 +141,10 @@ basis.function <- function(x,y, function.params, problem.parameters) {
         dmvnorm(x=matrix(nrow=length(y), ncol=2,data=c(rep(x,length(y)),
                                                        y)),
                 mean, sigma);
-    return (out);
+    return (dbeta(x,function.params[1]+1,problem.parameters$K.prime-
+                                         function.params[1]+2) *
+            dbeta(y,function.params[2]+1,problem.parameters$K.prime-
+                                         function.params[2]+2));
 }
 
 basis.function.xy <- function(x,y,function.params,problem.parameters) {
@@ -1184,15 +1187,17 @@ apply.generator <- function(poly, k, problem.parameters.x) {
 }
 
 
-blackbox <- function(mus,
-                     log.sigma2s,
+blackbox <- function(function.list,
                      problem.parameters,
                      dx, dy,
                      PLOT.SOLUTION,
                      MINIMIZE.REMAINDER) {
+    
     source("2-d-solution.R");
-    K = length(mus[1,]);
+    K = length(function.list);
 
+    K.prime = sqrt(K);
+    problem.parameters$K.prime <- K.prime;
     ## gram schmidt START ##
     x = seq(problem.parameters$ax,
             problem.parameters$bx,
@@ -1200,27 +1205,8 @@ blackbox <- function(mus,
     y = seq(problem.parameters$ay,
             problem.parameters$by,
             by=dy);
-
-    function.list = vector(mode="list",
-                           length=);
-    par(mfrow=c(ceiling(sqrt(K)),
-                ceiling(sqrt(K))));
-    par(mar = c(5,4,2,1));
-    for (k in seq(1,K)) {
-        function.params <- c(mus[,k], exp(log.sigma2s[,k]));
-        
-        function.list[[k]] <-
-            basis.function.xy(x,y,
-                              function.params,
-                              problem.parameters);
-        if (PLOT.SOLUTION) {
-            contour(x,y,function.list[[k]]);
-        }
-    }
-    
     norms <- rep(NA, K);
     coefficients <- matrix(0, nrow=K, ncol=K);
-    
     orthonormal.function.list = vector(mode="list",
                                          length=K);
     orthonormal.function.list <- function.list;
@@ -1274,8 +1260,8 @@ blackbox <- function(mus,
         }
         print(k);
     }
-    ## gram schmidt END ###
-
+    ## gram schmidt END ###p
+    
         
     ## SYSTEM MATRICES START ##
     derivative.xx.matrix <- matrix(nrow = K,
@@ -1413,7 +1399,7 @@ blackbox <- function(mus,
     lines(x,true.sol[,y.ic.index], col = "red");
 
     plot(y,approx.sol[x.ic.index,], type="l",
-         lty="dashed", col = "green");
+         lty="dashed", col = "black");
     lines(y,true.sol[x.ic.index,],col="red");
 
     png("contour.png");
@@ -1445,5 +1431,5 @@ blackbox <- function(mus,
     ## ##       lty="dashed");
 
     difference = sum(apply((true.sol-approx.sol)^2, 1, sum)*dy)*dx
-    return (difference);y
+    return (difference);
 }
