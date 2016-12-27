@@ -237,12 +237,24 @@ product.coefficient <- function(raw.function.params.1,
 }
 
 basis.function <- function(x,y, function.params, problem.parameters) {
-
+    mean <- matrix(nrow=2,ncol=1,c(function.params[1], function.params[2]));
+        sigma <- matrix(nrow=2,ncol=2,
+                    data=c(c(function.params[3],
+                             sqrt(function.params[3]*function.params[4])*
+                             problem.parameters$rho),
+                           c(sqrt(function.params[3]*function.params[4])*
+                             problem.parameters$rho,
+                             function.params[4])));
+    
     out = (x-problem.parameters$ax)*(problem.parameters$bx-x)*    
         (y-problem.parameters$ay)*(problem.parameters$by-y)*
-        dnorm(x,function.params[1],sqrt(function.params[3]))*
-        dnorm(y,function.params[2],sqrt(function.params[4]));
-    return (out);
+        dmvnorm(x=matrix(nrow=length(y), ncol=2,data=c(rep(x,length(y)),
+                                                       y)),
+                mean, sigma);
+    return (dbeta(x,function.params[1]+1,problem.parameters$K.prime-
+                                         function.params[1]+2) *
+            dbeta(y,function.params[2]+1,problem.parameters$K.prime-
+                                         function.params[2]+2));
 }
 
 basis.function.xy <- function(x,y,function.params,problem.parameters) {
@@ -297,6 +309,47 @@ norm.raw.function <- function(function.params, a, b) {
                product.coefficient(function.params,
                                    function.params));
     return (out);
+}
+
+project.numeric <- function(function.1, function.2,
+                            dx,dy) {
+    ## TODO(georgid): check that dim of both functions is the same
+    if (sum(dim(function.1) ==
+            dim(function.2)) < 2 ) {
+        stop("in project.numeric, functions not same dim");
+    }
+    projection <- sum(sapply(seq(1,length(function.1[,1])),
+                      function(x) {
+                          sum(function.1[x,]*
+                              function.2[x,])*dy;
+                      }))*dx;
+    return(projection);
+}
+
+deriv.x.numeric <- function(function.1,
+                            dx,dy) {
+
+    x.length = length(function.1[,1]);
+    
+    out <- sapply(X=seq(1,length(function.1[1,])),
+                  FUN = function(x) {
+                      return((function.1[-1,x]-
+                              function.1[-x.length,x])/dx);
+                  });
+    return(out);
+}
+
+deriv.y.numeric <- function(function.1,
+                            dx,dy) {
+
+    y.length = length(function.1[1,]);
+    
+    out <- sapply(X=seq(1,length(function.1[,1])),
+                  FUN = function(x) {
+                      return((function.1[x,-1]-
+                              function.1[x,-y.length])/dy);
+                  });
+    return(t(out));
 }
 
 project <- function(raw.function.params.1,
@@ -605,25 +658,19 @@ univariate.solution.approx <- function(coefs,x,orthonormal.function.list,K) {
     return (out);
 }
 
-bivariate.solution.approx <- function(orthonormal.function.list.x,
-                                      orthonormal.function.list.y,
+bivariate.solution.approx <- function(orthonormal.function.list,
                                       K,
-                                      k.xy.hash,
                                       coefs) {
     for (k.prime in seq(1,K)) {
-        k.x = k.xy.hash[1,k.prime];
-        k.y = k.xy.hash[2,k.prime];
 
         if (k.prime == 1) {
             out =
                 coefs[k.prime] *
-                orthonormal.function.list.x[[k.x]] %*%
-                t(orthonormal.function.list.y[[k.y]]);
+                orthonormal.function.list[[k.prime]];
         }
         out = out +
             coefs[k.prime] *
-            orthonormal.function.list.x[[k.x]] %*%
-            t(orthonormal.function.list.y[[k.y]]);
+            orthonormal.function.list[[k.prime]];
     }
     return (out);
 }
@@ -1250,166 +1297,17 @@ apply.generator <- function(poly, k, problem.parameters.x) {
 }
 
 
-blackbox <- function(log.sigma2,
-                     samples,
-                     K,
+blackbox <- function(function.list,
                      problem.parameters,
                      dx, dy,
                      PLOT.SOLUTION,
                      MINIMIZE.REMAINDER) {
+    
     source("2-d-solution.R");
-    sigma2=exp(log.sigma2);
-    print(paste("sigma2=",sigma2));
+    K = length(function.list);
 
-    mu.xs = c(seq(2*problem.parameters$ax, 2*problem.parameters$bx,
-                  length.out = K));
-    
-    mu.xs.2 = unlist(lapply(seq(1,K), function(k){rep(mu.xs[k], K)}));
-    
-    mu.ys = c(seq(2*problem.parameters$ay, 2*problem.parameters$by,
-                  length.out = K));
-    
-    mu.ys.2 = rep(mu.ys, K);
-    
-    log.sigma2.xs = log(rep(sigma2,
-                            K));
-    log.sigma2.xs.2 = unlist(lapply(seq(1,K), function(k){
-        rep(log.sigma2.xs[k], K)}));
-    
-    log.sigma2.ys = log(rep(sigma2,
-                            K));
-    
-    log.sigma2.ys.2 = unlist(lapply(seq(1,K), function(k){
-        rep(log.sigma2.ys[k], K)}));
-    
-    
-    mus = rbind(mu.xs.2, 
-                mu.ys.2);
-    log.sigma2s = rbind(log.sigma2.xs.2, log.sigma2.ys.2);
-    ## rotating according to the geometry of the problem
-    theta = 0;
-    Rotation.matrix = matrix(nrow=2, ncol=2,
-                             byrow=FALSE,
-                             data=c(c(cos(theta),sin(theta)),
-                                    c(-sin(theta),cos(theta))));
-
-    mmm <- min(abs(problem.parameters$ax +
-               (problem.parameters$bx-
-                problem.parameters$ax)/2 -
-               mu.xs));
-    x.location.index =
-        which(abs(problem.parameters$ax +
-                  (problem.parameters$bx-
-                   problem.parameters$ax)/2 -
-                  mu.xs) == mmm)[1]
-
-    mmm <- min(abs(problem.parameters$ay +
-               (problem.parameters$by-
-                problem.parameters$ay)/2 -
-               mu.ys));
-    y.location.index =
-        which(abs(problem.parameters$ay +
-                  (problem.parameters$by-
-                   problem.parameters$ay)/2 -
-                  mu.ys) == mmm)[1]
-    
-    mus = Rotation.matrix %*% (mus -
-                               rbind(rep(mu.xs[x.location.index],
-                                         length(mus[1,])),
-                                     rep(mu.ys[y.location.index],
-                                         length(mus[1,])))) +
-        rbind(rep(mu.xs[x.location.index],
-                  length(mus[1,])),
-              rep(mu.ys[y.location.index],
-                  length(mus[1,])));
-
-    mus = cbind(mus,
-                samples$mus);
-    
-    log.sigma2s <- cbind(log.sigma2s,
-                         rbind(samples$log.sigma2s,
-                               samples$log.sigma2s));
-
-    all.inside <- seq(1,length(mus[1,]));
-    all.inside <- mus[1,] <= problem.parameters$bx &
-        mus[1,] >= problem.parameters$ax &
-        mus[2,] <= problem.parameters$by &
-        mus[2,] >= problem.parameters$ay;
-    
-    plot(mus[1,all.inside], mus[2,all.inside],col="red");
-    mus <- mus[,all.inside];
-    print(paste("number terms = ", length(mus[1,]), sep=""));
-    log.sigma2s <- log.sigma2s[,all.inside];
-    
-    mu.log.sigma2.x.pairs.list <-
-        lapply(X=seq(1,length(mus[1,])),
-               function(x) {
-                   c(mus[1,x], log.sigma2s[1,x])
-               });
-    
-    mu.log.sigma2.y.pairs.list <-
-        lapply(X=seq(1,length(mus[1,])),
-               function(x) {
-                   c(mus[2,x], log.sigma2s[2,x])
-               });
-    
-    mu.x.unique <- mus[1,!duplicated(round(mus[1,],digits=5))];
-    mu.log.sigma2.x.pairs.list.unique <- vector("list");
-    current.index = 1;
-    for (i in seq(1,length(mu.x.unique))) {
-        indeces.mu <- which(mus[1,] == mu.x.unique[i]);
-        log.sigma2.x <- unique(log.sigma2s[1,indeces.mu]);
-        for (j in seq(1,length(log.sigma2.x))) {
-            mu.log.sigma2.x.pairs.list.unique[[current.index]] <-
-                c(mu.x.unique[i],log.sigma2.x[j]);
-            current.index = current.index + 1;
-        }
-    }
-    
-    mu.y.unique <- unique(mus[2,!duplicated(round(mus[2,],digits=5))]);
-    mu.log.sigma2.y.pairs.list.unique <- vector("list");
-    current.indey = 1;
-    for (i in seq(1,length(mu.y.unique))) {
-        indeces.mu <- which(mus[2,] == mu.y.unique[i]);
-        log.sigma2.y <- unique(log.sigma2s[2,indeces.mu]);
-        for (j in seq(1,length(log.sigma2.y))) {
-            mu.log.sigma2.y.pairs.list.unique[[current.indey]] <-
-                c(mu.y.unique[i],log.sigma2.y[j]);
-            current.indey = current.indey + 1;
-        }
-    }
-    
-    
-    ## hash function ##
-    ## unique means and variances ##
-    
-    ## simple hash funtion ##
-    ## k in seq(1,length(mus[1,])) ##
-    simple.hash <- function(k) {
-        mu.log.sigma2.x <- mu.log.sigma2.x.pairs.list[[k]];
-        k.x <-
-            which(unlist(lapply(seq(1,length(mu.log.sigma2.x.pairs.list.unique)),
-                                function(x) {
-                                    return(abs(mu.log.sigma2.x.pairs.list.unique[[x]][1] - mu.log.sigma2.x[1]) < 1e-15 &
-                                           abs(mu.log.sigma2.x.pairs.list.unique[[x]][2] - mu.log.sigma2.x[2]) < 1e-15);
-                                }))==1);
-        
-        mu.log.sigma2.y <- mu.log.sigma2.y.pairs.list[[k]];
-        k.y <-
-            which(unlist(lapply(seq(1,length(mu.log.sigma2.y.pairs.list.unique)),
-                                function(x) {
-                                    return(abs(mu.log.sigma2.y.pairs.list.unique[[x]][1] - mu.log.sigma2.y[1])<1e-15 &
-                                           abs(mu.log.sigma2.y.pairs.list.unique[[x]][2] -mu.log.sigma2.y[2])<1e-15);
-                                }))==1);
-        return (c(k.x,k.y));
-    }
-
-    
-    K = dim(mus)[2];
-    k.xy.hash <- sapply(seq(1,K),
-                        function(x) {
-                            simple.hash(x) });
-    
+    K.prime = sqrt(K);
+    problem.parameters$K.prime <- K.prime;
     ## gram schmidt START ##
     x = seq(problem.parameters$ax,
             problem.parameters$bx,
@@ -1417,207 +1315,61 @@ blackbox <- function(log.sigma2,
     y = seq(problem.parameters$ay,
             problem.parameters$by,
             by=dy);
-
-    function.list.x = vector(mode="list",
-                             length=length(mu.log.sigma2.x.pairs.list.unique));
-    function.list.y = vector(mode="list",
-                             length=length(mu.log.sigma2.y.pairs.list.unique));
-    
-    for (k in seq(1,max(length(function.list.x),
-                        length(function.list.y)))) {
-        if (k <= length(function.list.x)) {
-            mu.x = mu.log.sigma2.x.pairs.list.unique[[k]][1];
-            sigma2.x = exp(mu.log.sigma2.x.pairs.list.unique[[k]][2]);
-
-            function.list.x[[k]] = (x-problem.parameters$ax)*
-                (problem.parameters$bx-x)*
-                dnorm(x,mean=mu.x,sd=sqrt(sigma2.x));
-        }
-        if (k <= length(function.list.y)) {
-            mu.y = mu.log.sigma2.y.pairs.list.unique[[k]][1];
-            sigma2.y = exp(
-                mu.log.sigma2.y.pairs.list.unique[[k]][2]);
-            
-            function.list.y[[k]] = (y-problem.parameters$ay)*
-                (problem.parameters$by-y)*
-                dnorm(y,mean=mu.y,sd=sqrt(sigma2.y));
-        }
-    }
-    
-    ## PLOTTING BASES START ###
-    par(mfrow=c(2,1));
-    if (PLOT.SOLUTION) {
-        for (k in seq(1,length(function.list.x))) {
-            ## cat ("Press enter to continue");
-            ## line <- readline();
-            if (k==1) {
-                plot(x,function.list.x[[k]],type="l",
-                     ylim = c(0,1*max(function.list.x[[k]])));
-            } else {
-                lines(x,function.list.x[[k]]);
-            }
-        }
-        
-        for (k in seq(1,length(function.list.y))) {
-            if (k==1) {
-                plot(y,function.list.y[[k]],type="l",
-                     ylim = c(0,10*max(function.list.y[[k]])));
-            } else {
-                lines(y,function.list.y[[k]]);
-            }
-        }
-    }
-    ## PLOTTING BASES END ###
-    
-    K.x = length(function.list.x);
-    K.y = length(function.list.y);
-    
-    norms.x <- rep(NA, K.x);
-    norms.y <- rep(NA, K.y);
-    coefficients.x <- matrix(0, nrow=K.x, ncol=K.x);
-    coefficients.y <- matrix(0, nrow=K.y, ncol=K.y);
-    
-    orthonormal.function.list.x = vector(mode="list",
-                                         length=K.x);
-    orthonormal.function.list.y = vector(mode="list",
-                                         length=K.y);
-    
-    ## gram-schmidt X START ##
-    for (k in seq(1,K.x)) {
-        if (k==1) {
-            ## only normalize
-            norm.x = sqrt(sum(function.list.x[[k]]^2)*dx);
-            coefficients.x[k,k] = 1/norm.x;
-            norms.x[k] = norm.x;
-            orthonormal.function.list.x[[k]] =
-                function.list.x[[k]]/norm.x;
-        } else {
-            orthonormal.function.list.x[[k]] = function.list.x[[k]];
-            for (l in seq(1,k-1)) {
-                coefficients.x[k,l] = -sum(orthonormal.function.list.x[[l]]*
-                                           orthonormal.function.list.x[[k]])*dx;
-                
-                orthonormal.function.list.x[[k]] =
-                    orthonormal.function.list.x[[k]] +
-                    coefficients.x[k,l]*orthonormal.function.list.x[[l]];
-
-                orthonormal.function.list.x[[k]] =
-                    orthonormal.function.list.x[[k]] /
-                    sqrt(sum(orthonormal.function.list.x[[k]]^2)*dx);
-            }
-            coefficients.x[k,k] = 1;
-
-            ## orthonormal.function.list.x[[k]] = function.list.x[[k]];
-            ## for (l in seq(1,k-1)) {
-            ##     orthonormal.function.list.x[[k]] =
-            ##         orthonormal.function.list.x[[k]] +
-            ##         coefficients.x[k,l]*orthonormal.function.list.x[[l]];
-            ## }
-            
-            norm.x = sqrt(sum(orthonormal.function.list.x[[k]]^2*dx));
-            
-            norms.x[k] = norm.x;
-            
-            orthonormal.function.list.x[[k]] =
-                orthonormal.function.list.x[[k]]/norm.x;
-            coefficients.x[k,]=coefficients.x[k,]/norm.x;
-        }
-    }
-    
-    ## ortho.mat.X <- matrix(nrow=K.x, ncol=K.x);
-    ## for (k in seq(1,K.x)) {
-    ##     for ( l in seq(1,K.x)) {
-    ##          ortho.mat.X[k,l] <- sum((orthonormal.function.list.x[[k]]*
-    ##                                   orthonormal.function.list.x[[l]])) *dx;
-    ##     }
-    ## }
-    ## print(ortho.mat.X);
-    ## ## gram schmidt X END ###
-
+    norms <- rep(NA, K);
+    coefficients <- matrix(0, nrow=K, ncol=K);
+    orthonormal.function.list = vector(mode="list",
+                                         length=K);
+    orthonormal.function.list <- function.list;
     ## gram-schmidt START ##
-    for (k in seq(1,K.y)) {
+    par(mfrow=c(ceiling(sqrt(K)),
+                ceiling(sqrt(K))));
+    par(mar = c(5,4,2,1));    
+    for (k in seq(1,K)) {
         if (k==1) {
             ## only normalize
-            norm.y = sqrt(sum(function.list.y[[k]]^2)*dy);
-            coefficients.y[k,k] = 1/norm.y;
-            norms.y[k] = norm.y;
-            orthonormal.function.list.y[[k]] =
-                function.list.y[[k]]/norm.y;
+            norm = sqrt(project.numeric(function.list[[k]],
+                                        function.list[[k]],
+                                        dx,dy));
+            
+            coefficients[k,k] = 1/norm;
+            norms[k] = norm;
+            orthonormal.function.list[[k]] =
+                function.list[[k]]/norm;
         } else {
-            orthonormal.function.list.y[[k]] = function.list.y[[k]];
+            orthonormal.function.list[[k]] = function.list[[k]];
             for (l in seq(1,k-1)) {
-                coefficients.y[k,l] = -sum(orthonormal.function.list.y[[l]]*
-                                           orthonormal.function.list.y[[k]])*dy;
+                coefficients[k,l] = -project.numeric(orthonormal.function.list[[k]],
+                                                     orthonormal.function.list[[l]],
+                                                     dx,dy);
                 
-                orthonormal.function.list.y[[k]] =
-                    orthonormal.function.list.y[[k]] +
-                    coefficients.y[k,l]*orthonormal.function.list.y[[l]];
+                orthonormal.function.list[[k]] =
+                    orthonormal.function.list[[k]] +
+                    coefficients[k,l]*orthonormal.function.list[[l]];
 
-                orthonormal.function.list.y[[k]] =
-                    orthonormal.function.list.y[[k]] /
-                    sqrt(sum(orthonormal.function.list.y[[k]]^2)*dy);
+                orthonormal.function.list[[k]] =
+                    orthonormal.function.list[[k]] /
+                    sqrt(project.numeric(orthonormal.function.list[[k]],
+                                         orthonormal.function.list[[k]],
+                                         dx,dy));
             }
-            coefficients.y[k,k] = 1;
+            coefficients[k,k] = 1;
             
-            norm.y = sqrt(sum(orthonormal.function.list.y[[k]]^2*dy));
-            
-            norms.y[k] = norm.y;
-            
-            orthonormal.function.list.y[[k]] =
-                orthonormal.function.list.y[[k]]/norm.y;
+            norm = sqrt(project.numeric(orthonormal.function.list[[k]],
+                                        orthonormal.function.list[[k]],
+                                        dx,dy));
+            norms[k] = norm;
+            orthonormal.function.list[[k]] =
+                orthonormal.function.list[[k]]/norm;
+            coefficients[k,]=coefficients[k,]/norm;
         }
+        if (PLOT.SOLUTION) {
+            contour(x,y,orthonormal.function.list[[k]]);
+        }
+        print(k);
     }
-
-    ## ortho.mat.Y <- matrix(nrow=K.y, ncol=K.y);
-    ## for (k in seq(1,K.y)) {
-    ##     for ( l in seq(1,K.y)) {
-    ##          ortho.mat.Y[k,l] <- sum((orthonormal.function.list.y[[k]]*
-    ##                                   orthonormal.function.list.y[[l]])) *dy;
-    ##     }
-    ## }
-    ## print(ortho.mat.Y);
-    ## ## gram schmidt END ###
-
-    ## PLOTTING BASES START ###
-    if (PLOT.SOLUTION) {
-        par(mfrow=c(2,1));
-        for (k in seq(1,K.x)) {
-            if (k==1) {
-                plot(x,orthonormal.function.list.x[[k]],type="l",
-                     ylim = c(-1*max(orthonormal.function.list.x[[k]]),
-                              1*max(orthonormal.function.list.x[[k]])));
-            } else {
-                lines(x,orthonormal.function.list.x[[k]]);
-            }
-        }
+    ## gram schmidt END ###p
+    
         
-        for (k in seq(1,K.y)) {
-            if (k==1) {
-                plot(y,orthonormal.function.list.y[[k]],type="l",
-                     ylim = c(-1*max(orthonormal.function.list.y[[k]]),
-                              1*max(orthonormal.function.list.y[[k]])));
-            } else {
-                lines(y,orthonormal.function.list.y[[k]]);
-            }
-        }
-    }
-    ## PLOTTING BASES END ### 
-
-    ## for (k.prime in seq(1,K)) {
-    ##     k.x = k.xy.hash[1,k.prime];
-    ##     k.y = k.xy.hash[2,k.prime];
-                
-    ##     for (l.prime in seq(1,K)) {
-    ##         l.x = k.xy.hash[1,l.prime];
-    ##         l.y = k.xy.hash[2,l.prime];
-            
-    ##         print(sum(orthonormal.function.list.x[[k.x]]*
-    ##                   orthonormal.function.list.x[[l.x]])*dx *
-    ##               sum(orthonormal.function.list.y[[k.y]]*
-    ##                   orthonormal.function.list.y[[l.y]])*dy);
-    ##     }
-    ## }
-
     ## SYSTEM MATRICES START ##
     derivative.xx.matrix <- matrix(nrow = K,
                                    ncol = K);
@@ -1629,48 +1381,40 @@ blackbox <- function(log.sigma2,
     derivative.yx.matrix <- matrix(0,
                                    nrow = K,
                                    ncol = K);
-    for (k.prime in seq(1,K)) {
-        k.x = k.xy.hash[1,k.prime];
-        k.y = k.xy.hash[2,k.prime];
-
-        current.basis.dx.k = (orthonormal.function.list.x[[k.x]][-1]-
-                              orthonormal.function.list.x[[k.x]][-length(x)])/dx;
-        current.basis.dy.k = (orthonormal.function.list.y[[k.y]][-1]-
-                              orthonormal.function.list.y[[k.y]][-length(y)])/dy;
+    for (k in seq(1,K)) {
+        current.basis.dx.k = deriv.x.numeric(orthonormal.function.list[[k]],
+                                             dx,dy);
+        current.basis.dy.k = deriv.y.numeric(orthonormal.function.list[[k]],
+                                             dx,dy);
         
-        for (l.prime in seq(1,K)) {
-            l.x = k.xy.hash[1,l.prime];
-            l.y = k.xy.hash[2,l.prime];
-            
-            current.basis.dx.l = (orthonormal.function.list.x[[l.x]][-1]-
-                                  orthonormal.function.list.x[[l.x]][-length(x)])/dx;
-            current.basis.dy.l = (orthonormal.function.list.y[[l.y]][-1]-
-                                  orthonormal.function.list.y[[l.y]][-length(y)])/dy;
+        for (l in seq(1,K)) {
+            current.basis.dx.l = deriv.x.numeric(orthonormal.function.list[[l]],
+                                             dx,dy);
+            current.basis.dy.l = deriv.y.numeric(orthonormal.function.list[[l]],
+                                             dx,dy);
 
-            derivative.xx.matrix[k.prime,l.prime] =
-                sum(current.basis.dx.k*
-                    current.basis.dx.l)*dx *
-                sum(orthonormal.function.list.y[[k.y]]*
-                    orthonormal.function.list.y[[l.y]])*dy;
-            
-            derivative.yy.matrix[k.prime,l.prime] =
-                sum(orthonormal.function.list.x[[k.x]]*
-                    orthonormal.function.list.x[[l.x]])*dx *
-                sum(current.basis.dy.k*
-                    current.basis.dy.l)*dy;
 
-            derivative.xy.matrix[k.prime,l.prime] =
-                sum(current.basis.dx.k*
-                    orthonormal.function.list.x[[l.x]][-1])*dx *
-                sum(orthonormal.function.list.y[[k.y]][-1]*
-                    current.basis.dy.l)*dy;
+            derivative.xx.matrix[k,l] =
+                project.numeric(current.basis.dx.k,
+                                current.basis.dx.l,
+                                dx,dy);
+                    
+            derivative.yy.matrix[k,l] =
+                project.numeric(current.basis.dy.k,
+                                current.basis.dy.l,
+                                dx,dy);
 
-            derivative.yx.matrix[k.prime,l.prime] =
-                sum(orthonormal.function.list.x[[k.x]][-1]*
-                    current.basis.dx.l)*dx *
-                sum(current.basis.dy.k*
-                    orthonormal.function.list.y[[l.y]][-1])*dy;
+            derivative.xy.matrix[k,l] =
+                project.numeric(current.basis.dx.k[,-length(y)],
+                                current.basis.dy.l[-length(x),],
+                                dx,dy);
+
+            derivative.yx.matrix[k,l] =
+                project.numeric(current.basis.dy.k[-length(x),],
+                                current.basis.dx.l[,-length(y)],
+                                dx,dy);
         }
+        print(k);
     }
     ## SYSTEM MATRICES END ##
         
@@ -1691,24 +1435,16 @@ blackbox <- function(log.sigma2,
                        ncol=K);
     
     for (k.prime in seq(1,K)) {
-        k.x = k.xy.hash[1,k.prime];
-        k.y = k.xy.hash[2,k.prime];
-        
         for (l.prime in seq(1,K)) {
-            l.x = k.xy.hash[1,l.prime];
-            l.y = k.xy.hash[2,l.prime];
-                        
             mass.matrix.entry =
-                sum(orthonormal.function.list.x[[k.x]]*
-                    orthonormal.function.list.x[[l.x]])*dx *
-                sum(orthonormal.function.list.y[[k.y]]*
-                    orthonormal.function.list.y[[l.y]])*dy;
-            
-                                 
+                project.numeric(orthonormal.function.list[[k.prime]],
+                                orthonormal.function.list[[l.prime]],
+                                dx,dy);
             ## print(c(i,j,mass.matrix.entry));
             mass.mat[k.prime,l.prime]=mass.matrix.entry;
         }
     }
+    print(mass.mat);
     ## SYSTEM MATRICES END ###
     
     ## ## eigenvalues START ###
@@ -1720,11 +1456,8 @@ blackbox <- function(log.sigma2,
     y.ic.index = which(abs(y-problem.parameters$y.ic)<=dy/2)
     b = rep(NA, K);
     for (i in seq(1,K)) {
-        k.x = k.xy.hash[1,i];
-        k.y = k.xy.hash[2,i];
         b[i] = 
-            orthonormal.function.list.x[[k.x]][x.ic.index]*
-            orthonormal.function.list.y[[k.y]][y.ic.index];
+            orthonormal.function.list[[i]][x.ic.index,y.ic.index];
     }
     ## IC.vec = solve(mass.mat, b);
     IC.vec = solve(mass.mat, b);
@@ -1740,10 +1473,8 @@ blackbox <- function(log.sigma2,
             diag(exp(eig$values * problem.parameters$t)) %*%
             t(eig$vectors) %*% IC.vec;
     }
-    approx.sol <- bivariate.solution.approx(orthonormal.function.list.x,
-                                            orthonormal.function.list.y,
+    approx.sol <- bivariate.solution.approx(orthonormal.function.list,
                                             K,
-                                            k.xy.hash,
                                             coefs);
     
     min.obs = min(apply(approx.sol, 1, min));
@@ -1759,13 +1490,16 @@ blackbox <- function(log.sigma2,
     problem.parameters.x$a = problem.parameters$ax;
     problem.parameters.x$b = problem.parameters$bx;
     problem.parameters.x$sigma.2 = problem.parameters$sigma.2.x;
+    problem.parameters.x$x.ic = problem.parameters$x.ic;
 
     problem.parameters.y = problem.parameters;
     problem.parameters.y$x.ic = problem.parameters$y.ic;
     problem.parameters.y$a = problem.parameters$ay;
     problem.parameters.y$b = problem.parameters$by;
     problem.parameters.y$sigma.2 = problem.parameters$sigma.2.y;
-    
+    problem.parameters.y$x.ic = problem.parameters$y.ic;
+
+    print(c(problem.parameters.x$t, problem.parameters.y$t));
     true.sol <- univariate.solution(x,problem.parameters.x) %*%
         t(univariate.solution(y,problem.parameters.y));
        
@@ -1773,18 +1507,38 @@ blackbox <- function(log.sigma2,
     plot(x,approx.sol[,y.ic.index], type = "l", col = "black", lty="dashed");
     lines(x,true.sol[,y.ic.index], col = "red");
 
-    plot(y,approx.sol[x.ic.index,], type="l", lty="dashed", col = "black");
-    lines(y,true.sol[x.ic.index,], col = "red");
+    plot(y,approx.sol[x.ic.index,], type="l",
+         lty="dashed", col = "black");
+    lines(y,true.sol[x.ic.index,],col="red");
 
-    if (PLOT.SOLUTION) {
-        png("contour.png");
-        filled.contour(y,x,approx.sol, nlevels = 50);
-        dev.off();
-    }
+    png("contour.png");
+    filled.contour(x,y,approx.sol, nlevels = 50);
+    ## persp(x,y,approx.sol, theta = pi/2);
+    ## points(x[min.index.row], y[min.index.col], col="red");
+    dev.off();
+    
+    ## if (PLOT.SOLUTION) {
+    ##     exact.solution = univariate.solution(x,problem.parameters);
+    ##     png(filename=paste("solution-K-", K, ".png", sep=""),
+    ##         width=1200, height=1200,res=300);
+    ##     par(mar = c(5,4,2,1));
+    ##     plot(x,univariate.solution.approx(coefs,x,
+     ##                                       orthonormal.function.list,K),type="l",
+    ##          xlab=paste("K=",K,sep=""),
+    ##          ylab=paste("q(x,t), t=", problem.parameters$t, sep=""));
+    ##     lines(x, exact.solution, col="green",
+    ##           lty="dashed", lwd = 2);
+    ##     dev.off();
+    ## }
+    ## ## ## APPROX SOLUTION END ###
 
-    ## ## CHECKING PDE START ###
-    max.difference = max(apply(abs(true.sol-approx.sol),
-                               1,
-                               max));
-    return (max.difference);
+    ## ## ## CHECKING PDE START ###
+    ## A = solve(mass.mat) %*% stiff.mat;
+    ## ## plot(x,univariate.solution.approx.dt(coefs, A),type="l", col="red");
+    ## ## lines(x,0.5*(problem.parameters$sigma.2)*
+    ## ##         univariate.solution.approx.dx.dx(coefs),
+    ## ##       lty="dashed");
+
+    difference = sum(apply((true.sol-approx.sol)^2, 1, sum)*dy)*dx
+    return (difference);
 }

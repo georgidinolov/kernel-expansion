@@ -1,129 +1,77 @@
 rm(list=ls());
 
-PLOT.SOLUTION=FALSE;
+PLOT.SOLUTION=TRUE;
 dx = 0.01;
 dy = 0.01;
-K=10;
-nn = 10;
+K.prime = 4;
+
+library("mvtnorm");
 source("2-d-solution.R");
 problem.parameters = NULL;
-problem.parameters$ax = -1;
+problem.parameters$ax = 0;
 problem.parameters$bx = 1;
-problem.parameters$ay = -1;
+problem.parameters$ay = 0;
 problem.parameters$by = 1;
-problem.parameters$x.ic = 0.85;
-problem.parameters$y.ic = 0.85;
+problem.parameters$x.ic = 0.9;
+problem.parameters$y.ic = 0.9;
 problem.parameters$number.terms = 1000;
 problem.parameters$sigma.2.x = 1e-1;
-problem.parameters$sigma.2.y = 5e-1;
+problem.parameters$sigma.2.y = 1e-1;
 problem.parameters$rho = 0.0;
-problem.parameters$t = 0.5;
-sigma2 = .05;
-log.sigma2 = log(sigma2);
-samples <- NULL;
-samples$mus <- NULL;
-samples$log.sigma2s <- NULL;
+problem.parameters$t = 0.1;
+problem.parameters$K.prime = K.prime;
 
-bb <- blackbox(log.sigma2,
-               samples,
-               K=K,
-               problem.parameters,
-               dx, dy,
-               TRUE,
-               TRUE);
+K <- K.prime^2;
+function.list <- vector("list", K.prime^2);
 
-opt.results <- optim(log(sigma2),
-                     blackbox,
-                     method="Brent",
-                     samples=samples,
-                     K=K,
-                     problem.parameters=problem.parameters,
-                     dx=dx,
-                     dy=dy,
-                     PLOT.SOLUTION=TRUE,
-                     MINIMIZE.REMAINDER=TRUE,
-                     lower = -4,
-                     upper = -1,
-                     control=list(maxit=100,
-                                  reltol=5e-2));
-sigma2 <- exp(opt.results$par);
-log.sigma2 <- log(sigma2);
+x <- seq(problem.parameters$ax,
+         problem.parameters$bx,
+         by=dx);
+y <- seq(problem.parameters$ay,
+         problem.parameters$by,
+         by=dy);
 
-problem.parameters$rho = -0.8;
-nn = 50;
-samples <- NULL;
-samples$mus <- NULL;
-samples$log.sigma2s <- NULL;
-samples <- sample.process(n.simulations=nn*10,
-                          n.samples=nn,
-                          dt=problem.parameters$t/100,
-                          problem.parameters=problem.parameters);
-
-bb <- blackbox(log.sigma2,
-               samples,
-               K=K,
-               problem.parameters,
-               dx, dy,
-               TRUE,
-               TRUE);
-
-Ks <- seq(10,20,by=1);
-optimal.sigma2s <- rep(NA,length(Ks));
-
-for (i in seq(1,length(Ks))) {
-    K = Ks[i];
-    sigma2 = 0.4;
-    opt.results <- optim(log(sigma2),
-                         blackbox,
-                         method="Brent",
-                         K=K,
-                         problem.parameters=problem.parameters,
-                         dx=dx,
-                         dy=dy,
-                         PLOT.SOLUTION=TRUE,
-                         MINIMIZE.REMAINDER=TRUE,
-                         lower = -4,
-                         upper = 2,
-                         control=list(maxit=100,
-                                      reltol=5e-2));
+par(mfrow=c(ceiling(sqrt(K)),
+            ceiling(sqrt(K))));
+    par(mar = c(5,4,2,1));
+for (k in seq(1,K)) {
+    k.y <- ceiling(k/K.prime);
+    k.x <- k - (K.prime * (k.y-1));
+    print(c(k.x,k.y));
+    function.params <- c(k.x, k.y);
     
-    optimal.sigma2s[i] <- exp(opt.results$par);
+    function.list[[k]] <-
+        basis.function.xy(x,y,
+                          function.params,
+                          problem.parameters);
 }
 
-fit <- lm(log(optimal.sigma2s)~Ks);
-plot(Ks, log(optimal.sigma2s));
-abline(a=fit$coefficients[1], b=fit$coefficients[2],
-       col="red");
+problem.parameters$K.prime <- 30;
+for (n in seq(1,problem.parameters$K.prime)) {
+    k.x <- sample(seq(1,problem.parameters$K.prime), size=1);
+    k.y <- sample(seq(1,problem.parameters$K.prime), size=1);
+    function.params <- c(k.x, k.y);
+    
+    function.list[[K+1]] <-
+        basis.function.xy(x,y,
+                          function.params,
+                          problem.parameters);
+    K <- K+1;
+}
 
-K=40;
-bb = blackbox((fit$coefficients[1]+
-               fit$coefficients[2]*K),
-              K=K,
+par(mfrow=c(ceiling(sqrt(K)),
+            ceiling(sqrt(K))));
+par(mar = c(5,4,2,1));
+if (PLOT.SOLUTION) {
+    for (k in seq(1,K)) {
+        contour(x,y,function.list[[k]]);
+    }
+}
+
+problem.parameters$x.ic = 0.1;
+problem.parameters$y.ic = 0.1;
+
+l2 = blackbox(function.list,
               problem.parameters,
-              dx, dy,
-              TRUE,TRUE);
-
-sigma2 <- exp(fit$coefficients[1]+
-              fit$coefficients[2]*K);
-opt.results <- optim(log(sigma2),
-                     blackbox,
-                     method="Brent",
-                     K=K,
-                     problem.parameters=problem.parameters,
-                     dx=dx,
-                     dy=dy,
-                     PLOT.SOLUTION=TRUE,
-                     MINIMIZE.REMAINDER=TRUE,
-                     lower = log(sigma2)-2*summary(fit)$sigma,
-                     upper = log(sigma2)+2*summary(fit)$sigma,
-                     control=list(maxit=100,
-                                  reltol=5e-2));
-
-problem.parameters$x.ic = 0.65;
-problem.parameters$y.ic = 0.05;
-
-bb = blackbox(opt.results$par,
-              K=K,
-              problem.parameters,
-              dx, dy,
-              TRUE,TRUE);
+              dx,dy,TRUE,TRUE);
+print(l2);
