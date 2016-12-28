@@ -353,6 +353,7 @@ basis.function <- function(x,y, function.params, problem.parameters) {
         dmvnorm(x=matrix(nrow=length(y), ncol=2,data=c(rep(x,length(y)),
                                                        y)),
                 mean, sigma);
+    
     return (dbeta(x,function.params[1]+1,problem.parameters$K.prime-
                                          function.params[1]+2) *
             dbeta(y,function.params[2]+1,problem.parameters$K.prime-
@@ -1555,7 +1556,6 @@ blackbox <- function(function.list,
     y = seq(problem.parameters$ay,
             problem.parameters$by,
             by=dy);
-    
         
     ## SYSTEM MATRICES START ##
     derivative.xx.matrix <- system.mats$derivative.xx.matrix;
@@ -1624,6 +1624,7 @@ blackbox <- function(function.list,
     problem.parameters.x$b = problem.parameters$bx;
     problem.parameters.x$sigma.2 = problem.parameters$sigma.2.x;
     problem.parameters.x$x.ic = problem.parameters$x.ic;
+    problem.parameters.x$t <- 1;
 
     problem.parameters.y = problem.parameters;
     problem.parameters.y$x.ic = problem.parameters$y.ic;
@@ -1631,6 +1632,7 @@ blackbox <- function(function.list,
     problem.parameters.y$b = problem.parameters$by;
     problem.parameters.y$sigma.2 = problem.parameters$sigma.2.y;
     problem.parameters.y$x.ic = problem.parameters$y.ic;
+    problem.parameters.y$t <- 1;
 
     print(c(problem.parameters.x$t, problem.parameters.y$t));
     true.sol <- univariate.solution(x,problem.parameters.x) %*%
@@ -1645,7 +1647,10 @@ blackbox <- function(function.list,
     lines(y,true.sol[x.ic.index,],col="red");
 
     png("contour.png");
-    filled.contour(x,y,approx.sol, nlevels = 50);
+    contour(x,y,approx.sol, nlevels = 50);
+    points(problem.parameters$x.ic,
+           problem.parameters$y.ic,
+           col="red");
     ## persp(x,y,approx.sol, theta = pi/2);
     ## points(x[min.index.row], y[min.index.col], col="red");
     dev.off();
