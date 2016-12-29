@@ -1,12 +1,11 @@
 rm(list=ls());
+library("mvtnorm");
+source("2-d-solution.R");
 
 PLOT.SOLUTION = TRUE;
 dx = 0.01;
 dy = 0.01;
 K.prime = 10;
-
-library("mvtnorm");
-source("2-d-solution.R");
 
 problem.parameters.generate.data = NULL;
 problem.parameters.generate.data$t <- 1;
@@ -24,8 +23,8 @@ problem.parameters <- data[[1]];
 problem.parameters$K.prime = K.prime;
 problem.parameters$number.terms = 1000;
 
-K <- K.prime^2;
-function.list <- vector("list", K.prime^2);
+K <- (K.prime-1)^2;
+function.list <- vector("list", K);
 
 x <- seq(problem.parameters$ax,
          problem.parameters$bx,
@@ -34,11 +33,33 @@ y <- seq(problem.parameters$ay,
          problem.parameters$by,
          by=dy);
 
+alpha.minus.1.xs <- rep(NA,K);
+alpha.minus.1.ys <- rep(NA,K);
 for (k in seq(1,K)) {
-    k.y <- ceiling(k/K.prime);
-    k.x <- k - (K.prime * (k.y-1));
-    print(c(k.x,k.y));
-    function.params <- c(k.x, k.y);
+    alpha.minus.1.y <- ceiling(k/(K.prime-1));
+    alpha.minus.1.x <- k - ((K.prime-1) * (alpha.minus.1.y-1));
+    
+    alpha.minus.1.ys[k] <- alpha.minus.1.y;
+    alpha.minus.1.xs[k] <- alpha.minus.1.x;
+}
+alpha.xs <- alpha.minus.1.xs + 1;
+alpha.ys <- alpha.minus.1.ys + 1;
+## alpha + beta = K.prime + 2
+
+x.basis.coors <- alpha.minus.1.xs / (K.prime);
+y.basis.coors <- alpha.minus.1.ys / (K.prime);
+
+sort.bases <- sort.int(sqrt((x.basis.coors-0.5)^2 + (y.basis.coors-0.5)^2),
+                       index.return = TRUE);
+alpha.xs <- alpha.xs[sort.bases$ix];
+alpha.ys <- alpha.ys[sort.bases$ix];
+
+
+for (k in seq(1,K)) {
+    alpha.x <- alpha.xs[k];
+    alpha.y <- alpha.ys[k];
+    print(c(alpha.x,alpha.y));
+    function.params <- c(alpha.x, alpha.y);
     
     function.list[[k]] <-
         basis.function.xy(x,y,
@@ -68,6 +89,8 @@ if (PLOT.SOLUTION) {
     }
 }
 
+orthonormal.function.list <- function.list;
+
 orthonormal.function.list <- orthonormal.functions(function.list,
                                                    dx,dy,x,y,
                                                    PLOT.SOLUTION);
@@ -75,11 +98,80 @@ orthonormal.function.list <- orthonormal.functions(function.list,
 system.mats <- system.matrices(orthonormal.function.list,
                                dx,dy);
 
+tt <- min(problem.parameters$x.ic^2 / (4*problem.parameters$sigma.2.x),
+          problem.parameters$y.ic^2 / (4*problem.parameters$sigma.2.y));
+
+problem.parameters.x = problem.parameters;
+problem.parameters.x$x.ic = problem.parameters$x.ic;
+problem.parameters.x$a = problem.parameters$ax;
+problem.parameters.x$b = problem.parameters$bx;
+problem.parameters.x$sigma.2 = problem.parameters$sigma.2.x;
+problem.parameters.x$t = tt;
+
+problem.parameters.y = problem.parameters;
+problem.parameters.y$x.ic = problem.parameters$y.ic;
+problem.parameters.y$a = problem.parameters$ay;
+problem.parameters.y$b = problem.parameters$by;
+problem.parameters.y$sigma.2 = problem.parameters$sigma.2.y;
+problem.parameters.y$t = tt;
+
+print(c(problem.parameters.x$t, problem.parameters.y$t));
+IC.true <- univariate.solution(x,problem.parameters.x) %*%
+    t(univariate.solution(y,problem.parameters.y));
+
+IC.coefs <- rep(NA, K);
+for (k in seq(1,K)) {
+    IC.coefs[k] <- sum(apply(IC.true*orthonormal.function.list[[k]],
+                             1,
+                             sum)*dy)*dx;
+}
+
+IC.coefs <- solve(system.mats$mass.mat, IC.coefs);
+
+IC.approx <- bivariate.solution.approx(orthonormal.function.list,
+                                       K,
+                                       IC.coefs);
+
+x.ic.index = which(abs(x-problem.parameters$x.ic)<=dx/2);
+y.ic.index = which(abs(y-problem.parameters$y.ic)<=dy/2);
+approx <- rep(0, length(x));
+
+for (k in seq(1,K)) {
+    if (k==1) {
+        plot(x, IC.coefs[k]*
+                orthonormal.function.list[[k]][,y.ic.index], type="l",
+             ylim = c(-max(IC.coefs[k]*
+                          orthonormal.function.list[[k]][,y.ic.index]),
+                      max(IC.coefs[k]*
+                          orthonormal.function.list[[k]][,y.ic.index])));
+    } else {
+        lines(x, IC.coefs[k]*
+                 orthonormal.function.list[[k]][,y.ic.index], type="l")
+    }
+    approx <- approx +
+        IC.coefs[k]*
+                orthonormal.function.list[[k]][,y.ic.index];
+}
+lines(x, IC.true[,y.ic.index],col="red");
+lines(x, approx, lty="dashed", col="green");
+    
+par(mfrow=c(2,1));
+plot(x, IC.approx[,y.ic.index], type = "l");
+lines(x,IC.true[,y.ic.index], col = "red");
+abline(v=problem.parameters$x.ic, col = "red");
+
+plot(y, IC.approx[x.ic.index,], type = "l");
+lines(y,IC.true[x.ic.index,], col = "red");
+abline(v=problem.parameters$y.ic, col = "red");
+
+filled.contour(x,y,100*abs((IC.approx-IC.true)/IC.true));
+
 l2 <- blackbox(function.list,
                orthonormal.function.list,
                system.mats,
                problem.parameters,
-               dx,dy,TRUE,TRUE);
+               dx,dy,
+               TRUE,TRUE);
 print(l2);
 
 data <- sample.process(10, dt, problem.parameters.generate.data);
@@ -87,7 +179,9 @@ for (n in seq(1,length(data))) {
     data[[n]]$number.terms = 1000;
 }
 
-l2 = blackbox(function.list,
-              orthonormal.function.list,
-              data[[1]],
-              dx,dy,TRUE,TRUE);
+l2 <- blackbox(function.list,
+               orthonormal.function.list,
+               system.mats,
+               problem.parameters = data[[6]],
+               dx,dy,TRUE,TRUE);
+print(l2);

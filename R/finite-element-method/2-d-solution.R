@@ -354,9 +354,9 @@ basis.function <- function(x,y, function.params, problem.parameters) {
                                                        y)),
                 mean, sigma);
     
-    return (dbeta(x,function.params[1]+1,problem.parameters$K.prime-
+    return (dbeta(x,function.params[1],problem.parameters$K.prime-
                                          function.params[1]+2) *
-            dbeta(y,function.params[2]+1,problem.parameters$K.prime-
+            dbeta(y,function.params[2],problem.parameters$K.prime-
                                          function.params[2]+2));
 }
 
@@ -1582,6 +1582,7 @@ blackbox <- function(function.list,
     
     ## ## eigenvalues START ###
     eig <- eigen(solve(mass.mat) %*% stiff.mat);
+    ## eig <- eigen(stiff.mat);
     ## ## eigenvalues END ###
     
     ## ## ICs START ###
@@ -1677,6 +1678,6 @@ blackbox <- function(function.list,
     ## ##         univariate.solution.approx.dx.dx(coefs),
     ## ##       lty="dashed");
 
-    difference = sum(apply((true.sol-approx.sol)^2, 1, sum)*dy)*dx
+    difference = sqrt(sum(apply((true.sol-approx.sol)^2, 1, sum)*dy)*dx);
     return (difference);
 }
