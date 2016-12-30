@@ -764,13 +764,10 @@ univariate.solution.approx <- function(coefs,x,orthonormal.function.list,K) {
 bivariate.solution.approx <- function(orthonormal.function.list,
                                       K,
                                       coefs) {
+    out <- matrix(nrow=dim(orthonormal.function.list[[1]])[1],
+                  ncol=dim(orthonormal.function.list[[1]])[2],
+                  0);
     for (k.prime in seq(1,K)) {
-
-        if (k.prime == 1) {
-            out =
-                coefs[k.prime] *
-                orthonormal.function.list[[k.prime]];
-        }
         out = out +
             coefs[k.prime] *
             orthonormal.function.list[[k.prime]];
@@ -1639,7 +1636,7 @@ blackbox <- function(function.list,
     true.sol <- univariate.solution(x,problem.parameters.x) %*%
         t(univariate.solution(y,problem.parameters.y));
        
-    par(mfcol=c(1,2));
+    # par(mfcol=c(1,2));
     plot(x,approx.sol[,y.ic.index], type = "l", col = "black", lty="dashed");
     lines(x,true.sol[,y.ic.index], col = "red");
 
@@ -1648,10 +1645,10 @@ blackbox <- function(function.list,
     lines(y,true.sol[x.ic.index,],col="red");
 
     png("contour.png");
-    contour(x,y,approx.sol, nlevels = 50);
-    points(problem.parameters$x.ic,
-           problem.parameters$y.ic,
-           col="red");
+    filled.contour(x,y,approx.sol, nlevels = 50);
+    ## points(problem.parameters$x.ic,
+    ##        problem.parameters$y.ic,
+    ##        col="red");
     ## persp(x,y,approx.sol, theta = pi/2);
     ## points(x[min.index.row], y[min.index.col], col="red");
     dev.off();
