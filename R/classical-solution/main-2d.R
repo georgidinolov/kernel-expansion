@@ -1,5 +1,6 @@
 rm(list=ls());
 library("mvtnorm");
+library("gsl");
 source("../finite-element-method/2-d-solution.R");
 
 PLOT.SOLUTION = TRUE;
@@ -11,7 +12,7 @@ problem.parameters.generate.data = NULL;
 problem.parameters.generate.data$t <- 1;
 problem.parameters.generate.data$sigma.2.x <- 0.1;
 problem.parameters.generate.data$sigma.2.y <- 1;
-problem.parameters.generate.data$rho <- -0.9;
+problem.parameters.generate.data$rho <- -0.6;
 problem.parameters.generate.data$x.ic <- 0;
 problem.parameters.generate.data$y.ic <- 0;
 dt <- problem.parameters.generate.data$t/1000;
