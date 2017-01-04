@@ -1,6 +1,6 @@
 rm(list=ls());
 library("mvtnorm");
-source("2-d-solution.R");
+source("../finite-element-method/2-d-solution.R");
 
 PLOT.SOLUTION = TRUE;
 dx = 0.01;
