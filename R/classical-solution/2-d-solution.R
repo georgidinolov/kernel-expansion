@@ -93,7 +93,7 @@ bivariate.solution.classical <- function(dx, dy, problem.parameters) {
     
     K=50;
     L=2^5;
-    Cks <- rep(NA, K);
+    Cs.mat <- rep(NA, K);
     rr <- seq(0, r.star, by=0.01);
     solution <- rep(0, length(rr));
     
