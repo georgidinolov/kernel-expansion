@@ -86,37 +86,22 @@ bivariate.solution.classical <- function(dx, dy, problem.parameters) {
     phis <- c(atan(slopes[indeces[1]]),
               atan(slopes[indeces[2]]));
     phi <- max(phis)-min(phis);
-    
-    r.star <- 6;
-    alpha <- pi/phi;
-    lam <- bessel_zero_Jnu(nu=alpha, s=seq(1,3));
-    rr <- seq(0,2*r.star,by=0.01);
-    for (j in seq(1,length(lam))) {
-        if (j==1) {
-            plot(rr, bessel_Jnu(alpha, x=rr/r.star*lam[j]), type="l");
-        } else {
-            lines(rr, bessel_Jnu(alpha, x=rr/r.star*lam[j]));
-        }
-    }
-    abline(v=r.star,col="red");
-    abline(v=min(sqrt(apply((boundary.points.mat - c(xi.ic, eta.ic))^2, 2, sum))),
-           col="blue",
-           lwd=2);
 
     r.not <- min(sqrt(apply((boundary.points.mat - c(xi.ic, eta.ic))^2, 2, sum)));
+    r.star <- 1.626357;
     theta.not <- phi*0.1;
     
-    K=100;
-    L=2^2;
+    K=50;
+    L=2^5;
     Cks <- rep(NA, K);
     rr <- seq(0, r.star, by=0.01);
     solution <- rep(0, length(rr));
     
     for (k in seq(1,K)) {
+        print(k);
         alpha <- k*pi/phi;
-
         lambda.kls <- bessel_zero_Jnu(nu=alpha, s=seq(1,L));
-        approx <- rep(0,length(rr));
+        ## approx <- rep(0,length(rr));
         Cls <- rep(NA,L);
         for (j in seq(1,length(lambda.kls))) {
             ## if (j==1) {
@@ -124,34 +109,30 @@ bivariate.solution.classical <- function(dx, dy, problem.parameters) {
             ## } else {
             ##     lines(rr, bessel_Jnu(alpha, x=rr/r.star*lambda.kls[j]));
             ## }
-            Cls[j] <- bessel_Jnu(alpha, r.not*lambda.kls[j]/r.star)/
-                ((r.star^2)/2*bessel_Jnu(alpha+1,lambda.kls[j])^2);
-            approx = approx +
-                Cls[j] * bessel_Jnu(alpha, rr*lambda.kls[j]/r.star);
+            Cls[j] <- sin(k*pi*theta.not/phi) *
+                bessel_Jnu(alpha, r.not*lambda.kls[j]/r.star)/
+                (phi/2*(r.star^2)/2*bessel_Jnu(alpha+1,lambda.kls[j])^2);
+            ## approx = approx +
+            ##     Cls[j] * bessel_Jnu(alpha, rr*lambda.kls[j]/r.star);
         }
-        plot(rr, approx, type = "l", ylim = c(0,max(approx)*1));
-        lines(rr, approx);
-        abline(v=r.star,col="red");
-        abline(v=r.not,
-               col="blue",
-               lwd=2);
-
-        Cks[k] = (sin(k*pi*theta.not/phi)*
-                  sum(bessel_Jnu(nu=alpha, x=r.not*lambda.kls/r.star)*
-                      lambda.kls))/
-            (phi/2 * r.star^2/2 *
-             sum(lambda.kls^2*bessel_Jnu(alpha+1,lambda.kls)^2));
+        ## plot(rr, approx, type = "l", ylim = c(0,max(approx)*1));
+        ## lines(rr, approx);
+        ## abline(v=r.star,col="red");
+        ## abline(v=r.not,
+        ##        col="blue",
+        ##        lwd=2);
 
         for (l in seq(1,L)) {
             solution = solution +
-                sin(k*pi*theta.not/phi)*Cks[k]*
-                exp(-lambda.kls[l]^2*tt)*
-                bessel_Jnu(alpha,rr*lambda.kls[l]/r.star)*
-                lambda.kls[l];
+                Cls[l] *
+                exp(-(lambda.kls[l]/r.star)^2*tt)*
+                sin(k*pi*(0.2*phi)/phi)*
+                bessel_Jnu(alpha,rr*lambda.kls[l]/r.star);
         }
     }
     plot(rr, solution, type="l");
-    
+    abline(v=r.star,col="red");
+    abline(v=r.not,col="blue",lwd=2);
     
     sum(seq(0,r.star,by=0.01)*
         bessel_Jnu(alpha, seq(0,r.star,by=0.01)/r.star*lam[1])*

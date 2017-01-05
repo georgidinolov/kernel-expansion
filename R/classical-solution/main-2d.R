@@ -23,7 +23,7 @@ data <- sample.process(n.samples, dt, problem.parameters.generate.data);
 problem.parameters <- data[[1]];
 problem.parameters$K.prime = K.prime;
 problem.parameters$number.terms = 100;
-i
+
 K <- (K.prime-1)^2;
 function.list <- vector("list", K);
 
