@@ -1,10 +1,11 @@
 rm(list=ls());
 library("mvtnorm");
 library("gsl");
+library("plotrix");
 source("../finite-element-method/2-d-solution.R");
 source("2-d-solution.R");
 
- PLOT.SOLUTION = TRUE;
+PLOT.SOLUTION = TRUE;
 dx = 0.01;
 dy = 0.01;
 K.prime = 8;
@@ -13,15 +14,15 @@ problem.parameters.generate.data = NULL;
 problem.parameters.generate.data$t <- 1;
 problem.parameters.generate.data$sigma.2.x <- 0.1;
 problem.parameters.generate.data$sigma.2.y <- 1;
-problem.parameters.generate.data$rho <- -0.9;
+problem.parameters.generate.data$rho <- 0.9;
 problem.parameters.generate.data$x.ic <- 0;
 problem.parameters.generate.data$y.ic <- 0;
 dt <- problem.parameters.generate.data$t/1000;
-n.samples <- 10;
+n.samples <- 100;
 
 data <- sample.process(n.samples, dt, problem.parameters.generate.data);
 
-par(mfrow=c(5,5))
+par(mfrow=c(10,10))
 for (n in seq(1,length(data))) {
     problem.parameters <- data[[n]];
     problem.parameters$K.prime = K.prime;
