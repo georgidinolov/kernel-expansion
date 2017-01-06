@@ -2,8 +2,9 @@ rm(list=ls());
 library("mvtnorm");
 library("gsl");
 source("../finite-element-method/2-d-solution.R");
+source("2-d-solution.R");
 
-PLOT.SOLUTION = TRUE;
+ PLOT.SOLUTION = TRUE;
 dx = 0.01;
 dy = 0.01;
 K.prime = 8;
@@ -12,17 +13,21 @@ problem.parameters.generate.data = NULL;
 problem.parameters.generate.data$t <- 1;
 problem.parameters.generate.data$sigma.2.x <- 0.1;
 problem.parameters.generate.data$sigma.2.y <- 1;
-problem.parameters.generate.data$rho <- -0.6;
+problem.parameters.generate.data$rho <- -0.9;
 problem.parameters.generate.data$x.ic <- 0;
 problem.parameters.generate.data$y.ic <- 0;
 dt <- problem.parameters.generate.data$t/1000;
-n.samples <- 1;
+n.samples <- 10;
 
 data <- sample.process(n.samples, dt, problem.parameters.generate.data);
 
-problem.parameters <- data[[1]];
-problem.parameters$K.prime = K.prime;
-problem.parameters$number.terms = 100;
+par(mfrow=c(5,5))
+for (n in seq(1,length(data))) {
+    problem.parameters <- data[[n]];
+    problem.parameters$K.prime = K.prime;
+    problem.parameters$number.terms = 100;
+    bivariate.solution.classical(dx,dy,problem.parameters);
+}
 
 K <- (K.prime-1)^2;
 function.list <- vector("list", K);
