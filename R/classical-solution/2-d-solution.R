@@ -190,14 +190,12 @@ bivariate.solution.classical <- function(dx, dy, problem.parameters) {
             (phi/2*(r.star^2)/2*bessel_Jnu(alpha+1,lambda.kls)^2);
     }
     
-    trig.bases <- unlist(lapply(X=seq(1,K),
-                                function(x) {
-                                    return(rep(sin(x*pi*theta.not/phi),L))
-                                } ));
+
     alphas <- unlist(lapply(seq(1,K),
                             function(x){return(rep(x*pi/phi,L))}));
+    time.bases <- exp(-(lambdas/r.star)^2*tt);
     
-    sol <- function(r, t) {
+    sol <- function(r, t, trig.bases) {
         return(sum(trig.bases *
                    Ckls *
                    exp(-(lambdas/r.star)^2*t) *
@@ -212,7 +210,74 @@ bivariate.solution.classical <- function(dx, dy, problem.parameters) {
     abline(v=r.star,col="red");
     abline(v=r.not,col="blue",lwd=2);
 
+    xx <- seq(problem.parameters$ax + dx,
+              problem.parameters$bx - dx,
+              by=dx);
+    yy <- seq(problem.parameters$ay + dy,
+              problem.parameters$by - dy,
+              by=dy);
+    big.solution <- matrix(nrow = length(xx),
+                           ncol = length(yy),
+                           data = 0);
+
+    generate.trig.bases <- function(theta) {
+        out <- unlist(lapply(X=seq(1,K),
+                             function(x) {
+                                 return(rep(sin(x*pi*thetas[jj]/
+                                                phi),L))
+                             } ));
+        return (out);
+    }
+
     
+    
+    for (ii in seq(1,length(xx))) {
+        xy <- rbind(rep(xx[ii], length(yy)),
+                    yy);
+        xieta <- sapply(seq(1,length(yy)),
+                        function(x){T.mat %*% xy[,x]});
+        xieta.shifted <-
+            xieta - c(boundary.points.mat[1,closest.boundary.point],
+                      boundary.points.mat[2,closest.boundary.point]);
+        
+        rs <- sqrt(apply(xieta.shifted^2,2,sum));
+        
+        thetas <- atan(xieta.shifted[2,]/
+                       xieta.shifted[1,]) - phi.not +
+                  pi*((xieta.shifted[1,] < 0) &
+                      (xieta.shifted[2,] < 0)) +
+                  pi*((xieta.shifted[1,] < 0) &
+                      (xieta.shifted[2,] > 0));
+        
+        ## points(rs*cos(thetas + phi.not) +
+        ##        boundary.points.mat[1,closest.boundary.point],
+        ##        rs*sin(thetas + phi.not) +
+        ##        boundary.points.mat[2,closest.boundary.point],
+        ##        xlim=c(min(xis.lim[1], etas.lim[1]),
+        ##               max(xis.lim[2], etas.lim[2])),
+        ##        ylim=c(min(xis.lim[1], etas.lim[1]),
+        ##               max(xis.lim[2], etas.lim[2])));
+
+        indeces <- which(rs <= r.star);
+        
+        sapply(X=indeces, function(x) {generate.trig.bases(thetas[x])*
+                                           });
+        
+        ## for (jj in indeces) {
+        ##     trig.bases = generate.trig.bases(theta=thetas[jj]);
+        ##     big.solution[ii,jj] = sol(r=rs[jj], t=tt,
+        ##                               trig.bases=trig.bases)
+        ## }
+        
+        ## big.solution[ii,indeces] =
+        ##     sapply(X=indeces,
+        ##            function(x) {
+        ##                print(x)
+        ##                trig.bases = generate.trig.bases(theta=thetas[jj]);
+        ##                return(sol(r=rs[x], t=tt, trig.bases=trig.bases) );
+        ##            })
+    }
+    filled.contour(xx,yy,big.solution);
     
     while (abs(solution[length(solution)]) > 1e-10 &
            min(solution) >= 0) {
