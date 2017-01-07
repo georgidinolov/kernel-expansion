@@ -103,80 +103,123 @@ bivariate.solution.classical <- function(dx, dy, problem.parameters) {
 
     ## the offset phi0 and phi##
     if (closest.boundary.point == 4) {
-        phi.not <- atan(slopes[2]) + pi;
         phi <- (atan(slopes[4]) + 2*pi) -
             (atan(slopes[2]) + pi);
-        r.star <- r.not + 
+
+        C.1 <- (-boundary.points.mat[2,closest.boundary.point] +
+                boundary.points.mat[1,closest.boundary.point]*
+                sqrt(1-rho)/sqrt(1+rho))/
+            (sin(ss.1) - cos(ss.1)*sqrt(1-rho)/sqrt(1+rho));
+        C.3 <- (-boundary.points.mat[2,closest.boundary.point] -
+                boundary.points.mat[1,closest.boundary.point]*
+                sqrt(1-rho)/sqrt(1+rho))/
+            (sin(ss.3) + cos(ss.3)*sqrt(1-rho)/sqrt(1+rho));
+        
+        r.star <-
+            min(c(C.1, C.3));
+
+        phi.not <- atan(slopes[2]) + pi;
+        if (Cs[2] < Cs[4]) {
+            theta.not <- asin(Cs[2]/r.not);
+        } else {
+            theta.not <- (pi - asin(Cs[2]/r.not));
+        }
+        
     } else if (closest.boundary.point == 3) {
-        phi.not <- atan(slopes[4]) + pi;
         phi <- (atan(slopes[1]) + pi) -
             (atan(slopes[4]) + pi);
+                
+        r.star <- min(c(sqrt(sum((boundary.points.mat[,closest.boundary.point]-
+                                  boundary.points.mat[,1])^2)),
+                        sqrt(sum((boundary.points.mat[,closest.boundary.point]-
+                                  boundary.points.mat[,4])^2))));
+        phi.not <- atan(slopes[4]) + pi;
+        theta.not <- asin(Cs[4]/r.not);
+        
     } else if (closest.boundary.point == 2) {
-        phi.not <- atan(slopes[3]);
+        phi.not <- atan(slopes[3]) + 2*pi;
         phi <- atan(slopes[2]) - atan(slopes[3]);
+        r.star <- 
+            min(c(sqrt(sum((boundary.points.mat[,closest.boundary.point]-
+                            boundary.points.mat[,1])^2)),
+                  sqrt(sum((boundary.points.mat[,closest.boundary.point]-
+                            boundary.points.mat[,4])^2))));
+        theta.not <- asin(Cs[3]/r.not);
+        
     } else if (closest.boundary.point == 1) {
         phi.not <- atan(slopes[1]);
         phi <- (atan(slopes[3]) + pi) -
             atan(slopes[1]);
+
+        C.4 <- (-boundary.points.mat[2,closest.boundary.point] -
+                boundary.points.mat[1,closest.boundary.point]*
+                sqrt(1-rho)/sqrt(1+rho) +
+                1/(sigma.x*sqrt(1+rho)*cc))/
+                (sin(ss.4) + cos(ss.4)*sqrt(1-rho)/sqrt(1+rho));
+        
+        C.2 <- (-boundary.points.mat[2,closest.boundary.point] +
+                boundary.points.mat[1,closest.boundary.point]*
+                sqrt(1-rho)/sqrt(1+rho) +
+                1/(sigma.y*sqrt(1+rho)*cc))/
+            (sin(ss.2) - cos(ss.2)*sqrt(1-rho)/sqrt(1+rho));
+        
+        r.star <- min(C.4,C.2);
+        if (Cs[1] < Cs[3]) {
+            theta.not <- asin(Cs[1]/r.not);
+        } else {
+            theta.not <- (pi - asin(Cs[3]/r.not));
+        }
     } else {
-        ## THROW
+        ## THROW ERROR ##
     }
     
-    ## closest border indeces
-    r.star <- sort(sqrt(apply((boundary.points.mat -
-                                   boundary.points.mat[,closest.boundary.point])^2, 2, sum)))[2];
-
-        print(c(Cs[indeces[1]], r.not));
-        if (abs(Cs[indeces[1]] - r.not) > 1e-16) {
-            theta.not <- asin(x=Cs[indeces[1]]/r.not);
-            
-            K <- 50;
-            L <- 2^5;
-            Ckls <- rep(NA, K*L);
-            lambdas <- rep(NA, K*L);
-            rr <- seq(0, r.star, by=0.01);
-            solution <- rep(0, length(rr));
-            
-            for (k in seq(1,K)) {
-                alpha <- k*pi/phi;
-                lambda.kls <- bessel_zero_Jnu(nu=alpha, s=seq(1,L));
-                lambdas[seq((k-1)*L+1,k*L)] <- lambda.kls;
-                
-                Ckls[seq((k-1)*L+1,k*L)] = sin(k*pi*theta.not/phi) *
-                    bessel_Jnu(alpha, r.not*lambda.kls/r.star)/
-                    (phi/2*(r.star^2)/2*bessel_Jnu(alpha+1,lambda.kls)^2);
-            }
-            
-            trig.bases <- unlist(lapply(X=seq(1,K),
-                                        function(x) {
-                                            return(rep(sin(x*pi*theta.not/phi),L))
-                                        } ));
-            alphas <- unlist(lapply(seq(1,K),
-                                    function(x){return(rep(x*pi/phi,L))}));
-            
-            sol <- function(r, t) {
-                return(sum(trig.bases *
-                           Ckls *
-                           exp(-(lambdas/r.star)^2*t) *
-                           bessel_Jnu(alphas,
-                                      r*lambdas/r.star)));
-            }
-            
-            tt <- r.star/200;
-            solution <- sol(r.star, tt);
-            solution <- sapply(X=rr, function(x){return(sol(x,tt))});
-            plot(rr, solution, type = "l");
-            abline(v=r.star,col="red");
-            abline(v=r.not,col="blue",lwd=2);
-            while (abs(solution[length(solution)]) > 1e-10 &
-                   min(solution) >= 0) {
-                       tt <- tt/2;
-                       solution <- sapply(X=rr, function(x){return(sol(x,tt))});
-                       plot(rr, solution, type = "l");
-                       abline(v=r.star,col="red");
-                       abline(v=r.not,col="blue",lwd=2);
-                   }
-            
-        }
+    K <- 12;
+    L <- 2^4;
+    Ckls <- rep(NA, K*L);
+    lambdas <- rep(NA, K*L);
+    rr <- seq(0, r.star, by=0.01);
+    solution <- rep(0, length(rr));
+    
+    for (k in seq(1,K)) {
+        alpha <- k*pi/phi;
+        lambda.kls <- bessel_zero_Jnu(nu=alpha, s=seq(1,L));
+        lambdas[seq((k-1)*L+1,k*L)] <- lambda.kls;
+        
+        Ckls[seq((k-1)*L+1,k*L)] = sin(k*pi*theta.not/phi) *
+            bessel_Jnu(alpha, r.not*lambda.kls/r.star)/
+            (phi/2*(r.star^2)/2*bessel_Jnu(alpha+1,lambda.kls)^2);
     }
+    
+    trig.bases <- unlist(lapply(X=seq(1,K),
+                                function(x) {
+                                    return(rep(sin(x*pi*theta.not/phi),L))
+                                } ));
+    alphas <- unlist(lapply(seq(1,K),
+                            function(x){return(rep(x*pi/phi,L))}));
+    
+    sol <- function(r, t) {
+        return(sum(trig.bases *
+                   Ckls *
+                   exp(-(lambdas/r.star)^2*t) *
+                   bessel_Jnu(alphas,
+                              r*lambdas/r.star)));
+    }
+            
+    tt <- r.star/200;
+    solution <- sol(r.star, tt);
+    solution <- sapply(X=rr, function(x){return(sol(x,tt))});
+    plot(rr, solution, type = "l");
+    abline(v=r.star,col="red");
+    abline(v=r.not,col="blue",lwd=2);
+
+    
+    
+    while (abs(solution[length(solution)]) > 1e-10 &
+           min(solution) >= 0) {
+               tt <- tt/2;
+               solution <- sapply(X=rr, function(x){return(sol(x,tt))});
+               plot(rr, solution, type = "l");
+               abline(v=r.star,col="red");
+               abline(v=r.not,col="blue",lwd=2);
+           }
 }

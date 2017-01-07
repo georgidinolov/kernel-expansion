@@ -22,8 +22,8 @@ n.samples <- 100;
 
 data <- sample.process(n.samples, dt, problem.parameters.generate.data);
 
-par(mfrow=c(10,10))
-for (n in seq(1,length(data))) {
+par(mfrow=c(10,10));
+for (n in seq(10,length(data))) {
     problem.parameters <- data[[n]];
     problem.parameters$K.prime = K.prime;
     problem.parameters$number.terms = 100;
