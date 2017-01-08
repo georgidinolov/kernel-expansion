@@ -38,6 +38,39 @@ bivariate.solution.classical <- function(dx, dy, problem.parameters) {
     xis <- seq(xis.lim[1], xis.lim[2], by=0.01);
     etas <- seq(etas.lim[1], etas.lim[2], by=0.01);
     
+
+    
+    ## border 1
+    ss.1 <- atan(-sqrt(1+rho)/sqrt(1-rho));
+    C.1 <- (-eta.ic + xi.ic*sqrt(1-rho)/sqrt(1+rho))/
+        (sin(ss.1) - cos(ss.1)*sqrt(1-rho)/sqrt(1+rho));
+
+
+    ## border 2
+    ss.2 <- pi + ss.1;
+    C.2 <- (-eta.ic + xi.ic*sqrt(1-rho)/sqrt(1+rho) +
+            1/(sigma.y*sqrt(1+rho)*cc))/
+        (sin(ss.2) - cos(ss.2)*sqrt(1-rho)/sqrt(1+rho));
+
+
+    ## border 4
+    ss.4 <- atan(sqrt(1+rho)/sqrt(1-rho));
+    C.4 <- (-eta.ic - xi.ic*sqrt(1-rho)/sqrt(1+rho) +
+            1/(sigma.x*sqrt(1+rho)*cc))/
+        (sin(ss.4) + cos(ss.4)*sqrt(1-rho)/sqrt(1+rho));
+
+    
+    ## border 3
+    ss.3 <- pi + ss.4;
+    C.3 <- (-eta.ic - xi.ic*sqrt(1-rho)/sqrt(1+rho))/
+        (sin(ss.3) + cos(ss.3)*sqrt(1-rho)/sqrt(1+rho));
+
+    
+    Cs <- c(C.1,C.2,C.3,C.4);
+    sorted.ts <- sort.int(Cs,index.return=TRUE);
+
+    ## PLOTTING ####
+    par(mfrow=c(2,2));
     plot(xis, xis*sqrt(1-rho)/sqrt(1+rho), type="l",
          xlim=c(min(xis.lim[1], etas.lim[1]),
                 max(xis.lim[2], etas.lim[2])),
@@ -56,43 +89,21 @@ bivariate.solution.classical <- function(dx, dy, problem.parameters) {
     points((T.mat %*% c(1,1))[1],
     (T.mat %*% c(1,1))[2], col = "red");
     points(xi.ic, eta.ic, col = "green");
-    
-    ## border 1
-    ss.1 <- atan(-sqrt(1+rho)/sqrt(1-rho));
-    C.1 <- (-eta.ic + xi.ic*sqrt(1-rho)/sqrt(1+rho))/
-        (sin(ss.1) - cos(ss.1)*sqrt(1-rho)/sqrt(1+rho));
-    lines(c(xi.ic, C.1*cos(ss.1)+xi.ic),
+
+        lines(c(xi.ic, C.1*cos(ss.1)+xi.ic),
           c(eta.ic, C.1*sin(ss.1)+eta.ic),
           col="red");
 
-    ## border 2
-    ss.2 <- pi + ss.1;
-    C.2 <- (-eta.ic + xi.ic*sqrt(1-rho)/sqrt(1+rho) +
-            1/(sigma.y*sqrt(1+rho)*cc))/
-        (sin(ss.2) - cos(ss.2)*sqrt(1-rho)/sqrt(1+rho));
-    lines(c(xi.ic, C.2*cos(ss.2)+xi.ic),
+        lines(c(xi.ic, C.2*cos(ss.2)+xi.ic),
           c(eta.ic, C.2*sin(ss.2)+eta.ic),
           col="red");
-
-    ## border 4
-    ss.4 <- atan(sqrt(1+rho)/sqrt(1-rho));
-    C.4 <- (-eta.ic - xi.ic*sqrt(1-rho)/sqrt(1+rho) +
-            1/(sigma.x*sqrt(1+rho)*cc))/
-        (sin(ss.4) + cos(ss.4)*sqrt(1-rho)/sqrt(1+rho));
-    lines(c(xi.ic, C.4*cos(ss.4)+xi.ic),
+        lines(c(xi.ic, C.4*cos(ss.4)+xi.ic),
           c(eta.ic, C.4*sin(ss.4)+eta.ic),
           col="red");
-    
-    ## border 3
-    ss.3 <- pi + ss.4;
-    C.3 <- (-eta.ic - xi.ic*sqrt(1-rho)/sqrt(1+rho))/
-        (sin(ss.3) + cos(ss.3)*sqrt(1-rho)/sqrt(1+rho));
-    lines(c(xi.ic, C.3*cos(ss.3)+xi.ic),
+        lines(c(xi.ic, C.3*cos(ss.3)+xi.ic),
           c(eta.ic, C.3*sin(ss.3)+eta.ic),
           col="red");
-    
-    Cs <- c(C.1,C.2,C.3,C.4);
-    sorted.ts <- sort.int(Cs,index.return=TRUE);
+    ## PLOTTING END ##
 
     ## ic radius and closest corner
     r.not <- min(sqrt(apply((boundary.points.mat - c(xi.ic, eta.ic))^2, 2, sum)));
@@ -105,36 +116,65 @@ bivariate.solution.classical <- function(dx, dy, problem.parameters) {
     if (closest.boundary.point == 4) {
         phi <- (atan(slopes[4]) + 2*pi) -
             (atan(slopes[2]) + pi);
-
-        C.1 <- (-boundary.points.mat[2,closest.boundary.point] +
-                boundary.points.mat[1,closest.boundary.point]*
-                sqrt(1-rho)/sqrt(1+rho))/
-            (sin(ss.1) - cos(ss.1)*sqrt(1-rho)/sqrt(1+rho));
-        C.3 <- (-boundary.points.mat[2,closest.boundary.point] -
-                boundary.points.mat[1,closest.boundary.point]*
-                sqrt(1-rho)/sqrt(1+rho))/
-            (sin(ss.3) + cos(ss.3)*sqrt(1-rho)/sqrt(1+rho));
-        
-        r.star <-
-            min(c(C.1, C.3));
-
         phi.not <- atan(slopes[2]) + pi;
-        if (Cs[2] < Cs[4]) {
-            theta.not <- asin(Cs[2]/r.not);
+
+        if (phi > pi/2) {
+            C.1 <- (-boundary.points.mat[2,closest.boundary.point] +
+                    boundary.points.mat[1,closest.boundary.point]*
+                    sqrt(1-rho)/sqrt(1+rho))/
+                (sin(ss.1) - cos(ss.1)*sqrt(1-rho)/sqrt(1+rho));
+            C.3 <- (-boundary.points.mat[2,closest.boundary.point] -
+                    boundary.points.mat[1,closest.boundary.point]*
+                    sqrt(1-rho)/sqrt(1+rho))/
+                (sin(ss.3) + cos(ss.3)*sqrt(1-rho)/sqrt(1+rho));
+            
+            r.star <-
+                min(c(C.1, C.3));
+            
+
+            if (Cs[2] < Cs[4]) {
+                theta.not <- asin(Cs[2]/r.not);
+            } else {
+                theta.not <- (pi - asin(Cs[2]/r.not));
+            }
         } else {
-            theta.not <- (pi - asin(Cs[2]/r.not));
+            r.star <- min(c(sqrt(sum((boundary.points.mat[,closest.boundary.point]-
+                                      boundary.points.mat[,2])^2)),
+                            sqrt(sum((boundary.points.mat[,closest.boundary.point]-
+                                      boundary.points.mat[,3])^2))));
+            theta.not <- asin(Cs[2]/r.not);
         }
         
     } else if (closest.boundary.point == 3) {
         phi <- (atan(slopes[1]) + pi) -
             (atan(slopes[4]) + pi);
-                
-        r.star <- min(c(sqrt(sum((boundary.points.mat[,closest.boundary.point]-
-                                  boundary.points.mat[,1])^2)),
-                        sqrt(sum((boundary.points.mat[,closest.boundary.point]-
-                                  boundary.points.mat[,4])^2))));
         phi.not <- atan(slopes[4]) + pi;
-        theta.not <- asin(Cs[4]/r.not);
+
+        if (phi > pi/2) {
+            C.2 <- (-boundary.points.mat[2,closest.boundary.point] +
+                    boundary.points.mat[1,closest.boundary.point]*
+                    sqrt(1-rho)/sqrt(1+rho) +
+                    1/(sigma.y*sqrt(1+rho)*cc))/
+                (sin(ss.2) - cos(ss.2)*sqrt(1-rho)/sqrt(1+rho));
+            C.3 <- (-boundary.points.mat[2,closest.boundary.point] -
+                    boundary.points.mat[1,closest.boundary.point]*
+                    sqrt(1-rho)/sqrt(1+rho))/
+                (sin(ss.3) + cos(ss.3)*sqrt(1-rho)/sqrt(1+rho));
+            r.star <- min(C.2, C.3);
+
+            if (Cs[1] < Cs[4]) {
+                theta.not <- asin(Cs[1]/r.not) + phi/2;
+            } else {
+                theta.not <- asin(Cs[4]/r.not);
+            }
+        } else {
+                
+            r.star <- min(c(sqrt(sum((boundary.points.mat[,closest.boundary.point]-
+                                      boundary.points.mat[,1])^2)),
+                            sqrt(sum((boundary.points.mat[,closest.boundary.point]-
+                                      boundary.points.mat[,4])^2))));
+            theta.not <- asin(Cs[4]/r.not);
+        }
         
     } else if (closest.boundary.point == 2) {
         phi.not <- atan(slopes[3]) + 2*pi;
@@ -172,9 +212,30 @@ bivariate.solution.classical <- function(dx, dy, problem.parameters) {
     } else {
         ## THROW ERROR ##
     }
-    
-    K <- 12;
-    L <- 2^4;
+
+    lines(c(boundary.points.mat[1,closest.boundary.point],
+            r.star*cos(phi.not) + boundary.points.mat[1,closest.boundary.point]),
+          c(boundary.points.mat[2,closest.boundary.point],
+            r.star*sin(phi.not) + boundary.points.mat[2,closest.boundary.point]),
+          col="red",
+          lwd=2)
+    lines(c(boundary.points.mat[1,closest.boundary.point],
+            r.star*cos(phi.not+phi) + boundary.points.mat[1,closest.boundary.point]),
+          c(boundary.points.mat[2,closest.boundary.point],
+            r.star*sin(phi.not+phi) + boundary.points.mat[2,closest.boundary.point]),
+          col="red",
+          lwd=2)
+    lines(c(boundary.points.mat[1,closest.boundary.point],
+            r.star*cos(phi.not+theta.not) +
+            boundary.points.mat[1,closest.boundary.point]),
+          c(boundary.points.mat[2,closest.boundary.point],
+            r.star*sin(phi.not+theta.not) +
+            boundary.points.mat[2,closest.boundary.point]),
+          col="red",
+          lwd=2);
+            
+    K <- 80;
+    L <- 2^6;
     Ckls <- rep(NA, K*L);
     lambdas <- rep(NA, K*L);
     rr <- seq(0, r.star, by=0.01);
@@ -190,9 +251,9 @@ bivariate.solution.classical <- function(dx, dy, problem.parameters) {
             (phi/2*(r.star^2)/2*bessel_Jnu(alpha+1,lambda.kls)^2);
     }
     
-
     alphas <- unlist(lapply(seq(1,K),
                             function(x){return(rep(x*pi/phi,L))}));
+    tt <- r.star/400;
     time.bases <- exp(-(lambdas/r.star)^2*tt);
     
     sol <- function(r, t, trig.bases) {
@@ -202,14 +263,25 @@ bivariate.solution.classical <- function(dx, dy, problem.parameters) {
                    bessel_Jnu(alphas,
                               r*lambdas/r.star)));
     }
-            
-    tt <- r.star/200;
-    solution <- sol(r.star, tt);
-    solution <- sapply(X=rr, function(x){return(sol(x,tt))});
+
+    generate.trig.bases <- function(theta) {
+        out <- unlist(lapply(X=seq(1,K),
+                             function(x) {
+                                 return(rep(sin(x*pi*theta/
+                                                phi),L))
+                             } ));
+        return (out);
+    }
+    
+    solution <- sol(r.star, tt, theta.not);
+    for (angle in seq(0, phi, by=phi/100)) {
+    solution <- sapply(X=rr,
+                       function(x){return(sol(x,tt,
+                                              generate.trig.bases(angle)))});
     plot(rr, solution, type = "l");
     abline(v=r.star,col="red");
-    abline(v=r.not,col="blue",lwd=2);
-
+    abline(v=r.not,col="blue",lwd=2);}
+    
     xx <- seq(problem.parameters$ax + dx,
               problem.parameters$bx - dx,
               by=dx);
@@ -220,16 +292,6 @@ bivariate.solution.classical <- function(dx, dy, problem.parameters) {
                            ncol = length(yy),
                            data = 0);
 
-    generate.trig.bases <- function(theta) {
-        out <- unlist(lapply(X=seq(1,K),
-                             function(x) {
-                                 return(rep(sin(x*pi*thetas[jj]/
-                                                phi),L))
-                             } ));
-        return (out);
-    }
-
-    
     
     for (ii in seq(1,length(xx))) {
         xy <- rbind(rep(xx[ii], length(yy)),
@@ -260,14 +322,15 @@ bivariate.solution.classical <- function(dx, dy, problem.parameters) {
 
         indeces <- which(rs <= r.star);
         
-        sapply(X=indeces, function(x) {generate.trig.bases(thetas[x])*
-                                           });
+        ## sapply(X=indeces, function(x) {generate.trig.bases(thetas[x])*
+        ##                                    });
         
-        ## for (jj in indeces) {
-        ##     trig.bases = generate.trig.bases(theta=thetas[jj]);
-        ##     big.solution[ii,jj] = sol(r=rs[jj], t=tt,
-        ##                               trig.bases=trig.bases)
-        ## }
+        for (jj in indeces) {
+            trig.bases = generate.trig.bases(theta=thetas[jj]);
+            big.solution[ii,jj] = sol(r=rs[jj], t=tt,
+                                      trig.bases=trig.bases) /
+                (rs[jj]*sigma.x*sigma.y*sqrt(1-rho)*sqrt(1+rho));
+        }
         
         ## big.solution[ii,indeces] =
         ##     sapply(X=indeces,
@@ -277,14 +340,17 @@ bivariate.solution.classical <- function(dx, dy, problem.parameters) {
         ##                return(sol(r=rs[x], t=tt, trig.bases=trig.bases) );
         ##            })
     }
-    filled.contour(xx,yy,big.solution);
+    contour(xx,yy,big.solution);
+    points(problem.parameters$x.fc, problem.parameters$y.fc, col="red");
+    points(problem.parameters$x.ic, problem.parameters$y.ic, col="green")
+    print(c(closest.boundary.point));
     
-    while (abs(solution[length(solution)]) > 1e-10 &
-           min(solution) >= 0) {
-               tt <- tt/2;
-               solution <- sapply(X=rr, function(x){return(sol(x,tt))});
-               plot(rr, solution, type = "l");
-               abline(v=r.star,col="red");
-               abline(v=r.not,col="blue",lwd=2);
-           }
+    ## while (abs(solution[length(solution)]) > 1e-10 &
+    ##        min(solution) >= 0) {
+    ##            tt <- tt/2;
+    ##            solution <- sapply(X=rr, function(x){return(sol(x,tt))});
+    ##            plot(rr, solution, type = "l");
+    ##            abline(v=r.star,col="red");
+    ##            abline(v=r.not,col="blue",lwd=2);
+    ##        }s
 }
