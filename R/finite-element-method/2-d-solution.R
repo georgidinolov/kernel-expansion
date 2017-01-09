@@ -1542,6 +1542,7 @@ blackbox <- function(function.list,
                      MINIMIZE.REMAINDER) {
     
     source("2-d-solution.R");
+    source("../classical-solution/2-d-solution.R");
     K = length(function.list);
 
     K.prime = sqrt(K);
@@ -1587,13 +1588,26 @@ blackbox <- function(function.list,
     y.ic.index = which(abs(y-problem.parameters$y.ic)<=dy/2)
     x.fc.index = which(abs(x-problem.parameters$x.fc)<=dx/2)
     y.fc.index = which(abs(y-problem.parameters$y.fc)<=dy/2)
-    b = rep(NA, K);
-    for (i in seq(1,K)) {
-        b[i] = 
-            orthonormal.function.list[[i]][x.ic.index,y.ic.index];
+
+    small.t.solution <- bivariate.solution.classical(dx,dy,
+                                                     problem.parameters);
+    IC.true <- small.t.solution$big.solution;
+    IC.vec <- rep(NA, K);
+    for (k in seq(1,K)) {
+        IC.vec[k] <- sum(apply(IC.true*orthonormal.function.list[[k]],
+                                 1,
+                                 sum)*dy)*dx;
     }
+    IC.vec <- solve(system.mats$mass.mat, IC.vec);
+    problem.parameters$t <- 1 - small.t.solution$tt
+
+    ## b = rep(NA, K);
+    ## for (i in seq(1,K)) {
+    ##     b[i] = 
+    ##         orthonormal.function.list[[i]][x.ic.index,y.ic.index];
+    ## }
+    ## ## IC.vec = solve(mass.mat, b);
     ## IC.vec = solve(mass.mat, b);
-    IC.vec = solve(mass.mat, b);
     ## ## ICs END ###
     
     ## ## APPROX SOLUTION START ###
@@ -1634,11 +1648,10 @@ blackbox <- function(function.list,
     problem.parameters.y$x.ic = problem.parameters$y.ic;
     problem.parameters.y$t <- 1;
 
-    print(c(problem.parameters.x$t, problem.parameters.y$t));
     true.sol <- univariate.solution(x,problem.parameters.x) %*%
         t(univariate.solution(y,problem.parameters.y));
        
-    # par(mfcol=c(1,2));
+    par(mfcol=c(2,2));
     plot(x,approx.sol[,y.ic.index], type = "l", col = "black", lty="dashed");
     lines(x,true.sol[,y.ic.index], col = "red");
 
@@ -1646,6 +1659,17 @@ blackbox <- function(function.list,
          lty="dashed", col = "black");
     lines(y,true.sol[x.ic.index,],col="red");
 
+    contour(x,y,approx.sol, nlevels = 50);
+    points(problem.parameters$x.ic,
+           problem.parameters$y.ic,
+           pch=20,
+           col="green");
+    points(problem.parameters$x.fc,
+           problem.parameters$y.fc,
+           pch=20,
+           col="red");
+
+    print(approx.sol[x.fc.index, y.fc.index]);
     png("contour.png");
     contour(x,y,approx.sol, nlevels = 50);
     points(problem.parameters$x.ic,
