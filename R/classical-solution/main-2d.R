@@ -22,13 +22,11 @@ n.samples <- 10;
 
 data <- sample.process(n.samples, dt, problem.parameters.generate.data);
 
-
 for (n in seq(1,length(data))) {
-    par(mfrow=c(2,2));
     problem.parameters <- data[[n]];
     problem.parameters$K.prime = K.prime;
     problem.parameters$number.terms = 100;
-    bivariate.solution.classical(dx,dy,problem.parameters);
+    big.solution = bivariate.solution.classical(dx,dy,problem.parameters);
 }
 
 K <- (K.prime-1)^2;

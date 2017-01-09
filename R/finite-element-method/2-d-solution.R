@@ -1585,6 +1585,8 @@ blackbox <- function(function.list,
     ## ## ICs START ###
     x.ic.index = which(abs(x-problem.parameters$x.ic)<=dx/2)
     y.ic.index = which(abs(y-problem.parameters$y.ic)<=dy/2)
+    x.fc.index = which(abs(x-problem.parameters$x.fc)<=dx/2)
+    y.fc.index = which(abs(y-problem.parameters$y.fc)<=dy/2)
     b = rep(NA, K);
     for (i in seq(1,K)) {
         b[i] = 
@@ -1645,10 +1647,15 @@ blackbox <- function(function.list,
     lines(y,true.sol[x.ic.index,],col="red");
 
     png("contour.png");
-    filled.contour(x,y,approx.sol, nlevels = 50);
-    ## points(problem.parameters$x.ic,
-    ##        problem.parameters$y.ic,
-    ##        col="red");
+    contour(x,y,approx.sol, nlevels = 50);
+    points(problem.parameters$x.ic,
+           problem.parameters$y.ic,
+           pch=20,
+           col="green");
+    points(problem.parameters$x.fc,
+           problem.parameters$y.fc,
+           pch=20,
+           col="red");
     ## persp(x,y,approx.sol, theta = pi/2);
     ## points(x[min.index.row], y[min.index.col], col="red");
     dev.off();
