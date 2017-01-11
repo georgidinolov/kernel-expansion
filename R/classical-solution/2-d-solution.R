@@ -1,5 +1,6 @@
 ## problem.parameters
-bivariate.solution.classical <- function(dx, dy, problem.parameters) {
+bivariate.solution.classical <- function(dx, dy, problem.parameters,
+                                         PLOT.SOLUTION) {
     sigma.x <- sqrt(problem.parameters$sigma.2.x);
     sigma.y <- sqrt(problem.parameters$sigma.2.y);
     rho <- problem.parameters$rho;
@@ -66,42 +67,42 @@ bivariate.solution.classical <- function(dx, dy, problem.parameters) {
     Cs <- c(C.1,C.2,C.3,C.4);
     ss.s <- c(ss.1, ss.2, ss.3, ss.4);
 
-    ## ## PLOTTING ####
-    ## par(mfrow=c(1,2));
-    ## plot(xis, xis*sqrt(1-rho)/sqrt(1+rho), type="l",
-    ##      xlim=c(min(xis.lim[1], etas.lim[1]),
-    ##             max(xis.lim[2], etas.lim[2])),
-    ##      ylim=c(min(xis.lim[1], etas.lim[1]),
-    ##             max(xis.lim[2], etas.lim[2])));
-    ## lines(xis, (1 + xis*sigma.y*sqrt(1-rho)*cc)/(sigma.y*sqrt(1+rho)*cc));
-    ## lines(xis, -xis*sqrt(1-rho)/sqrt(1+rho));
-    ## lines(xis, -xis*sqrt(1-rho)/sqrt(1+rho) + 1/(sigma.x*sqrt(1+rho)*cc));
+    if (PLOT.SOLUTION) {
+        ## PLOTTING ####
+        plot(xis, xis*sqrt(1-rho)/sqrt(1+rho), type="l",
+             xlim=c(min(xis.lim[1], etas.lim[1]),
+                    max(xis.lim[2], etas.lim[2])),
+             ylim=c(min(xis.lim[1], etas.lim[1]),
+                    max(xis.lim[2], etas.lim[2])));
+        lines(xis, (1 + xis*sigma.y*sqrt(1-rho)*cc)/(sigma.y*sqrt(1+rho)*cc));
+        lines(xis, -xis*sqrt(1-rho)/sqrt(1+rho));
+        lines(xis, -xis*sqrt(1-rho)/sqrt(1+rho) + 1/(sigma.x*sqrt(1+rho)*cc));
+        
+        points((T.mat %*% c(0,0))[1],
+        (T.mat %*% c(0,0))[2], col = "red");
+        points((T.mat %*% c(0,1))[1],
+        (T.mat %*% c(0,1))[2], col = "red");
+        points((T.mat %*% c(1,0))[1],
+        (T.mat %*% c(1,0))[2], col = "red");
+        points((T.mat %*% c(1,1))[1],
+        (T.mat %*% c(1,1))[2], col = "red");
+        points(xi.ic, eta.ic, col = "green");
 
-    ## points((T.mat %*% c(0,0))[1],
-    ## (T.mat %*% c(0,0))[2], col = "red");
-    ## points((T.mat %*% c(0,1))[1],
-    ## (T.mat %*% c(0,1))[2], col = "red");
-    ## points((T.mat %*% c(1,0))[1],
-    ## (T.mat %*% c(1,0))[2], col = "red");
-    ## points((T.mat %*% c(1,1))[1],
-    ## (T.mat %*% c(1,1))[2], col = "red");
-    ## points(xi.ic, eta.ic, col = "green");
-
-    ##     lines(c(xi.ic, C.1*cos(ss.1)+xi.ic),
-    ##       c(eta.ic, C.1*sin(ss.1)+eta.ic),
-    ##       col="red");
-
-    ##     lines(c(xi.ic, C.2*cos(ss.2)+xi.ic),
-    ##       c(eta.ic, C.2*sin(ss.2)+eta.ic),
-    ##       col="red");
-    ##     lines(c(xi.ic, C.4*cos(ss.4)+xi.ic),
-    ##       c(eta.ic, C.4*sin(ss.4)+eta.ic),
-    ##       col="red");
-    ##     lines(c(xi.ic, C.3*cos(ss.3)+xi.ic),
-    ##       c(eta.ic, C.3*sin(ss.3)+eta.ic),
-    ##       col="red");
-    ## ## PLOTTING END ##
-
+        lines(c(xi.ic, C.1*cos(ss.1)+xi.ic),
+              c(eta.ic, C.1*sin(ss.1)+eta.ic),
+              col="red");
+        
+        lines(c(xi.ic, C.2*cos(ss.2)+xi.ic),
+              c(eta.ic, C.2*sin(ss.2)+eta.ic),
+              col="red");
+        lines(c(xi.ic, C.4*cos(ss.4)+xi.ic),
+              c(eta.ic, C.4*sin(ss.4)+eta.ic),
+              col="red");
+        lines(c(xi.ic, C.3*cos(ss.3)+xi.ic),
+              c(eta.ic, C.3*sin(ss.3)+eta.ic),
+              col="red");
+        ## PLOTTING END ##
+    }
     ##
     sorted.Cs <- sort.int(Cs, index.return=TRUE);
 
@@ -345,8 +346,11 @@ bivariate.solution.classical <- function(dx, dy, problem.parameters) {
                 (sigma.x*sigma.y*sqrt(1-rho)*sqrt(1+rho));
             
             ##               max(xis.lim[2], etas.lim[2])));
-            ## points(xieta[1,],xieta[2,], pch=20,
-            ##        col=rgb(abs(solution.current/Max),0,0));
+
+            if (PLOT.SOLUTION) {
+                points(xieta[1,],xieta[2,], pch=20,
+                       col=rgb(abs(big.solution[ii,]/Max),0,0));
+            }
     }
     out = NULL;
     out$big.solution <- big.solution;

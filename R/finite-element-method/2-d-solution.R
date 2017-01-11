@@ -775,24 +775,37 @@ bivariate.solution.approx <- function(orthonormal.function.list,
     return (out);
 }
 
-bivariate.solution.approx.yx <- function(coefficients,
-                                      coefs,
-                                      x,y,
-                                      raw.function.list,
-                                      problem.parameters) {
-    
-    out = matrix(0, ncol=length(y),nrow=length(x));
-    for (n in seq(1,length(raw.function.list))) {
-        for (m in seq(1,length(raw.function.list))) {
-            out = out +
-                coefs[n]*
-                coefficients[n,m]*basis.function.yx(x,y,
-                                                    raw.function.list[[m]],
-                                                    problem.parameters)
-        }
-    }
+bivariate.solution.approx.xy <- function(orthonormal.function.list,
+                                         K,
+                                         coefs,
+                                         x.fc.index,
+                                         y.fc.index) {
+    out = sum(sapply(seq(1,K),
+                     function(x) {
+                         coefs[x]*orthonormal.function.list[[x]][x.fc.index,
+                                                                 y.fc.index]
+                     }));
     return (out);
 }
+
+## bivariate.solution.approx.yx <- function(coefficients,
+##                                       coefs,
+##                                       x,y,
+##                                       raw.function.list,
+##                                       problem.parameters) {
+    
+##     out = matrix(0, ncol=length(y),nrow=length(x));
+##     for (n in seq(1,length(raw.function.list))) {
+##         for (m in seq(1,length(raw.function.list))) {
+##             out = out +
+##                 coefs[n]*
+##                 coefficients[n,m]*basis.function.yx(x,y,
+##                                                     raw.function.list[[m]],
+##                                                     problem.parameters)
+##         }
+##     }
+##     return (out);
+## }
 
 univariate.solution.approx.dt <- function(coefs,A,x,K,
                                           orthonormal.function.list) {
@@ -1590,7 +1603,8 @@ blackbox <- function(function.list,
     y.fc.index = which(abs(y-problem.parameters$y.fc)<=dy/2)
 
     small.t.solution <- bivariate.solution.classical(dx,dy,
-                                                     problem.parameters);
+                                                     problem.parameters,
+                                                     PLOT.SOLUTION);
     IC.true <- small.t.solution$big.solution;
     IC.vec <- rep(NA, K);
     for (k in seq(1,K)) {
@@ -1620,92 +1634,100 @@ blackbox <- function(function.list,
             diag(exp(eig$values * problem.parameters$t)) %*%
             t(eig$vectors) %*% IC.vec;
     }
-    approx.sol <- bivariate.solution.approx(orthonormal.function.list,
-                                            K,
-                                            coefs);
+
+    ## approx.sol <- bivariate.solution.approx(orthonormal.function.list,
+    ##                                         K,
+    ##                                         coefs);
     
-    min.obs = min(apply(approx.sol, 1, min));
-    min.index.row = which(apply(approx.sol, 1, min) == min.obs);
-    min.index.col = which(approx.sol[min.index.row,] ==
-                          min(approx.sol[min.index.row,]));
-    print(paste("min.obs = ", min.obs));
-    ## print(min.index.row);
-    ## print(min.index.col);
+    ## min.obs = min(apply(approx.sol, 1, min));
+    ## min.index.row = which(apply(approx.sol, 1, min) == min.obs);
+    ## min.index.col = which(approx.sol[min.index.row,] ==
+    ##                       min(approx.sol[min.index.row,]));
+    ## print(paste("min.obs = ", min.obs));
+    ## ## print(min.index.row);
+    ## ## print(min.index.col);
 
-    problem.parameters.x = problem.parameters;
-    problem.parameters.x$x.ic = problem.parameters$x.ic;
-    problem.parameters.x$a = problem.parameters$ax;
-    problem.parameters.x$b = problem.parameters$bx;
-    problem.parameters.x$sigma.2 = problem.parameters$sigma.2.x;
-    problem.parameters.x$x.ic = problem.parameters$x.ic;
-    problem.parameters.x$t <- 1;
+    ## problem.parameters.x = problem.parameters;
+    ## problem.parameters.x$x.ic = problem.parameters$x.ic;
+    ## problem.parameters.x$a = problem.parameters$ax;
+    ## problem.parameters.x$b = problem.parameters$bx;
+    ## problem.parameters.x$sigma.2 = problem.parameters$sigma.2.x;
+    ## problem.parameters.x$x.ic = problem.parameters$x.ic;
+    ## problem.parameters.x$t <- 1;
 
-    problem.parameters.y = problem.parameters;
-    problem.parameters.y$x.ic = problem.parameters$y.ic;
-    problem.parameters.y$a = problem.parameters$ay;
-    problem.parameters.y$b = problem.parameters$by;
-    problem.parameters.y$sigma.2 = problem.parameters$sigma.2.y;
-    problem.parameters.y$x.ic = problem.parameters$y.ic;
-    problem.parameters.y$t <- 1;
+    ## problem.parameters.y = problem.parameters;
+    ## problem.parameters.y$x.ic = problem.parameters$y.ic;
+    ## problem.parameters.y$a = problem.parameters$ay;
+    ## problem.parameters.y$b = problem.parameters$by;
+    ## problem.parameters.y$sigma.2 = problem.parameters$sigma.2.y;
+    ## problem.parameters.y$x.ic = problem.parameters$y.ic;
+    ## problem.parameters.y$t <- 1;
 
-    true.sol <- univariate.solution(x,problem.parameters.x) %*%
-        t(univariate.solution(y,problem.parameters.y));
+    ## true.sol <- univariate.solution(x,problem.parameters.x) %*%
+    ##     t(univariate.solution(y,problem.parameters.y));
        
-    par(mfcol=c(2,2));
-    plot(x,approx.sol[,y.ic.index], type = "l", col = "black", lty="dashed");
-    lines(x,true.sol[,y.ic.index], col = "red");
+    if (PLOT.SOLUTION) {
+        approx.sol <- bivariate.solution.approx(orthonormal.function.list,
+                                                K,
+                                                coefs);
 
-    plot(y,approx.sol[x.ic.index,], type="l",
-         lty="dashed", col = "black");
-    lines(y,true.sol[x.ic.index,],col="red");
+        problem.parameters.x = problem.parameters;
+        problem.parameters.x$x.ic = problem.parameters$x.ic;
+        problem.parameters.x$a = problem.parameters$ax;
+        problem.parameters.x$b = problem.parameters$bx;
+        problem.parameters.x$sigma.2 = problem.parameters$sigma.2.x;
+        problem.parameters.x$x.ic = problem.parameters$x.ic;
+        problem.parameters.x$t <- 1;
+        
+        problem.parameters.y = problem.parameters;
+        problem.parameters.y$x.ic = problem.parameters$y.ic;
+        problem.parameters.y$a = problem.parameters$ay;
+        problem.parameters.y$b = problem.parameters$by;
+        problem.parameters.y$sigma.2 = problem.parameters$sigma.2.y;
+        problem.parameters.y$x.ic = problem.parameters$y.ic;
+        problem.parameters.y$t <- 1;
+        
+        true.sol <- univariate.solution(x,problem.parameters.x) %*%
+            t(univariate.solution(y,problem.parameters.y));
+        
+        plot(x,approx.sol[,y.ic.index], type = "l", col = "black", lty="dashed");
+        lines(x,true.sol[,y.ic.index], col = "red");
+        
+        plot(y,approx.sol[x.ic.index,], type="l",
+             lty="dashed", col = "black");
+        lines(y,true.sol[x.ic.index,],col="red");
+        
+        contour(x,y,approx.sol, nlevels = 50);
+        points(problem.parameters$x.ic,
+               problem.parameters$y.ic,
+               pch=20,
+               col="green");
+        points(problem.parameters$x.fc,
+               problem.parameters$y.fc,
+               pch=20,
+               col="red");
+        
+        print(approx.sol[x.fc.index, y.fc.index]);
+        png("contour.png");
+        contour(x,y,approx.sol, nlevels = 50);
+        points(problem.parameters$x.ic,
+               problem.parameters$y.ic,
+               pch=20,
+               col="green");
+        points(problem.parameters$x.fc,
+               problem.parameters$y.fc,
+               pch=20,
+               col="red");
+        ## persp(x,y,approx.sol, theta = pi/2);
+        ## points(x[min.index.row], y[min.index.col], col="red");
+        dev.off();
+    }
 
-    contour(x,y,approx.sol, nlevels = 50);
-    points(problem.parameters$x.ic,
-           problem.parameters$y.ic,
-           pch=20,
-           col="green");
-    points(problem.parameters$x.fc,
-           problem.parameters$y.fc,
-           pch=20,
-           col="red");
-
-    print(approx.sol[x.fc.index, y.fc.index]);
-    png("contour.png");
-    contour(x,y,approx.sol, nlevels = 50);
-    points(problem.parameters$x.ic,
-           problem.parameters$y.ic,
-           pch=20,
-           col="green");
-    points(problem.parameters$x.fc,
-           problem.parameters$y.fc,
-           pch=20,
-           col="red");
-    ## persp(x,y,approx.sol, theta = pi/2);
-    ## points(x[min.index.row], y[min.index.col], col="red");
-    dev.off();
+    out = sum(sapply(seq(1,K),
+                     function(x) {
+                         coefs[x]*orthonormal.function.list[[x]][x.fc.index,
+                                                                 y.fc.index]
+                     }));
     
-    ## if (PLOT.SOLUTION) {
-    ##     exact.solution = univariate.solution(x,problem.parameters);
-    ##     png(filename=paste("solution-K-", K, ".png", sep=""),
-    ##         width=1200, height=1200,res=300);
-    ##     par(mar = c(5,4,2,1));
-    ##     plot(x,univariate.solution.approx(coefs,x,
-     ##                                       orthonormal.function.list,K),type="l",
-    ##          xlab=paste("K=",K,sep=""),
-    ##          ylab=paste("q(x,t), t=", problem.parameters$t, sep=""));
-    ##     lines(x, exact.solution, col="green",
-    ##           lty="dashed", lwd = 2);
-    ##     dev.off();
-    ## }
-    ## ## ## APPROX SOLUTION END ###
-
-    ## ## ## CHECKING PDE START ###
-    ## A = solve(mass.mat) %*% stiff.mat;
-    ## ## plot(x,univariate.solution.approx.dt(coefs, A),type="l", col="red");
-    ## ## lines(x,0.5*(problem.parameters$sigma.2)*
-    ## ##         univariate.solution.approx.dx.dx(coefs),
-    ## ##       lty="dashed");
-
-    difference = sqrt(sum(apply((true.sol-approx.sol)^2, 1, sum)*dy)*dx);
-    return (difference);
+    return (out);
 }
