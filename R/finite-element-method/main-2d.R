@@ -4,8 +4,8 @@ source("2-d-solution.R");
 source("../classical-solution/2-d-solution.R");
 
 PLOT.SOLUTION = TRUE;
-dx = 0.01;
-dy = 0.01;
+dx = 0.001;
+dy = 0.001;
 K.prime = 11;
 
 problem.parameters.generate.data = NULL;
@@ -73,7 +73,7 @@ if (PLOT.SOLUTION) {
         contour(x,y,function.list[[k]]);
     }
 }
-j
+
 orthonormal.function.list <- function.list;
 orthonormal.function.list <- orthonormal.functions(function.list,
                                                    dx,dy,x,y,
@@ -82,7 +82,7 @@ system.mats <- system.matrices(orthonormal.function.list,
                                dx,dy);
 
 for (n in seq(1,length(data))) {
-    par(mfcol=c(2,2));
+    par(mfrow=c(3,2));
     problem.parameters <- data[[n]];
     problem.parameters$K.prime <- K.prime;
     problem.parameters$number.terms <- 100;

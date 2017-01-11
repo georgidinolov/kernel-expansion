@@ -339,25 +339,51 @@ product.coefficient <- function(raw.function.params.1,
 }
 
 basis.function <- function(x,y, function.params, problem.parameters) {
-    mean <- matrix(nrow=2,ncol=1,c(function.params[1], function.params[2]));
-        sigma <- matrix(nrow=2,ncol=2,
-                    data=c(c(function.params[3],
-                             sqrt(function.params[3]*function.params[4])*
-                             problem.parameters$rho),
-                           c(sqrt(function.params[3]*function.params[4])*
-                             problem.parameters$rho,
-                             function.params[4])));
+    ## mean <- matrix(nrow=2,ncol=1,c(function.params[1], function.params[2]));
+    ##     sigma <- matrix(nrow=2,ncol=2,
+    ##                 data=c(c(function.params[3],
+    ##                          sqrt(function.params[3]*function.params[4])*
+    ##                          problem.parameters$rho),
+    ##                        c(sqrt(function.params[3]*function.params[4])*
+    ##                          problem.parameters$rho,
+    ##                          function.params[4])));
     
-    out = (x-problem.parameters$ax)*(problem.parameters$bx-x)*    
-        (y-problem.parameters$ay)*(problem.parameters$by-y)*
-        dmvnorm(x=matrix(nrow=length(y), ncol=2,data=c(rep(x,length(y)),
-                                                       y)),
-                mean, sigma);
+    ## out = (x-problem.parameters$ax)*(problem.parameters$bx-x)*    
+    ##     (y-problem.parameters$ay)*(problem.parameters$by-y)*
+    ##     dmvnorm(x=matrix(nrow=length(y), ncol=2,data=c(rep(x,length(y)),
+    ##                                                    y)),
+    ##             mean, sigma);
+
+    alpha.1 <- function.params[1];
+    beta.1 <- problem.parameters$K.prime-
+        function.params[1]+2;
     
-    return (dbeta(x,function.params[1],problem.parameters$K.prime-
-                                         function.params[1]+2) *
-            dbeta(y,function.params[2],problem.parameters$K.prime-
-                                         function.params[2]+2));
+    mu.1 <- (alpha.1-1)/(alpha.1+beta.1-2);
+    sigma2.1 <- alpha.1*beta.1/
+        ((alpha.1+beta.1)^2*(alpha.1+beta.1+1));
+
+
+    alpha.2 <- function.params[2];
+    beta.2 <- problem.parameters$K.prime-
+        function.params[2]+2;
+    
+    mu.2 <- (alpha.2-1)/(alpha.2+beta.2-2);
+    sigma2.2 <- alpha.2*beta.2/
+        ((alpha.2+beta.2)^2*(alpha.2+beta.2+1));
+
+    return (rep(x*(1-x),length(y))*y*(1-y) *
+            dmvnorm(cbind(rep(x,length(y)),
+                          y),
+                    mean=c(mu.1,mu.2),
+                    sigma=matrix(nrow=2,ncol=2,byrow=FALSE,
+                                 data=9*c(c(sigma2.1, -0.9*sqrt(sigma2.1*sigma2.2)),
+                                        c(-0.9*sqrt(sigma2.1*sigma2.2), sigma2.2)))));
+                                          
+    
+    ## return (dbeta(x,function.params[1],problem.parameters$K.prime-
+    ##                                      function.params[1]+2) *
+    ##         dbeta(y,function.params[2],problem.parameters$K.prime-
+    ##                                      function.params[2]+2));
 }
 
 basis.function.xy <- function(x,y,function.params,problem.parameters) {
@@ -1553,7 +1579,7 @@ blackbox <- function(function.list,
                      dx, dy,
                      PLOT.SOLUTION,
                      MINIMIZE.REMAINDER) {
-    
+
     source("2-d-solution.R");
     source("../classical-solution/2-d-solution.R");
     K = length(function.list);
@@ -1597,10 +1623,10 @@ blackbox <- function(function.list,
     ## ## eigenvalues END ###
     
     ## ## ICs START ###
-    x.ic.index = which(abs(x-problem.parameters$x.ic)<=dx/2)
-    y.ic.index = which(abs(y-problem.parameters$y.ic)<=dy/2)
-    x.fc.index = which(abs(x-problem.parameters$x.fc)<=dx/2)
-    y.fc.index = which(abs(y-problem.parameters$y.fc)<=dy/2)
+    x.ic.index = which(abs(x-problem.parameters$x.ic)<=dx/2);
+    y.ic.index = which(abs(y-problem.parameters$y.ic)<=dy/2);
+    x.fc.index = which(abs(x-problem.parameters$x.fc)<=dx/2);
+    y.fc.index = which(abs(y-problem.parameters$y.fc)<=dy/2);
 
     small.t.solution <- bivariate.solution.classical(dx,dy,
                                                      problem.parameters,
@@ -1613,8 +1639,11 @@ blackbox <- function(function.list,
                                  sum)*dy)*dx;
     }
     IC.vec <- solve(system.mats$mass.mat, IC.vec);
-    problem.parameters$t <- 1 - small.t.solution$tt
+    problem.parameters$t <- 1 - small.t.solution$tt;
 
+    plot(xx, IC.true[,y.ic.index], type = "l", col = "red");
+    plot(yy, IC.true[x.ic.index,], type = "l", col = "red");
+    
     ## b = rep(NA, K);
     ## for (i in seq(1,K)) {
     ##     b[i] = 
