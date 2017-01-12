@@ -4,15 +4,15 @@ source("2-d-solution.R");
 source("../classical-solution/2-d-solution.R");
 
 PLOT.SOLUTION = TRUE;
-dx = 0.001;
-dy = 0.001;
+dx = 0.005;
+dy = 0.005;
 K.prime = 11;
 
 problem.parameters.generate.data = NULL;
 problem.parameters.generate.data$t <- 1;
 problem.parameters.generate.data$sigma.2.x <- 0.1;
 problem.parameters.generate.data$sigma.2.y <- 1;
-problem.parameters.generate.data$rho <- -0.99;
+problem.parameters.generate.data$rho <- 0.0;
 problem.parameters.generate.data$x.ic <- 0;
 problem.parameters.generate.data$y.ic <- 0;
 dt <- problem.parameters.generate.data$t/1000;
@@ -83,15 +83,24 @@ system.mats <- system.matrices(orthonormal.function.list,
 
 for (n in seq(1,length(data))) {
     par(mfrow=c(3,2));
-    problem.parameters <- data[[n]];
-    problem.parameters$K.prime <- K.prime;
-    problem.parameters$number.terms <- 100;
-    l2 <- blackbox(function.list,
+    problem.parameters.original <- data[[n]];
+    problem.parameters.original$K.prime <- K.prime;
+    problem.parameters.original$number.terms <- 100;
+    l2.1 <- blackbox(function.list,
                    orthonormal.function.list,
                    system.mats,
-                   problem.parameters,
+                   problem.parameters.original,
                    dx,dy,
-                   TRUE,TRUE);
+                   FALSE,FALSE);
+    
+    problem.parameters.original$ax <- problem.parameters.original$ax - dx;
+    l2.2 <- blackbox(function.list,
+                   orthonormal.function.list,
+                   system.mats,
+                   problem.parameters.original,
+                   dx,dy,
+                   FALSE,FALSE);
+    
     ## cat("Press [ENTER] to continue");
     ## line <- readline();
     print(paste("n=", n, "; l2 = ", l2));

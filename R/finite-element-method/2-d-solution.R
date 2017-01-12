@@ -1,3 +1,67 @@
+rescale.problem <- function(problem.parameters.original) {
+    sigma.2.x <- problem.parameters.original$sigma.2.x;
+    sigma.2.y <- problem.parameters.original$sigma.2.y;
+    x.current <- problem.parameters.original$x.fc;
+    y.current <- problem.parameters.original$y.fc;
+    
+    ax <- problem.parameters.original$ax;
+    bx <- problem.parameters.original$bx;
+    ay <- problem.parameters.original$ay;
+    by <- problem.parameters.original$by;
+    
+    ## STEP 1 ##
+    x.ic <- problem.parameters.original$x.ic / sqrt(sigma.2.x);
+    x.current <- x.current / sqrt(sigma.2.x);
+    ax <- ax / sqrt(sigma.2.x);
+    bx <- bx / sqrt(sigma.2.x);
+    sigma.2.x <- 1;
+
+    y.ic <- problem.parameters.generate.data$y.ic / sqrt(sigma.2.y);
+    y.current <- y.current / sqrt(sigma.2.y);
+    ay <- ay / sqrt(sigma.2.y);
+    by <- by / sqrt(sigma.2.y);
+    sigma.2.y <- 1;
+    
+    ## STEP 2 ##
+    L.x <- bx-ax;
+    x.ic <- x.ic / L.x;
+    x.current <- x.current / L.x;
+    ax <- ax / L.x;
+    bx <- bx / L.x;
+    sigma.2.x <- 1/ (L.x^2);
+    
+    L.y <- by-ay;
+    y.ic <- y.ic / L.y;
+    y.current <- y.current / L.y;
+    ay <- ay / L.y;
+    by <- by / L.y;
+    sigma.2.y <- 1/ (L.y^2);
+    
+    ## STEP 3 ##
+    x.ic <- x.ic - ax;
+    x.current <- x.current - ax;
+    bx <- bx - ax;
+    ax <- ax - ax;
+    
+    y.ic <- y.ic - ay;
+    y.current <- y.current - ay;
+    by <- by - ay;
+    ay <- ay - ay;
+    
+    out <- problem.parameters.original;
+    out$x.ic <- x.ic;
+    out$y.ic <- y.ic;
+    out$x.fc <- x.current;
+    out$y.fc <- y.current;
+    out$ax <- ax;
+    out$bx <- bx;
+    out$ay <- ay;
+    out$by <- by;
+    out$sigma.2.x <- sigma.2.x;
+    out$sigma.2.y <- sigma.2.y;
+    return(out);
+}
+
 ## sample from process
 sample.process <- function(n.samples,
                            dt,
@@ -36,59 +100,49 @@ sample.process <- function(n.samples,
             x.current <- x.new;
             y.current <- y.new;
         }
-        print(c(ax, 0, x.current, bx));
-        print(c(ay, 0, y.current, by));
 
-        ## STEP 1 ##
-        x.ic <- problem.parameters.generate.data$x.ic / sqrt(sigma.2.x);
-        x.current <- x.current / sqrt(sigma.2.x);
-        ax <- ax / sqrt(sigma.2.x);
-        bx <- bx / sqrt(sigma.2.x);
-        sigma.2.x <- 1;
-        print(c(ax, x.ic, x.current, bx));
+        ## ## STEP 1 ##
+        ## x.ic <- problem.parameters.generate.data$x.ic / sqrt(sigma.2.x);
+        ## x.current <- x.current / sqrt(sigma.2.x);
+        ## ax <- ax / sqrt(sigma.2.x);
+        ## bx <- bx / sqrt(sigma.2.x);
+        ## sigma.2.x <- 1;
 
-        y.ic <- problem.parameters.generate.data$y.ic / sqrt(sigma.2.y);
-        y.current <- y.current / sqrt(sigma.2.y);
-        ay <- ay / sqrt(sigma.2.y);
-        by <- by / sqrt(sigma.2.y);
-        sigma.2.y <- 1;
-        print(c(ay, y.ic, y.current, by));
-        
+        ## y.ic <- problem.parameters.generate.data$y.ic / sqrt(sigma.2.y);
+        ## y.current <- y.current / sqrt(sigma.2.y);
+        ## ay <- ay / sqrt(sigma.2.y);
+        ## by <- by / sqrt(sigma.2.y);
+        ## sigma.2.y <- 1;
 
-        ## STEP 2 ##
-        L.x <- bx-ax;
-        x.ic <- x.ic / L.x;
-        x.current <- x.current / L.x;
-        ax <- ax / L.x;
-        bx <- bx / L.x;
-        sigma.2.x <- 1/ (L.x^2);
-        print(c(ax, x.ic, x.current, bx));
+        ## ## STEP 2 ##
+        ## L.x <- bx-ax;
+        ## x.ic <- x.ic / L.x;
+        ## x.current <- x.current / L.x;
+        ## ax <- ax / L.x;
+        ## bx <- bx / L.x;
+        ## sigma.2.x <- 1/ (L.x^2);
 
-        L.y <- by-ay;
-        y.ic <- y.ic / L.y;
-        y.current <- y.current / L.y;
-        ay <- ay / L.y;
-        by <- by / L.y;
-        sigma.2.y <- 1/ (L.y^2);
-        print(c(ay, y.ic, y.current, by));
+        ## L.y <- by-ay;
+        ## y.ic <- y.ic / L.y;
+        ## y.current <- y.current / L.y;
+        ## ay <- ay / L.y;
+        ## by <- by / L.y;
+        ## sigma.2.y <- 1/ (L.y^2);
 
-        ## STEP 3 ##
-        x.ic <- x.ic - ax;
-        x.current <- x.current - ax;
-        bx <- bx - ax;
-        ax <- ax - ax;
+        ## ## STEP 3 ##
+        ## x.ic <- x.ic - ax;
+        ## x.current <- x.current - ax;
+        ## bx <- bx - ax;
+        ## ax <- ax - ax;
 
-        y.ic <- y.ic - ay;
-        y.current <- y.current - ay;
-        by <- by - ay;
-        ay <- ay - ay;
-        
-        print(c(ax, x.ic, x.current, bx));
-        print(c(ay, y.ic, y.current, by));
+        ## y.ic <- y.ic - ay;
+        ## y.current <- y.current - ay;
+        ## by <- by - ay;
+        ## ay <- ay - ay;
         
         out[[i]] <- problem.parameters.generate.data;
-        out[[i]]$x.ic <- x.ic;
-        out[[i]]$y.ic <- y.ic;
+        out[[i]]$x.ic <- problem.parameters.generate.data$x.ic;
+        out[[i]]$y.ic <- problem.parameters.generate.data$y.ic;
         out[[i]]$x.fc <- x.current;
         out[[i]]$y.fc <- y.current;
         out[[i]]$ax <- ax;
@@ -358,7 +412,7 @@ basis.function <- function(x,y, function.params, problem.parameters) {
     beta.1 <- problem.parameters$K.prime-
         function.params[1]+2;
     
-    mu.1 <- (alpha.1-1)/(alpha.1+beta.1-2);
+    mu.1 <- (alpha.1)/(alpha.1+beta.1);
     sigma2.1 <- alpha.1*beta.1/
         ((alpha.1+beta.1)^2*(alpha.1+beta.1+1));
 
@@ -367,23 +421,23 @@ basis.function <- function(x,y, function.params, problem.parameters) {
     beta.2 <- problem.parameters$K.prime-
         function.params[2]+2;
     
-    mu.2 <- (alpha.2-1)/(alpha.2+beta.2-2);
+    mu.2 <- (alpha.2)/(alpha.2+beta.2);
     sigma2.2 <- alpha.2*beta.2/
         ((alpha.2+beta.2)^2*(alpha.2+beta.2+1));
 
-    return (rep(x*(1-x),length(y))*y*(1-y) *
-            dmvnorm(cbind(rep(x,length(y)),
-                          y),
-                    mean=c(mu.1,mu.2),
-                    sigma=matrix(nrow=2,ncol=2,byrow=FALSE,
-                                 data=9*c(c(sigma2.1, -0.9*sqrt(sigma2.1*sigma2.2)),
-                                        c(-0.9*sqrt(sigma2.1*sigma2.2), sigma2.2)))));
+    ## return (rep(x*(1-x),length(y))*y*(1-y) *
+    ##         dmvnorm(cbind(rep(x,length(y)),
+    ##                       y),
+    ##                 mean=c(mu.1,mu.2),
+    ##                 sigma=matrix(nrow=2,ncol=2,byrow=FALSE,
+    ##                              data=9*c(c(sigma2.1, -0.8*sqrt(sigma2.1*sigma2.2)),
+    ##                                     c(-0.8*sqrt(sigma2.1*sigma2.2), sigma2.2)))));
                                           
     
-    ## return (dbeta(x,function.params[1],problem.parameters$K.prime-
-    ##                                      function.params[1]+2) *
-    ##         dbeta(y,function.params[2],problem.parameters$K.prime-
-    ##                                      function.params[2]+2));
+    return (dbeta(x,function.params[1],problem.parameters$K.prime-
+                                         function.params[1]+2) *
+            dbeta(y,function.params[2],problem.parameters$K.prime-
+                                         function.params[2]+2));
 }
 
 basis.function.xy <- function(x,y,function.params,problem.parameters) {
@@ -1575,13 +1629,15 @@ system.matrices <- function(orthonormal.function.list,
 blackbox <- function(function.list,
                      orthonormal.function.list,
                      system.mats,
-                     problem.parameters,
+                     problem.parameters.original,
                      dx, dy,
                      PLOT.SOLUTION,
                      MINIMIZE.REMAINDER) {
-
     source("2-d-solution.R");
     source("../classical-solution/2-d-solution.R");
+
+    problem.parameters = rescale.problem(problem.parameters.original);
+
     K = length(function.list);
 
     K.prime = sqrt(K);
@@ -1635,23 +1691,33 @@ blackbox <- function(function.list,
     IC.vec <- rep(NA, K);
     for (k in seq(1,K)) {
         IC.vec[k] <- sum(apply(IC.true*orthonormal.function.list[[k]],
-                                 1,
-                                 sum)*dy)*dx;
+                               1,
+                               sum)*dy)*dx;
     }
     IC.vec <- solve(system.mats$mass.mat, IC.vec);
     problem.parameters$t <- 1 - small.t.solution$tt;
 
-    plot(xx, IC.true[,y.ic.index], type = "l", col = "red");
-    plot(yy, IC.true[x.ic.index,], type = "l", col = "red");
-    
-    ## b = rep(NA, K);
-    ## for (i in seq(1,K)) {
-    ##     b[i] = 
-    ##         orthonormal.function.list[[i]][x.ic.index,y.ic.index];
-    ## }
-    ## ## IC.vec = solve(mass.mat, b);
-    ## IC.vec = solve(mass.mat, b);
-    ## ## ICs END ###
+    if (PLOT.SOLUTION) {
+        IC.approx <- bivariate.solution.approx(orthonormal.function.list,
+                                               K,
+                                               IC.vec);
+
+        ## for (kk in seq(1,length(orthonormal.function.list))) {
+        ##     if (kk==1) {
+        ##         plot(x,orthonormal.function.list[[kk]][,y.ic.index],type="l",
+        ##              ylim=c(-max(abs(orthonormal.function.list[[kk]][,y.ic.index])),
+        ##                     max(abs(orthonormal.function.list[[kk]][,y.ic.index]))));
+        ##     } else {
+        ##         lines(x,orthonormal.function.list[[kk]][,y.ic.index]);
+        ##     }
+        ## }
+        
+        plot(x, IC.true[,y.ic.index], type = "l", col = "red");
+        lines(x, IC.approx[,y.ic.index], col = "black");
+
+        plot(y, IC.true[x.ic.index,], type = "l", col = "red");
+        lines(y, IC.approx[x.ic.index,], col = "black")
+    }
     
     ## ## APPROX SOLUTION START ###
     if (K==1) {
@@ -1718,7 +1784,7 @@ blackbox <- function(function.list,
         
         true.sol <- univariate.solution(x,problem.parameters.x) %*%
             t(univariate.solution(y,problem.parameters.y));
-        
+
         plot(x,approx.sol[,y.ic.index], type = "l", col = "black", lty="dashed");
         lines(x,true.sol[,y.ic.index], col = "red");
         
