@@ -4,15 +4,15 @@ source("2-d-solution.R");
 source("../classical-solution/2-d-solution.R");
 
 PLOT.SOLUTION = TRUE;
-dx = 0.005;
-dy = 0.005;
+dx = 0.01;
+dy = 0.01;
 K.prime = 11;
 
 problem.parameters.generate.data = NULL;
 problem.parameters.generate.data$t <- 1;
 problem.parameters.generate.data$sigma.2.x <- 0.1;
 problem.parameters.generate.data$sigma.2.y <- 1;
-problem.parameters.generate.data$rho <- 0.0;
+problem.parameters.generate.data$rho <- -0.0;
 problem.parameters.generate.data$x.ic <- 0;
 problem.parameters.generate.data$y.ic <- 0;
 dt <- problem.parameters.generate.data$t/1000;
@@ -31,53 +31,60 @@ x <- seq(0,1,
 y <- seq(0,1,
          by=dy);
 
-alpha.minus.1.xs <- rep(NA,K);
-alpha.minus.1.ys <- rep(NA,K);
-for (k in seq(1,K)) {
-    alpha.minus.1.y <- ceiling(k/(K.prime-1));
-    alpha.minus.1.x <- k - ((K.prime-1) * (alpha.minus.1.y-1));
+## alpha.minus.1.xs <- rep(NA,K);
+## alpha.minus.1.ys <- rep(NA,K);
+## for (k in seq(1,K)) {
+##     alpha.minus.1.y <- ceiling(k/(K.prime-1));
+##     alpha.minus.1.x <- k - ((K.prime-1) * (alpha.minus.1.y-1));
     
-    alpha.minus.1.ys[k] <- alpha.minus.1.y;
-    alpha.minus.1.xs[k] <- alpha.minus.1.x;
-}
-alpha.xs <- alpha.minus.1.xs + 1;
-alpha.ys <- alpha.minus.1.ys + 1;
-## alpha + beta = K.prime + 2
+##     alpha.minus.1.ys[k] <- alpha.minus.1.y;
+##     alpha.minus.1.xs[k] <- alpha.minus.1.x;
+## }
+## alpha.xs <- alpha.minus.1.xs + 1;
+## alpha.ys <- alpha.minus.1.ys + 1;
+## ## alpha + beta = K.prime + 2
 
-x.basis.coors <- alpha.minus.1.xs / (K.prime);
-y.basis.coors <- alpha.minus.1.ys / (K.prime);
+## x.basis.coors <- alpha.minus.1.xs / (K.prime);
+## y.basis.coors <- alpha.minus.1.ys / (K.prime);
 
-sort.bases <- sort.int(sqrt((x.basis.coors-0.5)^2 +
-                            (y.basis.coors-0.5)^2),
-                       index.return = TRUE);
-alpha.xs <- alpha.xs[sort.bases$ix];
-alpha.ys <- alpha.ys[sort.bases$ix];
+## sort.bases <- sort.int(sqrt((x.basis.coors-0.5)^2 +
+##                             (y.basis.coors-0.5)^2),
+##                        index.return = TRUE);
+## alpha.xs <- alpha.xs[sort.bases$ix];
+## alpha.ys <- alpha.ys[sort.bases$ix];
 
-for (k in seq(1,K)) {
-    alpha.x <- alpha.xs[k];
-    alpha.y <- alpha.ys[k];
-    print(c(alpha.x,alpha.y));
-    function.params <- c(alpha.x, alpha.y);
+## for (k in seq(1,K)) {
+##     alpha.x <- alpha.xs[k];
+##     alpha.y <- alpha.ys[k];
+##     print(c(alpha.x,alpha.y));
+##     function.params <- c(alpha.x, alpha.y);
     
-    function.list[[k]] <-
-        basis.function.xy(x,y,
-                          function.params,
-                          problem.parameters);
-}
+##     function.list[[k]] <-
+##         basis.function.xy(x,y,
+##                           function.params,
+##                           problem.parameters);
+## }
 
-par(mfrow=c(ceiling(sqrt(K)),
-            ceiling(sqrt(K))));
-par(mar = c(5,4,2,1));
-if (PLOT.SOLUTION) {
-    for (k in seq(1,K)) {
-        contour(x,y,function.list[[k]]);
-    }
-}
+## par(mfrow=c(ceiling(sqrt(K)),
+##             ceiling(sqrt(K))));
+## par(mar = c(5,4,2,1));
+## if (PLOT.SOLUTION) {
+##     for (k in seq(1,K)) {
+##         contour(x,y,function.list[[k]]);
+##     }
+## }
 
+sigma=0.2;
+l=0.5;
+function.list <-
+    basis.functions.normal.kernel(rho=problem.parameters.generate.data$rho,
+                                  l=l, sigma2=sigma^2,
+                                  dx,dy,
+                                  std.dev.factor=0.5);
 orthonormal.function.list <- function.list;
 orthonormal.function.list <- orthonormal.functions(function.list,
                                                    dx,dy,x,y,
-                                                   TRUE);
+                                                   FALSE);
 system.mats <- system.matrices(orthonormal.function.list,
                                dx,dy);
 
@@ -91,7 +98,7 @@ for (n in seq(1,length(data))) {
                    system.mats,
                    problem.parameters.original,
                    dx,dy,
-                   FALSE,FALSE);
+                   TRUE,TRUE);
     
     problem.parameters.original$ax <- problem.parameters.original$ax - dx;
     l2.2 <- blackbox(function.list,
@@ -101,9 +108,9 @@ for (n in seq(1,length(data))) {
                    dx,dy,
                    FALSE,FALSE);
     
-    ## cat("Press [ENTER] to continue");
-    ## line <- readline();
-    print(paste("n=", n, "; l2 = ", l2));
+    cat("Press [ENTER] to continue");
+    line <- readline();
+    print(paste("n=", n, "; l2.1 = ", l2.1));
 }
 print(l2);
 
