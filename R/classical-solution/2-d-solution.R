@@ -304,6 +304,13 @@ bivariate.solution.classical <- function(dx, dy, problem.parameters,
     ##      type="l")
     ## abline(v = r.not, col="blue",lwd=2);
 
+    nn <- 1001;
+    xs <- seq(1,nn-1)/nn;
+    ys <- seq(1,nn-1)/nn;
+    ic.mat <- rbind(rep(xs, each=length(ys)),
+                    rep(ys, length(xs)));
+                             
+
     big.solution <- matrix(nrow = length(xx),
                            ncol = length(yy),
                            data = 0);
@@ -312,46 +319,55 @@ bivariate.solution.classical <- function(dx, dy, problem.parameters,
         (sigma.x*sigma.y*sqrt(1-rho)*sqrt(1+rho))
     xi.ic.reflected = 2*sorted.Cs$x[1]*cos(ss.s[sorted.Cs$ix[1]]) + xi.ic;
     eta.ic.reflected = 2*sorted.Cs$x[1]*sin(ss.s[sorted.Cs$ix[1]]) + eta.ic;
+
+    kernel <- function(xieta,tt) {
+        out <- (dmvnorm(t(xieta),
+                 mean=c(xi.ic,eta.ic),
+                 sigma=diag(rep(tt,2))) -
+         dmvnorm(t(xieta),
+                 mean=c(xi.ic.reflected,eta.ic.reflected),
+                 sigma=diag(rep(tt,2)))) /
+            (sigma.x*sigma.y*sqrt(1-rho)*sqrt(1+rho));
+        return(out);
+    }
     
     for (ii in seq(1,length(xx))) {
-            xieta <- T.mat %*% rbind(rep(xx[ii], length(yy)),
-                                     yy);
+        xieta <- T.mat %*% rbind(rep(xx[ii], length(yy)),
+                         yy);
+        
+        big.solution[ii,] = (dmvnorm(t(xieta),
+                                     mean=c(xi.ic,eta.ic),
+                                     sigma=diag(rep(tt,2))) -
+                             dmvnorm(t(xieta),
+                                     mean=c(xi.ic.reflected,eta.ic.reflected),
+                                     sigma=diag(rep(tt,2)))) /
+            (sigma.x*sigma.y*sqrt(1-rho)*sqrt(1+rho));
 
-            ## xieta.shifted <-
-            ##     xieta - c(boundary.points.mat[1,closest.boundary.point],
-            ##               boundary.points.mat[2,closest.boundary.point]);
-            
-            ## rs <- sqrt(apply( xieta.shifted^2, 2, sum));
-            ## thetas <- atan(xieta.shifted[2,]/
-            ##            xieta.shifted[1,]) - phi.not +
-            ##       pi*((xieta.shifted[1,] < 0) &
-            ##           (xieta.shifted[2,] < 0)) +
-            ##       pi*((xieta.shifted[1,] < 0) &
-            ##           (xieta.shifted[2,] > 0));
-            ## indeces <- which(rs < r.star);
-            ## print(c(ii, indeces));
-
-            ## if (length(indeces) > 0) {
-            ##     big.solution[ii,indeces] = sol.vector(rs[indeces],
-            ##                                           thetas[indeces],
-            ##                                           time.bases);
-            ## }
-            
-            big.solution[ii,] = (dmvnorm(t(xieta),
-                                         mean=c(xi.ic,eta.ic),
-                                         sigma=diag(rep(tt,2))) -
-                                 dmvnorm(t(xieta),
-                                         mean=c(xi.ic.reflected,eta.ic.reflected),
-                                         sigma=diag(rep(tt,2)))) /
-                (sigma.x*sigma.y*sqrt(1-rho)*sqrt(1+rho));
-            
-            ##               max(xis.lim[2], etas.lim[2])));
-
-            if (PLOT.SOLUTION) {
-                points(xieta[1,],xieta[2,], pch=20,
-                       col=rgb(abs(big.solution[ii,]/Max),0,0));
-            }
+        if (PLOT.SOLUTION) {
+            points(xieta[1,],xieta[2,], pch=20,
+                   col=rgb(abs(big.solution[ii,]/Max),0,0));
+        }
     }
+
+    big.sol <- matrix(nrow=length(xx),ncol=length(yy),0);
+    for (jj in seq(700,1000)) {
+        print(jj);
+        for (kk in seq(1,200)) {
+            xieta <- T.mat %*% c(xs[jj], ys[kk]);
+            
+            big.sol = big.sol +
+                (choose(nn,jj)*xx^jj*(1-xx)^(nn-jj) %*%
+                 t(choose(nn,kk)*yy^kk*(1-yy)^(nn-kk))) *
+                    kernel(xieta=xieta,tt=tt)
+            ## xieta <- T.mat %*% rbind(rep(xs[jj], length(ys)),
+            ##                          ys);
+            ## big.sol[jj,] <- kernel(xieta=xieta, tt=tt);
+        }
+    }
+    par(mfrow=c(2,1));
+    contour(xx,yy,big.sol);
+    contour(xx,yy,big.solution);
+    
     out = NULL;
     out$big.solution <- big.solution;
     out$tt <- tt;
@@ -365,4 +381,76 @@ bivariate.solution.classical <- function(dx, dy, problem.parameters,
     ##            abline(v=r.star,col="red");
     ##            abline(v=r.not,col="blue",lwd=2);
     ##        }s
+}
+
+
+generate.Cs <- function(problem.parameters, ic.mat) {
+    
+    sigma.x <- sqrt(problem.parameters$sigma.2.x);
+    sigma.y <- sqrt(problem.parameters$sigma.2.y);
+    rho <- problem.parameters$rho;
+    cc <- sin(pi/4);
+    
+    T.mat <- matrix(nrow=2,ncol=2,
+                    data=c(c(cc/(sigma.x*sqrt(1-rho)),
+                             cc/(sigma.x*sqrt(1+rho))),
+                           c(-cc/(sigma.y*sqrt(1-rho)),
+                             cc/(sigma.y*sqrt(1+rho)))),
+                    byrow=FALSE);
+    
+    T.mat.inv <- solve(T.mat);
+    
+    xieta.ics <- (T.mat %*% ic.mat);
+
+    boundary.points.mat <- T.mat %*%
+        matrix(nrow=2,ncol=4,
+               data=c(c(0,0),
+                      c(0,1),
+                      c(1,0),
+                      c(1,1)));
+
+    slopes <- c(sqrt(1-rho)/sqrt(1+rho),
+                sqrt(1-rho)/sqrt(1+rho),
+                -sqrt(1-rho)/sqrt(1+rho),
+                -sqrt(1-rho)/sqrt(1+rho));
+    
+    xis.lim <- c(min(boundary.points.mat[1,]),
+                 max(boundary.points.mat[1,]));
+                     
+    etas.lim <- c(min(boundary.points.mat[2,]),
+                  max(boundary.points.mat[2,]));
+    
+    xis <- seq(xis.lim[1], xis.lim[2], by=0.01);
+    etas <- seq(etas.lim[1], etas.lim[2], by=0.01);
+    
+    ## border 1
+    ss.1 <- atan(-sqrt(1+rho)/sqrt(1-rho));
+    C.1 <- (-xieta.ics[2,]+ xieta.ics[1,]*sqrt(1-rho)/sqrt(1+rho))/
+        (sin(ss.1) - cos(ss.1)*sqrt(1-rho)/sqrt(1+rho));
+
+
+    ## border 2
+    ss.2 <- pi + ss.1;
+    C.2 <- (-xieta.ics[2,]+ xieta.ics[1,]*sqrt(1-rho)/sqrt(1+rho) +
+            1/(sigma.y*sqrt(1+rho)*cc))/
+        (sin(ss.2) - cos(ss.2)*sqrt(1-rho)/sqrt(1+rho));
+
+
+    ## border 4
+    ss.4 <- atan(sqrt(1+rho)/sqrt(1-rho));
+    C.4 <- (-xieta.ics[2,]- xieta.ics[1,]*sqrt(1-rho)/sqrt(1+rho) +
+            1/(sigma.x*sqrt(1+rho)*cc))/
+        (sin(ss.4) + cos(ss.4)*sqrt(1-rho)/sqrt(1+rho));
+
+    ## border 3
+    ss.3 <- pi + ss.4;
+    C.3 <- (-xieta.ics[2,]- xieta.ics[1,]*sqrt(1-rho)/sqrt(1+rho))/
+        (sin(ss.3) + cos(ss.3)*sqrt(1-rho)/sqrt(1+rho));
+
+    
+    Cs <- rbind(C.1,C.2,C.3,C.4);
+    sorted.Cs <- sapply(seq(1,dim(Cs)[2]),
+                        function(x) {sort(Cs[,x])});
+    tt <- min((sorted.Cs[2,]/3)^2);
+    ss.s <- c(ss.1, ss.2, ss.3, ss.4);
 }

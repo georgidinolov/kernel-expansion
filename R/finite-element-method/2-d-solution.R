@@ -395,7 +395,7 @@ product.coefficient <- function(raw.function.params.1,
 ## function.params$mu = c(mu.x, mu.y);
 ## function.params$epsilon = matrix(nrow=2,ncol=2,data=c(c(sigma2, rho*sigma2),
 ##                                                      c(rho*sigma2, sigma2)));
-## function.params$l = l (double >= 1)
+## function.params$l = l (double > 0)
 ## output = x^l*(1-x)^l*y^l*(1-y)^l*N(c(x,y)| mu, epsilon);
 basis.function.normal.kernel <- function(x,y,function.params) {
     return( rep(x,length(y))^l*(1-rep(x,length(y)))^l*y^l*(1-y)^l*
@@ -1508,19 +1508,23 @@ apply.generator <- function(poly, k, problem.parameters.x) {
     }
 }
 
-basis.functions.normal.kernel <- function(rho, l,
+basis.functions.normal.kernel <- function(rho,
+                                          l,
                                           sigma2,
                                           dx,dy,
                                           std.dev.factor) {
     sigma <- sqrt(sigma2);
-    x.nodes <- c(seq(0.5-sqrt(2), 0.5-std.dev.factor*sigma*sqrt(1-rho),
+    x.nodes <- c(seq(0.5-sqrt(2), 0.5,
                      by=std.dev.factor*sigma*sqrt(1-rho)),
                  seq(0.5, 0.5+sqrt(2),
                      by=std.dev.factor*sigma*sqrt(1-rho)));
-    y.nodes <- c(seq(0.5-sqrt(2), 0.5-std.dev.factor*sigma*sqrt(1+rho),
+    x.nodes <- unique(x.nodes);
+    
+    y.nodes <- c(seq(0.5-sqrt(2), 0.5,
                      by=std.dev.factor*sigma*sqrt(1+rho)),
                  seq(0.5, 0.5+sqrt(2),
                      by=std.dev.factor*sigma*sqrt(1+rho)));
+    y.nodes <- unique(y.nodes);
 
     xy.nodes <- rbind(rep(x.nodes,each=length(y.nodes)),
                       rep(y.nodes,length(x.nodes)));
@@ -1529,29 +1533,28 @@ basis.functions.normal.kernel <- function(rho, l,
     Rot.mat <- matrix(nrow=2,ncol=2,
                       data=c(c(sin(theta), -cos(theta)),
                              c(cos(theta), sin(theta))));
-    xieta.nodes <- Rot.mat %*% xy.nodes;
+    xieta.nodes <- Rot.mat %*% (xy.nodes - c(0.5,0.5)) + c(0.5,0.5);
     xieta.nodes <- xieta.nodes[, (xieta.nodes[1,] >= 0) & (xieta.nodes[1,] <= 1) &
                                  (xieta.nodes[2,] >= 0) & (xieta.nodes[2,] <= 1)];
     
-    ## plot(xieta.nodes[1,],xieta.nodes[2,]);
-    sort.bases <- sort.int(sqrt((xieta.nodes[1,]-0.5)^2 +
-                                (xieta.nodes[2,]-0.5)^2),
-                           index.return = TRUE);
-    xieta.nodes = xieta.nodes[,sort.bases$ix];
+    plot(xieta.nodes[1,],xieta.nodes[2,]);
+    ## sort.bases <- sort.int(sqrt((xieta.nodes[1,]-0.5)^2 +
+    ##                             (xieta.nodes[2,]-0.5)^2),
+    ##                        index.return = TRUE);
+    ## xieta.nodes = xieta.nodes[,sort.bases$ix];
     
     K = dim(xieta.nodes)[2];
     x <- seq(0,1,by=dx);
     y <- seq(0,1,by=dy);
 
     function.list <- vector("list", K);
-    
+
     ## function.params$mu = c(mu.x, mu.y);
     ## function.params$epsilon = matrix(nrow=2,ncol=2,data=c(c(sigma2, rho*sigma2),
     ##                                                      c(rho*sigma2, sigma2)));
     ## function.params$l = l (double >= 1)
     ## output = x^l*(1-x)^l*y^l*(1-y)^l*N(c(x,y)| mu, epsilon);
     function.params=NULL;
-    
     for (k in seq(1,K)) {
         function.params$mu = c(xieta.nodes[1,k], xieta.nodes[2,k]);
         function.params$epsilon = matrix(nrow=2,ncol=2,data=c(c(sigma2, rho*sigma2),
@@ -1560,11 +1563,14 @@ basis.functions.normal.kernel <- function(rho, l,
         function.list[[k]] = basis.function.normal.kernel.xy(x, y, function.params);
     }
 
-    ## par(mfrow=c(ceiling(sqrt(K)),
-    ##             ceiling(sqrt(K))));
-    ## for (k in seq(1,K)) {
-    ##     contour(x,y,function.list[[k]]);
-    ## }
+    if (ceiling(sqrt(K)) <= 15) {
+        par(mfrow=c(ceiling(sqrt(K)),
+                    ceiling(sqrt(K))),
+            mai=c(0.1,0.1,0.1,0.1));
+        for (k in seq(1,K)) {
+            contour(x,y,function.list[[k]]);
+        }
+    }
     return (function.list);
 }
 
@@ -1581,7 +1587,7 @@ orthonormal.functions <- function(function.list,
     ## gram-schmidt START ##
     par(mfrow=c(ceiling(sqrt(K)),
                 ceiling(sqrt(K))));
-    par(mar = c(5,4,2,1));    
+    par(mai = c(0.1,0.1,0.1,0.1));    
     for (k in seq(1,K)) {
         if (k==1) {
             ## only normalize
@@ -1845,6 +1851,46 @@ blackbox <- function(function.list,
                                                 K,
                                                 coefs);
 
+        ## ## function.params$mu = c(mu.x, mu.y);
+        ## ## function.params$epsilon = matrix(nrow=2,ncol=2,data=c(c(sigma2, rho*sigma2),
+        ## ##                                                      c(rho*sigma2, sigma2)));
+        ## ## function.params$l = l (double > 0)
+        ## ## output = x^l*(1-x)^l*y^l*(1-y)^l*N(c(x,y)| mu, epsilon);
+        ## approx.sol.pos <- function(coefs.pos) {
+        ##     rho <- problem.parameters$rho;
+        ##     mu.x <- coefs.pos[1];
+        ##     sigma.x <- exp(coefs.pos[2]);
+        ##     mu.y <- coefs.pos[3];
+        ##     sigma.y <- exp(coefs.pos[4]);
+
+        ##     function.params=NULL;
+        ##     function.params$mu=c(mu.x,mu.y);
+        ##     function.params$epsilon =
+        ##         matrix(nrow=2,ncol=2,
+        ##                data=c(c(sigma.x^2, rho*sigma.x*sigma.y),
+        ##                       c(rho*sigma.x*sigma.y, sigma.y^2)));
+        ##     function.params$l=0.5;
+            
+        ##     out <- basis.function.normal.kernel.xy(x,y,function.params);
+        ##     return(out);
+        ## }
+
+        ## optimization.function <- function(coefs.pos) {
+        ##     out <- sqrt(sum(apply((approx.sol-approx.sol.pos(coefs.pos))^2,
+        ##                           1, sum)*dy)*dx);
+        ##     ## print(out);
+        ##     return(out);
+        ## }
+        
+        ## opp <- optim(par=c(0.6, log(0.4^2), 0.2, log(0.2^2)),
+        ##              fn=optimization.function);
+
+        ## approx.sol.positive <- approx.sol.pos(opp$par);
+        ## par(mfrow=c(1,2));
+        ## contour(x,y,approx.sol.positive);
+        ## contour(x,y,approx.sol);
+        ## approx.sol <- approx.sol.positive;
+        
         problem.parameters.x = problem.parameters;
         problem.parameters.x$x.ic = problem.parameters$x.ic;
         problem.parameters.x$a = problem.parameters$ax;

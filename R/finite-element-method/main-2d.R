@@ -12,13 +12,14 @@ problem.parameters.generate.data = NULL;
 problem.parameters.generate.data$t <- 1;
 problem.parameters.generate.data$sigma.2.x <- 0.1;
 problem.parameters.generate.data$sigma.2.y <- 1;
-problem.parameters.generate.data$rho <- -0.0;
+problem.parameters.generate.data$rho <- -0.95;
 problem.parameters.generate.data$x.ic <- 0;
 problem.parameters.generate.data$y.ic <- 0;
 dt <- problem.parameters.generate.data$t/1000;
 n.samples <- 100;
 
 data <- sample.process(n.samples, dt, problem.parameters.generate.data);
+
 problem.parameters <- data[[1]];
 problem.parameters$K.prime <- K.prime;
 problem.parameters$number.terms <- 100;
@@ -26,10 +27,8 @@ problem.parameters$number.terms <- 100;
 K <- (K.prime-1)^2;
 function.list <- vector("list", K);
 
-x <- seq(0,1,
-         by=dx);
-y <- seq(0,1,
-         by=dy);
+x <- seq(0,1,by=dx);
+y <- seq(0,1,by=dy);
 
 ## alpha.minus.1.xs <- rep(NA,K);
 ## alpha.minus.1.ys <- rep(NA,K);
@@ -74,13 +73,15 @@ y <- seq(0,1,
 ##     }
 ## }
 
-sigma=0.2;
-l=0.5;
+sigma=0.20;
+sigma2=sigma^2;
+l=1;
 function.list <-
     basis.functions.normal.kernel(rho=problem.parameters.generate.data$rho,
-                                  l=l, sigma2=sigma^2,
+                                  l=l,
+                                  sigma2=sigma^2,
                                   dx,dy,
-                                  std.dev.factor=0.5);
+                                  std.dev.factor=1/2);
 orthonormal.function.list <- function.list;
 orthonormal.function.list <- orthonormal.functions(function.list,
                                                    dx,dy,x,y,
@@ -94,11 +95,11 @@ for (n in seq(1,length(data))) {
     problem.parameters.original$K.prime <- K.prime;
     problem.parameters.original$number.terms <- 100;
     l2.1 <- blackbox(function.list,
-                   orthonormal.function.list,
-                   system.mats,
-                   problem.parameters.original,
-                   dx,dy,
-                   TRUE,TRUE);
+                     orthonormal.function.list,
+                     system.mats,
+                     problem.parameters.original,
+                     dx,dy,
+                     TRUE,TRUE); 
     
     problem.parameters.original$ax <- problem.parameters.original$ax - dx;
     l2.2 <- blackbox(function.list,
@@ -107,10 +108,12 @@ for (n in seq(1,length(data))) {
                    problem.parameters.original,
                    dx,dy,
                    FALSE,FALSE);
-    
+
+    -(l2.1-l2.2)/dx;
+
+    print(paste("n=", n, "; l2.1 = ", l2.1));   
     cat("Press [ENTER] to continue");
     line <- readline();
-    print(paste("n=", n, "; l2.1 = ", l2.1));
 }
 print(l2);
 
