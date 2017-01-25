@@ -1,3 +1,41 @@
+mle.estimator.no.boundary <- function(data,
+                                      sigma.x.ic, sigma.y.ic, rho.ic) {
+    neg.log.likelihood <- function(par, data) {
+        sigma.x <- exp(par[1]);
+        sigma.y <- exp(par[2]);
+        rho <- exp(par[3])/(exp(par[3])+1);
+
+        Sigma <- matrix(nrow=2,ncol=2,
+                        byrow=T,
+                        data=c(c(sigma.x^2, rho*sigma.x*sigma.y),
+                               c(rho*sigma.x*sigma.y, sigma.y^2)));
+        
+        neg.ll.tilde <- 0;
+        for (n in seq(1,length(data))) {
+            neg.ll.tilde = neg.ll.tilde -
+                (dmvnorm(x=c(data[[n]]$x.fc, data[[n]]$y.fc),
+                        mean = c(0,0),
+                        sigma = Sigma, log=TRUE) + 
+                abs(par[1]) + abs(par[2]) +
+                (par[3] - 2*log(exp(par[3]) + 1)));
+                        
+        }
+        return (neg.ll.tilde);
+    }
+
+    opt <- optim(par = c(log(sigma.x.ic), log(sigma.y.ic),
+                         log(rho.ic/(1-rho.ic))),
+                 fn = neg.log.likelihood,
+                 method = "Nelder-Mead",
+                 data = data)
+
+    print(c(exp(opt$par[1]),
+            exp(opt$par[2]),
+            exp(opt$par[3])/(exp(opt$par[3])+1)));
+    
+    return(opt);
+}
+
 load.data.from.csv <- function(data.set.file) {
     input.data <- read.csv(file= data.set.file, header = TRUE, sep = ",");
     n <- dim(input.data)[1];

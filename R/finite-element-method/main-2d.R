@@ -29,7 +29,9 @@ data[[1]]$y.fc = -0.624682;
 data[[1]]$by = 0.379309;
 
 data <- load.data.from.csv(
-    "~/research/PDE-solvers/src/brownian-motion/data-set-2.csv");
+    "~/research/PDE-solvers/src/brownian-motion/data-set-37.csv");
+
+mle.estimator.no.boundary(data, 1, 0.5, 0.4);
 
 problem.parameters <- data[[1]];
 problem.parameters$K.prime <- K.prime;
@@ -110,7 +112,7 @@ for (n in seq(1,length(data))) {
                      system.mats,
                      problem.parameters.original,
                      dx,dy,
-                     TRUE,TRUE);
+                     FALSE, FALSE);
     print (l2.1 *
            1.0/((problem.parameters.original$bx-
                  problem.parameters.original$ax) *
