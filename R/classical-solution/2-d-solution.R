@@ -304,7 +304,7 @@ bivariate.solution.classical <- function(dx, dy, problem.parameters,
     ##      type="l")
     ## abline(v = r.not, col="blue",lwd=2);
 
-    nn <- 1001;
+    nn <- 11;
     xs <- seq(1,nn-1)/nn;
     ys <- seq(1,nn-1)/nn;
     ic.mat <- rbind(rep(xs, each=length(ys)),
@@ -349,24 +349,24 @@ bivariate.solution.classical <- function(dx, dy, problem.parameters,
         }
     }
 
-    big.sol <- matrix(nrow=length(xx),ncol=length(yy),0);
-    for (jj in seq(700,1000)) {
-        print(jj);
-        for (kk in seq(1,200)) {
-            xieta <- T.mat %*% c(xs[jj], ys[kk]);
+    ## big.sol <- matrix(nrow=length(xx),ncol=length(yy),0);
+    ## for (jj in seq(700,1000)) {
+    ##     print(jj);
+    ##     for (kk in seq(1,200)) {
+    ##         xieta <- T.mat %*% c(xs[jj], ys[kk]);
             
-            big.sol = big.sol +
-                (choose(nn,jj)*xx^jj*(1-xx)^(nn-jj) %*%
-                 t(choose(nn,kk)*yy^kk*(1-yy)^(nn-kk))) *
-                    kernel(xieta=xieta,tt=tt)
-            ## xieta <- T.mat %*% rbind(rep(xs[jj], length(ys)),
-            ##                          ys);
-            ## big.sol[jj,] <- kernel(xieta=xieta, tt=tt);
-        }
-    }
-    par(mfrow=c(2,1));
-    contour(xx,yy,big.sol);
-    contour(xx,yy,big.solution);
+    ##         big.sol = big.sol +
+    ##             (choose(nn,jj)*xx^jj*(1-xx)^(nn-jj) %*%
+    ##              t(choose(nn,kk)*yy^kk*(1-yy)^(nn-kk))) *
+    ##                 kernel(xieta=xieta,tt=tt)
+    ##         ## xieta <- T.mat %*% rbind(rep(xs[jj], length(ys)),
+    ##         ##                          ys);
+    ##         ## big.sol[jj,] <- kernel(xieta=xieta, tt=tt);
+    ##     }
+    ## }
+    ## par(mfrow=c(2,1));
+    ## contour(xx,yy,big.sol);
+    ## contour(xx,yy,big.solution);
     
     out = NULL;
     out$big.solution <- big.solution;

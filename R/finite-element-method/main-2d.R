@@ -4,21 +4,32 @@ source("2-d-solution.R");
 source("../classical-solution/2-d-solution.R");
 
 PLOT.SOLUTION = TRUE;
-dx = 0.01;
-dy = 0.01;
-K.prime = 11;
+dx = 0.005;
+dy = 0.005;
+K.prime = 12;
 
 problem.parameters.generate.data = NULL;
 problem.parameters.generate.data$t <- 1;
-problem.parameters.generate.data$sigma.2.x <- 0.1;
-problem.parameters.generate.data$sigma.2.y <- 1;
-problem.parameters.generate.data$rho <- -0.95;
+problem.parameters.generate.data$sigma.2.x <- 1.0^2;
+problem.parameters.generate.data$sigma.2.y <- 0.25^2;
+problem.parameters.generate.data$rho <- 0.4;
 problem.parameters.generate.data$x.ic <- 0;
 problem.parameters.generate.data$y.ic <- 0;
 dt <- problem.parameters.generate.data$t/1000;
 n.samples <- 100;
 
 data <- sample.process(n.samples, dt, problem.parameters.generate.data);
+
+data[[1]]$ax = -0.676618;
+data[[1]]$x.fc = 0.297061;
+data[[1]]$bx = 0.557878;
+
+data[[1]]$ay = -1.18179;
+data[[1]]$y.fc = -0.624682;
+data[[1]]$by = 0.379309;
+
+data <- load.data.from.csv(
+    "~/research/PDE-solvers/src/brownian-motion/data-set-2.csv");
 
 problem.parameters <- data[[1]];
 problem.parameters$K.prime <- K.prime;
@@ -73,7 +84,7 @@ y <- seq(0,1,by=dy);
 ##     }
 ## }
 
-sigma=0.20;
+sigma=0.30;
 sigma2=sigma^2;
 l=1;
 function.list <-
@@ -99,17 +110,22 @@ for (n in seq(1,length(data))) {
                      system.mats,
                      problem.parameters.original,
                      dx,dy,
-                     TRUE,TRUE); 
+                     TRUE,TRUE);
+    print (l2.1 *
+           1.0/((problem.parameters.original$bx-
+                 problem.parameters.original$ax) *
+                (problem.parameters.original$by-
+                 problem.parameters.original$ay)));
     
-    problem.parameters.original$ax <- problem.parameters.original$ax - dx;
-    l2.2 <- blackbox(function.list,
-                   orthonormal.function.list,
-                   system.mats,
-                   problem.parameters.original,
-                   dx,dy,
-                   FALSE,FALSE);
+    ## problem.parameters.original$ax <- problem.parameters.original$ax - dx;
+    ## l2.2 <- blackbox(function.list,
+    ##                orthonormal.function.list,
+    ##                system.mats,
+    ##                problem.parameters.original,
+    ##                dx,dy,
+    ##                FALSE,FALSE);
 
-    -(l2.1-l2.2)/dx;
+    ## -(l2.1-l2.2)/dx;
 
     print(paste("n=", n, "; l2.1 = ", l2.1));   
     cat("Press [ENTER] to continue");
@@ -117,120 +133,71 @@ for (n in seq(1,length(data))) {
 }
 print(l2);
 
-## n=10;
-## data <- sample.process(n, dt, problem.parameters.generate.data);
-## for (l in seq(1,length(data))) {
-##     data[[l]]$number.terms = 1000;
-## }
+kernel <- function(x,x.0,tt) {
+    if (x.0 <= 0.5) {
+        out <- (dnorm(t(x),
+                      mean=x.0,
+                      sd=sigma.x*sqrt(tt)) -
+                dnorm(t(x),
+                      mean=-x.0,
+                      sd=sigma.x*sqrt(tt)));
+    } else {
+        out <- (dnorm(t(x),
+                      mean=x.0,
+                      sd=sigma.x*sqrt(tt)) -
+                dnorm(t(x),
+                      mean=1+(1-x.0),
+                      sd=sigma.x*sqrt(tt)));
+    }
+    return(out);
+}
 
-## l2s <- rep(NA,n);
 
-## par(mfrow=c(sqrt(n),sqrt(n)));
-## for (l in seq(1,n)) {
-##     l2 <- blackbox(function.list,
-##                    orthonormal.function.list,
-##                    system.mats,
-##                    problem.parameters = data[[l]],
-##                    dx,dy,TRUE,TRUE);
-##     print(c(l,l2));
-##     l2s[l] <- l2;
-## }
+plot.new();
+dev.off();
 
-## print(l2);
+nn <- 11;
+nu <- nn-1;
+xs <- seq(1,nn-1)/nn;
+problem.parameters = rescale.problem(problem.parameters.original);
+sigma.x <- sqrt(problem.parameters$sigma.2.x);
+sigma.y <- sqrt(problem.parameters$sigma.2.y);
+rho <- problem.parameters$rho;
 
-## l <- which(l2s==max(l2s));
-## problem.parameters <- data[[l]];
-## tt1 <- problem.parameters$x.ic^2 / (4*problem.parameters$sigma.2.x);
-## tt2 <- (1-problem.parameters$x.ic)^2 / (4*problem.parameters$sigma.2.x);
-## tt3 <- problem.parameters$y.ic^2 / (4*problem.parameters$sigma.2.y);
-## tt4 <- (1-problem.parameters$y.ic)^2 / (4*problem.parameters$sigma.2.y);
-## tt <- sort(c(tt1,tt2,tt3,tt4))[3];
+tts = ifelse(xs <= 0.5, ((1-xs)/(5*sigma.x))^2, (xs/(5*sigma.x))^2)
+tt <- min(tts);
+xx <- seq(0,1,by=dx/10);
+x.i <- 1/nn;
+x.i.prime <- (nn-1)/nn;
 
-## problem.parameters.x = problem.parameters;
-## problem.parameters.x$x.ic = problem.parameters$x.ic;
-## problem.parameters.x$a = problem.parameters$ax;
-## problem.parameters.x$b = problem.parameters$bx;
-## problem.parameters.x$sigma.2 = problem.parameters$sigma.2.x;
-## problem.parameters.x$t = tt;
+plot(xx, choose(nn,nu)*x^(nu)*(1-x)^(nn-nu), type="l", ylim = c(0,1));
+density.factor = 3;
+integrals.exact <- rep(0, nn-1);
+integrals.approx <- rep(0, nn-1);
 
-## problem.parameters.y = problem.parameters;
-## problem.parameters.y$x.ic = problem.parameters$y.ic;
-## problem.parameters.y$a = problem.parameters$ay;
-## problem.parameters.y$b = problem.parameters$by;
-## problem.parameters.y$sigma.2 = problem.parameters$sigma.2.y;
-## problem.parameters.y$t = tt;
+for (ii in seq(1,nn-1)) {
+    lines(xx, kernel(xx, x.0=ii/nn, tt=tt), col="red");
+    for (j in seq(1,length(xx))) {
+        integrals.exact[ii] = integrals.exact[ii] +
+            (kernel(x=ii/nn, x.0 = xx[j], tt=tt)*
+                  choose(nn,nn-1)*xx[j]^(nn-1)*(1-xx[j])^1);
+    }
+    integrals.exact[ii] = integrals.exact[ii] * dx/10;
 
-## print(c(problem.parameters.x$t, problem.parameters.y$t));
-## IC.true <- univariate.solution(x,problem.parameters.x) %*%
-##     t(univariate.solution(y,problem.parameters.y));
+    xs <- seq(0,1,length.out=nn*density.factor);
+    weights <- choose(nn,ii)*
+        (xs)^(nu)*(1-xs)^(nn-nu);
+    weights <- weights/sum(weights)*1/(nn+1);
+    for (jj in seq(1,length(xs))) {
+        integrals.approx[ii] = integrals.approx[ii] +
+            kernel(ii/nn, x.0=xs[jj], tt=tt)*weights[jj]
+    }
+}
+print(integrals.approx);
+print(integrals.exact);
 
-## IC.coefs <- rep(NA, K);
-## for (k in seq(1,K)) {
-##     IC.coefs[k] <- sum(apply(IC.true*orthonormal.function.list[[k]],
-##                              1,
-##                              sum)*dy)*dx;
-## }
-## IC.coefs <- solve(system.mats$mass.mat, IC.coefs);
+par(mfrow=c(2,1));
+plot(integrals.exact, integrals.approx);
+abline(a=0,b=1,lwd=2);
 
-## x.ic.index = which(abs(x-problem.parameters$x.ic)<=dx/2);
-## y.ic.index = which(abs(y-problem.parameters$y.ic)<=dy/2);
-
-## par(mfrow=c(2,1));
-## approx <- rep(0, length(x));
-## IC.approx <- matrix(nrow=dim(orthonormal.function.list[[1]])[1],
-##                     ncol=dim(orthonormal.function.list[[1]])[2],
-##                     0);
-## IC.approx <- bivariate.solution.approx(orthonormal.function.list,
-##                                        K,
-##                                        IC.coefs);
-## for (k in seq(1,K)) {
-##     if (k==1) {
-##         plot(x, IC.coefs[k]*
-##                 orthonormal.function.list[[k]][,y.ic.index], type="l",
-##              ylim = c(-max(IC.coefs[k]*
-##                            orthonormal.function.list[[k]][,y.ic.index]),
-##                       max(IC.coefs[k]*
-##                           orthonormal.function.list[[k]][,y.ic.index])));
-##     } else {
-##         lines(x, IC.coefs[k]*
-##                  orthonormal.function.list[[k]][,y.ic.index], type="l")
-##     }
-##     approx <- approx +
-##         IC.coefs[k]*
-##         orthonormal.function.list[[k]][,y.ic.index];
-##     ## IC.approx = IC.approx +
-##     ##     IC.coefs[k]*orthonormal.function.list[[k]];
-## }
-## lines(x, IC.true[,y.ic.index],col="red", lwd = 2);
-## lines(x, approx, lty="dashed", col="green", lwd =2);
-
-## approx <- rep(0, length(y));
-## for (k in seq(1,K)) {
-##     if (k==1) {
-##         plot(y, IC.coefs[k]*
-##                 orthonormal.function.list[[k]][x.ic.index,], type="l",
-##              ylim = c(-max(5*IC.coefs[k]*
-##                           orthonormal.function.list[[k]][x.ic.index,]),
-##                       max(5*IC.coefs[k]*
-##                           orthonormal.function.list[[k]][x.ic.index,])));
-##     } else {
-##         lines(y, IC.coefs[k]*
-##                  orthonormal.function.list[[k]][x.ic.index,], type="l")
-##     }
-##     approx <- approx +
-##         IC.coefs[k]*
-##                 orthonormal.function.list[[k]][x.ic.index,];
-## }
-## lines(y, IC.true[x.ic.index,],col="red", lwd=2);
-## lines(y, approx, lty="dashed", col="green", lwd=2);
-    
-## par(mfrow=c(2,1));
-## plot(x, IC.approx[,y.ic.index], type = "l");
-## lines(x,IC.true[,y.ic.index], col = "red");
-## abline(v=problem.parameters$x.ic, col = "red");
-
-## plot(y, IC.approx[x.ic.index,], type = "l");
-## lines(y,IC.true[x.ic.index,], col = "red");
-## abline(v=problem.parameters$y.ic, col = "red");
-
-## IC.vec <- IC.coefs;
+plot((integrals.approx-integrals.exact)/integrals.exact*100);

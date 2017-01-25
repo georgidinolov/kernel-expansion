@@ -1,3 +1,27 @@
+load.data.from.csv <- function(data.set.file) {
+    input.data <- read.csv(file= data.set.file, header = TRUE, sep = ",");
+    n <- dim(input.data)[1];
+    data <- vector("list", n);
+    for (i in seq(1,n)) {
+        data[[i]]$t <- input.data$t[i];
+        data[[i]]$sigma.2.x <- (input.data$sigma_x[i])^2;
+        data[[i]]$sigma.2.y <- (input.data$sigma_y[i])^2;
+        data[[i]]$rho <- input.data$rho[i];
+
+        data[[i]]$ax <- input.data$a[i];
+        data[[i]]$x.ic <- input.data$x_0[i];
+        data[[i]]$bx <- input.data$b[i];
+        data[[i]]$x.fc <- input.data$x_T[i];
+
+        data[[i]]$ay <- input.data$c[i];
+        data[[i]]$y.ic <- input.data$y_0[i];
+        data[[i]]$by <- input.data$d[i];
+        data[[i]]$y.fc <- input.data$y_T[i];
+    }
+    return (data);
+}
+
+
 rescale.problem <- function(problem.parameters.original) {
     sigma.2.x <- problem.parameters.original$sigma.2.x;
     sigma.2.y <- problem.parameters.original$sigma.2.y;
@@ -10,17 +34,17 @@ rescale.problem <- function(problem.parameters.original) {
     by <- problem.parameters.original$by;
     
     ## STEP 1 ##
-    x.ic <- problem.parameters.original$x.ic / sqrt(sigma.2.x);
-    x.current <- x.current / sqrt(sigma.2.x);
-    ax <- ax / sqrt(sigma.2.x);
-    bx <- bx / sqrt(sigma.2.x);
-    sigma.2.x <- 1;
+    x.ic <- problem.parameters.original$x.ic - ax;
+    x.current <- x.current - ax;
+    bx <- bx - ax;
+    ax <- ax - ax; 
+    sigma.2.x <- sigma.2.x;
 
-    y.ic <- problem.parameters.generate.data$y.ic / sqrt(sigma.2.y);
-    y.current <- y.current / sqrt(sigma.2.y);
-    ay <- ay / sqrt(sigma.2.y);
-    by <- by / sqrt(sigma.2.y);
-    sigma.2.y <- 1;
+    y.ic <- problem.parameters.generate.data$y.ic - ay
+    y.current <- y.current - ay
+    by <- by - ay;
+    ay <- ay - ay;
+    sigma.2.y <- sigma.2.y;
     
     ## STEP 2 ##
     L.x <- bx-ax;
@@ -36,17 +60,6 @@ rescale.problem <- function(problem.parameters.original) {
     ay <- ay / L.y;
     by <- by / L.y;
     sigma.2.y <- 1/ (L.y^2);
-    
-    ## STEP 3 ##
-    x.ic <- x.ic - ax;
-    x.current <- x.current - ax;
-    bx <- bx - ax;
-    ax <- ax - ax;
-    
-    y.ic <- y.ic - ay;
-    y.current <- y.current - ay;
-    by <- by - ay;
-    ay <- ay - ay;
     
     out <- problem.parameters.original;
     out$x.ic <- x.ic;
@@ -1722,7 +1735,6 @@ blackbox <- function(function.list,
     source("../classical-solution/2-d-solution.R");
 
     problem.parameters = rescale.problem(problem.parameters.original);
-
     K = length(function.list);
 
     K.prime = sqrt(K);
