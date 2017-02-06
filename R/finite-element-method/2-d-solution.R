@@ -1,9 +1,64 @@
+estimator.rodgers <- function(data.files.list,
+                              rho.true) {
+    dx = 0.001;
+    nu = seq(dx, 100, by=dx);
+    b = 2*log(2) - 1;
+        
+    rhos <- seq(-1+dx, 1-dx, by=0.005);
+    phis <- rep(NA, length(rhos));
+    for (rho in rhos) {
+        alpha.pos = asin(rho);
+        gamma.pos = (alpha.pos + pi/2)/2;
+        fs.pos <- cos(alpha.pos) *
+            sum(cosh(nu*alpha.pos)/sinh(nu*pi/2)*tanh(nu*gamma.pos))*dx
+
+        alpha.neg <- asin(-rho);
+        gamma.neg <- (alpha.neg + pi/2)/2;
+        fs.neg <- cos(alpha.neg) *
+            sum(cosh(nu*alpha.neg)/sinh(nu*pi/2)*tanh(nu*gamma.neg))*dx
+        
+        phis[which(rhos==rho)] = 0.5*rho +
+            1/(2*(1-2*b))*(2*fs.pos -
+                           2*fs.neg - rho);
+        print(rho);
+    }
+    plot(rhos, phis, type = "l");
+
+    estimates <- rep(NA, length(data.files.list));
+    for (i in seq(1,length(data.files.list))) {
+        file <- data.files.list[[i]];
+        data <- load.data.from.csv(file);
+        
+        b = 2*log(2) - 1;
+        rho.0.hats = rep(NA, length(data));
+        rho.rz.hats = rep(NA, length(data));
+        for (n in seq(1,length(data))) {
+            rho.rz.hats[n] =
+                (0.5*data[[n]]$x.fc*data[[n]]$y.fc +
+                 1/(2*(1-2*b))*
+                 (data[[n]]$bx + data[[n]]$ax - data[[n]]$x.fc)*
+                 (data[[n]]$by + data[[n]]$ay - data[[n]]$y.fc));
+
+            rho.0.hats[n] =
+                (data[[n]]$x.fc*data[[n]]$y.fc);
+        }
+        r.bar = mean(rho.rz.hats);
+        index <- which(abs(phis-r.bar) == min(abs(phis-r.bar)))
+        rho.rz.estimate <- rhos[index];
+        estimates[i] = rho.rz.estimate;
+    }
+    MSE <- sqrt(mean((estimates-rho.true)^2));
+    sd(estimates);
+
+    print(paste("MSE = ", MSE, sep=""));
+}
+
 mle.estimator.no.boundary <- function(data,
                                       sigma.x.ic, sigma.y.ic, rho.ic) {
     neg.log.likelihood <- function(par, data) {
         sigma.x <- exp(par[1]);
         sigma.y <- exp(par[2]);
-        rho <- exp(par[3])/(exp(par[3])+1);
+        rho <- 2*exp(par[3])/(exp(par[3])+1) - 1;
 
         Sigma <- matrix(nrow=2,ncol=2,
                         byrow=T,
@@ -15,25 +70,32 @@ mle.estimator.no.boundary <- function(data,
             neg.ll.tilde = neg.ll.tilde -
                 (dmvnorm(x=c(data[[n]]$x.fc, data[[n]]$y.fc),
                         mean = c(0,0),
-                        sigma = Sigma, log=TRUE) + 
-                abs(par[1]) + abs(par[2]) +
-                (par[3] - 2*log(exp(par[3]) + 1)));
-                        
+                        sigma = Sigma, log=TRUE));
         }
+
+        neg.ll.tilde = neg.ll.tilde -
+            ((par[1]) + (par[2]) +
+             (log(2) + par[3] - 2*log(exp(par[3]) + 1)));
+
         return (neg.ll.tilde);
     }
 
     opt <- optim(par = c(log(sigma.x.ic), log(sigma.y.ic),
-                         log(rho.ic/(1-rho.ic))),
+                         log( ((rho.ic+1)/2) /
+                              (1-((rho.ic+1)/2)) )),
                  fn = neg.log.likelihood,
                  method = "Nelder-Mead",
                  data = data)
 
     print(c(exp(opt$par[1]),
             exp(opt$par[2]),
-            exp(opt$par[3])/(exp(opt$par[3])+1)));
-    
-    return(opt);
+            2*exp(opt$par[3])/(exp(opt$par[3])+1) - 1));
+
+    out = NULL;
+    out$sigma.x.mle <- exp(opt$par[1]);
+    out$sigma.y.mle <- exp(opt$par[2]);
+    out$rho.mle <- 2*exp(opt$par[3])/(exp(opt$par[3])+1) - 1;
+    return(out);
 }
 
 load.data.from.csv <- function(data.set.file) {

@@ -18,7 +18,8 @@ problem.parameters.generate.data$y.ic <- 0;
 dt <- problem.parameters.generate.data$t/1000;
 n.samples <- 100;
 
-data <- sample.process(n.samples, dt, problem.parameters.generate.data);
+data <- load.data.from.csv(
+    "~/research/PDE-solvers/src/brownian-motion/data-set-1.csv");
 
 data[[1]]$ax = -0.676618;
 data[[1]]$x.fc = 0.297061;
@@ -28,10 +29,20 @@ data[[1]]$ay = -1.18179;
 data[[1]]$y.fc = -0.624682;
 data[[1]]$by = 0.379309;
 
-data <- load.data.from.csv(
-    "~/research/PDE-solvers/src/brownian-motion/data-set-37.csv");
 
-mle.estimator.no.boundary(data, 1, 0.5, 0.4);
+data.files.list <- list.files(path = "~/research/PDE-solvers/src/brownian-motion",
+                             pattern = "data-set-", full.names = TRUE)
+print(data.files.list);
+
+estimates <- rep(NA,length(data.files.list));
+for (i in seq(1,length(data.files.list))) {
+    data <- load.data.from.csv(data.files.list[i]);
+    mles <- mle.estimator.no.boundary(data, 1, 1, 0.0);
+    estimates[i] <- mles$rho.mle;
+}
+sqrt(mean((estimates-0.0)^2));
+
+estimator.rodgers(data.files.list, 0.0);
 
 problem.parameters <- data[[1]];
 problem.parameters$K.prime <- K.prime;
