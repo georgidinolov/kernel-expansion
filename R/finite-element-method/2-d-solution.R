@@ -46,6 +46,10 @@ estimator.rodgers <- function(data.files.list,
         index <- which(abs(phis-r.bar) == min(abs(phis-r.bar)))
         rho.rz.estimate <- rhos[index];
         estimates[i] = rho.rz.estimate;
+        print(paste("rho.estimate = ", estimates[i],
+                    "; rho.true = ", rho.true,
+                    "; sd(rho.estimate) = ", sd(rho.rz.hats)),
+              sep="");
     }
     MSE <- sqrt(mean((estimates-rho.true)^2));
     sd(estimates);

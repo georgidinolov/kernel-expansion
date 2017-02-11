@@ -10,9 +10,9 @@ K.prime = 12;
 
 problem.parameters.generate.data = NULL;
 problem.parameters.generate.data$t <- 1;
-problem.parameters.generate.data$sigma.2.x <- 1.0^2;
-problem.parameters.generate.data$sigma.2.y <- 0.25^2;
-problem.parameters.generate.data$rho <- 0.4;
+problem.parameters.generate.data$sigma.2.x <- 0.36787944117144233402427744294982^2;
+problem.parameters.generate.data$sigma.2.y <- 1.94773404105467573543819526094012^2;
+problem.parameters.generate.data$rho <- 0.31666666666666665186369300499791;
 problem.parameters.generate.data$x.ic <- 0;
 problem.parameters.generate.data$y.ic <- 0;
 dt <- problem.parameters.generate.data$t/1000;
@@ -21,17 +21,18 @@ n.samples <- 100;
 data <- load.data.from.csv(
     "~/research/PDE-solvers/src/brownian-motion/data-set-1.csv");
 
-data[[1]]$ax = -0.676618;
-data[[1]]$x.fc = 0.297061;
-data[[1]]$bx = 0.557878;
+data[[1]]$ax = -1.23434 - (-1.21098);
+data[[1]]$x.fc = -0.196667- (-1.21098);
+data[[1]]$bx = 0.388308- (-1.21098);
+data[[1]]$x.ic = -1.21098- (-1.21098);
 
-data[[1]]$ay = -1.18179;
-data[[1]]$y.fc = -0.624682;
-data[[1]]$by = 0.379309;
-
+data[[1]]$ay = 0.120379 - 0.171973;
+data[[1]]$y.fc = 1.09127- 0.171973;
+data[[1]]$by = 1.30771- 0.171973;
+data[[1]]$y.ic = 0.171973- 0.171973;
 
 data.files.list <- list.files(path = "~/research/PDE-solvers/src/brownian-motion",
-                             pattern = "data-set-", full.names = TRUE)
+                             pattern = "data-set-1.csv", full.names = TRUE)
 print(data.files.list);
 
 estimates <- rep(NA,length(data.files.list));
@@ -123,7 +124,8 @@ for (n in seq(1,length(data))) {
                      system.mats,
                      problem.parameters.original,
                      dx,dy,
-                     FALSE, FALSE);
+                     TRUE, FALSE);
+    
     print (l2.1 *
            1.0/((problem.parameters.original$bx-
                  problem.parameters.original$ax) *
