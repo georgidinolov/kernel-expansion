@@ -32,7 +32,7 @@ data[[1]]$by = 0.126382;
 data[[1]]$y.ic = 0;
 
 data.files.list <- list.files(path = "~/research/PDE-solvers/data",
-                             pattern = "data-set-1.csv", full.names = TRUE);
+                             pattern = "data-set-4.csv", full.names = TRUE);
 print(data.files.list);
 
 estimates <- rep(NA,length(data.files.list));
