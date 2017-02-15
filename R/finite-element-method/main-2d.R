@@ -21,18 +21,18 @@ n.samples <- 100;
 data <- load.data.from.csv(
     "~/research/PDE-solvers/src/brownian-motion/data-set-1.csv");
 
-data[[1]]$ax = -1.23434 - (-1.21098);
-data[[1]]$x.fc = -0.196667- (-1.21098);
-data[[1]]$bx = 0.388308- (-1.21098);
-data[[1]]$x.ic = -1.21098- (-1.21098);
+data[[1]]$ax = -1.56035;
+data[[1]]$x.fc = -0.684587;
+data[[1]]$bx = 0.0261297;
+data[[1]]$x.ic = 0;
 
-data[[1]]$ay = 0.120379 - 0.171973;
-data[[1]]$y.fc = 1.09127- 0.171973;
-data[[1]]$by = 1.30771- 0.171973;
-data[[1]]$y.ic = 0.171973- 0.171973;
+data[[1]]$ay = -0.871711;
+data[[1]]$y.fc = -0.154531;
+data[[1]]$by = 0.126382;
+data[[1]]$y.ic = 0;
 
-data.files.list <- list.files(path = "~/research/PDE-solvers/src/brownian-motion",
-                             pattern = "data-set-1.csv", full.names = TRUE)
+data.files.list <- list.files(path = "~/research/PDE-solvers/data",
+                             pattern = "data-set-1.csv", full.names = TRUE);
 print(data.files.list);
 
 estimates <- rep(NA,length(data.files.list));
@@ -41,9 +41,23 @@ for (i in seq(1,length(data.files.list))) {
     mles <- mle.estimator.no.boundary(data, 1, 1, 0.0);
     estimates[i] <- mles$rho.mle;
 }
-sqrt(mean((estimates-0.0)^2));
+sqrt(mean((estimates-0.8)^2));
 
-estimator.rodgers(data.files.list, 0.0);
+data.files.list <- list.files(path = "~/research/PDE-solvers/data",
+                              pattern = "*-order-128.csv", full.names = TRUE);
+print(data.files.list);
+estimates.fd <- rep(NA,length(data.files.list));
+for (i in seq(1,length(data.files.list))) {
+    mles <- load.results.from.csv(data.files.list[i]);
+    if(!is.null(mles)) {
+        estimates.fd[i] <- mles$rho;
+    }
+}
+sqrt(mean((estimates.fd[!is.na(estimates.fd)]-0.8)^2));
+plot(density(estimates.fd[!is.na(estimates.fd)]));
+lines(density(estimates.fd[!is.na(estimates.fd)]), col="red");
+
+estimator.rodgers(data.files.list, 0.8);
 
 problem.parameters <- data[[1]];
 problem.parameters$K.prime <- K.prime;
@@ -98,7 +112,7 @@ y <- seq(0,1,by=dy);
 ##     }
 ## }
 
-sigma=0.30;
+sigma=0.25;
 sigma2=sigma^2;
 l=1;
 function.list <-
@@ -113,7 +127,6 @@ orthonormal.function.list <- orthonormal.functions(function.list,
                                                    FALSE);
 system.mats <- system.matrices(orthonormal.function.list,
                                dx,dy);
-
 for (n in seq(1,length(data))) {
     par(mfrow=c(3,2));
     problem.parameters.original <- data[[n]];

@@ -125,6 +125,17 @@ load.data.from.csv <- function(data.set.file) {
     return (data);
 }
 
+load.results.from.csv <- function(data.set.file) {
+    res = try(read.csv(file= data.set.file, header = TRUE, sep = ","));
+    out = NULL;
+    if (class(res) != "try-error") {
+        input.data <- read.csv(file= data.set.file, header = TRUE, sep = ",");
+    out$sigma.x = input.data$sigma_x;
+    out$sigma.y = input.data$sigma_y;
+    out$rho = input.data$rho;}
+    return (out);
+}
+
 
 rescale.problem <- function(problem.parameters.original) {
     sigma.2.x <- problem.parameters.original$sigma.2.x;
