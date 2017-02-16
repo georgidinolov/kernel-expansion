@@ -54,7 +54,10 @@ estimator.rodgers <- function(data.files.list,
     MSE <- sqrt(mean((estimates-rho.true)^2));
     sd(estimates);
 
+    plot(density(estimates));
+
     print(paste("MSE = ", MSE, sep=""));
+    return (estimates);
 }
 
 mle.estimator.no.boundary <- function(data,

@@ -1,4 +1,5 @@
 rm(list=ls());
+library("parallel");
 library("mvtnorm");
 source("2-d-solution.R");
 source("../classical-solution/2-d-solution.R");
@@ -7,6 +8,7 @@ PLOT.SOLUTION = TRUE;
 dx = 0.005;
 dy = 0.005;
 K.prime = 12;
+rho.true = 0.8;
 
 problem.parameters.generate.data = NULL;
 problem.parameters.generate.data$t <- 1;
@@ -32,32 +34,53 @@ data[[1]]$by = 0.126382;
 data[[1]]$y.ic = 0;
 
 data.files.list <- list.files(path = "~/research/PDE-solvers/data",
-                             pattern = "data-set-4.csv", full.names = TRUE);
+                             pattern = "data-set-*", full.names = TRUE);
 print(data.files.list);
 
-estimates <- rep(NA,length(data.files.list));
-for (i in seq(1,length(data.files.list))) {
-    data <- load.data.from.csv(data.files.list[i]);
-    mles <- mle.estimator.no.boundary(data, 1, 1, 0.0);
-    estimates[i] <- mles$rho.mle;
-}
-sqrt(mean((estimates-0.8)^2));
+cl <- makeCluster(4);
+estimates.mle <- parSapply(cl=cl, X=data.files.list,
+                           function(x) {
+                               source("2-d-solution.R");
+                               library("mvtnorm");
+                               data <- load.data.from.csv(x);
+                               mles <- mle.estimator.no.boundary(data, 1, 1, 0.0);
+                               return(mles$rho);
+                           });
+stopCluster(cl);
+sqrt(mean((estimates.mle-0.8)^2));
 
-data.files.list <- list.files(path = "~/research/PDE-solvers/data",
-                              pattern = "*-order-128.csv", full.names = TRUE);
-print(data.files.list);
-estimates.fd <- rep(NA,length(data.files.list));
-for (i in seq(1,length(data.files.list))) {
-    mles <- load.results.from.csv(data.files.list[i]);
+results.files.list <- list.files(path = "~/research/PDE-solvers/data",
+                              pattern = "*-rel-tol", full.names = TRUE);
+print(results.files.list);
+estimates.fd <- rep(NA,length(results.files.list));
+for (i in seq(1,length(results.files.list))) {
+    mles <- load.results.from.csv(results.files.list[i]);
     if(!is.null(mles)) {
         estimates.fd[i] <- mles$rho;
     }
 }
 sqrt(mean((estimates.fd[!is.na(estimates.fd)]-0.8)^2));
-plot(density(estimates.fd[!is.na(estimates.fd)]));
-lines(density(estimates.fd[!is.na(estimates.fd)]), col="red");
 
-estimator.rodgers(data.files.list, 0.8);
+estimates.rogers <- estimator.rodgers(data.files.list, 0.8);
+
+y.lims <- c(0,
+            max(max(density(estimates.fd[!is.na(estimates.fd)])$y),
+                max(density(estimates.mle)$y),
+                max(density(estimates.rogers)$y)));
+
+x.lims <- c(min(min(density(estimates.fd[!is.na(estimates.fd)])$x),
+                min(density(estimates.mle)$x),
+                min(density(estimates.rogers)$x)),
+            max(max(density(estimates.fd[!is.na(estimates.fd)])$x),
+                max(density(estimates.mle)$x),
+                max(density(estimates.rogers)$x)));
+
+plot(density(estimates.fd[!is.na(estimates.fd)]),
+     ylim=y.lims,
+     xlim=x.lims);
+lines(density(estimates.mle),col="red");
+lines(density(estimates.rogers),col="green");
+abline(v=rho.true, col="red", lwd=2);
 
 problem.parameters <- data[[1]];
 problem.parameters$K.prime <- K.prime;
