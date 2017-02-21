@@ -38,19 +38,19 @@ data.files.list <- list.files(path = "~/research/PDE-solvers/data",
 print(data.files.list);
 
 cl <- makeCluster(4);
-estimates.mle <- parSapply(cl=cl, X=data.files.list,
+estimates.mle <- parLapply(cl=cl, X=data.files.list,
                            function(x) {
                                source("2-d-solution.R");
                                library("mvtnorm");
                                data <- load.data.from.csv(x);
                                mles <- mle.estimator.no.boundary(data, 1, 1, 0.0);
-                               return(mles$rho);
+                               return(mles);
                            });
 stopCluster(cl);
 sqrt(mean((estimates.mle-0.8)^2));
 
 results.files.list <- list.files(path = "~/research/PDE-solvers/data",
-                              pattern = "*-rel-tol", full.names = TRUE);
+                              pattern = "order-32-rel-tol", full.names = TRUE);
 print(results.files.list);
 estimates.fd <- rep(NA,length(results.files.list));
 for (i in seq(1,length(results.files.list))) {
