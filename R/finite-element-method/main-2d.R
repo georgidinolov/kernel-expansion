@@ -8,20 +8,20 @@ PLOT.SOLUTION = TRUE;
 dx = 0.005;
 dy = 0.005;
 K.prime = 12;
-rho.true = 0.8;
+rho.true = -0.8;
 
 problem.parameters.generate.data = NULL;
 problem.parameters.generate.data$t <- 1;
-problem.parameters.generate.data$sigma.2.x <- 0.36787944117144233402427744294982^2;
-problem.parameters.generate.data$sigma.2.y <- 1.94773404105467573543819526094012^2;
-problem.parameters.generate.data$rho <- 0.31666666666666665186369300499791;
+problem.parameters.generate.data$sigma.2.x <- 0.986379^2;
+problem.parameters.generate.data$sigma.2.y <- 0.986379^2;
+problem.parameters.generate.data$rho <- -0.708294;
 problem.parameters.generate.data$x.ic <- 0;
 problem.parameters.generate.data$y.ic <- 0;
 dt <- problem.parameters.generate.data$t/1000;
 n.samples <- 100;
 
 data <- load.data.from.csv(
-    "~/research/PDE-solvers/src/brownian-motion/data-set-1.csv");
+    "~/research/PDE-solvers/data/data-set-1.csv");
 
 data[[1]]$ax = -1.56035;
 data[[1]]$x.fc = -0.684587;
@@ -47,10 +47,15 @@ estimates.mle <- parLapply(cl=cl, X=data.files.list,
                                return(mles);
                            });
 stopCluster(cl);
-sqrt(mean((estimates.mle-0.8)^2));
+
+estimates.mle.rhos <- rep(NA, length(estimates.mle));
+for (i in seq(1,length(estimates.mle))) {
+    estimates.mle.rhos[i] = estimates.mle[[i]]$rho.mle;
+}
+sqrt(mean((estimates.mle.rhos-0.8)^2));
 
 results.files.list <- list.files(path = "~/research/PDE-solvers/data",
-                              pattern = "order-32-rel-tol", full.names = TRUE);
+                              pattern = "order-64-rel-tol", full.names = TRUE);
 print(results.files.list);
 estimates.fd <- rep(NA,length(results.files.list));
 for (i in seq(1,length(results.files.list))) {
@@ -65,20 +70,20 @@ estimates.rogers <- estimator.rodgers(data.files.list, 0.8);
 
 y.lims <- c(0,
             max(max(density(estimates.fd[!is.na(estimates.fd)])$y),
-                max(density(estimates.mle)$y),
+                max(density(estimates.mle.rhos)$y),
                 max(density(estimates.rogers)$y)));
 
 x.lims <- c(min(min(density(estimates.fd[!is.na(estimates.fd)])$x),
-                min(density(estimates.mle)$x),
+                min(density(estimates.mle.rhos)$x),
                 min(density(estimates.rogers)$x)),
             max(max(density(estimates.fd[!is.na(estimates.fd)])$x),
-                max(density(estimates.mle)$x),
+                max(density(estimates.mle.rhos)$x),
                 max(density(estimates.rogers)$x)));
 
 plot(density(estimates.fd[!is.na(estimates.fd)]),
      ylim=y.lims,
      xlim=x.lims);
-lines(density(estimates.mle),col="red");
+lines(density(estimates.mle.rhos),col="red");
 lines(density(estimates.rogers),col="green");
 abline(v=rho.true, col="red", lwd=2);
 
@@ -135,7 +140,7 @@ y <- seq(0,1,by=dy);
 ##     }
 ## }
 
-sigma=0.25;
+sigma=0.3;
 sigma2=sigma^2;
 l=1;
 function.list <-
@@ -155,6 +160,12 @@ for (n in seq(1,length(data))) {
     problem.parameters.original <- data[[n]];
     problem.parameters.original$K.prime <- K.prime;
     problem.parameters.original$number.terms <- 100;
+    problem.parameters.original$sigma.2.x <-
+        problem.parameters.generate.data$sigma.2.x;
+    problem.parameters.original$sigma.2.y <-
+        problem.parameters.generate.data$sigma.2.y;
+    problem.parameters.original$rho <-
+        problem.parameters.generate.data$rho;
     l2.1 <- blackbox(function.list,
                      orthonormal.function.list,
                      system.mats,
