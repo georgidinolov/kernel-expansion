@@ -12,16 +12,22 @@ rho.true = -0.8;
 
 problem.parameters.generate.data = NULL;
 problem.parameters.generate.data$t <- 1;
-problem.parameters.generate.data$sigma.2.x <- 0.986379^2;
-problem.parameters.generate.data$sigma.2.y <- 0.986379^2;
-problem.parameters.generate.data$rho <- -0.708294;
+
+## problem.parameters.generate.data$sigma.2.x <- 0.986379^2;
+## problem.parameters.generate.data$sigma.2.y <- 0.986379^2;
+## problem.parameters.generate.data$rho <- -0.708294;
+
+problem.parameters.generate.data$sigma.2.x <- 1^2;
+problem.parameters.generate.data$sigma.2.y <- 1^2;
+problem.parameters.generate.data$rho <- 0.0;
+
 problem.parameters.generate.data$x.ic <- 0;
 problem.parameters.generate.data$y.ic <- 0;
 dt <- problem.parameters.generate.data$t/1000;
 n.samples <- 100;
 
 data <- load.data.from.csv(
-    "~/PDE-solvers/data/data-set-1.csv");
+    "~/research/PDE-solvers/data/data-set-1.csv");
 
 ## data.files.list <- list.files(path = "~/research/PDE-solvers/data",
 ##                              pattern = "data-set-*", full.names = TRUE);
@@ -87,7 +93,7 @@ function.list <- vector("list", K);
 x <- seq(0,1,by=dx);
 y <- seq(0,1,by=dy);
 
-sigma=0.30;
+sigma=0.15;
 sigma2=sigma^2;
 l=1;
 function.list <-
@@ -103,7 +109,7 @@ orthonormal.function.list <- orthonormal.functions(function.list,
 system.mats <- system.matrices(orthonormal.function.list,
                                dx,dy);
 
-Delta = 0.01;
+Delta = 1/256;
 for (n in seq(1,length(data))) {
     par(mfrow=c(3,2));
     problem.parameters.original <- data[[n]];
@@ -129,17 +135,80 @@ for (n in seq(1,length(data))) {
                      system.mats,
                      problem.parameters.current,
                      dx,dy,
+                     TRUE, FALSE) *
+             1.0/((problem.parameters.current$bx-
+                 problem.parameters.current$ax)^1 *
+                (problem.parameters.current$by-
+                 problem.parameters.current$ay)^1);
+    print(paste("l2.1 = ", l2.1, sep=""));
+
+    values = rep(NA, 2);
+    for (i in c(0,1)) {
+        problem.parameters.original <- data[[n]];
+        problem.parameters.original$K.prime <- K.prime;
+        problem.parameters.original$number.terms <- 100;
+        
+        problem.parameters.original$sigma.2.x <-
+            problem.parameters.generate.data$sigma.2.x;
+        
+        problem.parameters.original$sigma.2.y <-
+            problem.parameters.generate.data$sigma.2.y;
+        
+        ## problem.parameters.original$rho <- -0.80;
+        
+        problem.parameters.original$rho <-
+            problem.parameters.generate.data$rho;
+        
+        problem.parameters.current =
+            problem.parameters.original;
+        
+        index = 1 +
+            abs(i)*1;
+        print(c(index,i));
+        problem.parameters.current = problem.parameters.original;
+        
+        problem.parameters.current$ax <- 
+		      	problem.parameters.original$ax - Delta*i;
+
+        value = (-1)^(i) * 
+            blackbox(function.list,
+                     orthonormal.function.list,
+                     system.mats,
+                     problem.parameters.current,
+                     dx,dy,
                      FALSE, FALSE) *
              1.0/((problem.parameters.current$bx-
-                 problem.parameters.current$ax)^3 *
+                 problem.parameters.current$ax)^1 *
                 (problem.parameters.current$by-
-                 problem.parameters.current$ay)^3)
+                 problem.parameters.current$ay)^1)
 
+        values[index] = value;
+    }
+    print(-sum(values)/Delta);
+    
     values = rep(NA, 16);
     for (i in c(1,0)) {
     	for (j in c(1,0)) {
 	    for (k in c(1,0)) {
 	    	for (l in c(1,0)) {
+                    problem.parameters.original <- data[[n]];
+                    problem.parameters.original$K.prime <- K.prime;
+                    problem.parameters.original$number.terms <- 100;
+                    
+                    problem.parameters.original$sigma.2.x <-
+                        problem.parameters.generate.data$sigma.2.x;
+                    
+                    problem.parameters.original$sigma.2.y <-
+                        problem.parameters.generate.data$sigma.2.y;
+                    
+                    ## problem.parameters.original$rho <- -0.80;
+                    
+                    problem.parameters.original$rho <-
+                        problem.parameters.generate.data$rho;
+                    
+                    problem.parameters.current =
+                        problem.parameters.original;
+                    
 		    index = 1 +
 		    	  abs(i)*1 +
 			  abs(j)*2 +
