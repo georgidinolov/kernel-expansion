@@ -87,7 +87,7 @@ function.list <- vector("list", K);
 x <- seq(0,1,by=dx);
 y <- seq(0,1,by=dy);
 
-sigma=0.20;
+sigma=0.30;
 sigma2=sigma^2;
 l=1;
 function.list <-
@@ -102,6 +102,8 @@ orthonormal.function.list <- orthonormal.functions(function.list,
                                                    FALSE);
 system.mats <- system.matrices(orthonormal.function.list,
                                dx,dy);
+
+Delta = 0.01;
 for (n in seq(1,length(data))) {
     par(mfrow=c(3,2));
     problem.parameters.original <- data[[n]];
@@ -114,35 +116,69 @@ for (n in seq(1,length(data))) {
     problem.parameters.original$sigma.2.y <-
         problem.parameters.generate.data$sigma.2.y;
 
-    problem.parameters.original$rho <- -0.80;
+    ## problem.parameters.original$rho <- -0.80;
 
-    ## problem.parameters.original$rho <-
-    ##     problem.parameters.generate.data$rho;
+    problem.parameters.original$rho <-
+         problem.parameters.generate.data$rho;
+	 
+    problem.parameters.current =
+         problem.parameters.original;
 
     l2.1 <- blackbox(function.list,
                      orthonormal.function.list,
                      system.mats,
-                     problem.parameters.original,
+                     problem.parameters.current,
                      dx,dy,
-                     FALSE, FALSE);
-    
-    print(c(l2.1, l2.1 *
-           1.0/((problem.parameters.original$bx-
-                 problem.parameters.original$ax)^3 *
-                (problem.parameters.original$by-
-                 problem.parameters.original$ay)^3)));
-    
-    ## problem.parameters.original$ax <- problem.parameters.original$ax - dx;
-    ## l2.2 <- blackbox(function.list,
-    ##                orthonormal.function.list,
-    ##                system.mats,
-    ##                problem.parameters.original,
-    ##                dx,dy,
-    ##                FALSE,FALSE);
+                     FALSE, FALSE) *
+             1.0/((problem.parameters.current$bx-
+                 problem.parameters.current$ax)^3 *
+                (problem.parameters.current$by-
+                 problem.parameters.current$ay)^3)
 
-    ## -(l2.1-l2.2)/dx;
+    values = rep(NA, 16);
+    for (i in c(1,0)) {
+    	for (j in c(1,0)) {
+	    for (k in c(1,0)) {
+	    	for (l in c(1,0)) {
+		    index = 1 +
+		    	  abs(i)*1 +
+			  abs(j)*2 +
+			  abs(k)*4 +
+			  abs(l)*8;
+	            print(c(index,i,j,k,l));
+		    problem.parameters.current = problem.parameters.original;
 
-    ## print(paste("n=", n, "; l2.1 = ", l2.1));   
+		    problem.parameters.current$ax <- 
+		      	problem.parameters.original$ax - Delta*i;
+
+		    problem.parameters.current$bx <- 
+		      	problem.parameters.original$bx + Delta*j;
+
+		    problem.parameters.current$ay <- 
+		      	problem.parameters.original$ay - Delta*k;
+
+		    problem.parameters.current$by <- 
+		      	problem.parameters.original$by + Delta*l;
+
+		    value = (-1)^(i+j+k+l+1) * 
+		    	 blackbox(function.list,
+                                  orthonormal.function.list,
+                                  system.mats,
+                     problem.parameters.current,
+                     dx,dy,
+                     FALSE, FALSE) *
+             1.0/((problem.parameters.current$bx-
+                 problem.parameters.current$ax)^3 *
+                (problem.parameters.current$by-
+                 problem.parameters.current$ay)^3)
+
+		    values[index] = value;
+		}
+	    }
+        }	
+    }
+    print (sum(values)/Delta^4)
+
     cat("Press [ENTER] to continue");
     line <- readline();
 }
