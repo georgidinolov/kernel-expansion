@@ -29,59 +29,64 @@ n.samples <- 100;
 data <- load.data.from.csv(
     "~/research/PDE-solvers/data/data-set-1.csv");
 
-## data.files.list <- list.files(path = "~/research/PDE-solvers/data",
-##                              pattern = "data-set-*", full.names = TRUE);
-## print(data.files.list);
+data.files.list <- list.files(path = "~/research/PDE-solvers/data",
+                              pattern = "data-set-*",
+                              full.names = TRUE);
+print(data.files.list);
+data.files.list <- data.files.list[-c(42,43)];
 
-## cl <- makeCluster(4);
-## estimates.mle <- parLapply(cl=cl, X=data.files.list,
-##                            function(x) {
-##                                source("2-d-solution.R");
-##                                library("mvtnorm");
-##                                data <- load.data.from.csv(x);
-##                                mles <- mle.estimator.no.boundary(data, 1, 1, 0.0);
-##                                return(mles);
-##                            });
-## stopCluster(cl);
+cl <- makeCluster(4);
+estimates.mle <- parLapply(cl=cl, X=data.files.list,
+                           function(x) {
+                               source("2-d-solution.R");
+                               library("mvtnorm");
+                               data <- load.data.from.csv(x);
+                               mles <- mle.estimator.no.boundary(data, 1, 1, 0.0);
+                               return(mles);
+                           });
+stopCluster(cl);
 
-## estimates.mle.rhos <- rep(NA, length(estimates.mle));
-## for (i in seq(1,length(estimates.mle))) {
-##     estimates.mle.rhos[i] = estimates.mle[[i]]$rho.mle;
-## }
-## sqrt(mean((estimates.mle.rhos-0.8)^2));
+estimates.mle.rhos <- rep(NA, length(estimates.mle));
+for (i in seq(1,length(estimates.mle))) {
+    estimates.mle.rhos[i] = estimates.mle[[i]]$rho.mle;
+}
+sqrt(mean((estimates.mle.rhos + 0.6)^2));
 
-## results.files.list <- list.files(path = "~/research/PDE-solvers/data",
-##                               pattern = "order-64-rel-tol", full.names = TRUE);
-## print(results.files.list);
-## estimates.fd <- rep(NA,length(results.files.list));
-## for (i in seq(1,length(results.files.list))) {
-##     mles <- load.results.from.csv(results.files.list[i]);
-##     if(!is.null(mles)) {
-##         estimates.fd[i] <- mles$rho;
-##     }
-## }
-## sqrt(mean((estimates.fd[!is.na(estimates.fd)]-0.8)^2));
+results.files.list <- list.files(path = "~/research/PDE-solvers/data",
+                              pattern = "order-32-rel-tol", full.names = TRUE);
+print(results.files.list);
+estimates.fd <- rep(NA,length(results.files.list));
+for (i in seq(1,length(results.files.list))) {
+    mles <- load.results.from.csv(results.files.list[i]);
+    if(!is.null(mles)) {
+        estimates.fd[i] <- mles$rho;
+    }
+}
+sqrt(mean((estimates.fd[!is.na(estimates.fd)]+0.6)^2));
+hist(estimates.fd[!is.na(estimates.fd)], 100, prob = T);
+lines(density(estimates.fd[!is.na(estimates.fd)]));
+abline(v = c(-0.6, 0.6), lwd = 2, col = "red");
 
-## estimates.rogers <- estimator.rodgers(data.files.list, 0.8);
+estimates.rogers <- estimator.rodgers(data.files.list, -0.6);
 
-## y.lims <- c(0,
-##             max(max(density(estimates.fd[!is.na(estimates.fd)])$y),
-##                 max(density(estimates.mle.rhos)$y),
-##                 max(density(estimates.rogers)$y)));
+y.lims <- c(0,
+            max(max(density(estimates.fd[!is.na(estimates.fd)])$y),
+                max(density(estimates.mle.rhos)$y),
+                max(density(estimates.rogers)$y)));
 
-## x.lims <- c(min(min(density(estimates.fd[!is.na(estimates.fd)])$x),
-##                 min(density(estimates.mle.rhos)$x),
-##                 min(density(estimates.rogers)$x)),
-##             max(max(density(estimates.fd[!is.na(estimates.fd)])$x),
-##                 max(density(estimates.mle.rhos)$x),
-##                 max(density(estimates.rogers)$x)));
+x.lims <- c(min(min(density(estimates.fd[!is.na(estimates.fd)])$x),
+                min(density(estimates.mle.rhos)$x),
+                min(density(estimates.rogers)$x)),
+            max(max(density(estimates.fd[!is.na(estimates.fd)])$x),
+                max(density(estimates.mle.rhos)$x),
+                max(density(estimates.rogers)$x)));
 
-## plot(density(estimates.fd[!is.na(estimates.fd)]),
-##      ylim=y.lims,
-##      xlim=x.lims);
-## lines(density(estimates.mle.rhos),col="red");
-## lines(density(estimates.rogers),col="green");
-## abline(v=rho.true, col="red", lwd=2);
+plot(density(estimates.fd[!is.na(estimates.fd)]),
+     ylim=y.lims,
+     xlim=x.lims);
+lines(density(estimates.mle.rhos),col="red");
+lines(density(estimates.rogers),col="green");
+abline(v=rho.true, col="red", lwd=2);
 
 problem.parameters <- data[[1]];
 problem.parameters$K.prime <- K.prime;
@@ -93,7 +98,7 @@ function.list <- vector("list", K);
 x <- seq(0,1,by=dx);
 y <- seq(0,1,by=dy);
 
-sigma=0.15;
+sigma=0.25;
 sigma2=sigma^2;
 l=1;
 function.list <-
@@ -108,8 +113,8 @@ orthonormal.function.list <- orthonormal.functions(function.list,
                                                    FALSE);
 system.mats <- system.matrices(orthonormal.function.list,
                                dx,dy);
+Delta = 1/128;
 
-Delta = 1/256;
 for (n in seq(1,length(data))) {
     par(mfrow=c(3,2));
     problem.parameters.original <- data[[n]];
@@ -135,7 +140,7 @@ for (n in seq(1,length(data))) {
                      system.mats,
                      problem.parameters.current,
                      dx,dy,
-                     TRUE, FALSE) *
+                     FALSE, FALSE) *
              1.0/((problem.parameters.current$bx-
                  problem.parameters.current$ax)^1 *
                 (problem.parameters.current$by-
@@ -154,8 +159,6 @@ for (n in seq(1,length(data))) {
         problem.parameters.original$sigma.2.y <-
             problem.parameters.generate.data$sigma.2.y;
         
-        ## problem.parameters.original$rho <- -0.80;
-        
         problem.parameters.original$rho <-
             problem.parameters.generate.data$rho;
         
@@ -165,7 +168,6 @@ for (n in seq(1,length(data))) {
         index = 1 +
             abs(i)*1;
         print(c(index,i));
-        problem.parameters.current = problem.parameters.original;
         
         problem.parameters.current$ax <- 
 		      	problem.parameters.original$ax - Delta*i;
