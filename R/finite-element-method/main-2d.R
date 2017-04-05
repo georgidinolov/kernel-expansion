@@ -8,7 +8,7 @@ PLOT.SOLUTION = TRUE;
 dx = 0.005;
 dy = 0.005;
 K.prime = 12;
-rho.true = -0.8;
+rho.true = 0.8;
 
 problem.parameters.generate.data = NULL;
 problem.parameters.generate.data$t <- 1;
@@ -18,13 +18,15 @@ problem.parameters.generate.data$t <- 1;
 ## problem.parameters.generate.data$rho <- -0.708294;
 
 problem.parameters.generate.data$sigma.2.x <- 1^2;
-problem.parameters.generate.data$sigma.2.y <- 1^2;
-problem.parameters.generate.data$rho <- 0.0;
+problem.parameters.generate.data$sigma.2.y <- 0.1^2;
+problem.parameters.generate.data$rho <- rho.true;
 
 problem.parameters.generate.data$x.ic <- 0;
 problem.parameters.generate.data$y.ic <- 0;
 dt <- problem.parameters.generate.data$t/1000;
 n.samples <- 100;
+
+data <- sample.process(n.samples, dt, problem.parameters.generate.data);
 
 data <- load.data.from.csv(
     "~/research/PDE-solvers/data/data-set-1.csv");
@@ -98,7 +100,7 @@ function.list <- vector("list", K);
 x <- seq(0,1,by=dx);
 y <- seq(0,1,by=dy);
 
-sigma=0.25;
+sigma=0.20;
 sigma2=sigma^2;
 l=1;
 function.list <-
@@ -140,7 +142,7 @@ for (n in seq(1,length(data))) {
                      system.mats,
                      problem.parameters.current,
                      dx,dy,
-                     FALSE, FALSE) *
+                     TRUE, FALSE) *
              1.0/((problem.parameters.current$bx-
                  problem.parameters.current$ax)^1 *
                 (problem.parameters.current$by-
