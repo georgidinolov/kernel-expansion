@@ -1,110 +1,3 @@
-estimator.rodgers <- function(data.files.list,
-                              rho.true) {
-    dx = 0.001;
-    nu = seq(dx, 100, by=dx);
-    b = 2*log(2) - 1;
-        
-    rhos <- seq(-1+dx, 1-dx, by=0.005);
-    phis <- rep(NA, length(rhos));
-    for (rho in rhos) {
-        alpha.pos = asin(rho);
-        gamma.pos = (alpha.pos + pi/2)/2;
-        fs.pos <- cos(alpha.pos) *
-            sum(cosh(nu*alpha.pos)/sinh(nu*pi/2)*tanh(nu*gamma.pos))*dx
-
-        alpha.neg <- asin(-rho);
-        gamma.neg <- (alpha.neg + pi/2)/2;
-        fs.neg <- cos(alpha.neg) *
-            sum(cosh(nu*alpha.neg)/sinh(nu*pi/2)*tanh(nu*gamma.neg))*dx
-        
-        phis[which(rhos==rho)] = 0.5*rho +
-            1/(2*(1-2*b))*(2*fs.pos -
-                           2*fs.neg - rho);
-        print(rho);
-    }
-    plot(rhos, phis, type = "l");
-
-    estimates <- rep(NA, length(data.files.list));
-    for (i in seq(1,length(data.files.list))) {
-        file <- data.files.list[[i]];
-        data <- load.data.from.csv(file);
-        
-        b = 2*log(2) - 1;
-        rho.0.hats = rep(NA, length(data));
-        rho.rz.hats = rep(NA, length(data));
-        for (n in seq(1,length(data))) {
-            rho.rz.hats[n] =
-                (0.5*data[[n]]$x.fc*data[[n]]$y.fc +
-                 1/(2*(1-2*b))*
-                 (data[[n]]$bx + data[[n]]$ax - data[[n]]$x.fc)*
-                 (data[[n]]$by + data[[n]]$ay - data[[n]]$y.fc));
-
-            rho.0.hats[n] =
-                (data[[n]]$x.fc*data[[n]]$y.fc);
-        }
-        r.bar = mean(rho.rz.hats);
-        index <- which(abs(phis-r.bar) == min(abs(phis-r.bar)))
-        rho.rz.estimate <- rhos[index];
-        estimates[i] = rho.rz.estimate;
-        print(paste("rho.estimate = ", estimates[i],
-                    "; rho.true = ", rho.true,
-                    "; sd(rho.estimate) = ", sd(rho.rz.hats)),
-              sep="");
-    }
-    MSE <- sqrt(mean((estimates-rho.true)^2));
-    sd(estimates);
-
-    plot(density(estimates));
-
-    print(paste("MSE = ", MSE, sep=""));
-    return (estimates);
-}
-
-mle.estimator.no.boundary <- function(data,
-                                      sigma.x.ic, sigma.y.ic, rho.ic) {
-    neg.log.likelihood <- function(par, data) {
-        sigma.x <- exp(par[1]);
-        sigma.y <- exp(par[2]);
-        rho <- 2*exp(par[3])/(exp(par[3])+1) - 1;
-
-        Sigma <- matrix(nrow=2,ncol=2,
-                        byrow=T,
-                        data=c(c(sigma.x^2, rho*sigma.x*sigma.y),
-                               c(rho*sigma.x*sigma.y, sigma.y^2)));
-        
-        neg.ll.tilde <- 0;
-        for (n in seq(1,length(data))) {
-            neg.ll.tilde = neg.ll.tilde -
-                (dmvnorm(x=c(data[[n]]$x.fc, data[[n]]$y.fc),
-                        mean = c(0,0),
-                        sigma = Sigma, log=TRUE));
-        }
-
-        neg.ll.tilde = neg.ll.tilde -
-            ((par[1]) + (par[2]) +
-             (log(2) + par[3] - 2*log(exp(par[3]) + 1)));
-
-        return (neg.ll.tilde);
-    }
-
-    opt <- optim(par = c(log(sigma.x.ic), log(sigma.y.ic),
-                         log( ((rho.ic+1)/2) /
-                              (1-((rho.ic+1)/2)) )),
-                 fn = neg.log.likelihood,
-                 method = "Nelder-Mead",
-                 data = data)
-
-    print(c(exp(opt$par[1]),
-            exp(opt$par[2]),
-            2*exp(opt$par[3])/(exp(opt$par[3])+1) - 1));
-
-    out = NULL;
-    out$sigma.x.mle <- exp(opt$par[1]);
-    out$sigma.y.mle <- exp(opt$par[2]);
-    out$rho.mle <- 2*exp(opt$par[3])/(exp(opt$par[3])+1) - 1;
-    return(out);
-}
-
 load.data.from.csv <- function(data.set.file) {
     input.data <- read.csv(file= data.set.file, header = TRUE, sep = ",");
     n <- dim(input.data)[1];
@@ -126,17 +19,6 @@ load.data.from.csv <- function(data.set.file) {
         data[[i]]$y.fc <- input.data$y_T[i];
     }
     return (data);
-}
-
-load.results.from.csv <- function(data.set.file) {
-    res = try(read.csv(file= data.set.file, header = TRUE, sep = ","));
-    out = NULL;
-    if (class(res) != "try-error") {
-        input.data <- read.csv(file= data.set.file, header = TRUE, sep = ",");
-    out$sigma.x = input.data$sigma_x;
-    out$sigma.y = input.data$sigma_y;
-    out$rho = input.data$rho;}
-    return (out);
 }
 
 
@@ -170,14 +52,14 @@ rescale.problem <- function(problem.parameters.original) {
     x.current <- x.current / L.x;
     ax <- ax / L.x;
     bx <- bx / L.x;
-    sigma.2.x <- 1/ (L.x^2);
+    sigma.2.x <- sigma.2.x/ (L.x^2);
     
     L.y <- by-ay;
     y.ic <- y.ic / L.y;
     y.current <- y.current / L.y;
     ay <- ay / L.y;
     by <- by / L.y;
-    sigma.2.y <- 1/ (L.y^2);
+    sigma.2.y <- sigma.2.y/ (L.y^2);
     
     out <- problem.parameters.original;
     out$x.ic <- x.ic;
@@ -530,10 +412,10 @@ product.coefficient <- function(raw.function.params.1,
 ## output = x^l*(1-x)^l*y^l*(1-y)^l*N(c(x,y)| mu, epsilon);
 basis.function.normal.kernel <- function(x,y,function.params) {
     return( rep(x,length(y))^l*(1-rep(x,length(y)))^l*y^l*(1-y)^l*
-            dmvnorm(x=cbind(rep(x,length(y)),
+            (dmvnorm(x=cbind(rep(x,length(y)),
                             y),
                     mean = function.params$mu,
-                    sigma = function.params$epsilon));
+                    sigma = function.params$epsilon)) );
 }
 
 basis.function.normal.kernel.xy <- function(x,y,function.params) {
@@ -662,27 +544,29 @@ project.numeric <- function(function.1, function.2,
 deriv.x.numeric <- function(function.1,
                             dx,dy) {
 
-    x.length = length(function.1[,1]);
+    y.length = length(function.1[,1]);
+    x.length = length(function.1[1,]);   
     
-    out <- sapply(X=seq(1,length(function.1[1,])),
+    out <- sapply(X=seq(1,y.length),
                   FUN = function(x) {
-                      return((function.1[-1,x]-
-                              function.1[-x.length,x])/dx);
+                      return((function.1[x,-1]-
+                              function.1[x,-x.length])/dx);
                   });
-    return(out);
+    return(t(out));
 }
 
 deriv.y.numeric <- function(function.1,
                             dx,dy) {
 
-    y.length = length(function.1[1,]);
+    y.length = length(function.1[,1]);
+    x.length = length(function.1[1,]);   
     
-    out <- sapply(X=seq(1,length(function.1[,1])),
+    out <- sapply(X=seq(1,x.length),
                   FUN = function(x) {
-                      return((function.1[x,-1]-
-                              function.1[x,-y.length])/dy);
+                      return((function.1[-1,x]-
+                              function.1[-y.length,x])/dy);
                   });
-    return(t(out));
+    return(out);
 }
 
 project <- function(raw.function.params.1,
@@ -1694,14 +1578,14 @@ basis.functions.normal.kernel <- function(rho,
         function.list[[k]] = basis.function.normal.kernel.xy(x, y, function.params);
     }
 
-    if (ceiling(sqrt(K)) <= 15) {
-        par(mfrow=c(ceiling(sqrt(K)),
-                    ceiling(sqrt(K))),
-            mai=c(0.1,0.1,0.1,0.1));
-        for (k in seq(1,K)) {
-            contour(x,y,function.list[[k]]);
-        }
-    }
+    ## if (ceiling(sqrt(K)) <= 15) {
+    ##     par(mfrow=c(ceiling(sqrt(K)),
+    ##                 ceiling(sqrt(K))),
+    ##         mai=c(0.1,0.1,0.1,0.1));
+    ##     for (k in seq(1,K)) {
+    ##         contour(x,y,function.list[[k]]);
+    ##     }
+    ## }
     return (function.list);
 }
 
@@ -1738,14 +1622,14 @@ orthonormal.functions <- function(function.list,
                                                      dx,dy);
                 
                 orthonormal.function.list[[k]] =
-                    orthonormal.function.list[[k]] +
+		                    orthonormal.function.list[[k]] +
                     coefficients[k,l]*orthonormal.function.list[[l]];
 
-                orthonormal.function.list[[k]] =
-                    orthonormal.function.list[[k]] /
-                    sqrt(project.numeric(orthonormal.function.list[[k]],
-                                         orthonormal.function.list[[k]],
-                                         dx,dy));
+                 orthonormal.function.list[[k]] =
+                     orthonormal.function.list[[k]] /
+                     sqrt(project.numeric(orthonormal.function.list[[k]],
+                                          orthonormal.function.list[[k]],
+                                          dx,dy));
             }
             coefficients[k,k] = 1;
             
@@ -1805,13 +1689,13 @@ system.matrices <- function(orthonormal.function.list,
                                 dx,dy);
 
             derivative.xy.matrix[k,l] =
-                project.numeric(current.basis.dx.k[,-length(y)],
-                                current.basis.dy.l[-length(x),],
+                project.numeric(current.basis.dx.k[-length(y),],
+                                current.basis.dy.l[,-length(x)],
                                 dx,dy);
 
             derivative.yx.matrix[k,l] =
-                project.numeric(current.basis.dy.k[-length(x),],
-                                current.basis.dx.l[,-length(y)],
+                project.numeric(current.basis.dy.k[,-length(x)],
+                                current.basis.dx.l[-length(y),],
                                 dx,dy);
         }
         print(k);
@@ -1899,6 +1783,8 @@ blackbox <- function(function.list,
     x.fc.index = which(abs(x-problem.parameters$x.fc)<=dx/2);
     y.fc.index = which(abs(y-problem.parameters$y.fc)<=dy/2);
 
+    print(c(x.fc.index, y.fc.index));
+
     small.t.solution <- bivariate.solution.classical(dx,dy,
                                                      problem.parameters,
                                                      PLOT.SOLUTION);
@@ -1911,6 +1797,7 @@ blackbox <- function(function.list,
     }
     IC.vec <- solve(system.mats$mass.mat, IC.vec);
     problem.parameters$t <- 1 - small.t.solution$tt;
+    print(paste("small.t.solution$tt = ", small.t.solution$tt, sep=""));
 
     if (PLOT.SOLUTION) {
         IC.approx <- bivariate.solution.approx(orthonormal.function.list,

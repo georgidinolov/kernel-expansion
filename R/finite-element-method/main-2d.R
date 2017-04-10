@@ -1,5 +1,4 @@
 rm(list=ls());
-library("parallel");
 library("mvtnorm");
 source("2-d-solution.R");
 source("../classical-solution/2-d-solution.R");
@@ -8,19 +7,12 @@ PLOT.SOLUTION = TRUE;
 dx = 0.005;
 dy = 0.005;
 K.prime = 12;
-rho.true = 0.8;
 
 problem.parameters.generate.data = NULL;
 problem.parameters.generate.data$t <- 1;
-
-## problem.parameters.generate.data$sigma.2.x <- 0.986379^2;
-## problem.parameters.generate.data$sigma.2.y <- 0.986379^2;
-## problem.parameters.generate.data$rho <- -0.708294;
-
-problem.parameters.generate.data$sigma.2.x <- 1^2;
-problem.parameters.generate.data$sigma.2.y <- 0.1^2;
-problem.parameters.generate.data$rho <- rho.true;
-
+problem.parameters.generate.data$sigma.2.x <- 1.0^2;
+problem.parameters.generate.data$sigma.2.y <- 0.25^2;
+problem.parameters.generate.data$rho <- 0.4;
 problem.parameters.generate.data$x.ic <- 0;
 problem.parameters.generate.data$y.ic <- 0;
 dt <- problem.parameters.generate.data$t/1000;
@@ -28,67 +20,23 @@ n.samples <- 100;
 
 data <- sample.process(n.samples, dt, problem.parameters.generate.data);
 
-data <- load.data.from.csv(
-    "~/research/PDE-solvers/data/data-set-1.csv");
+ax = -0.48827288707862964711736708522949;
+x_T = 0.30241354010724963430334355507512;
+bx = 0.64797920985140089467080315444036;
+ay = -0.00167401308935050943324518435418;
+y_T = 0.15583755504239005240663118456723;
+by = 0.26253747705908508924821376240288;
 
-data.files.list <- list.files(path = "~/research/PDE-solvers/data",
-                              pattern = "data-set-*",
-                              full.names = TRUE);
-print(data.files.list);
-data.files.list <- data.files.list[-c(42,43)];
+data[[1]]$ax = -0.488273
+data[[1]]$x.fc = 0.302414
+data[[1]]$bx = 0.647979
 
-cl <- makeCluster(4);
-estimates.mle <- parLapply(cl=cl, X=data.files.list,
-                           function(x) {
-                               source("2-d-solution.R");
-                               library("mvtnorm");
-                               data <- load.data.from.csv(x);
-                               mles <- mle.estimator.no.boundary(data, 1, 1, 0.0);
-                               return(mles);
-                           });
-stopCluster(cl);
+data[[1]]$ay = -0.00167401
+data[[1]]$y.fc = 0.155838
+data[[1]]$by = 0.262537
 
-estimates.mle.rhos <- rep(NA, length(estimates.mle));
-for (i in seq(1,length(estimates.mle))) {
-    estimates.mle.rhos[i] = estimates.mle[[i]]$rho.mle;
-}
-sqrt(mean((estimates.mle.rhos + 0.6)^2));
-
-results.files.list <- list.files(path = "~/research/PDE-solvers/data",
-                              pattern = "order-32-rel-tol", full.names = TRUE);
-print(results.files.list);
-estimates.fd <- rep(NA,length(results.files.list));
-for (i in seq(1,length(results.files.list))) {
-    mles <- load.results.from.csv(results.files.list[i]);
-    if(!is.null(mles)) {
-        estimates.fd[i] <- mles$rho;
-    }
-}
-sqrt(mean((estimates.fd[!is.na(estimates.fd)]+0.6)^2));
-hist(estimates.fd[!is.na(estimates.fd)], 100, prob = T);
-lines(density(estimates.fd[!is.na(estimates.fd)]));
-abline(v = c(-0.6, 0.6), lwd = 2, col = "red");
-
-estimates.rogers <- estimator.rodgers(data.files.list, -0.6);
-
-y.lims <- c(0,
-            max(max(density(estimates.fd[!is.na(estimates.fd)])$y),
-                max(density(estimates.mle.rhos)$y),
-                max(density(estimates.rogers)$y)));
-
-x.lims <- c(min(min(density(estimates.fd[!is.na(estimates.fd)])$x),
-                min(density(estimates.mle.rhos)$x),
-                min(density(estimates.rogers)$x)),
-            max(max(density(estimates.fd[!is.na(estimates.fd)])$x),
-                max(density(estimates.mle.rhos)$x),
-                max(density(estimates.rogers)$x)));
-
-plot(density(estimates.fd[!is.na(estimates.fd)]),
-     ylim=y.lims,
-     xlim=x.lims);
-lines(density(estimates.mle.rhos),col="red");
-lines(density(estimates.rogers),col="green");
-abline(v=rho.true, col="red", lwd=2);
+## data <- load.data.from.csv(
+##     "~/research/PDE-solvers/src/brownian-motion/data-set-2.csv");
 
 problem.parameters <- data[[1]];
 problem.parameters$K.prime <- K.prime;
@@ -100,7 +48,50 @@ function.list <- vector("list", K);
 x <- seq(0,1,by=dx);
 y <- seq(0,1,by=dy);
 
-sigma=0.20;
+## alpha.minus.1.xs <- rep(NA,K);
+## alpha.minus.1.ys <- rep(NA,K);
+## for (k in seq(1,K)) {
+##     alpha.minus.1.y <- ceiling(k/(K.prime-1));
+##     alpha.minus.1.x <- k - ((K.prime-1) * (alpha.minus.1.y-1));
+    
+##     alpha.minus.1.ys[k] <- alpha.minus.1.y;
+##     alpha.minus.1.xs[k] <- alpha.minus.1.x;
+## }
+## alpha.xs <- alpha.minus.1.xs + 1;
+## alpha.ys <- alpha.minus.1.ys + 1;
+## ## alpha + beta = K.prime + 2
+
+## x.basis.coors <- alpha.minus.1.xs / (K.prime);
+## y.basis.coors <- alpha.minus.1.ys / (K.prime);
+
+## sort.bases <- sort.int(sqrt((x.basis.coors-0.5)^2 +
+##                             (y.basis.coors-0.5)^2),
+##                        index.return = TRUE);
+## alpha.xs <- alpha.xs[sort.bases$ix];
+## alpha.ys <- alpha.ys[sort.bases$ix];
+
+## for (k in seq(1,K)) {
+##     alpha.x <- alpha.xs[k];
+##     alpha.y <- alpha.ys[k];
+##     print(c(alpha.x,alpha.y));
+##     function.params <- c(alpha.x, alpha.y);
+    
+##     function.list[[k]] <-
+##         basis.function.xy(x,y,
+##                           function.params,
+##                           problem.parameters);
+## }
+
+## par(mfrow=c(ceiling(sqrt(K)),
+##             ceiling(sqrt(K))));
+## par(mar = c(5,4,2,1));
+## if (PLOT.SOLUTION) {
+##     for (k in seq(1,K)) {
+##         contour(x,y,function.list[[k]]);
+##     }
+## }
+
+sigma=0.30;
 sigma2=sigma^2;
 l=1;
 function.list <-
@@ -115,143 +106,35 @@ orthonormal.function.list <- orthonormal.functions(function.list,
                                                    FALSE);
 system.mats <- system.matrices(orthonormal.function.list,
                                dx,dy);
-Delta = 1/128;
 
 for (n in seq(1,length(data))) {
     par(mfrow=c(3,2));
     problem.parameters.original <- data[[n]];
     problem.parameters.original$K.prime <- K.prime;
     problem.parameters.original$number.terms <- 100;
-
-    problem.parameters.original$sigma.2.x <-
-        problem.parameters.generate.data$sigma.2.x;
-
-    problem.parameters.original$sigma.2.y <-
-        problem.parameters.generate.data$sigma.2.y;
-
-    ## problem.parameters.original$rho <- -0.80;
-
-    problem.parameters.original$rho <-
-         problem.parameters.generate.data$rho;
-	 
-    problem.parameters.current =
-         problem.parameters.original;
-
     l2.1 <- blackbox(function.list,
                      orthonormal.function.list,
                      system.mats,
-                     problem.parameters.current,
+                     problem.parameters.original,
                      dx,dy,
-                     TRUE, FALSE) *
-             1.0/((problem.parameters.current$bx-
-                 problem.parameters.current$ax)^1 *
-                (problem.parameters.current$by-
-                 problem.parameters.current$ay)^1);
-    print(paste("l2.1 = ", l2.1, sep=""));
-
-    values = rep(NA, 2);
-    for (i in c(0,1)) {
-        problem.parameters.original <- data[[n]];
-        problem.parameters.original$K.prime <- K.prime;
-        problem.parameters.original$number.terms <- 100;
-        
-        problem.parameters.original$sigma.2.x <-
-            problem.parameters.generate.data$sigma.2.x;
-        
-        problem.parameters.original$sigma.2.y <-
-            problem.parameters.generate.data$sigma.2.y;
-        
-        problem.parameters.original$rho <-
-            problem.parameters.generate.data$rho;
-        
-        problem.parameters.current =
-            problem.parameters.original;
-        
-        index = 1 +
-            abs(i)*1;
-        print(c(index,i));
-        
-        problem.parameters.current$ax <- 
-		      	problem.parameters.original$ax - Delta*i;
-
-        value = (-1)^(i) * 
-            blackbox(function.list,
-                     orthonormal.function.list,
-                     system.mats,
-                     problem.parameters.current,
-                     dx,dy,
-                     FALSE, FALSE) *
-             1.0/((problem.parameters.current$bx-
-                 problem.parameters.current$ax)^1 *
-                (problem.parameters.current$by-
-                 problem.parameters.current$ay)^1)
-
-        values[index] = value;
-    }
-    print(-sum(values)/Delta);
+                     TRUE,TRUE);
+    print (l2.1 *
+           1.0/((problem.parameters.original$bx-
+                 problem.parameters.original$ax) *
+                (problem.parameters.original$by-
+                 problem.parameters.original$ay)));
     
-    values = rep(NA, 16);
-    for (i in c(1,0)) {
-    	for (j in c(1,0)) {
-	    for (k in c(1,0)) {
-	    	for (l in c(1,0)) {
-                    problem.parameters.original <- data[[n]];
-                    problem.parameters.original$K.prime <- K.prime;
-                    problem.parameters.original$number.terms <- 100;
-                    
-                    problem.parameters.original$sigma.2.x <-
-                        problem.parameters.generate.data$sigma.2.x;
-                    
-                    problem.parameters.original$sigma.2.y <-
-                        problem.parameters.generate.data$sigma.2.y;
-                    
-                    ## problem.parameters.original$rho <- -0.80;
-                    
-                    problem.parameters.original$rho <-
-                        problem.parameters.generate.data$rho;
-                    
-                    problem.parameters.current =
-                        problem.parameters.original;
-                    
-		    index = 1 +
-		    	  abs(i)*1 +
-			  abs(j)*2 +
-			  abs(k)*4 +
-			  abs(l)*8;
-	            print(c(index,i,j,k,l));
-		    problem.parameters.current = problem.parameters.original;
+    ## problem.parameters.original$ax <- problem.parameters.original$ax - dx;
+    ## l2.2 <- blackbox(function.list,
+    ##                orthonormal.function.list,
+    ##                system.mats,
+    ##                problem.parameters.original,
+    ##                dx,dy,
+    ##                FALSE,FALSE);
 
-		    problem.parameters.current$ax <- 
-		      	problem.parameters.original$ax - Delta*i;
+    ## -(l2.1-l2.2)/dx;
 
-		    problem.parameters.current$bx <- 
-		      	problem.parameters.original$bx + Delta*j;
-
-		    problem.parameters.current$ay <- 
-		      	problem.parameters.original$ay - Delta*k;
-
-		    problem.parameters.current$by <- 
-		      	problem.parameters.original$by + Delta*l;
-
-		    value = (-1)^(i+j+k+l+1) * 
-		    	 blackbox(function.list,
-                                  orthonormal.function.list,
-                                  system.mats,
-                     problem.parameters.current,
-                     dx,dy,
-                     FALSE, FALSE) *
-             1.0/((problem.parameters.current$bx-
-                 problem.parameters.current$ax)^3 *
-                (problem.parameters.current$by-
-                 problem.parameters.current$ay)^3)
-
-		    values[index] = value;
-		}
-	    }
-        }	
-    }
-    print (sum(values)/Delta^4)
-
+    print(paste("n=", n, "; l2.1 = ", l2.1));   
     cat("Press [ENTER] to continue");
     line <- readline();
 }
