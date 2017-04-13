@@ -27,13 +27,13 @@ ay = -0.00167401308935050943324518435418;
 y_T = 0.15583755504239005240663118456723;
 by = 0.26253747705908508924821376240288;
 
-data[[1]]$ax = -0.488273
-data[[1]]$x.fc = 0.302414
-data[[1]]$bx = 0.647979
+data[[1]]$ax = ax;
+data[[1]]$x.fc = x_T;
+data[[1]]$bx = bx;
 
-data[[1]]$ay = -0.00167401
-data[[1]]$y.fc = 0.155838
-data[[1]]$by = 0.262537
+data[[1]]$ay = ay;
+data[[1]]$y.fc = y_T;
+data[[1]]$by = by;
 
 ## data <- load.data.from.csv(
 ##     "~/research/PDE-solvers/src/brownian-motion/data-set-2.csv");
