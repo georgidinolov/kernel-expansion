@@ -1776,7 +1776,7 @@ blackbox <- function(function.list,
     eig <- eigen(solve(mass.mat) %*% stiff.mat);
     ## eig <- eigen(stiff.mat);
     ## ## eigenvalues END ###
-    
+        
     ## ## ICs START ###
     x.ic.index = which(abs(x-problem.parameters$x.ic)<=dx/2);
     y.ic.index = which(abs(y-problem.parameters$y.ic)<=dy/2);

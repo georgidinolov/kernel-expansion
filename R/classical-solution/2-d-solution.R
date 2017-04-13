@@ -314,7 +314,7 @@ bivariate.solution.classical <- function(dx, dy, problem.parameters,
     big.solution <- matrix(nrow = length(xx),
                            ncol = length(yy),
                            data = 0);
-    tt <- (sorted.Cs$x[2]/4)^2;
+    tt <- (sorted.Cs$x[2]/5)^2;
     Max <- dmvnorm(x=c(xi.ic,eta.ic),mean=c(xi.ic,eta.ic),sigma=diag(rep(tt,2)))/
         (sigma.x*sigma.y*sqrt(1-rho)*sqrt(1+rho))
     xi.ic.reflected = 2*sorted.Cs$x[1]*cos(ss.s[sorted.Cs$ix[1]]) + xi.ic;
@@ -333,9 +333,9 @@ bivariate.solution.classical <- function(dx, dy, problem.parameters,
     
     for (ii in seq(1,length(xx))) {
         xieta <- T.mat %*% rbind(rep(xx[ii], length(yy)),
-                         yy);
+                                 yy);
         
-        big.solution[ii,] = (dmvnorm(t(xieta),
+        big.solution[,ii] = (dmvnorm(t(xieta),
                                      mean=c(xi.ic,eta.ic),
                                      sigma=diag(rep(tt,2))) -
                              dmvnorm(t(xieta),
