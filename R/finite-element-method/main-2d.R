@@ -4,15 +4,15 @@ source("2-d-solution.R");
 source("../classical-solution/2-d-solution.R");
 
 PLOT.SOLUTION = TRUE;
-dx = 0.005;
-dy = 0.005;
+dx = 0.002;
+dy = 0.002;
 K.prime = 12;
 
 problem.parameters.generate.data = NULL;
 problem.parameters.generate.data$t <- 1;
 problem.parameters.generate.data$sigma.2.x <- 1.0^2;
 problem.parameters.generate.data$sigma.2.y <- 0.25^2;
-problem.parameters.generate.data$rho <- 0.4;
+problem.parameters.generate.data$rho <- 0.0;
 problem.parameters.generate.data$x.ic <- 0;
 problem.parameters.generate.data$y.ic <- 0;
 dt <- problem.parameters.generate.data$t/1000;
@@ -20,9 +20,9 @@ n.samples <- 100;
 
 data <- sample.process(n.samples, dt, problem.parameters.generate.data);
 
-ax = -0.48827288707862964711736708522949;
-x_T = 0.30241354010724963430334355507512;
-bx = 0.64797920985140089467080315444036;
+ax = -0.72369188603481704458175727268099;
+x_T = 0.05790788365792873954029928995624;
+bx = 0.52428012475170060469054078566842;
 ay = -0.00167401308935050943324518435418;
 y_T = 0.15583755504239005240663118456723;
 by = 0.26253747705908508924821376240288;

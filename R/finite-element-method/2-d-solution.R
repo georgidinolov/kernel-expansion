@@ -1737,7 +1737,7 @@ blackbox <- function(function.list,
     source("../classical-solution/2-d-solution.R");
 
     problem.parameters = rescale.problem(problem.parameters.original);
-    K = length(function.list);
+    K = length(orthonormal.function.list);
 
     K.prime = sqrt(K);
     problem.parameters$K.prime <- K.prime;
