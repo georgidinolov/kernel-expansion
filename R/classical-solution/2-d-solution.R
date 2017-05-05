@@ -314,11 +314,12 @@ bivariate.solution.classical <- function(dx, dy, problem.parameters,
     big.solution <- matrix(nrow = length(xx),
                            ncol = length(yy),
                            data = 0);
-    tt <- (sorted.Cs$x[2]/2)^2;
+    tt <- (sorted.Cs$x[2]/6)^2;
     Max <- dmvnorm(x=c(xi.ic,eta.ic),mean=c(xi.ic,eta.ic),sigma=diag(rep(tt,2)))/
         (sigma.x*sigma.y*sqrt(1-rho)*sqrt(1+rho))
     xi.ic.reflected = 2*sorted.Cs$x[1]*cos(ss.s[sorted.Cs$ix[1]]) + xi.ic;
     eta.ic.reflected = 2*sorted.Cs$x[1]*sin(ss.s[sorted.Cs$ix[1]]) + eta.ic;
+    points(xi.ic.reflected, eta.ic.reflected, col = "purple");
 
     kernel <- function(xieta,tt) {
         out <- (dmvnorm(t(xieta),
@@ -345,7 +346,7 @@ bivariate.solution.classical <- function(dx, dy, problem.parameters,
 
         if (PLOT.SOLUTION) {
             points(xieta[1,],xieta[2,], pch=20,
-                   col=rgb(abs(big.solution[ii,]/Max),0,0));
+                   col=rgb(abs(big.solution[,ii]/Max),0,0));
         }
     }
 

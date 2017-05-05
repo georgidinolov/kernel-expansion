@@ -1780,8 +1780,10 @@ blackbox <- function(function.list,
     ## ## ICs START ###
     x.ic.index = which(abs(x-problem.parameters$x.ic)<=dx/2);
     y.ic.index = which(abs(y-problem.parameters$y.ic)<=dy/2);
-    x.fc.index = which(abs(x-problem.parameters$x.fc)<=dx/2);
-    y.fc.index = which(abs(y-problem.parameters$y.fc)<=dy/2);
+    ## x.fc.index = which(abs(x-problem.parameters$x.fc)<=dx/2);
+    ## y.fc.index = which(abs(y-problem.parameters$y.fc)<=dy/2);
+    x.fc.index = round(problem.parameters$x.fc/dx) + 1;
+    y.fc.index = round(problem.parameters$y.fc/dx) + 1;
 
     print(c(x.fc.index, y.fc.index));
 
@@ -1796,7 +1798,7 @@ blackbox <- function(function.list,
                                sum)*dy)*dx;
     }
     IC.vec <- solve(system.mats$mass.mat, IC.vec);
-    problem.parameters$t <- 1 - small.t.solution$tt;
+    problem.parameters$t <- problem.parameters$t - small.t.solution$tt;
     print(paste("small.t.solution$tt = ", small.t.solution$tt, sep=""));
 
     if (PLOT.SOLUTION) {
@@ -1814,11 +1816,11 @@ blackbox <- function(function.list,
         ##     }
         ## }
         
-        plot(x, IC.true[,y.ic.index], type = "l", col = "red");
-        lines(x, IC.approx[,y.ic.index], col = "black");
+        plot(x, IC.true[y.ic.index,], type = "l", col = "red");
+        lines(x, IC.approx[y.ic.index,], col = "black");
 
-        plot(y, IC.true[x.ic.index,], type = "l", col = "red");
-        lines(y, IC.approx[x.ic.index,], col = "black")
+        plot(y, IC.true[,x.ic.index], type = "l", col = "red");
+        lines(y, IC.approx[,x.ic.index], col = "black")
     }
     
     ## ## APPROX SOLUTION START ###
@@ -1964,8 +1966,8 @@ blackbox <- function(function.list,
 
     out = sum(sapply(seq(1,K),
                      function(x) {
-                         coefs[x]*orthonormal.function.list[[x]][x.fc.index,
-                                                                 y.fc.index]
+                         coefs[x]*orthonormal.function.list[[x]][y.fc.index,
+                                                                 x.fc.index]
                      }));
     
     return (out);

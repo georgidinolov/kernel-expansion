@@ -4,28 +4,28 @@ source("2-d-solution.R");
 source("../classical-solution/2-d-solution.R");
 
 PLOT.SOLUTION = TRUE;
-dx = 0.002;
-dy = 0.002;
+dx = 0.005;
+dy = 0.005;
 K.prime = 12;
 
 problem.parameters.generate.data = NULL;
 problem.parameters.generate.data$t <- 1;
 problem.parameters.generate.data$sigma.2.x <- 1.0^2;
-problem.parameters.generate.data$sigma.2.y <- 0.25^2;
-problem.parameters.generate.data$rho <- 0.0;
+problem.parameters.generate.data$sigma.2.y <- 1.0^2;
+problem.parameters.generate.data$rho <- 0.6;
 problem.parameters.generate.data$x.ic <- 0;
 problem.parameters.generate.data$y.ic <- 0;
 dt <- problem.parameters.generate.data$t/1000;
-n.samples <- 100;
+n.samples <- 64;
 
 data <- sample.process(n.samples, dt, problem.parameters.generate.data);
 
-ax = -0.72369188603481704458175727268099;
-x_T = 0.05790788365792873954029928995624;
-bx = 0.52428012475170060469054078566842;
-ay = -0.00167401308935050943324518435418;
-y_T = 0.15583755504239005240663118456723;
-by = 0.26253747705908508924821376240288;
+ax = -0.49715709250150114106858723062032;
+x_T = 1.40590589684411759741067271534121;
+bx = 1.75535709803343054069557638285914;
+ay = -0.55389844337502103233106254265294;
+y_T = 1.25288021831189477772738882777048;
+by = 1.93415058868214839726817899645539;
 
 data[[1]]$ax = ax;
 data[[1]]$x.fc = x_T;
@@ -106,38 +106,103 @@ orthonormal.function.list <- orthonormal.functions(function.list,
                                                    FALSE);
 system.mats <- system.matrices(orthonormal.function.list,
                                dx,dy);
-
+ll.sum = 0;
 for (n in seq(1,length(data))) {
-    par(mfrow=c(3,2));
-    problem.parameters.original <- data[[n]];
-    problem.parameters.original$K.prime <- K.prime;
-    problem.parameters.original$number.terms <- 100;
-    l2.1 <- blackbox(function.list,
+    print ( paste("ON DATA POINT ", n) );
+    {
+        par(mfrow=c(3,2));
+        problem.parameters.original <- data[[n]];
+        problem.parameters.original$K.prime <- K.prime;
+        problem.parameters.original$number.terms <- 100;
+        problem.parameters.original$rho <- 0.6;
+        
+        l2.1 <- blackbox(function.list,
                      orthonormal.function.list,
                      system.mats,
                      problem.parameters.original,
                      dx,dy,
                      TRUE,TRUE);
-    print (l2.1 *
-           1.0/((problem.parameters.original$bx-
+        print (l2.1 *
+               1.0/((problem.parameters.original$bx-
                  problem.parameters.original$ax) *
-                (problem.parameters.original$by-
-                 problem.parameters.original$ay)));
+                 (problem.parameters.original$by-
+                  problem.parameters.original$ay)));
+        sol = l2.1 *
+            1.0/((problem.parameters.original$bx-
+                  problem.parameters.original$ax) *
+                 (problem.parameters.original$by-
+                  problem.parameters.original$ay));
+    }
+
+    a.indeces = c(-1,0);
+    b.indeces = c(0,1);
+    c.indeces = c(-1,0);
+    d.indeces = c(0,1);
     
-    ## problem.parameters.original$ax <- problem.parameters.original$ax - dx;
-    ## l2.2 <- blackbox(function.list,
-    ##                orthonormal.function.list,
-    ##                system.mats,
-    ##                problem.parameters.original,
-    ##                dx,dy,
-    ##                FALSE,FALSE);
+    a.power=1;
+    b.power=1;
+    c.power=1;
+    d.power=1;
 
-    ## -(l2.1-l2.2)/dx;
-
-    print(paste("n=", n, "; l2.1 = ", l2.1));   
-    cat("Press [ENTER] to continue");
-    line <- readline();
+    h = 1/64;
+    derivative = 0;
+  
+    for ( i in seq(1,2)) {
+        if (i==0) { a.power=1; } else { a.power=0; };
+        
+        for ( j in seq(1,2)) {
+            if (j==0) { b.power=1; } else { b.power=0; };
+            
+            for ( k in seq(1,2)) {
+                if (k==0) { c.power=1; } else { c.power=0; };
+                
+                for ( l in seq(1,2)) {
+                    if (l==0) { d.power=1; } else { d.power=0; };
+                    
+                    problem.parameters.original <- data[[n]];
+                    problem.parameters.original$K.prime <- K.prime;
+                    problem.parameters.original$number.terms <- 100;
+                    
+                    problem.parameters.original$ax <-
+                        problem.parameters.original$ax + a.indeces[i]*h;
+                    problem.parameters.original$bx <-
+                        problem.parameters.original$bx + b.indeces[i]*h;
+                    problem.parameters.original$ay <-
+                        problem.parameters.original$ay + c.indeces[i]*h;
+                    problem.parameters.original$by <-
+                        problem.parameters.original$by + d.indeces[i]*h;
+                    
+                    current.sol  <- blackbox(function.list,
+                                             orthonormal.function.list,
+                                             system.mats,
+                                             problem.parameters.original,
+                                             dx,dy,
+                                             FALSE, FALSE);
+                    current.sol = current.sol *
+                        1.0/((problem.parameters.original$bx-
+                              problem.parameters.original$ax) *
+                             (problem.parameters.original$by-
+                              problem.parameters.original$ay))
+                    
+                    derivative = derivative +
+                        current.sol *
+                        (-1)^a.power * (-1)^b.power * (-1)^c.power * (-1)^d.power;
+                }
+            }
+        }
+    }
+    derivative = derivative / (h^4);
+   
+    if (derivative < 0) {
+        print(paste("DATA POINT ", n , "PRODUCED NEG LIKELIHOOD"));
+    } else {
+        ll.sum = ll.sum + log(derivative);
+    }
+    ## print(paste("n=", n, "; l2.1 = ", l2.1));   
+    ## cat("Press [ENTER] to continue");
+    ## line <- readline();
 }
+
 print(l2);
 
 kernel <- function(x,x.0,tt) {
