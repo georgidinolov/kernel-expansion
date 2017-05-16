@@ -1,4 +1,6 @@
 rm(list=ls());
+library("parallel");
+source("2-d-solution.R");
 path = "~/research/PDE-solvers/data/";
 
 files.list.16 <-
@@ -115,25 +117,28 @@ abline(v=0.6,lwd=2,col="red");
 ## coefs
 ## data: data lenght is a power of 2!
 ## xx
-data = c(0.88447,-0.293022,-0.0624749,-0.0270319,-0.0150369,-0.00955344,-0.00659266,-0.00481345,-0.00366112,-0.00287222,-0.00230851,-0.00189175,-0.00157499,-0.00132861,-0.00113322,-0.00097568,-0.000846813,-0.000740074,-0.000650685,-0.000575091,-0.000510604,-0.000455161,-0.000407158,-0.000365332,-0.000328678,-0.000296386,-0.000267802,-0.000242389,-0.000219706,-0.000199384,-0.000181117,-0.000164647,-0.000149756,-0.000136258,-0.000123995,-0.00011283,-0.000102647,-9.33444e-05,-8.48331e-05,-7.70368e-05,-6.98883e-05,-6.33287e-05,-5.7306e-05,-5.17748e-05,-4.66946e-05,-4.20299e-05,-3.77489e-05,-3.38236e-05,-3.02291e-05,-2.69433e-05,-2.39465e-05,-2.12213e-05,-1.87521e-05,-1.65252e-05,-1.45286e-05,-1.27516e-05,-1.11849e-05,-9.82042e-06,-8.65125e-06,-7.67151e-06,-6.87636e-06,-6.26189e-06,-5.82509e-06,-5.56386e-06,-5.47692e-06,-3.4095e-06,-6.82312e-06,-1.0245e-05,-1.36793e-05,-1.71304e-05,-2.06024e-05,-2.40999e-05,-2.76273e-05,-3.11895e-05,-3.47913e-05,-3.84378e-05,-4.21343e-05,-4.58864e-05,-4.97e-05,-5.35814e-05,-5.75373e-05,-6.15746e-05,-6.57011e-05,-6.99248e-05,-7.42545e-05,-7.86997e-05,-8.32708e-05,-8.79788e-05,-9.2836e-05,-9.78559e-05,-0.000103053,-0.000108444,-0.000114046,-0.000119879,-0.000125966,-0.000132331,-0.000139003,-0.000146012,-0.000153394,-0.000161189,-0.000169443,-0.00017821,-0.000187551,-0.000197535,-0.000208246,-0.000219781,-0.000232255,-0.000245805,-0.000260596,-0.000276827,-0.000294743,-0.00031465,-0.000336928,-0.000362063,-0.000390685,-0.000423621,-0.000461989,-0.000507327,-0.000561826,-0.000628711,-0.000712949,-0.000822626,-0.000971909,-0.00118823,-0.00153303,-0.00217964,-0.00387575,-0.0168413);
+
+########### COMPLEX FFT ##############
+true.sol = c(0,0.0585938,0.109375,0.152344,0.1875,0.214844,0.234375,0.246094,0.25,0.246094,0.234375,0.214844,0.1875,0.152344,0.109375,0.0585938,0,-0.0585938,-0.109375,-0.152344,-0.1875,-0.214844,-0.234375,-0.246094,-0.25,-0.246094,-0.234375,-0.214844,-0.1875,-0.152344,-0.109375,-0.0585938,-0);
 
 x = as.matrix(read.csv(file="~/research/PDE-solvers/data/out.csv",header=F));
 fcoefs = complex(real=x[,2],imaginary=x[,3]);
 n = length(fcoefs);
-xx = seq(0,1,length.out=100);
+xx = seq(0,2,length.out=100);
+L = xx[length(xx)] - x[1];
 es = vector(mode="list", length=n);
-for (i in seq(1,16)) {
+for (i in seq(1,n)) {
     if (i==1) {
         es[[i]] = rep(1,length(xx)) * fcoefs[i];
-    } else if (i==n/2) {
+    } else if (i==n/2+1) {
         es[[i]] = cos(n*pi*xx) * fcoefs[i];
-    } else if (i < n/2) {
-        es[[i]] = complex(real = cos(2*pi*xx*(i-1)),
-                          imaginary = sin(2*pi*xx*(i-1))) *
+    } else if (i < n/2+1) {
+        es[[i]] = complex(real = cos(2*pi*xx/L*(i-1)),
+                          imaginary = sin(2*pi*xx/L*(i-1))) *
             fcoefs[i];
-    } else if (i > n/2) {
-        es[[i]] = complex(real = cos(2*pi*xx*(i-n-1)),
-                          imaginary = sin(2*pi*xx*(i-n-1))) *
+    } else if (i > n/2+1) {
+        es[[i]] = complex(real = cos(2*pi*xx/L*(i-n-1)),
+                          imaginary = sin(2*pi*xx/L*(i-n-1))) *
             fcoefs[i];
     }
 }
@@ -144,78 +149,221 @@ for (i in seq(1,n)) {
 }
 solution = solution/n;
 
-plot(2*pi*xx, Re(solution));
-lines(2*pi*xx, Re(solution));
+plot(xx, Re(solution));
+lines(xx, Im(solution), col = "blue", lty=2);
+lines(seq(0,L,length.out=length(true.sol)), true.sol);
+lines(xx, xx*(1-xx), col="blue");
+lines(xx, exp(-0.5 * (xx-0.5)^2 / 0.01), col="blue");
+###################### REAL FFT #################################
+true.sol = as.matrix(read.csv(file="~/research/PDE-solvers/data/trig-test.csv",
+                              header=F));
+true.sol = c(0,0.382683,0.707107,0.92388,1,0.92388,0.707107,0.382683,1.22465e-16);
+plot(seq(0,1,length.out=length(true.sol)), true.sol);
 
-######################
-y.real = x[seq(1,n/2+1),2];
-y.imag = x[seq(1,n/2+1),3];
+xx = seq(0,1,length.out=200);
+y = as.matrix(read.csv(file="~/research/PDE-solvers/data/out.csv",header=F))[,2];
+n = length(y);
+y.real = y[seq(1,n/2+1)];
+y.imag = c(0, y[seq(n, n/2+2)], 0);
 solution = rep(0,length(xx));
 
 for (i in seq(1,n/2+1)) {
     if (i==1) {
         solution =
-            solution + rep(y[i], length(xx));
+            solution + rep(y.real[i], length(xx));
     } else if (i==n/2+1) {
         solution =
-            solution + y[i]*cos(n*pi*xx);
+            solution + y.real[i]*cos(n*pi*xx);
     } else {
         solution =
             solution + 2*y.real[i]*cos((i-1)*2*pi*xx) -
             2*y.imag[i]*sin((i-1)*2*pi*xx);
     }
 }
+
+solution = solution / n;
+plot(xx,solution,col="blue");
+lines(xx,solution,col="blue");
+lines(seq(0,1,length.out=length(true.sol)), true.sol);
+## lines(seq(0,1,length.out=length(true.sol[4,])), true.sol[4,]);
+####################
+
+####################
+
+y.true = c(3.72665e-06,8.13816e-06,1.73297e-05,3.59844e-05,7.28609e-05,0.000143858,0.000276968,0.000519976,0.000951908,0.00169928,0.00295796,0.00502086,0.00831038,0.0134129,0.0211097,0.0323965,0.0484811,0.0707465,0.100669,0.139683,0.188995,0.249352,0.3208,0.402452,0.492325,0.587282,0.683124,0.774837,0.856997,0.924285,0.972053,0.996856,0.996856,0.972053,0.924285,0.856997,0.774837,0.683124,0.587282,0.492325,0.402452,0.3208,0.249352,0.188995,0.139683,0.100669,0.0707465,0.0484811,0.0323965,0.0211097,0.0134129,0.00831038,0.00502086,0.00295796,0.00169928,0.000951908,0.000519976,0.000276968,0.000143858,7.28609e-05,3.59844e-05,1.73297e-05,8.13816e-06,3.72665e-06);
+
+y = c(15.7918,-13.0268,7.31241,-2.79313,0.725954,-0.128388,0.0154437,-0.00126778,6.75884e-05,-5.1039e-06,-2.02142e-06,-1.7884e-06,-1.52427e-06,-1.29704e-06,-1.101e-06,-9.31956e-07,-7.86148e-07,-6.60292e-07,-5.51582e-07,-4.57639e-07,-3.76468e-07,-3.06399e-07,-2.46038e-07,-1.94227e-07,-1.50008e-07,-1.12587e-07,-8.13151e-08,-5.5664e-08,-3.52116e-08,-1.96285e-08,-8.6679e-09,-2.15866e-09,8.88178e-16,-4.39405e-08,-8.80066e-08,-1.32324e-07,-1.77021e-07,-2.22223e-07,-2.6806e-07,-3.1466e-07,-3.62151e-07,-4.10659e-07,-4.60304e-07,-5.11196e-07,-5.63425e-07,-6.17055e-07,-6.72104e-07,-7.2852e-07,-7.86148e-07,-8.44676e-07,-9.03566e-07,-9.61951e-07,-1.01848e-06,-1.07192e-06,-1.08047e-06,-2.41396e-06,2.7996e-05,-0.00045362,0.00468481,-0.0321595,0.144401,-0.414321,0.72021,-0.639967);
+
+n = length(y);
+y.real = y[seq(1,n/2+1)];
+y.imag = c(0, y[seq(n, n/2+2)], 0);
+solution = rep(0,length(xx));
+
+for (i in seq(1,n/2+1)) {
+    if (i==1) {
+        solution =
+            solution + rep(y.real[i], length(xx));
+    } else if (i==n/2+1) {
+        solution =
+            solution + 2*y.real[i]*cos(n*pi*xx);
+    } else {
+        solution =
+            solution + 2*y.real[i]*cos((i-1)*2*pi*xx) -
+            2*y.imag[i]*sin((i-1)*2*pi*xx);
+    }
+}
+
+solution = solution / n;
+
 plot(xx,solution);
+lines(seq(0,1,length.out=length(y.true)), y.true, col="red");
+sol = as.matrix(read.csv("~/research/PDE-solvers/data/trig-test.csv",header=F));
+lines(seq(0,1,length.out=length(sol[16,])), sol[16,]);
 
-xx = seq(1,0,length.out=128);
-coefs = rep(NA, length(data));
+lines(xx, sin(2*pi*xx*2), col="red");
+####################
 
-for (k in seq(0,length(data)-1)) {
-    if (k==0) {
-        coefs[k+1] = complex(real = data[k+1], imaginary=0);
+
+#### ODD EXTENSION ####
+## before.extension = as.matrix(read.csv(file="~/research/PDE-solvers/data/trig-test.csv", header=F));
+## contour(before.extension);
+
+## odd.extension.1 = as.matrix(read.csv(file="~/research/PDE-solvers/data/odd-extension-1.csv", header=F));
+## n = (dim(odd.extension.1)[1]-1)/2;
+## contour(z=odd.extension.1[seq(1,n+1), seq(1,2*n+1)], xlab="x", ylab="y");
+
+odd.extension = as.matrix(read.csv(file="~/research/PDE-solvers/data/odd-extension.csv", header=F));
+n = dim(odd.extension)[1]-1;
+contour(odd.extension[seq(1,n),seq(1,n)], xlab="x", ylab="y");
+
+## USING R START 
+fcoefs.R = matrix(n,n,data=NA);
+## FIRST FFT ON ROWS
+for (i in seq(1,n)) {
+    fcoefs.R[i,] = fft(odd.extension[i,seq(1,n)]);
+}
+## SECOND FFT ON COLUMNS
+for (i in seq(1,n)) {
+    fcoefs.R[,i] = fft(fcoefs.R[,i]);
+}
+
+signal = matrix(n,n,data=NA);
+## RECONSTRUCTING DISCRETE SIGNAL 1
+for (i in seq(0,n-1)) {
+    for (j in seq(0,n-1)) {
+        signal[i+1,j+1] = 0;
+
+        for (k in seq(0,n-1)) {
+            for (l in seq(0,n-1)) {
+                signal[i+1,j+1] = signal[i+1,j+1] +
+                    fcoefs.R[k+1,l+1] * exp(1i*2*pi * (i/n*k + j/n*l ) )
+            }
+        }
+        signal[i+1,j+1] = signal[i+1,j+1]/n^2;
+    }
+}
+contour(Re(signal));
+
+## RECONSTRUCTING DISCRETE SIGNAL 2
+x = seq(0,2,by=1/(n/2));
+y = seq(0,2,by=1/(n/2));
+
+xx = matrix(n+1, n+1, data=rep(x, length(y)), byrow=F);
+pyy = matrix(n+1, n+1, data=rep(y, length(x)), byrow=T); 
+
+signal = matrix(n+1, n+1, data=0i);
+
+for (k in seq(0,n-1)) {
+    for (l in seq(0,n-1)) {
+        signal = signal +
+            fcoefs.R[k+1,l+1] *
+            exp(1i*2*pi * xx/2 * k) *
+            exp(1i*2*pi * yy/2 * l);
+    }
+}
+signal = signal/n^2;
+contour(Re(signal));
+
+## RECONSTRUCTING CONTINUOUS SIGNAL
+x = seq(0,2,length.out=100);
+y = seq(0,2,length.out=100);
+
+xx = matrix(length(x), length(y), data=rep(x, length(y)), byrow=F);
+yy = matrix(length(x), length(y), data=rep(y, length(x)), byrow=T); 
+
+signal = matrix(length(x), length(y), data=0i);
+frequencies = c(seq(0,n/2), seq(-n/2+1,-1));
+
+for (k in seq(1,length(frequencies))) {
+    if (k == n/2) {
+        fk = cos(n*pi * xx/2);
+    } else {
+        fk = exp(1i*2*pi * xx/2 * frequencies[k]);
     }
     
-    else if (k == length(data)/2) {
-        coefs[k+1] = complex(real = data[k+1], imaginary=0);
+    for (l in seq(1,length(frequencies))) {
+        if (l==n/2) {
+            fl = cos(n*pi * yy/2);
+        } else {
+            fl = exp(1i*2*pi * yy/2 * frequencies[l]);
+        }
+        
+        signal = signal +
+            fcoefs.R[k,l] *
+            fk *
+            fl;
     }
+}
+signal = signal/n^2;
+contour(Re(signal));
+contour(Im(signal));
+persp(Re(signal));
+## USING R END
 
-    else if (k < length(data)/2) {
-        coefs[k+1] = complex(real = data[k+1], imaginary=data[(length(data)-k)+1]);
-    }
 
-    else if (k > length(data)/2) {
-        coefs[k+1] = complex(real = data[length(data)-k+1], imaginary=-data[k+1]);
+#### FFT ODD.EXTENSION ####
+fft.odd.extension = as.matrix(read.csv(file="~/research/PDE-solvers/data/odd-extension-fft.csv", header=F));
+dim(fft.odd.extension);
+
+n = dim(fft.odd.extension)[2];
+fcoefs = matrix(nrow=n, ncol=n, data=NA);
+for (i in seq(1,n)) {
+    for (j in seq(1,n)) {
+        fcoefs[i,j] = complex(real=fft.odd.extension[2*(i-1)+1,j],
+                              imaginary=fft.odd.extension[2*i,j]);
     }
 }
 
-n = length(data);
-solution = rep(0,length(xx));
-for (k in seq(0,length(data)/2)) {
-    if (k==0) {
-        solution = solution + coefs[k+1];
-    }
+## RECONSTRUCTING CONTINUOUS SIGNAL
+x = seq(0,2,length.out=100);
+y = seq(0,2,length.out=100);
 
-    else if (k==length(data)/2) {
-        solution = solution + coefs[k+1] * cos(length(data)*pi*xx);
-    }
+xx = matrix(length(x), length(y), data=rep(x, length(y)), byrow=F);
+yy = matrix(length(x), length(y), data=rep(y, length(x)), byrow=T); 
 
-    else if (k < length(data)/2) {
-        solution =
-            solution +
-            coefs[k]*complex(real=2*pi*k*xx, imaginary=2*pi*k*xx);
-    }
+signal = matrix(length(x), length(y), data=0i);
+frequencies = c(seq(0,n/2), seq(-n/2+1,-1));
 
-    else if (k > length(data)/2) {
-        solution =
-            solution +
-            coefs[k]*complex(real=2*pi*(k-n)*xx, imaginary=2*pi*(k-n)*xx);
+for (k in seq(1,length(frequencies))) {
+    if (k == n/2) {
+        fk = cos(n*pi * xx/2);
+    } else {
+        fk = exp(1i*2*pi * xx/2 * frequencies[k]);
+    }
+    
+    for (l in seq(1,length(frequencies))) {
+        if (l==n/2) {
+            fl = cos(n*pi * yy/2);
+        } else {
+            fl = exp(1i*2*pi * yy/2 * frequencies[l]);
+        }
+        
+        signal = signal +
+            fcoefs[k,l] *
+            fk *
+            fl;
     }
 }
-
-
-
-elem=as.matrix(read.csv(file = "~/research/PDE-solvers/data/trig-test.csv", header=F));
-plot(xx, elem[50,])
-lines(xx, solution);
-
-
+signal = signal/n^2;
+contour(Re(signal));
+contour(Im(signal));
