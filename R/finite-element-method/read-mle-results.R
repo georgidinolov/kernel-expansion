@@ -322,7 +322,7 @@ persp(Re(signal));
 
 
 #### FFT ODD.EXTENSION ####
-fft.odd.extension = as.matrix(read.csv(file="~/research/PDE-solvers/data/odd-extension-fft.csv", header=F));
+fft.odd.extension = as.matrix(read.csv(file="~/research/PDE-solvers/last-element-fourier-interpolant-FFT.csv", header=F));
 dim(fft.odd.extension);
 
 n = dim(fft.odd.extension)[2];
@@ -335,27 +335,29 @@ for (i in seq(1,n)) {
 }
 
 ## RECONSTRUCTING CONTINUOUS SIGNAL
-x = seq(0,2,length.out=100);
-y = seq(0,2,length.out=100);
+x = seq(0,1,length.out=n+1);
+y = seq(0,1,length.out=n+1);
 
 xx = matrix(length(x), length(y), data=rep(x, length(y)), byrow=F);
 yy = matrix(length(x), length(y), data=rep(y, length(x)), byrow=T); 
 
 signal = matrix(length(x), length(y), data=0i);
 frequencies = c(seq(0,n/2), seq(-n/2+1,-1));
+Lx = x[length(x)] - x[1];
+Ly = y[length(x)] - y[1];
 
 for (k in seq(1,length(frequencies))) {
     if (k == n/2) {
-        fk = cos(n*pi * xx/2);
+        fk = cos(n*pi * xx/Lx);
     } else {
-        fk = exp(1i*2*pi * xx/2 * frequencies[k]);
+        fk = exp(1i*2*pi * xx/Lx * frequencies[k]);
     }
     
     for (l in seq(1,length(frequencies))) {
         if (l==n/2) {
-            fl = cos(n*pi * yy/2);
+            fl = cos(n*pi * yy/Ly);
         } else {
-            fl = exp(1i*2*pi * yy/2 * frequencies[l]);
+            fl = exp(1i*2*pi * yy/Ly * frequencies[l]);
         }
         
         signal = signal +
@@ -363,7 +365,138 @@ for (k in seq(1,length(frequencies))) {
             fk *
             fl;
     }
+    print (k);
 }
+
 signal = signal/n^2;
+par(mfrow=c(2,2));
 contour(Re(signal));
+persp(Re(signal), theta=15, phi=10);
 contour(Im(signal));
+
+
+dxdx.lin= as.matrix(read.csv(file="~/research/PDE-solvers/system_matrix_dx_dx.csv", header=F));
+
+dxdx.fft= as.matrix(read.csv(file="~/research/PDE-solvers/system_matrix_dx_dx.csv", header=F));
+
+evec = as.matrix(read.csv(file="~/research/PDE-solvers/evec-matrix.csv", header=F));
+evec.1 = as.matrix(read.csv(file="~/research/PDE-solvers/evec-matrix-1.csv", header=F));
+eval = as.matrix(read.csv(file="~/research/PDE-solvers/eval-matrix.csv", header=F));
+IC = as.matrix(read.csv(file="~/research/PDE-solvers/IC-matrix.csv", header=F));
+
+evec %*% exp(diag(eval[,1]) * 0.99) %*% t(evec) %*% IC;
+
+element.fft.interpolant = as.matrix(read.csv(file="~/research/PDE-solvers/last-element-fourier-interpolant.csv", header=F));
+element.linear.interpolant = as.matrix(read.csv(file="~/research/PDE-solvers/last-element-linear-interpolant.csv", header=F));
+real.signal = Re(signal);
+
+mass.matrix.fft = as.matrix(read.csv(file="~/research/PDE-solvers/mass-matrix-fft.csv",
+                                 header=F));
+stiffness.matrix.fft = as.matrix(read.csv(file="~/research/PDE-solvers/stiffness-matrix-fft.csv",
+                                          header=F));
+
+mass.matrix.linear = as.matrix(read.csv(file="~/research/PDE-solvers/mass-matrix-linear.csv",
+                                 header=F));
+stiffness.matrix.linear = as.matrix(read.csv(file="~/research/PDE-solvers/stiffness-matrix-linear.csv",
+                                             header=F));
+
+diff = mass.matrix.fft - mass.matrix.linear;
+heatmap(diff);
+
+diff = stiffness.matrix.fft - stiffness.matrix.linear;
+mm = min(stiffness.matrix.fft - stiffness.matrix.linear);
+heatmap((diff));
+row.index = which(apply(X = diff - mm, MARGIN=1, FUN=min) == 0);
+col.index = which( diff[row.index,] == mm );
+print(diff[row.index, col.index]);
+
+### SYSTEM MATRICES DX DX START ###
+system.matrix.dx.dx.fft = as.matrix(read.csv(file="~/research/PDE-solvers/system-matrix-dx-dx-fft.csv", header=F));
+system.matrix.dx.dx.linear = as.matrix(read.csv(file="~/research/PDE-solvers/system-matrix-dx-dx-linear.csv", header=F));
+
+diff = abs(system.matrix.dx.dx.fft - system.matrix.dx.dx.linear);
+heatmap(diff);
+mm = max(diff);
+row.index = which(apply(X = diff - mm, MARGIN=1, FUN=max) == 0);
+col.index = which( diff[row.index,] == mm );
+print(diff[row.index, col.index]);
+### SYSTEM MATRICES DX DX END ###
+
+### SYSTEM MATRICES DY DY START ###
+system.matrix.dy.dy.fft = as.matrix(read.csv(file="~/research/PDE-solvers/system-matrix-dy-dy-fft.csv", header=F));
+system.matrix.dy.dy.linear = as.matrix(read.csv(file="~/research/PDE-solvers/system-matrix-dy-dy-linear.csv", header=F));
+
+diff = abs(system.matrix.dy.dy.fft - system.matrix.dy.dy.linear);
+heatmap(diff);
+mm = max(diff);
+row.index = which(apply(X = diff - mm, MARGIN=1, FUN=max) == 0);
+col.index = which( diff[row.index,] == mm );
+print(diff[row.index, col.index]);
+### SYSTEM MATRICES DY DY END ###
+
+
+### SYSTEM MATRICES DX DY START ###
+system.matrix.dx.dy.fft = as.matrix(read.csv(file="~/research/PDE-solvers/system-matrix-dx-dy-fft.csv", header=F));
+system.matrix.dx.dy.linear = as.matrix(read.csv(file="~/research/PDE-solvers/system-matrix-dx-dy-linear.csv", header=F));
+
+diff = abs(system.matrix.dx.dy.fft - system.matrix.dx.dy.linear);
+heatmap(diff);
+mm = max(diff);
+row.index = which(apply(X = diff - mm, MARGIN=1, FUN=max) == 0);
+col.index = which( diff[row.index,] == mm );
+print(diff[row.index, col.index]);
+### SYSTEM MATRICES DX DY END ###
+
+IC.fft = as.matrix(read.csv(file="~/research/PDE-solvers/IC-matrix.csv", header=F));
+IC.linear = as.matrix(read.csv(file="~/research/PDE-solvers/IC-matrix.csv", header=F));
+
+max.abs.diffs = rep(NA, 100);
+for (i in seq(0,99)) {
+    element.linear.interpolant = as.matrix(read.csv(file=paste("~/research/PDE-solvers/orthonormal_element_", i, "-linear.csv", sep=""), header=F));
+
+    element.fft.interpolant = as.matrix(read.csv(file=paste("~/research/PDE-solvers/orthonormal_element_", i, "-fft.csv", sep=""), header=F));
+    diff = abs(element.fft.interpolant - element.linear.interpolant);
+    max.abs.diffs[i+1] = max(diff);
+}
+
+element.linear.interpolant.i = as.matrix(read.csv(file=paste("~/research/PDE-solvers/element-i-linear.csv", sep=""), header=F));
+element.linear.interpolant.j = as.matrix(read.csv(file=paste("~/research/PDE-solvers/element-j-linear.csv", sep=""), header=F));
+
+n = dim(element.linear.interpolant.i)[1];
+
+deriv.integral = 0;
+for (i in seq(1,n-1)) {
+    for (j in seq(1,n-1)) {
+
+        deriv.integral = deriv.integral +
+            ## ##
+            (element.linear.interpolant.i[i+1,j] -
+             element.linear.interpolant.i[i,j]) *
+            ## ##
+            (element.linear.interpolant.j[i+1,j] -
+             element.linear.interpolant.j[i,j]);
+        
+    }
+}
+
+element.fft.interpolant.i = as.matrix(read.csv(file=paste("~/research/PDE-solvers/element-i-fft.csv", sep=""), header=F));
+element.fft.interpolant.j = as.matrix(read.csv(file=paste("~/research/PDE-solvers/element-j-fft.csv", sep=""), header=F));
+
+deriv.integral = 0;
+for (i in seq(1,n-1)) {
+    for (j in seq(1,n-1)) {
+
+        deriv.integral = deriv.integral +
+            ## ##
+            (element.fft.interpolant.i[i+1,j] -
+             element.fft.interpolant.i[i,j]) *
+            ## ##
+            (element.fft.interpolant.j[i+1,j] -
+             element.fft.interpolant.j[i,j]);
+        
+    }
+}
+
+diff = abs(element.fft.interpolant - element.linear.interpolant);
+max(diff);
+
