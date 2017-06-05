@@ -116,12 +116,35 @@
 \spacingset{1.00} % 
 \section{Introduction}
 
-We consider the solution of the Fokker-Planck equation for bivariate
+We consider two-dimensional correlated Brownian motion with absorbing boundaries:
+\begin{align}
+  X_t &= X_0 + \mu_x t + 
+  
+  \left( \begin{array}{c}
+           X_t \\
+           Y_y \end{array} \right) &=   \left( \begin{array}{c}
+                                                   \mu_x \\
+                                                   \mu_y \end{array} \right) dt + 
+  
+  \label{eq:1} \\
+  a_i &\leq X_i(t) \leq b_i, &&  &&  \label{eq:2}
+\end{align}
+where $W_i$ are standard Brownian motions with
+$\mbox{Cov}(W_1(t), W_2(t)) = \rho t$.
+
+
+the solution of the Fokker-Planck equation for bivariate
 Brownian motion with absorbing boundaries and correlated
 increments. In particular, we find the transition density function for
-the system
+the system described by the SDE
 \begin{align}
-  X_i(t) &= x_i + \mu_i + \sigma_i W_i(t), & i &= 1,2, & 0 &< t \leq T,  \label{eq:1} \\
+  \left( \begin{array}{c}
+           d X_t \\
+           d Y_y \end{array} \right) &=   \left( \begin{array}{c}
+                                                   \mu_x \\
+                                                   \mu_y \end{array} \right) dt + 
+  
+  \label{eq:1} \\
   a_i &\leq X_i(t) \leq b_i, &&  &&  \label{eq:2}
 \end{align}
 where $W_i$ are standard Brownian motions with
@@ -180,6 +203,8 @@ The formal Fourier expansion for the problem is
 Plugging into the PDE yields an eigenvalue problem which is slow to solve.
 
 \subsection{Finite Difference}
+
+\subsection{Finite Element}
 
 \bibliographystyle{plainnat}
 \bibliography{master-bibliography}
