@@ -122,12 +122,21 @@ increments. In particular, we find the transition density function for
 the system
 \begin{align}
   X_i(t) &= x_i + \mu_i + \sigma_i W_i(t), & i &= 1,2, & 0 &< t \leq T,  \label{eq:1} \\
-  a_i &\leq X_i(t) \leq b_i, &&  & 0 &< t \leq T,  \label{eq:2}
+  a_i &\leq X_i(t) \leq b_i, &&  &&  \label{eq:2}
 \end{align}
 where $W_i$ are standard Brownian motions with
-$\mbox{Cov}(W_1(t), W_2(t)) = \rho t$. Our solution is obtained by
-combining an analytic small-time solution with an approximate finite
-element method.
+$\mbox{Cov}(W_1(t), W_2(t)) = \rho t$.
+
+The solution of the Fokker-Plank equation corresponding to
+(\ref{eq:1}) - (\ref{eq:2}) is the transition density of a particle
+beginning at $(X_1(0), X_2(0))$, terminating at $(X_1(T), X_2(T))$,
+while never leaving the region $\Omega$ defined by the rectangle
+$(a_1, b_1) x (a_2,b_2)$. Differentiating the solution with respect to the
+boundaries produces the transition density of a particle
+beginning and ending at the points $(X_1(0), X_2(0))$ and
+$(X_1(T), X_2(T))$ respectively, while attaining the minima $a_1/a_2$
+and maxima $b_1/b_2$ in each coordinate axis.
+
 
 Closed-form solutions to (\ref{eq:1}) - (\ref{eq:2}) are available for
 different parameter regimes. For example, when $\rho = 0$, the
