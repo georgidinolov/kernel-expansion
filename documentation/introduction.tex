@@ -129,7 +129,7 @@ $\mbox{Cov}(W_1(t), W_2(t)) = \rho t$.
 
 The solution of the Fokker-Plank equation corresponding to
 (\ref{eq:1}) - (\ref{eq:2}) is the transition density of a particle
-beginning at $(X_1(0), X_2(0))$, terminating at $(X_1(T), X_2(T))$,
+starting at $(X_1(0), X_2(0))$, terminating at $(X_1(T), X_2(T))$,
 while never leaving the region $\Omega$ defined by the rectangle
 $(a_1, b_1) x (a_2,b_2)$. Differentiating the solution with respect to the
 boundaries produces the transition density of a particle
@@ -137,24 +137,49 @@ beginning and ending at the points $(X_1(0), X_2(0))$ and
 $(X_1(T), X_2(T))$ respectively, while attaining the minima $a_1/a_2$
 and maxima $b_1/b_2$ in each coordinate axis.
 
+The transition density for the considered system has been used in
+computing first passage times \citep{kou2016first,
+  sacerdote2012first}, with application to structural models in credit
+risk and default correlations \citep{haworth2008modelling,
+  ching2014correlated}. \citep{he1998double} use variants of the
+differentiated solutions with respect to some of the boundaries to
+price financial derivative instruments whose payoff depends on
+observed maxima/minima. 
 
 Closed-form solutions to (\ref{eq:1}) - (\ref{eq:2}) are available for
-different parameter regimes. For example, when $\rho = 0$, the
-transition density of the process can be obtained with a Fourier
-expansion. When $a_1 = -\infty$ and $b_1 = \infty$, the method of
-images can be used to enforce the remaining boundaries. For either
-$a_1, a_2 = -\infty$ or $b_1, b_2 = \infty$, an analytic solution
-exists for a set of countably many values for $\rho$. However, to the
-best of our knowledge, there is no closed-form solution to the general
-problem in (\ref{eq:1}) - (\ref{eq:2}). The transition density for
-this problem is of interest particularly in problems dealing with
-first passage times \citep{kou2016first, sacerdote2012first},
-structural models in credit risk and default correlations
-\citep{haworth2008modelling, ching2014correlated}, and pricing of
-double lookback options \citep{he1998double}.
+some parameter regimes. When $\rho = 0$, the transition density of the
+process can be obtained with a Fourier expansion. When $a_1 = -\infty$
+and $b_1 = \infty$, the method of images can be used to enforce the
+remaining boundaries. For either $a_1, a_2 = -\infty$ or
+$b_1, b_2 = \infty$, the Fokker-Plank equation is a Sturm-Liouville
+problem in radial coordinates. Both of these techniques are used by
+\cite{he1998double}. However, to the best of our knowledge, there is
+no closed-form solution to the general problem in (\ref{eq:1}) -
+(\ref{eq:2}).
 
+It is still possible to approach the general problem by proposing a
+Fourier expansions. However, a drawback of this out-of-the-box
+solution is that the system matrix for the corresponding eigenvalue
+problem is large and dense. An alternative is to use a finite
+difference scheme. However, discretization of the initial condition
+introduces a numerical bias in the estimation procedure.
 
+In this paper, we propose a solution to the general problem
+(\ref{eq:1}) - (\ref{eq:2}) which is obtained by combining a
+small-time analytic solution with a finite-element method.
 
+ADD OUT APPLICATION (ESTIMATION)
+
+\section{Numerical Method}
+\subsection{Fourier Expansion}
+
+The formal Fourier expansion for the problem is
+\begin{align*}
+  f(x,y | t) = \lim_{K\to\infty}\sum_{k=1}^K c_k(t) sin(2\pi k x/L).
+\end{align*}
+Plugging into the PDE yields an eigenvalue problem which is slow to solve.
+
+\subsection{Finite Difference}
 
 \bibliographystyle{plainnat}
 \bibliography{master-bibliography}

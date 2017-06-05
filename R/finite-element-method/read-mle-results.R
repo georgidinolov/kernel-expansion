@@ -4,13 +4,13 @@ source("2-d-solution.R");
 path = "~/research/PDE-solvers/data/";
 
 files.list.16 <-
-    list.files(path = "~/research/PDE-solvers/data/", pattern = "*order-16-5e-3.csv");
+    list.files(path = "~/research/PDE-solvers/data/", pattern = "*order-16-5e-3-linear-256.csv");
 files.list.32 <-
-    list.files(path = "~/research/PDE-solvers/data/", pattern = "*order-32-5e-3.csv");
+    list.files(path = "~/research/PDE-solvers/data/", pattern = "*order-32-5e-3-linear-256.csv");
 files.list.64 <-
-    list.files(path = "~/research/PDE-solvers/data/", pattern = "*order-64-5e-3.csv");
+    list.files(path = "~/research/PDE-solvers/data/", pattern = "*order-64-5e-3-linear-256.csv");
 files.list.128 <-
-    list.files(path = "~/research/PDE-solvers/data/", pattern = "*order-128-5e-3.csv");
+    list.files(path = "~/research/PDE-solvers/data/", pattern = "*order-128-5e-3-linear-256.csv");
 
 length(files.list.16);
 length(files.list.32);
@@ -77,6 +77,7 @@ par(mfrow=c(2,2));
 hist(sigma.xs.64, prob=T); lines(density(sigma.xs.64)); abline(v=1.0, lwd=2, col="red");
 hist(sigma.ys.64, prob=T); lines(density(sigma.ys.64)); abline(v=1.0, lwd=2, col="red");
 plot(density(rhos.64)); abline(v=0.6, lwd=2, col="red");
+print(c(mean(rhos.64), median(rhos.64)));
 ##############################################
 
 ##############################################
@@ -92,6 +93,7 @@ for (i in seq(1, length(files.list.128))) {
     rhos.128[i] =  result[[3]];
 }
 lines(density(rhos.128), col="blue");
+print(c(mean(rhos.128), median(rhos.128)));
 ##############################################
 
 par(mfrow=c(2,2));
@@ -102,17 +104,25 @@ plot(density(rhos.64), col="blue", lwd=2); lines(density(rhos.128), lwd=2); abli
 
 ############# ALL #############################
 par(mfrow=c(2,2))
-plot(density(sigma.xs.16), type="l", lty=1, lwd=1, ylim=c(0,14)); lines(density(sigma.xs.32), lwd=2, lty=2, col = "red");
-lines(density(sigma.xs.64), lwd=2, lty=3, col="blue"); lines(density(sigma.xs.128), lwd=2, lty=4);
+plot(density(sigma.xs.16), type="l", lty=1, lwd=1, ylim=c(0,14), col="black");
+lines(density(sigma.xs.32), lwd=2, lty=2, col = "red");
+lines(density(sigma.xs.64), lwd=2, lty=3, col="blue");
+lines(density(sigma.xs.128), lwd=2, lty=4, col="black");
 abline(v=1.0,lwd=2,col="red");
 ## 
-plot(density(sigma.ys.16), type="l", lty=1, lwd=1, ylim=c(0,14)); lines(density(sigma.ys.32), lwd=2, lty=2, col = "red");
-lines(density(sigma.ys.64), lwd=2, lty=3, col="blue"); lines(density(sigma.ys.128), lwd=2, lty=4);
+plot(density(sigma.ys.16), type="l", lty=1, lwd=1, ylim=c(0,14), col="black");
+lines(density(sigma.ys.32), lwd=2, lty=2, col = "red");
+lines(density(sigma.ys.64), lwd=2, lty=3, col="blue");
+lines(density(sigma.ys.128), lwd=2, lty=4, col="black");
 abline(v=1.0,lwd=2,col="red");
 ##
-plot(density(rhos.16), type="l", lty=1, lwd=1, ylim=c(0,14)); lines(density(rhos.32), lwd=2, lty=2, col = "red");
-lines(density(rhos.64), lwd=2, lty=3, col="blue"); lines(density(rhos.128), lwd=2, lty=4);
+plot(density(rhos.16), type="l", lty=1, lwd=1, ylim=c(0,14), col="black");
+lines(density(rhos.32), lwd=2, lty=2, col = "red");
+lines(density(rhos.64), lwd=2, lty=3, col="blue");
+lines(density(rhos.128), lwd=2, lty=4, col="black");
 abline(v=0.6,lwd=2,col="red");
+
+
 
 ## coefs
 ## data: data lenght is a power of 2!
