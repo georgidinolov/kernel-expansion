@@ -137,7 +137,8 @@ solution to the Fokker-Planck equation \citep{oksendal2013stochastic}:
                                          + \rho\sigma_x\sigma_y \frac{\partial^2}{\partial x \partial y}p(x,y,t')
                                          + \frac{1}{2}\sigma_y^2 \frac{\partial^2}{\partial y^2}p(x,y,t'),
   \label{eq:1} \\
-  p(a_x, y,t') &= p(b_x,y,t') = p(x,a_y,t') = p(x,b_y,t') = 0 &0 &< t' \leq t.  \label{eq:2}
+  p(a_x, y,t') &= p(b_x,y,t') = p(x,a_y,t') = p(x,b_y,t') = 0, \label{eq:2} \\
+   0 &< t' \leq t. \nonumber
 \end{align}
 Differentiating $p(x,y,t)$ with respect to the boundaries produces the
 transition density of a particle beginning and ending at the points
@@ -158,7 +159,7 @@ The transition density for the considered system has been used in
 computing first passage times \citep{kou2016first,
   sacerdote2016first}, with application to structural models in credit
 risk and default correlations \citep{haworth2008modelling,
-  ching2014correlated}. \citep{he1998double} use variants of the
+  ching2014correlated}. \cite{he1998double} use variants of the
 differentiated solutions with respect to some of the boundaries to
 price financial derivative instruments whose payoff depends on
 observed maxima/minima. 
@@ -198,24 +199,45 @@ for the exponential decomposition
 \]
 Plugging the above equation into (\ref{eq:1}) and setting the
 advection terms for $q(x,y,t)$ to zero, we arrive at the PDE
-\[
+\begin{equation}
   \frac{\partial}{\partial t} q(x,y,t') = \frac{1}{2}\sigma_x^2
   \frac{\partial^2}{\partial x^2}q(x,y,t') + \rho\sigma_x\sigma_y
   \frac{\partial^2}{\partial x \partial y}q(x,y,t') +
   \frac{1}{2}\sigma_y^2 \frac{\partial^2}{\partial y^2}q(x,y,t').
-\]
+  \label{eq:qq}
+\end{equation}
+We will consider the solution to this PDE, as it encompasses the
+original problem.
 
 \subsection{Fourier Expansion}
-
-The formal Fourier expansion for the problem is
+The formal Fourier (sinusoidal) expansion for the problem is given by
 \begin{align*}
-  f(x,y | t) = \lim_{K\to\infty}\sum_{k=1}^K c_k(t) sin(2\pi k x/L).
+  q(x,y,t) &= \lim_{K,L\to\infty}\sum_{k=1}^K \sum_{l=1}^L c_{k,l}(t) \sin\left(2\pi\cdot k \frac{x-a_x}{b_x-a_x}\right) \sin\left(2\pi\cdot l \frac{y-a_y}{b_y-a_y}\right) \\
+  \hat{q}(x,y,t) &= \sum_{k=1}^K \sum_{l=1}^L c_{k,l}(t) \sin\left(2\pi\cdot k \frac{x-a_x}{b_x-a_x}\right) \sin\left(2\pi\cdot l \frac{y-a_y}{b_y-a_y}\right) & \mbox{for some } K, L
 \end{align*}
-Plugging into the PDE yields an eigenvalue problem which is slow to solve.
+With $\rho = 0$, the sinusoidal functions are the eigenvectors for the
+differential operator in (\ref{eq:qq}), and we would proceed by
+substituting $\hat{q}$ into (\ref{eq:qq}) and deriving a system of
+ODEs whose solution is the vector $(c_{1,1}(t), \ldots,
+c_{K,L}(t))$. In this case the system matrix is diagonal so that each
+$c_{k,l}(t)$ can be written down analytically.
 
+We can proceed in the same manner in the case where $\rho \neq
+0$. However, the mixing terms
+\[
+  \frac{\partial^2}{\partial x \partial y} \sin\left(2\pi\cdot k
+    \frac{x-a_x}{b_x-a_x}\right) \sin\left(2\pi\cdot l
+    \frac{y-a_y}{b_y-a_y}\right),
+\]
+are cosines and as such have a non-sparse representation in terms of
+sine series. Because of this, the matrix for the system of ODEs when
+$\rho \neq 0$ is dense. Moreover, the truncation values for $K$ and
+$L$ are also large. Finally, to compute 
 \subsection{Finite Difference}
 
+
 \subsection{Finite Element}
+
 
 \bibliographystyle{plainnat}
 \bibliography{master-bibliography}
