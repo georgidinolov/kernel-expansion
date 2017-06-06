@@ -129,7 +129,7 @@ $(X(t), Y(t))$ under the boundary conditions:
   p\left(X(t) = x, Y(t) = y | a_x < X(t') < b_x, a_y < Y(t') < b_y, 0 < t' \leq t, X(0)=x_0, Y(0)=y_0 \right). \label{eq:CDF}
 \end{align}
 This density, which we shorten to $p(x,y,t)$ from now on, is the
-solution to the Fokker-Planck equation \citep{oksendal2003stochastic}:
+solution to the Fokker-Planck equation \citep{oksendal2013stochastic}:
 \begin{align}
   \frac{\partial}{\partial t} p(x,y,t') &= -\mu_x \frac{\partial}{\partial x}p(x,y,t')
                                          - \mu_y \frac{\partial}{\partial y}p(x,y,t')
@@ -156,7 +156,7 @@ direction:
 
 The transition density for the considered system has been used in
 computing first passage times \citep{kou2016first,
-  sacerdote2012first}, with application to structural models in credit
+  sacerdote2016first}, with application to structural models in credit
 risk and default correlations \citep{haworth2008modelling,
   ching2014correlated}. \citep{he1998double} use variants of the
 differentiated solutions with respect to some of the boundaries to
@@ -183,11 +183,28 @@ introduces a numerical bias in the estimation procedure.
 
 In this paper, we propose a solution to the general problem
 (\ref{eq:1}) - (\ref{eq:2}) which is obtained by combining a
-small-time analytic solution with a finite-element method.
+small-time analytic solution with a finite-element method. Our
+application is the maximal likelihood estimation
 
 ADD OUT APPLICATION (ESTIMATION)
 
-\section{Numerical Method}
+\section{Approximate Numerical Solutions}
+Before considering any solutions to (\ref{eq:1}) - (\ref{eq:2}), we
+simplify the PDE in (\ref{eq:1}) by using the fact that parameters
+$(\mu_x, \mu_y, \sigma_x, \sigma_y, \rho)$ are constant and solving
+for the exponential decomposition
+\[
+  p(x,y,t) = \exp(\alpha x + \beta y + \gamma t) q(x,y,t).
+\]
+Plugging the above equation into (\ref{eq:1}) and setting the
+advection terms for $q(x,y,t)$ to zero, we arrive at the PDE
+\[
+  \frac{\partial}{\partial t} q(x,y,t') = \frac{1}{2}\sigma_x^2
+  \frac{\partial^2}{\partial x^2}q(x,y,t') + \rho\sigma_x\sigma_y
+  \frac{\partial^2}{\partial x \partial y}q(x,y,t') +
+  \frac{1}{2}\sigma_y^2 \frac{\partial^2}{\partial y^2}q(x,y,t').
+\]
+
 \subsection{Fourier Expansion}
 
 The formal Fourier expansion for the problem is
