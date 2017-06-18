@@ -236,9 +236,13 @@ We can proceed in the same manner in the case where $\rho \neq
 are cosines and as such have a non-sparse representation in terms of
 sine series. Because of this, the matrix for the system of ODEs when
 $\rho \neq 0$ is dense. Moreover, the truncation values for $K$ and
-$L$ are also large. Finally, to compute 
-\subsection{Finite Difference}
+$L$ are also large. This makes the computation of the density function
+prohibitively expensive.
 
+\subsection{Finite Difference}
+The finite difference method we employed relied on assigning the
+initial condition to a closest grid point on the finite difference
+grid.
 
 \subsection{Finite Element Method}
 The method we use relies on two pieces:
@@ -252,7 +256,7 @@ PDE (\ref{eq:qq}) via the finite element method
 \citep{shaidurov2013multigrid}. Convergence of our method to the
 strong solution under the $L^2(\bar{\Omega})$ norm is guaranteed as
 long as the family we propose is complete in the Banach space of
-functions induced under $L^2(\bar{\Omega})$.
+functions induced under $L^2(\bar{\Omega})$ \citep{salsa2016partial}.
 
 The small-time solution is derived by considering the fundamental
 solution $G(x,y |t, x_0, y_0)$ for the unbounded problem in
@@ -329,30 +333,54 @@ having a large correlation coefficient.
 \begin{proof}
   By the definition of weak convergence, given the weak solution $q_k$
   and the classical solution $q$, for any continuous function $f$,
-  \[ \langle q_k| f \rangle \to \langle q| f \rangle \mbox { as } k \to \infty. \]
-
-  Because $f$ can be any function in $L^2$, we can choose $f$ to be
-  $\exp(ilx)$ for any integer $l$. This means that the characteristic
-  function of $X_k$ converges pointwise to the characteristic function
-  of $X$. By Levy's continuity theorem, this means that
+  \[ \langle q_k| f \rangle \to \langle q| f \rangle \mbox { as } k
+    \to \infty. \]
+  Because $f$ can be any function in $L^2$, we can
+  choose $f$ to be $\exp(ilx)$ for any integer $l$. This means that
+  the characteristic function of $X_k$ converges pointwise to the
+  characteristic function of $X$. By Levy's continuity theorem, this
+  means that
   \[ X_k \xrightarrow[]{d} X \mbox { as } k \to \infty. \]
 
   Next, given Theorem 4.1 in \cite{singler2008differentiability}, we
   know that, for each $k$, $q_k$ satisfies the criteria in
   \cite{casella2002statistical} to guarantee that, for data
   $X_{k} \sim F_k(\theta)$,
-  \[ \hat{\theta}_{n,k}(X_k) \xrightarrow[]{p} \theta \] as $n \to
-  \infty$. In other words, the MLE estimator for
+  \[ \hat{\theta}_{n,k}(X_k) \xrightarrow[]{p} \theta \] as
+  $n \to \infty$. Moreover, we are guaranteed asymptotic
+  efficiency. In other words, the MLE estimator for
   $(\sigma_x, \sigma_y, \rho)$ based on the likelihood function under
-  $F_k$ for data sampled from $F_k$. Now we need to show that the same
-  holds for data sampled from $F$ as $k \to \infty$.
+  $F_k$ for data sampled from $F_k$ is asymptotically efficient. Now we need to show
+  that the same holds for data sampled from $F$ as $k \to \infty$.
 
   To do this, we will use Chebyshev's inequality:
-  \begin{align*}
-    \Pr_{X}\left( \left| \hat{\theta}_{n,k}(X_k) - \theta \right| \geq \epsilon \right) &\leq \frac{ \mbox{E}_{X}\left[ (\hat{\theta}_{n,k}(X_k) - \theta)^2 \right] }{ \epsilon^2 }.
-  \end{align*}
+  \[
+    \Pr_{X}\left( \left| \hat{\theta}_{n,k}(X) - \theta \right| \geq
+      \epsilon \right) \leq \frac{ \mbox{E}_{X}\left[
+        (\hat{\theta}_{n,k}(X) - \theta)^2 \right] }{ \epsilon^2 }.
+  \]
   By the Maximum theorem, $\hat{\theta}_{n,k}(x)$ is a continuous
-  function with respect to $x$, meaning that 
+  function with respect to $x$, and further because we have bounded
+  $\hat{\theta}$ from below and above,
+  \[
+    \mbox{E}_{X_k}\left[ (\hat{\theta}_{n,k}(X_k) - \theta)^2 \right]
+    \to \mbox{E}_{X}\left[ (\hat{\theta}_{n,k}(X) - \theta)^2 \right]
+    \mbox{ as } k \to \infty
+  \]
+  by the portmanteau lemma. Finally, because $\hat{\theta}_{k,n}$ is
+  asymptotically efficient, we can show that
+  \[
+    \mbox{E}_{X_k}\left[ (\hat{\theta}_{n,k}(X_k) - \theta)^2 \right]
+    \to 0 \mbox{ as } n \to \infty,
+  \]
+  since the expected value of the estimator tends to $\theta$ and its
+  variance goes to 0 when $n \to \infty$. Therefore, given any
+  $\epsilon > 0$ and $\delta > 0$, we can find a sufficiently large $n$ and $k$ such that
+  \[
+    \Pr_{X}\left( \left| \hat{\theta}_{n,k}(X) - \theta \right| \geq
+      \epsilon \right) \leq \frac{ \mbox{E}_{X}\left[
+        (\hat{\theta}_{n,k}(X) - \theta)^2 \right] }{ \epsilon^2 } < \delta    
+  \]
 \end{proof}
 
 
