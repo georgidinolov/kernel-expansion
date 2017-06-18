@@ -1,6 +1,6 @@
 \documentclass[10pt]{article}
 
-
+\usepackage{amsthm}
 \usepackage[toc,page]{appendix}
 \usepackage{amssymb}
 \usepackage{pslatex,palatino,avant,graphicx,color}
@@ -23,6 +23,7 @@
 \usepackage{bbm}
 \usepackage[titles,subfigure]{tocloft} % Alter the style of the Table of Contents
 
+\newtheorem{lemma}{Lemma}
 %\pdfminorversion=4
 % NOTE: To produce blinded version, replace "0" with "1" below.
 \newcommand{\blind}{0}
@@ -197,17 +198,20 @@ for the exponential decomposition
 \[
   p(x,y,t) = \exp(\alpha x + \beta y + \gamma t) q(x,y,t).
 \]
-Plugging the above equation into (\ref{eq:1}) and setting the
-advection terms for $q(x,y,t)$ to zero, we arrive at the PDE
-\begin{equation}
-  \frac{\partial}{\partial t} q(x,y,t') = \frac{1}{2}\sigma_x^2
+We can find $\alpha, \beta$ and $\gamma$, as well as a scaling
+transformation, such that $q(x,y,t)$ satisfies
+\begin{align}
+  \frac{\partial}{\partial t} q(x,y,t') &= \frac{1}{2}\sigma_x^2
   \frac{\partial^2}{\partial x^2}q(x,y,t') + \rho\sigma_x\sigma_y
   \frac{\partial^2}{\partial x \partial y}q(x,y,t') +
   \frac{1}{2}\sigma_y^2 \frac{\partial^2}{\partial y^2}q(x,y,t').
-  \label{eq:qq}
-\end{equation}
-We will consider the solution to this PDE, as it encompasses the
-original problem.
+                                          \label{eq:qq} \\
+  q(x,y,t) &=0 &\mbox{for } & (x,y) \in \partial \Omega \nonumber \\
+  q(x,y,0) &= \delta(x-x_0) \delta(y-y_0) \nonumber
+\end{align}
+on the unit square.  We will consider the solution to this PDE without
+loss of generality.
+
 
 \subsection{Fourier Expansion}
 The formal Fourier (sinusoidal) expansion for the problem is given by
@@ -236,7 +240,120 @@ $L$ are also large. Finally, to compute
 \subsection{Finite Difference}
 
 
-\subsection{Finite Element}
+\subsection{Finite Element Method}
+The method we use relies on two pieces:
+\begin{enumerate}
+\item a small-time analytic solution $q(x,y,t_\epsilon)$ for the IC/BC problem,
+\item a family of orthonormal basis functions which represent
+  $q(x,y,t_\epsilon)$ parsimoniously.
+\end{enumerate}
+By combining 1) and 2), we can efficiently find a weak solution to the
+PDE (\ref{eq:qq}) via the finite element method
+\citep{shaidurov2013multigrid}. Convergence of our method to the
+strong solution under the $L^2(\bar{\Omega})$ norm is guaranteed as
+long as the family we propose is complete in the Banach space of
+functions induced under $L^2(\bar{\Omega})$.
+
+The small-time solution is derived by considering the fundamental
+solution $G(x,y |t, x_0, y_0)$ for the unbounded problem in
+(\ref{eq:qq}), which is the bivariate Gaussian density with mean and
+covariance determined by the initial condition and the diffusion
+parameters \citep{stakgold2011green}. We can then find a small enough
+$t_\epsilon$ such that $G(x,y|t_\epsilon,x_0, y_0)$ is numerically
+zero on three of the four boundaries of $\bar{\Omega}$. The
+zero-condition on the remaining boundary is enforced by suitably
+reflecting $G(x,y|t_\epsilon,x_0, y_0)$ about the boundary. The
+small-time solution therefore takes on the analytic form
+\[
+  q(x,y,t_\epsilon) = G(x,y|t_\epsilon,x_0, y_0) - G(x,y|t_\epsilon,x'_0, y'_0),
+\]
+for some known $(x'_0, y'_0, t_\epsilon)$.
+
+The construction of the orthonormal basis functions is motivated by
+the Green's function for the unbounded problem: before performing
+Gram-Schmidt orthogonalization, the finite family of basis functions
+are of the form
+\[
+  \tilde{\psi}_k(x,y| x_k, y_k, \rho, \sigma) = N\left( (x,y)^T \left|
+      (x_k, y_k)^T , \quad \left( \begin{array}{cc}
+                                     \sigma^2 & \rho \sigma^2 \\
+                                     \rho \sigma^2 & \sigma^2
+                     \end{array} \right) \right. \right) x(1-x)y(1-y).
+\]
+The advantage of these basis elements is that they better resolve the
+fundamental for the unbounded problem by taking into account $\rho$ in
+the covariance of each kernel. By performing Gram-Schmidt
+orthogonalization under the $L^2(\Omega)$ norm, we arrive at a family
+of orthonormal functions which can better resolve small-time solutions
+having a large correlation coefficient.
+
+% \subsection{Small-time Analytic Solution}
+% The fundamental solution for the heat problem in (\ref{eq:qq})
+% \textit{without the boundary conditions} is the bivariate Gaussian
+% density function
+% \begin{align}
+%   G(x,y,t | x_0, y_0) &= N\left( (x,y)^T \left| (x_0, y_0)^T , \quad
+%              t\left( \begin{array}{cc}
+%                        \sigma_x^2 & \rho \sigma_x \sigma_y \\
+%                        \rho \sigma_x \sigma_y & \sigma_y^2
+%                      \end{array} \right) \right. \right).         
+% \end{align}
+% For a fixed $(x_0,y_0)$, we can find a small time $t_\epsilon$
+% solution to the PDE where three of the four boundaries are enforced
+% numerically (maximum value of numerical solution is $\sim 10^{-16}$,
+% while the last boundary condition is enforced by reflecting $G(x,y,t)$
+% accross it. This small-time solution is analytic, satisfying both the
+% differential operator as well as the IC/BC. Let this small-time solution be denoted as
+% \[
+%   q(x,y,t_\epsilon).
+% \]
+
+% \subsection{Finite Element Method}
+% We use the small-time solution as an initial condition in a finite
+% element scheme to find the weak solution to (\ref{eq:qq}). To do so,
+% we need to choose a suitable family of basis functions. Apart from
+% satisfying the boundary conditions, there are many choices available
+% for basis functions. The out-of-the-box solution is usually linear
+% interpolants on either triangular or rectangular meshes
+% \citep{shaidurov2013multigrid} over the computational
+% domain. However, such an approach ignores the correlation structure
+% of the solution to (\ref{eq:qq}).
+
+% For this reason, we propose a family of basis functions which do
+% take into account the correlation.
+
+\begin{lemma}
+  The maximum likelihood estimator is consistent as $n \to \infty$ and $k \to \infty$:
+  \[ \hat{\theta}_{n,k} \to \theta \].
+\end{lemma}
+\begin{proof}
+  By the definition of weak convergence, given the weak solution $q_k$
+  and the classical solution $q$, for any continuous function $f$,
+  \[ \langle q_k| f \rangle \to \langle q| f \rangle \mbox { as } k \to \infty. \]
+
+  Because $f$ can be any function in $L^2$, we can choose $f$ to be
+  $\exp(ilx)$ for any integer $l$. This means that the characteristic
+  function of $X_k$ converges pointwise to the characteristic function
+  of $X$. By Levy's continuity theorem, this means that
+  \[ X_k \xrightarrow[]{d} X \mbox { as } k \to \infty. \]
+
+  Next, given Theorem 4.1 in \cite{singler2008differentiability}, we
+  know that, for each $k$, $q_k$ satisfies the criteria in
+  \cite{casella2002statistical} to guarantee that, for data
+  $X_{k} \sim F_k(\theta)$,
+  \[ \hat{\theta}_{n,k}(X_k) \xrightarrow[]{p} \theta \] as $n \to
+  \infty$. In other words, the MLE estimator for
+  $(\sigma_x, \sigma_y, \rho)$ based on the likelihood function under
+  $F_k$ for data sampled from $F_k$. Now we need to show that the same
+  holds for data sampled from $F$ as $k \to \infty$.
+
+  To do this, we will use Chebyshev's inequality:
+  \begin{align*}
+    \Pr_{X}\left( \left| \hat{\theta}_{n,k}(X_k) - \theta \right| \geq \epsilon \right) &\leq \frac{ \mbox{E}_{X}\left[ (\hat{\theta}_{n,k}(X_k) - \theta)^2 \right] }{ \epsilon^2 }.
+  \end{align*}
+  By the Maximum theorem, $\hat{\theta}_{n,k}(x)$ is a continuous
+  function with respect to $x$, meaning that 
+\end{proof}
 
 
 \bibliographystyle{plainnat}
