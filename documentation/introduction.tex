@@ -129,26 +129,26 @@ $(X(t), Y(t))$ under the boundary conditions:
 \begin{align}
   p\left(X(t) = x, Y(t) = y | a_x < X(t') < b_x, a_y < Y(t') < b_y, 0 < t' \leq t, X(0)=x_0, Y(0)=y_0 \right). \label{eq:CDF}
 \end{align}
-This density, which we shorten to $p(x,y,t)$ from now on, is the
+This density, which we shorten to $q(x,y,t)$ from now on, is the
 solution to the Fokker-Planck equation \citep{oksendal2013stochastic}:
 \begin{align}
-  \frac{\partial}{\partial t} p(x,y,t') &= -\mu_x \frac{\partial}{\partial x}p(x,y,t')
-                                         - \mu_y \frac{\partial}{\partial y}p(x,y,t')
-                                         + \frac{1}{2}\sigma_x^2 \frac{\partial^2}{\partial x^2}p(x,y,t')
-                                         + \rho\sigma_x\sigma_y \frac{\partial^2}{\partial x \partial y}p(x,y,t')
-                                         + \frac{1}{2}\sigma_y^2 \frac{\partial^2}{\partial y^2}p(x,y,t'),
+  \frac{\partial}{\partial t} q(x,y,t') &= -\mu_x \frac{\partial}{\partial x}q(x,y,t')
+                                         - \mu_y \frac{\partial}{\partial y}q(x,y,t')
+                                         + \frac{1}{2}\sigma_x^2 \frac{\partial^2}{\partial x^2}q(x,y,t')
+                                         + \rho\sigma_x\sigma_y \frac{\partial^2}{\partial x \partial y}q(x,y,t')
+                                         + \frac{1}{2}\sigma_y^2 \frac{\partial^2}{\partial y^2}q(x,y,t'),
   \label{eq:1} \\
-  p(a_x, y,t') &= p(b_x,y,t') = p(x,a_y,t') = p(x,b_y,t') = 0, \label{eq:2} \\
+  q(a_x, y,t') &= q(b_x,y,t') = q(x,a_y,t') = q(x,b_y,t') = 0, \label{eq:2} \\
    0 &< t' \leq t. \nonumber
 \end{align}
-Differentiating $p(x,y,t)$ with respect to the boundaries produces the
+Differentiating $q(x,y,t)$ with respect to the boundaries produces the
 transition density of a particle beginning and ending at the points
 $(X_1(0), X_2(0))$ and $(X_1(t), X_2(t))$ respectively, while
 attaining the minima $a_x/a_y$ and maxima $b_x/b_y$ in each coordinate
 direction:
 \begin{align*}
   \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial
-  b_y} p(x,y,t) = 
+  b_y} q(x,y,t) = 
 \end{align*}
 \begin{align}
   p\left(X(t) = x, Y(t) = y \left| \min_{t'}X(t') = a_x,
@@ -185,10 +185,12 @@ introduces a numerical bias in the estimation procedure.
 
 In this paper, we propose a solution to the general problem
 (\ref{eq:1}) - (\ref{eq:2}) which is obtained by combining a
-small-time analytic solution with a finite-element method. Our
-application is the maximal likelihood estimation
+small-time analytic solution with a finite-element method. We apply
+our computational method for finding (\ref{eq:CDF}) and (\ref{eq:pdf})
+to estimate the equation parameters in settings where the
+model assumption is appropriate. application is the maximal likelihood
+estimation. 
 
-ADD OUT APPLICATION (ESTIMATION)
 
 \section{Approximate Numerical Solutions}
 Before considering any solutions to (\ref{eq:1}) - (\ref{eq:2}), we
@@ -217,7 +219,6 @@ loss of generality.
 The formal Fourier (sinusoidal) expansion for the problem is given by
 \begin{align*}
   q(x,y,t) &= \lim_{K,L\to\infty}\sum_{k=1}^K \sum_{l=1}^L c_{k,l}(t) \sin\left(2\pi\cdot k \frac{x-a_x}{b_x-a_x}\right) \sin\left(2\pi\cdot l \frac{y-a_y}{b_y-a_y}\right) \\
-  \hat{q}(x,y,t) &= \sum_{k=1}^K \sum_{l=1}^L c_{k,l}(t) \sin\left(2\pi\cdot k \frac{x-a_x}{b_x-a_x}\right) \sin\left(2\pi\cdot l \frac{y-a_y}{b_y-a_y}\right) & \mbox{for some } K, L
 \end{align*}
 With $\rho = 0$, the sinusoidal functions are the eigenvectors for the
 differential operator in (\ref{eq:qq}), and we would proceed by
@@ -240,12 +241,17 @@ $L$ are also large. This makes the computation of the density function
 prohibitively expensive.
 
 \subsection{Finite Difference}
-The finite difference method we employed relied on assigning the
-initial condition to a closest grid point on the finite difference
-grid.
+The finite difference method we employe uses a regular grid. Because
+of this, either the initial condition or the boundaries need to be
+approximated by assigning them to a correct grid point(s). This
+quantization introduces an aritificial diffusion in the numerical
+scheme, which biases parameter estimates. Of course, this error can be
+reduced by using a finer grid. However, the resolution needed is
+prohibitively high for this problem.
+
 
 \subsection{Finite Element Method}
-The method we use relies on two pieces:
+The method we use relies on two parts:
 \begin{enumerate}
 \item a small-time analytic solution $q(x,y,t_\epsilon)$ for the IC/BC problem,
 \item a family of orthonormal basis functions which represent
@@ -326,6 +332,12 @@ having a large correlation coefficient.
 % For this reason, we propose a family of basis functions which do
 % take into account the correlation.
 
+\section{Estimation}
+As an application of our computational method, we estimate the
+parameters in (\ref{eq:pdf}). However, before we do so, we prove a
+lemma to show that maximum likelihood estimates based on the
+approximate solution are asymptotically efficient.
+
 \begin{lemma}
   The maximum likelihood estimator is consistent as $n \to \infty$ and $k \to \infty$:
   \[ \hat{\theta}_{n,k} \to \theta \].
@@ -343,7 +355,7 @@ having a large correlation coefficient.
   \[ X_k \xrightarrow[]{d} X \mbox { as } k \to \infty. \]
 
   Next, given Theorem 4.1 in \cite{singler2008differentiability}, we
-  know that, for each $k$, $q_k$ satisfies the criteria in
+  know that, for each $k$, $q_k$ satisfies the criteria A1 - A6 in 
   \cite{casella2002statistical} to guarantee that, for data
   $X_{k} \sim F_k(\theta)$,
   \[ \hat{\theta}_{n,k}(X_k) \xrightarrow[]{p} \theta \] as
