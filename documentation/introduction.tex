@@ -179,7 +179,7 @@ no closed-form solution to the general problem in (\ref{eq:1}) -
 (\ref{eq:2}). This also limits the available ways to compute
 (\ref{eq:pdf}), with the most straightforward approach being finite
 difference with respect to the boundary conditions. This, however,
-requires one to solve at least 16 eigenvalue problems to evaulate the
+requires one to solve at least 16 eigenvalue problems to evaluate the
 density function for a single observation, motivating the need for an
 efficient numerical method to solve (\ref{eq:1}) - (\ref{eq:2}).
 
@@ -190,7 +190,7 @@ eigenfunctions for the differential operator are approximated as
 sinusoidal series satisfying the boundary conditions. However, a
 drawback of this out-of-the-box solution is that the system matrix for
 the corresponding eigenvalue problem is large and dense. An
-alternative is to use a finite difference scheme to direcly solve the
+alternative is to use a finite difference scheme to directly solve the
 evolution problem after suitable transformations. However, both of
 these methods need a high degree of numerical resolution to produce
 practically useful approximations of the transition density. We
@@ -204,7 +204,7 @@ In this paper, we propose a solution to the general problem
 small-time analytic solution with a finite-element method. Our method
 directly takes into account the correlation parameter present in the
 differential operator in order to efficiently represent the analytic
-small-time soltuion and propagate it forward in time. We apply our
+small-time solution and propagate it forward in time. We apply our
 computational method to estimate equation parameters with a maximum
 likelihood approach in settings where the model assumptions of
 constant $(\mu_x, \mu_y, \sigma_x, \sigma_y, \rho)$ and Brownian
@@ -223,13 +223,13 @@ We can find $\alpha, \beta$ and $\gamma$, as well as a suitable
 scaling transformation, such that $p(\xi,\eta,\tau)$ satisfies the diffusion
 equation:
 \begin{align}
-  \frac{\partial}{\partial \tau} q(\xi,\eta,\tau') &= \frac{1}{2}\sigma_\xi^2
-  \frac{\partial^2}{\partial \xi^2}q(\xi,\eta,\tau') + \rho\sigma_\xi\sigma_\eta
-  \frac{\partial^2}{\partial \xi \partial \eta}q(\xi,\eta,\tau') +
-  \frac{1}{2}\sigma_\eta^2 \frac{\partial^2}{\partial \eta^2}q(\xi,\eta,\tau').
-                                          \label{eq:qq} \\
-  q(\xi,\eta,\tau) &=0 &\mbox{for } & (\xi,\eta) \in [0,1] \times [0,1], \nonumber \\
-  q(\xi,\eta,0) &= \delta(\xi-\xi_0) \delta(\eta-\eta_0) \nonumber
+  \frac{\partial}{\partial \tau} p(\xi,\eta,\tau') &= \frac{1}{2}\sigma_\xi^2
+  \frac{\partial^2}{\partial \xi^2}p(\xi,\eta,\tau') + \rho\sigma_\xi\sigma_\eta
+  \frac{\partial^2}{\partial \xi \partial \eta}p(\xi,\eta,\tau') +
+                                                     \frac{1}{2}\sigma_\eta^2 \frac{\partial^2}{\partial \eta^2}p(\xi,\eta,\tau') , \label{eq:qq} \\
+  &:= \mathcal{L}p(\xi,\eta,\tau) , \\
+  p(\xi,\eta,\tau) &=0 &\mbox{for } & (\xi,\eta) \in [0,1] \times [0,1], \nonumber \\
+  p(\xi,\eta,0) &= \delta(\xi-\xi_0) \delta(\eta-\eta_0) \nonumber
 \end{align}
 on the unit square.  The transformations $\tilde{\theta} \to \theta$
 as well as $(\xi,\eta) \to (x,y)$ allow us to go from
@@ -250,18 +250,17 @@ where the eigenfunctions $\phi_\nu(\xi, \eta)$ satisfy the boundary
 conditions. Because the differential operator in the normalized
 problem (\ref{eq:qq}) is self-adjoint [PROVE], the family of
 eigenfunctions is complete in the Hilbert space $L^2$
-[CITE]. Moreover, the eigenvalues are bounded below by $\lambda_0$, so
+[CITE]. Moreover, the eigenvalues are bounded below by 0, so
 that the solution behaves as expected (see section 6.3 of
 \cite{risken1989fokker-planck}).
 
-Since we require $\phi_\nu(\xi,\eta)$ to be zero on the orthogonal
-boundaries, we may represent the eigenfunction as a linear combination
-of sines
+Since we require $\phi_\nu(\xi,\eta)$ to be zero on the boundaries, we
+may represent the eigenfunction as a linear combination of sines
 \[
   \phi_\nu(\xi,\eta) = \sum_{l=0}^L \sum_{m=0}^M c_{l,m, \nu}
   \sin\left(2\pi\, l\, \xi \right) \sin\left(2\pi\, m\, \eta \right) := \Psi(\xi,\eta)^T c_\nu,
 \]
-where we have truncated the infintite series for some suitably large
+where we have truncated the infinite series for some suitably large
 $L$ and $M$ and defined
 \begin{align*}
   \psi_{l,m}(\xi,\eta) &= \sin\left(2\pi\, l\, \xi \right)
@@ -284,7 +283,7 @@ the linear system
 \] 
 where $A$ is a constant matrix dependent on $\tilde{\theta}$. In the
 case where $\rho = 0$, $A$ is diagonal because
-$\left\{ \psi_{l,m}(\xi,\eta) \right\}_{l,m}$ arethe eigenfunctions to
+$\left\{ \psi_{l,m}(\xi,\eta) \right\}_{l,m}$ are the eigenfunctions to
 $\mathcal{L}$. When $\rho \neq 0$, $A$ is no longer diagonal and is in
 fact dense. This caused by the mixing terms
 \[
@@ -300,20 +299,83 @@ of $\mathcal{L}\phi_\nu$ into the eigenvalue problem
   \Psi(\xi,\eta)^T A^T c_\nu = -\lambda_\nu \Psi(\xi,\eta)^T c_\nu
   \quad \Leftrightarrow \quad A^T c_\nu = -\lambda_\nu c_\nu
 \]
-whose solution gives the family of orthonormal eigenfunctions.
-
-As mentioned already, the efficiency of this approach is dependent on
-the cost of solving the eigenvalue problem $A^T c_\nu = -\lambda_\nu c_\nu$.  
+whose solution gives the family of orthonormal eigenfunctions. As
+mentioned already, the efficiency of this approach is dependent on the
+cost of solving the eigenvalue problem
+$A^T c_\nu = -\lambda_\nu c_\nu$. 
 
 \subsection{Finite Difference}
-The finite difference method we employe uses a regular grid. Because
-of this, either the initial condition or the boundaries need to be
-approximated by assigning them to a correct grid point(s). This
-quantization introduces an aritificial diffusion in the numerical
-scheme, which biases parameter estimates. Of course, this error can be
-reduced by using a finer grid. However, the resolution needed is
-prohibitively high for this problem.
+A finite difference method used to solve the problem (\ref{eq:qq})
+defines an approximate solution over some grid of points
+$\left\{(\xi_l, \eta_m) \right\}_{l=0,m=0}^{L,M}$ over $[0,1] \times [0,1]:$
+\begin{equation}
+  q(\xi,\eta,\tau) \approx \sum_{l}\sum_{m} c_{l,m}(\tau) \delta(\xi-\xi_l) \delta(\eta-\eta_m) = \Delta(\xi,\eta)^T c(t),\label{eq:finite-diff-sol}
+\end{equation}
+where $c(\tau) = (c_{0,0}(\tau), \ldots, c_{L,M}(\tau)^T$ and
+$\Delta(\xi,\eta) = (\delta(\xi-\xi_0) \delta(\eta-\eta_0), \ldots,
+\delta(\xi-\xi_L) \delta(\eta-\eta_M))$, where we have once again
+separated the spatial and temporal components of the problem as in the
+previous section. This is a suitable choice, because the differential
+operator $\mathcal{L}$ is linear and constant and there is therefore
+no need to perform approximation in time, i.e. we take derivative with
+respect to time directly:
+\[
+  \frac{\partial}{\partial \tau}q(\xi,\eta,\tau) \approx \Delta(\xi,\eta)^T \frac{\partial c(\tau)}{\partial \tau}
+\]
+The differential operator $\mathcal{L}$ for the representation in
+equation (\ref{eq:finite-diff-sol}) is approximated with a finite
+difference operator $\mathcal{L}_{FD}$ such that approximate derivatives are defined on the grid:
+\[
+  \mathcal{L}q(\xi,\eta,\tau) \approx \mathcal{L}_{FD}q(\xi,\eta,\tau) = \sum_{l}\sum_{m} f(c_{l,m}(\tau)) \delta(\xi-\xi_l) \delta(\eta-\eta_m) := \Delta(\xi,\eta)^T f(c(t))
+\]
+where $f(c_{l,m}(\tau))$ is a function of some neighboring coefficient
+values at $(\xi_l, \eta_m)$.
 
+For a central difference scheme on a regular $N \times N$ grid aligned
+with the boundaries (with step size $h=1/(N-1)$), 
+\[
+  \frac{\partial^2}{\partial \xi^2} q(\xi_l, \eta_m, \tau) \approx
+  \frac{c_{l+1,m}(\tau) - 2c_{l,m}(\tau) + c_{l-1,m}(\tau)}{h^2} = \frac{1}{h^2}A_{l,m,\xi^2} c(\tau),
+\]
+where $A_{l,m,\xi^2}$ is some all-zero row vector except for three
+entries of 1 corresponding to the grid points
+$(\xi_{l-1}, \eta_m), (\xi_l,\eta_m), (\xi_{l+1},\eta_m)$. For the
+mixing term, the approximation is
+\[
+  \frac{\partial^2}{\partial \xi \partial \eta} q(\xi_l, \eta_m, \tau) \approx
+  \frac{c_{l+1,m+1}(\tau) - c_{l+1,m-1}(\tau) - c_{l-1,m+1}(\tau) + c_{l-1,m-1}(\tau)}{4h^2} = \frac{1}{4h^2}A_{l,m,\xi\eta} c(\tau).
+\]
+The finite difference approximation of $\mathcal{L}$ can be written as
+a linear transformation of $c(\tau)$:
+\[
+  \mathcal{L}q(\xi,\eta,\tau) \approx \Delta^T(\xi,\eta) \underbrace{\left( \frac{1}{2}\sigma_\xi^2 \frac{1}{h^2}A_{\xi^2} + \rho\sigma_\xi\sigma_\eta A_{\xi\eta} + \frac{1}{2}\sigma_\xi^2 \frac{1}{h^2}A_{\eta^2}  \right)}_{A} c(\tau),
+\]
+where we have composed the row vectors for the different derivative
+terms as matrices $A_{\xi^2}, A_{\xi\eta},$ and $A_{\eta^2}$. The
+system of differential equations for $c(\tau)$ is therefore completely
+determined by our choice of step size $h$, as well as the parameter
+values $(\sigma_\xi, \sigma_\eta, \rho)$:
+\begin{align}
+   &\frac{\partial c(\tau)}{\partial \tau} = A c(\tau) \nonumber \\
+   \Rightarrow &c(\tau) = \exp\left( A\tau \right)c(0) \label{eq:eigenproblem-fd}
+\end{align}
+For non-small $\tau$, we must find the eigenvalue decomposition of $A$
+in order to solve the evolution problem. It should be noted here that
+a regular grid approach with a constant $h$ is appealing, because it
+allows us to fill once and store the matrices
+$A_{\xi^2}, A_{\eta^2}, A_{\xi\eta}$, which saves valuable
+computational resources if we are to solve the finite difference
+eigenproblem (\ref{eq:eigenproblem-fd}) repeatedly for different
+parameter values $\tilde{\theta}$.
+
+Unlike the system matrix for the trigonometric expansion, the system
+matrix here is sparse, as was demonstrated for $A_{\xi^2}$ explicitly,
+so that the eigenvalue problem is much cheaper. Further, the system
+matrix can be made even sparser by considering a $45^{\circ}$ rotation
+which removes the mixing term from the problem PDE and still allows us
+to use a regular grid.
+
+However, 
 
 \subsection{Finite Element Method}
 The method we use relies on two parts:
