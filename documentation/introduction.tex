@@ -127,7 +127,7 @@ $\mbox{Cov}(W_1(t), W_2(t)) = \rho t$ for $0 < t' \leq t$. In
 particular, we find the joint transition density function for
 $(X(t), Y(t))$ under the boundary conditions:
 \begin{align}
-  \Pr\left(X(t) \in dx, Y(t) \in dy | a_x < X(t') < b_x, a_y < Y(t') < b_y, 0 < t' \leq t, X(0)=x_0, Y(0)=y_0, \theta \right), \label{eq:CDF} 
+  \Pr\left(X(t) \in dx, Y(t) \in dy, a_x < X(t') < b_x, a_y < Y(t') < b_y |0 < t' \leq t, X(0)=x_0, Y(0)=y_0, \theta \right), \label{eq:CDF} 
 \end{align}
 with $\theta := (\mu_x, \mu_y, \sigma_x, \sigma_y, \rho).$ This
 density, which we shorten to $q(x,y,t)$ from now on, is the solution
@@ -152,8 +152,8 @@ direction:
   b_y} q(x,y,t) = 
 \end{align*}
 \begin{align}
-  \Pr\left(X(t) \in dx, Y(t) \in dy \left| \min_{t'}X(t') = a_x,
-  \max_{t'}X(t')=b_x, \min_{t'} Y(t')=a_y, \max_{t'} Y(t')=b_y, 0 <
+  \Pr\left(X(t) \in dx, Y(t) \in dy, \min_{t'}X(t') = a_x,
+  \max_{t'}X(t')=b_x, \min_{t'} Y(t')=a_y, \max_{t'} Y(t')=b_y \left| 0 <
   t' \leq t, X(0)=x_0, Y(0)=y_0, \theta \right.\right). \label{eq:pdf}
 \end{align}
 The transition density (\ref{eq:CDF}) with less than 4 boundaries has
@@ -381,11 +381,11 @@ finite difference and it is of fourth order. Given this high order
 differentiation, $h$ cannot be made too small because roundoff error
 becomes an issue relatively quickly.
 
-This naturally occuring lower bound on $h$ introduces yet another
-practical issue: on a regular grid, the delta function intial
+This naturally occurring lower bound on $h$ introduces yet another
+practical issue: on a regular grid, the delta function initial
 condition at $(\xi_0, \eta_0)$ needs to be either rounded to the
 nearest grid point or represented as a weighted sum of delta functions
-on the four nearest grid points. Either appraoch introduces a
+on the four nearest grid points. Either approach introduces a
 numerical diffusion into the problem which, for a finite $h$, can bias
 the numerical solution.
 
@@ -490,10 +490,29 @@ work].
 % take into account the correlation.
 
 \section{Estimation}
-As an application of our computational method, we estimate the
-parameters in (\ref{eq:pdf}). However, before we do so, we prove a
-lemma to show that maximum likelihood estimates based on the
-approximate solution are asymptotically efficient.
+Our numerical method is specifically designed for computational
+efficiency for repeatedly evaluating the density function
+(\ref{eq:pdf}). The method is therefore particularly suited for
+performing maximum likelihood estimation of parameter values with
+respect to models involving systems of the type (\ref{eq:X}) -
+(\ref{eq:Y}). In such a scenario, the maximum likelihood estimator
+(MLE) for the true parameters $\theta$ are those which maximize the
+(log-)likelihood function conditional on the observed data. MLEs are
+especially useful in practical settings when they exhibit
+\textit{consistency}, \textit{i.e.}: the MLEs gets closer to the true
+parameter $\theta$ as more data is collected and included in the
+likelihood (assuming the model and its parameters remain constant).
+
+In this section, we prove that the MLE based on the
+\textbf{approximate} (weak) finite element solution to the governing
+Fokker-Planck equation (\ref{eq:1}) is consistent. First, we define
+$X$ as the random variable sampled from the distribution corresponding
+to the density (\ref{eq:pdf}):
+\[
+  X \sim F(\theta),
+\]
+where we have explicitly made the density $F$ dependent on the model
+parameters $\theta$.
 
 \begin{lemma}
   The maximum likelihood estimator is consistent as $n \to \infty$ and $k \to \infty$:
