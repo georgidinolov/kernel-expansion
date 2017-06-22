@@ -162,8 +162,8 @@ been used in computing first passage times \citep{kou2016first,
 risk and default correlations \citep{haworth2008modelling,
   ching2014correlated}. \cite{he1998double} use variants of
 (\ref{eq:pdf}) with respect to some of the boundaries to price
-financial derivative instruments whose payoff depends on observed
-maxima/minima.
+financial derivative instruments whose payoff depends on \textbf{some}
+of the observed maxima/minima.
 
 Closed-form solutions to (\ref{eq:1}) - (\ref{eq:2}) are available for
 some parameter regimes. When $\rho = 0$, the transition density of the
@@ -239,7 +239,7 @@ coordinate frame. We will call equation (\ref{eq:qq}) the
 \textit{normalized} problem and will consider its solution without
 loss of generality.
 
-\subsection{Trigonometric Expansion}
+\subsection{Eigenfunction Expansion} \label{sec:eigenfunction}
 Following Section 6.2 of \cite{risken1989fokker-planck}, we may use
 the biorthogonal decomposition of the solution as a sum of
 eigenfunctions and time-dependent coefficients determined by eigenvalues:
@@ -304,7 +304,7 @@ mentioned already, the efficiency of this approach is dependent on the
 cost of solving the eigenvalue problem
 $A^T c_\nu = -\lambda_\nu c_\nu$. 
 
-\subsection{Finite Difference}
+\subsection{Finite Difference}  \label{sec:finite-difference}
 A finite difference method used to solve the problem (\ref{eq:qq})
 defines an approximate solution over some grid of points
 $\left\{(\xi_l, \eta_m) \right\}_{l=0,m=0}^{L,M}$ over $[0,1] \times [0,1]:$
@@ -369,47 +369,70 @@ eigenproblem (\ref{eq:eigenproblem-fd}) repeatedly for different
 parameter values $\tilde{\theta}$.
 
 Unlike the system matrix for the trigonometric expansion, the system
-matrix here is sparse, as was demonstrated for $A_{\xi^2}$ explicitly,
-so that the eigenvalue problem is much cheaper. Further, the system
-matrix can be made even sparser by considering a $45^{\circ}$ rotation
-which removes the mixing term from the problem PDE and still allows us
-to use a regular grid.
+matrix here is sparse, as was demonstrated for $A_{\xi^2}$ explicitly.
+Eigenvalue problem is therefore much cheaper to solve. Further, the
+system matrix can be made even sparser by performing a $45^{\circ}$
+rotation which removes the mixing term from the problem PDE and still
+allows us to use a regular grid.
 
-However, 
+However, the fundamental limitation of using a finite element method
+is that differentiation with respect to boundaries is also done using
+finite difference and it is of fourth order. Given this high order
+differentiation, $h$ cannot be made too small because roundoff error
+becomes an issue relatively quickly.
+
+This naturally occuring lower bound on $h$ introduces yet another
+practical issue: on a regular grid, the delta function intial
+condition at $(\xi_0, \eta_0)$ needs to be either rounded to the
+nearest grid point or represented as a weighted sum of delta functions
+on the four nearest grid points. Either appraoch introduces a
+numerical diffusion into the problem which, for a finite $h$, can bias
+the numerical solution.
 
 \subsection{Finite Element Method}
-The method we use relies on two parts:
-\begin{enumerate}
-\item a small-time analytic solution $q(x,y,t_\epsilon)$ for the IC/BC problem,
+We propose a numerical method which $1)$ maintains a functional
+approximation of the differential operator $\mathcal{L}$ like the
+eigenfunction expansion in Section \ref{sec:eigenfunction} while $2)$
+imposing a computational burded comparable to or better than that of
+the finite difference approach in Section
+\ref{sec:finite-difference}. Further, our method explicitly minimizes
+the error associated with using a finite, smooth representation of the
+initial condition $\delta(\xi-\xi_0)\delta(\eta-\eta_0)$.
+
+As such, our approach consists of two parts
+\begin{enumerate}[i)]
+\item a small-time analytic solution $q(x,y,\tau_\epsilon)$ for the IC/BC problem,
 \item a family of orthonormal basis functions which represent
-  $q(x,y,t_\epsilon)$ parsimoniously.
+  $q(x,y,\tau_\epsilon)$ parsimoniously.
 \end{enumerate}
-By combining 1) and 2), we can efficiently find a weak solution to the
+By combining $i)$ and $ii)$, we can efficiently find a weak solution to the
 PDE (\ref{eq:qq}) via the finite element method
 \citep{shaidurov2013multigrid}. Convergence of our method to the
 strong solution under the $L^2(\bar{\Omega})$ norm is guaranteed as
-long as the family we propose is complete in the Banach space of
+long as the family we propose is complete in the Hilbert space of
 functions induced under $L^2(\bar{\Omega})$ \citep{salsa2016partial}.
 
 The small-time solution is derived by considering the fundamental
-solution $G(x,y |t, x_0, y_0)$ for the unbounded problem in
-(\ref{eq:qq}), which is the bivariate Gaussian density with mean and
-covariance determined by the initial condition and the diffusion
+solution $G(\xi,\eta |\tau, \xi_0, \eta_0)$ for the unbounded problem
+in (\ref{eq:qq}), which is the bivariate Gaussian density with mean
+and covariance determined by the initial condition and the diffusion
 parameters \citep{stakgold2011green}. We can then find a small enough
-$t_\epsilon$ such that $G(x,y|t_\epsilon,x_0, y_0)$ is numerically
-zero on three of the four boundaries of $\bar{\Omega}$. The
-zero-condition on the remaining boundary is enforced by suitably
-reflecting $G(x,y|t_\epsilon,x_0, y_0)$ about the boundary. The
-small-time solution therefore takes on the analytic form
+$t_\epsilon$ such that $G(\xi,\eta |\tau, \xi_0, \eta_0)$ is
+numerically zero on three of the four boundaries of
+$\bar{\Omega}$. The zero-condition on the remaining boundary is
+enforced by suitably moving the source term for the fundamental solut
+$(\xi'_0, \eta'_0)$. The small-time solution
+therefore takes on the analytic form
 \[
-  q(x,y,t_\epsilon) = G(x,y|t_\epsilon,x_0, y_0) - G(x,y|t_\epsilon,x'_0, y'_0),
+  q(\xi,\eta,\tau_\epsilon) = G(\xi,\eta|\tau_\epsilon,\xi_0, \eta_0) - G(\xi,\eta|\tau_\epsilon,\xi'_0, \eta'_0).
 \]
-for some known $(x'_0, y'_0, t_\epsilon)$.
 
 The construction of the orthonormal basis functions is motivated by
-the Green's function for the unbounded problem: before performing
-Gram-Schmidt orthogonalization, the finite family of basis functions
-are of the form
+the fundadmental solution for the unbounded problem (\ref{eq:qq}):
+before performing Gram-Schmidt orthogonalization, the finite family of
+basis functions
+$\{ \tilde{\psi}_k(x,y| x_k, y_k, \rho, \sigma) \}_{k}^K$ are of the
+form
 \[
   \tilde{\psi}_k(x,y| x_k, y_k, \rho, \sigma) = N\left( (x,y)^T \left|
       (x_k, y_k)^T , \quad \left( \begin{array}{cc}
@@ -417,12 +440,19 @@ are of the form
                                      \rho \sigma^2 & \sigma^2
                      \end{array} \right) \right. \right) x(1-x)y(1-y).
 \]
-The advantage of these basis elements is that they better resolve the
-fundamental for the unbounded problem by taking into account $\rho$ in
-the covariance of each kernel. By performing Gram-Schmidt
+Essentially, the collection
+$\{ \tilde{\psi}_k(x,y| x_k, y_k, \rho, \sigma) \}_{k}^K$ is composed
+of fundamental solutions to a heat diffusion problem tuned by $\sigma$
+and $\rho$, mollified such that their support is on $\bar{\Omega}$,
+and centered along some grid over $\bar{\Omega}$.
+
+The advantage of these elements is that they better resolve the
+fundamental solution for the unbounded problem by taking into account
+$\rho$ in the covariance of each kernel. By performing Gram-Schmidt
 orthogonalization under the $L^2(\Omega)$ norm, we arrive at a family
 of orthonormal functions which can better resolve small-time solutions
-having a large correlation coefficient.
+having a large correlation coefficient. [Wow this needs a lot more
+work].
 
 % \subsection{Small-time Analytic Solution}
 % The fundamental solution for the heat problem in (\ref{eq:qq})
