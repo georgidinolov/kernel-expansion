@@ -127,10 +127,10 @@ $\mbox{Cov}(W_1(t), W_2(t)) = \rho t$ for $0 < t' \leq t$. In
 particular, we find the joint transition density function for
 $(X(t), Y(t))$ under the boundary conditions:
 \begin{align}
-  \Pr\left(X(t) \in dx, Y(t) \in dy, a_x < X(t') < b_x, a_y < Y(t') < b_y |0 < t' \leq t, X(0)=x_0, Y(0)=y_0, \theta \right), \label{eq:CDF} 
+  \Pr\left(X(t) \in dx, Y(t) \in dy | \forall t' \in [0,t]\,\, X(t') \in [a_x, b_x], \froall t' \in [0,t]\,\, Y(t') \in [a_y,b_y], X(0)=x_0, Y(0)=y_0, \theta \right), \label{eq:CDF}
 \end{align}
 with $\theta := (\mu_x, \mu_y, \sigma_x, \sigma_y, \rho).$ This
-density, which we shorten to $q(x,y,t)$ from now on, is the solution
+function, which we shorten to $q(x,y,t)$ from now on, is the solution
 to the Fokker-Planck equation \citep{oksendal2013stochastic}:
 \begin{align}
   \frac{\partial}{\partial t} q(x,y,t') &= -\mu_x \frac{\partial}{\partial x}q(x,y,t')
@@ -156,14 +156,14 @@ direction:
   \max_{t'}X(t')=b_x, \min_{t'} Y(t')=a_y, \max_{t'} Y(t')=b_y \left| 0 <
   t' \leq t, X(0)=x_0, Y(0)=y_0, \theta \right.\right). \label{eq:pdf}
 \end{align}
-The transition density (\ref{eq:CDF}) with less than 4 boundaries has
-been used in computing first passage times \citep{kou2016first,
-  sacerdote2016first}, with application to structural models in credit
-risk and default correlations \citep{haworth2008modelling,
-  ching2014correlated}. \cite{he1998double} use variants of
-(\ref{eq:pdf}) with respect to some of the boundaries to price
-financial derivative instruments whose payoff depends on \textbf{some}
-of the observed maxima/minima.
+The transition density (\ref{eq:CDF}) with less than all four
+boundaries has been used in computing first passage times
+\citep{kou2016first, sacerdote2016first}, with application to
+structural models in credit risk and default correlations
+\citep{haworth2008modelling, ching2014correlated}. \cite{he1998double}
+use variants of (\ref{eq:pdf}) with respect to some of the boundaries
+to price financial derivative instruments whose payoff depends on
+\textbf{some} of the observed maxima/minima.
 
 Closed-form solutions to (\ref{eq:1}) - (\ref{eq:2}) are available for
 some parameter regimes. When $\rho = 0$, the transition density of the
@@ -215,7 +215,7 @@ motion driving stochastic evolution are appropriate.
 Before considering any solutions to the full Fokker-Planck equation
 (\ref{eq:1}) - (\ref{eq:2}), we simplify the PDE by proposing an
 exponential decomposition of the solution and using the fact that parameters
-$(\mu_x, \mu_y, \sigma_x, \sigma_y, \rho)$ are constant:
+$\theta = (\mu_x, \mu_y, \sigma_x, \sigma_y, \rho)$ are constant:
 \[
   q(x,y,t) = \exp(\alpha x + \beta y + \gamma t) p(x,y,t).
 \]
@@ -362,7 +362,7 @@ values $(\sigma_\xi, \sigma_\eta, \rho)$:
 For non-small $\tau$, we must find the eigenvalue decomposition of $A$
 in order to solve the evolution problem. It should be noted here that
 a regular grid approach with a constant $h$ is appealing, because it
-allows us to fill once and store the matrices
+allows us to construct once and store the matrices
 $A_{\xi^2}, A_{\eta^2}, A_{\xi\eta}$, which saves valuable
 computational resources if we are to solve the finite difference
 eigenproblem (\ref{eq:eigenproblem-fd}) repeatedly for different
@@ -370,32 +370,30 @@ parameter values $\tilde{\theta}$.
 
 Unlike the system matrix for the trigonometric expansion, the system
 matrix here is sparse, as was demonstrated for $A_{\xi^2}$ explicitly.
-Eigenvalue problem is therefore much cheaper to solve. Further, the
-system matrix can be made even sparser by performing a $45^{\circ}$
-rotation which removes the mixing term from the problem PDE and still
-allows us to use a regular grid.
+The eigenvalue problem is therefore much cheaper to solve. The system
+matrix can be made even sparser on a regular grid by performing a
+$45^{\circ}$ rotation which removes the mixing term from the problem
+PDE and preserves the boundaries.
 
-However, the fundamental limitation of using a finite element method
-is that differentiation with respect to boundaries is also done using
-finite difference and it is of fourth order. Given this high order
-differentiation, $h$ cannot be made too small because roundoff error
-becomes an issue relatively quickly.
-
-This naturally occurring lower bound on $h$ introduces yet another
-practical issue: on a regular grid, the delta function initial
+However, the fundamental limitation of using a finite difference
+method is that differentiation with respect to boundaries is also done
+using finite differences and it is of fourth order. Given this high
+order differentiation, $h$ cannot be made too small because roundoff
+error becomes an issue relatively quickly. [\textbf{\color{red} this needs to be a
+  bit more clear. Why isn't this an issue with a smooth
+  approximation?}] This naturally occurring lower bound on $h$ introduces yet another
+practical concerng: on a regular grid, the delta function initial
 condition at $(\xi_0, \eta_0)$ needs to be either rounded to the
 nearest grid point or represented as a weighted sum of delta functions
 on the four nearest grid points. Either approach introduces a
 numerical diffusion into the problem which, for a finite $h$, can bias
-the numerical solution.
+the numerical solution. [\textbf{\color{red} for which we have results}]
 
 \subsection{Finite Element Method}
 We propose a numerical method which $1)$ maintains a functional
-approximation of the differential operator $\mathcal{L}$ like the
-eigenfunction expansion in Section \ref{sec:eigenfunction} while $2)$
+approximation of the differential operator $\mathcal{L}$ while $2)$
 imposing a computational burded comparable to or better than that of
-the finite difference approach in Section
-\ref{sec:finite-difference}. Further, our method explicitly minimizes
+the finite difference approach. Further, our method explicitly minimizes
 the error associated with using a finite, smooth representation of the
 initial condition $\delta(\xi-\xi_0)\delta(\eta-\eta_0)$.
 
@@ -405,12 +403,12 @@ As such, our approach consists of two parts
 \item a family of orthonormal basis functions which represent
   $q(x,y,\tau_\epsilon)$ parsimoniously.
 \end{enumerate}
-By combining $i)$ and $ii)$, we can efficiently find a weak solution to the
-PDE (\ref{eq:qq}) via the finite element method
+By combining $i)$ and $ii)$, we can efficiently find a weak solution
+to the PDE (\ref{eq:qq}) via the finite element method
 \citep{shaidurov2013multigrid}. Convergence of our method to the
 strong solution under the $L^2(\bar{\Omega})$ norm is guaranteed as
-long as the family we propose is complete in the Hilbert space of
-functions induced under $L^2(\bar{\Omega})$ \citep{salsa2016partial}.
+long as the family of basis functions we propose is complete in the
+Hilbert space under $L^2(\bar{\Omega})$ \citep{salsa2016partial}.
 
 The small-time solution is derived by considering the fundamental
 solution $G(\xi,\eta |\tau, \xi_0, \eta_0)$ for the unbounded problem
@@ -420,15 +418,15 @@ parameters \citep{stakgold2011green}. We can then find a small enough
 $t_\epsilon$ such that $G(\xi,\eta |\tau, \xi_0, \eta_0)$ is
 numerically zero on three of the four boundaries of
 $\bar{\Omega}$. The zero-condition on the remaining boundary is
-enforced by suitably moving the source term for the fundamental solut
-$(\xi'_0, \eta'_0)$. The small-time solution
+enforced by suitably moving the source term for the fundamental
+solution to some suitable $(\xi'_0, \eta'_0)$. The small-time solution
 therefore takes on the analytic form
 \[
   q(\xi,\eta,\tau_\epsilon) = G(\xi,\eta|\tau_\epsilon,\xi_0, \eta_0) - G(\xi,\eta|\tau_\epsilon,\xi'_0, \eta'_0).
 \]
 
-The construction of the orthonormal basis functions is motivated by
-the fundadmental solution for the unbounded problem (\ref{eq:qq}):
+The construction of the orthonormal basis functions is also motivated
+by the fundadmental solution for the unbounded problem (\ref{eq:qq}):
 before performing Gram-Schmidt orthogonalization, the finite family of
 basis functions
 $\{ \tilde{\psi}_k(x,y| x_k, y_k, \rho, \sigma) \}_{k}^K$ are of the
@@ -443,51 +441,17 @@ form
 Essentially, the collection
 $\{ \tilde{\psi}_k(x,y| x_k, y_k, \rho, \sigma) \}_{k}^K$ is composed
 of fundamental solutions to a heat diffusion problem tuned by $\sigma$
-and $\rho$, mollified such that their support is on $\bar{\Omega}$,
-and centered along some grid over $\bar{\Omega}$.
+and $\rho$, tapered such that their support is on $\bar{\Omega}$,
+and centered along some grid over $\bar{\Omega}$ and are still smooth.
 
 The advantage of these elements is that they better resolve the
 fundamental solution for the unbounded problem by taking into account
-$\rho$ in the covariance of each kernel. By performing Gram-Schmidt
-orthogonalization under the $L^2(\Omega)$ norm, we arrive at a family
-of orthonormal functions which can better resolve small-time solutions
-having a large correlation coefficient. [Wow this needs a lot more
-work].
-
-% \subsection{Small-time Analytic Solution}
-% The fundamental solution for the heat problem in (\ref{eq:qq})
-% \textit{without the boundary conditions} is the bivariate Gaussian
-% density function
-% \begin{align}
-%   G(x,y,t | x_0, y_0) &= N\left( (x,y)^T \left| (x_0, y_0)^T , \quad
-%              t\left( \begin{array}{cc}
-%                        \sigma_x^2 & \rho \sigma_x \sigma_y \\
-%                        \rho \sigma_x \sigma_y & \sigma_y^2
-%                      \end{array} \right) \right. \right).         
-% \end{align}
-% For a fixed $(x_0,y_0)$, we can find a small time $t_\epsilon$
-% solution to the PDE where three of the four boundaries are enforced
-% numerically (maximum value of numerical solution is $\sim 10^{-16}$,
-% while the last boundary condition is enforced by reflecting $G(x,y,t)$
-% accross it. This small-time solution is analytic, satisfying both the
-% differential operator as well as the IC/BC. Let this small-time solution be denoted as
-% \[
-%   q(x,y,t_\epsilon).
-% \]
-
-% \subsection{Finite Element Method}
-% We use the small-time solution as an initial condition in a finite
-% element scheme to find the weak solution to (\ref{eq:qq}). To do so,
-% we need to choose a suitable family of basis functions. Apart from
-% satisfying the boundary conditions, there are many choices available
-% for basis functions. The out-of-the-box solution is usually linear
-% interpolants on either triangular or rectangular meshes
-% \citep{shaidurov2013multigrid} over the computational
-% domain. However, such an approach ignores the correlation structure
-% of the solution to (\ref{eq:qq}).
-
-% For this reason, we propose a family of basis functions which do
-% take into account the correlation.
+$\rho$ in the covariance of each kernel [\textbf{\color{red} if not
+  prove, demonstrate}]. By performing Gram-Schmidt orthogonalization
+under the $L^2(\Omega)$ norm, we arrive at a family of orthonormal
+functions $\{ \psi_k(x,y| x_k, y_k, \rho, \sigma) \}_{k}^K$ which can
+better resolve small-time solutions having a large correlation
+coefficient. [This needs a lot more work].
 
 \section{Estimation}
 Our numerical method is specifically designed for computational
@@ -505,49 +469,81 @@ likelihood (assuming the model and its parameters remain constant).
 
 In this section, we prove that the MLE based on the
 \textbf{approximate} (weak) finite element solution to the governing
-Fokker-Planck equation (\ref{eq:1}) is consistent. First, we define
-$X$ as the random variable sampled from the distribution corresponding
-to the density (\ref{eq:pdf}):
+Fokker-Planck equation (\ref{eq:1}) is consistent. We define $X$ as
+the random variable sampled from the distribution corresponding to the
+true density (\ref{eq:pdf}):
 \[
   X \sim F(\theta),
 \]
 where we have explicitly made the density $F$ dependent on the model
 parameters $\theta$.
 
+For a family of basis functions
+$\{ \tilde{\psi}_l(x,y| x_k, y_k, \rho, \sigma) \}_{l=0}^k$, let
+$q_k(x,y,t|\theta)$ be the weak solution to the governing
+Fokker-Planck equation (\ref{eq:1}) - (\ref{eq:2}). The approximation
+to the true pdf is then
+\[
+  \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial
+    b_y} q_k(x,y,t).
+\]
+The distribution corresponding to this density is denoted as
+$F_k(\theta)$. Let $X_k$ be the random variable corresponding to this
+distribution:
+\[
+  X_k \sim F_k(\theta).
+\]
+We prove Lemma \ref{lem:1}, which states that the distribution of
+random variables sampled according to the approximate solution
+converge in density to random variables sampled from the true
+solution:
+\begin{lemma} \label{lem:1}
+  For $X_k$ and $X$ defined above, $X_k \xrightarrow[]{d} X \mbox{ as } k \to \infty.$
+\end{lemma}
+\begin{proof}
+  \textbf{\color{red}do not read below; I'm working on it tonight}
+  The weak solution $q_k(x,y,t)$ has the property that for any
+  $C^{\infty}(\Omega)$ function $v \in L^2(\Omega)$,
+  \[ \underset{k \to \infty}{\lim}(q_k,v) = (q,v), \] where
+  $(v,u) := \displaystyle \int_{a_x}^{b_x} \int_{a_y}^{b_y}
+  v(x,y,t)u(x,y,t) dx\,dy.$ and $q$ is the strong solution.
+
+  Recalling equation (\ref{eq:CDF}), the strong solution has the probabilistic interpretation
+  \begin{align*}
+    q(x,y,t) &= \Pr\left(X(t) \in dx, Y(t) \in dy, a_x < X(t') < b_x, a_y < Y(t') < b_y |0 < t' \leq t, X(0)=x_0, Y(0)=y_0, \theta \right) \\
+     &= \Pr\left(X(t) \in dx, Y(t) \in dy, \min_{t'}X(t') \geq a_x,
+  \max_{t'}X(t') \leq b_x, \min_{t'} Y(t') \geq a_y, \max_{t'} Y(t') \leq b_y \left| 0 <
+  t' \leq t, X(0)=x_0, Y(0)=y_0, \theta \right.\right)
+  \end{align*}
+\end{proof}
+
+
 \begin{lemma}
   The maximum likelihood estimator is consistent as $n \to \infty$ and $k \to \infty$:
   \[ \hat{\theta}_{n,k} \to \theta \].
 \end{lemma}
 \begin{proof}
-  By the definition of weak convergence, given the weak solution $q_k$
-  and the classical solution $q$, for any continuous function $f$,
-  \[ \langle q_k| f \rangle \to \langle q| f \rangle \mbox { as } k
-    \to \infty. \]
-  Because $f$ can be any function in $L^2$, we can
-  choose $f$ to be $\exp(ilx)$ for any integer $l$. This means that
-  the characteristic function of $X_k$ converges pointwise to the
-  characteristic function of $X$. By Levy's continuity theorem, this
-  means that
-  \[ X_k \xrightarrow[]{d} X \mbox { as } k \to \infty. \]
+  \textbf{\color{red} It's a bit sloppy. Also, we do not need
+    asymptotic efficiency to prove equation (\ref{eq:var-lim})} By
+  Lemma \ref{lem:1}
+    \[ X_k \xrightarrow[]{d} X \mbox { as } k \to \infty. \] Next,
+    given Theorem 4.1 in \cite{singler2008differentiability}, we know
+    that, for each $k$, $q_k$ is analytic in both the diffusion
+    parameters and boundary parameters. Hence, the probability density
+    function satisfies the criteria A1 - A6 in
+    \cite{casella2002statistical} to guarantee that, for data
+    $X_{k} \sim F_k(\theta)$,
+    \[ \hat{\theta}_{n,k}(X_k) \xrightarrow[]{p} \theta \mbox{ as } n
+      \to \infty. \]
 
-  Next, given Theorem 4.1 in \cite{singler2008differentiability}, we
-  know that, for each $k$, $q_k$ satisfies the criteria A1 - A6 in 
-  \cite{casella2002statistical} to guarantee that, for data
-  $X_{k} \sim F_k(\theta)$,
-  \[ \hat{\theta}_{n,k}(X_k) \xrightarrow[]{p} \theta \] as
-  $n \to \infty$. Moreover, we are guaranteed asymptotic
-  efficiency. In other words, the MLE estimator for
-  $(\sigma_x, \sigma_y, \rho)$ based on the likelihood function under
-  $F_k$ for data sampled from $F_k$ is asymptotically efficient. Now we need to show
-  that the same holds for data sampled from $F$ as $k \to \infty$.
-
-  To do this, we will use Chebyshev's inequality:
+    Now we need to show that the same holds for data sampled from $F$
+    as $k \to \infty$. To do this, we will use Chebyshev's inequality:
   \[
     \Pr_{X}\left( \left| \hat{\theta}_{n,k}(X) - \theta \right| \geq
       \epsilon \right) \leq \frac{ \mbox{E}_{X}\left[
         (\hat{\theta}_{n,k}(X) - \theta)^2 \right] }{ \epsilon^2 }.
   \]
-  By the Maximum theorem, $\hat{\theta}_{n,k}(x)$ is a continuous
+  By the Maximum theorem [REFERENCE], $\hat{\theta}_{n,k}(x)$ is a continuous
   function with respect to $x$, and further because we have bounded
   $\hat{\theta}$ from below and above,
   \[
@@ -555,15 +551,15 @@ parameters $\theta$.
     \to \mbox{E}_{X}\left[ (\hat{\theta}_{n,k}(X) - \theta)^2 \right]
     \mbox{ as } k \to \infty
   \]
-  by the portmanteau lemma. Finally, because $\hat{\theta}_{k,n}$ is
-  asymptotically efficient, we can show that
-  \[
+  by the portmanteau lemma. Finally, we can show that
+  \begin{equation}
     \mbox{E}_{X_k}\left[ (\hat{\theta}_{n,k}(X_k) - \theta)^2 \right]
-    \to 0 \mbox{ as } n \to \infty,
-  \]
+    \to 0 \mbox{ as } n \to \infty, \label{eq:var-lim}
+  \end{equation}
   since the expected value of the estimator tends to $\theta$ and its
   variance goes to 0 when $n \to \infty$. Therefore, given any
-  $\epsilon > 0$ and $\delta > 0$, we can find a sufficiently large $n$ and $k$ such that
+  $\epsilon > 0$ and $\delta > 0$, we can find a sufficiently large
+  $n$ and $k$ such that
   \[
     \Pr_{X}\left( \left| \hat{\theta}_{n,k}(X) - \theta \right| \geq
       \epsilon \right) \leq \frac{ \mbox{E}_{X}\left[
