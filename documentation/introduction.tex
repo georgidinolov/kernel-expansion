@@ -127,7 +127,7 @@ $\mbox{Cov}(W_1(t), W_2(t)) = \rho t$ for $0 < t' \leq t$. In
 particular, we find the joint transition density function for
 $(X(t), Y(t))$ under the boundary conditions:
 \begin{align}
-  \Pr\left(X(t) \in dx, Y(t) \in dy | \forall t' \in [0,t]\,\, X(t') \in [a_x, b_x], \froall t' \in [0,t]\,\, Y(t') \in [a_y,b_y], X(0)=x_0, Y(0)=y_0, \theta \right), \label{eq:CDF}
+  \Pr\left(X(t) \in dx, Y(t) \in dy | \forall t' \in [0,t]\,\, X(t') \in [a_x, b_x], \forall t' \in [0,t]\,\, Y(t') \in [a_y,b_y], X(0)=x_0, Y(0)=y_0, \theta \right), \label{eq:CDF}
 \end{align}
 with $\theta := (\mu_x, \mu_y, \sigma_x, \sigma_y, \rho).$ This
 function, which we shorten to $q(x,y,t)$ from now on, is the solution
@@ -212,60 +212,75 @@ motion driving stochastic evolution are appropriate.
 
 
 \section{Approximate Numerical Solutions}
-Before considering any solutions to the full Fokker-Planck equation
-(\ref{eq:1}) - (\ref{eq:2}), we simplify the PDE by proposing an
-exponential decomposition of the solution and using the fact that parameters
-$\theta = (\mu_x, \mu_y, \sigma_x, \sigma_y, \rho)$ are constant:
+Before considering solutions to the full Fokker-Planck equation
+(\ref{eq:1}) - (\ref{eq:2}), we simplify the PDE by proposing a
+scaling transformation
 \[
-  q(x,y,t) = \exp(\alpha x + \beta y + \gamma t) p(x,y,t).
+  \left(\begin{array}{c} x'\\ y'\end{array}\right) \to
+  \left( \begin{array}{c} \frac{x' - a_x}{b_x-a_x} \\ \frac{y' -
+        a_y}{b_y-a_y} \end{array} \right) := (x, y)^{T}
 \]
-We can find $\alpha, \beta$ and $\gamma$, as well as a suitable
-scaling transformation, such that $p(\xi,\eta,\tau)$ satisfies the diffusion
+and an exponential decomposition of the solution
+\[
+  p(x,y,t) = \exp(\alpha x + \beta y + \gamma t) q(x,y,t).
+\]
+For
+\begin{align*}
+  -\left( \begin{array}{c}
+            \mu_x \\
+            \mu_y
+          \end{array} \right) &= \left( \begin{array}{cc}
+                                         \left( \frac{\sigma_x}{(b_x-a_x)} \right)^2 & \rho\frac{\sigma_x}{(b_x-a_x)} \frac{\sigma_y}{(b_y-a_y)} \\
+                                         \rho\frac{\sigma_x}{(b_x-a_x)} \frac{\sigma_y}{(b_y-a_y)} & \left(\frac{\sigma_y}{(b_y-a_y)}\right)^2
+                                       \end{array} \right) \left( \begin{array}{c}
+                                                                    \alpha \\
+                                                                    \beta
+                                                                  \end{array} \right) \\
+  \gamma &= \frac{1}{2}\left( \frac{\sigma_x}{(b_x-a_x)} \right)^2 \alpha^2 + \frac{1}{2}\left(\frac{\sigma_y}{(b_y-a_y)}\right)^2 \beta^2 + \alpha\beta.
+\end{align*}
+$p(x,y,t)$ satisfies the diffusion
 equation:
 \begin{align}
-  \frac{\partial}{\partial \tau} p(\xi,\eta,\tau') &= \frac{1}{2}\sigma_\xi^2
-  \frac{\partial^2}{\partial \xi^2}p(\xi,\eta,\tau') + \rho\sigma_\xi\sigma_\eta
-  \frac{\partial^2}{\partial \xi \partial \eta}p(\xi,\eta,\tau') +
-                                                     \frac{1}{2}\sigma_\eta^2 \frac{\partial^2}{\partial \eta^2}p(\xi,\eta,\tau') , \label{eq:qq} \\
-  &:= \mathcal{L}p(\xi,\eta,\tau) , \\
-  p(\xi,\eta,\tau) &=0 &\mbox{for } & (\xi,\eta) \in [0,1] \times [0,1], \nonumber \\
-  p(\xi,\eta,0) &= \delta(\xi-\xi_0) \delta(\eta-\eta_0) \nonumber
+  \frac{\partial}{\partial t} p(x,y,t) &= \frac{1}{2}\left( \frac{\sigma_x}{(b_x-a_x)} \right)^2
+                                                    \frac{\partial^2}{\partial x^2}p(x,y,t) + \rho\left( \frac{\sigma_x}{(b_x-a_x)} \right)\left( \frac{\sigma_y}{(b_y-a_y)} \right)
+                                                    \frac{\partial^2}{\partial x \partial y}p(x,y,t) +
+                                         \frac{1}{2}\left( \frac{\sigma_y}{(b_y-a_y)} \right)^2 \frac{\partial^2}{\partial y^2}p(x,y,t) , \label{eq:qq} \\
+  &:= \mathcal{L}p(x,y,t),\quad (x,y) \in (0,1) \times (0,1), \\
+  p(x,y,t) &=0 \mbox{ for }  (x,y) \in \{ x | x = 0\} \cup \{ y | y = 0\}, \nonumber \\
+  p(x,y,0) &= \delta\left( x - \frac{x_0-a_x}{b_x - a_x} \right) \delta\left(y-\frac{y_0 - a_y}{b_y - a_y}\right). \nonumber
 \end{align}
-on the unit square.  The transformations $\tilde{\theta} \to \theta$
-as well as $(\xi,\eta) \to (x,y)$ allow us to go from
-$p(\xi,\eta,\tau)$ to $p(x,y,t)$ without trouble. Note here that under
-this transformation $\rho$ remains the same as in the original
-coordinate frame. We will call equation (\ref{eq:qq}) the
-\textit{normalized} problem and will consider its solution without
-loss of generality.
+Note here that under this transformation $\rho$ remains the same as in
+the original coordinate frame. We will call equation (\ref{eq:qq}) the
+\textit{normalized} problem and will consider its solution in terms of
+the diffusion parameters $(\sigma_x, \sigma_y, \rho)$ without a loss
+of generality.
 
 \subsection{Eigenfunction Expansion} \label{sec:eigenfunction}
 Following Section 6.2 of \cite{risken1989fokker-planck}, we may use
 the biorthogonal decomposition of the solution as a sum of
 eigenfunctions and time-dependent coefficients determined by eigenvalues:
 \begin{equation}
-  p(\xi,\eta,\tau) = \phi_\nu(\xi,\eta) e^{-\lambda_\nu \tau}, \label{eq:biorthogonal}
+  p(x,y,t) = \phi_\nu(x,y) e^{-\lambda_\nu t}, \label{eq:biorthogonal}
 \end{equation}
-where the eigenfunctions $\phi_\nu(\xi, \eta)$ satisfy the boundary
-conditions. Because the differential operator in the normalized
-problem (\ref{eq:qq}) is self-adjoint [PROVE], the family of
-eigenfunctions is complete in the Hilbert space $L^2$
-[CITE]. Moreover, the eigenvalues are bounded below by 0, so
-that the solution behaves as expected (see section 6.3 of
+where the eigenfunctions $\phi_\nu(x, y)$ satisfy the boundary
+conditions. Because the differential operator $\mathcal{L}$ is
+self-adjoint, the family of eigenfunctions is complete in the Hilbert
+space $L^2(\Omega)$. Moreover, the eigenvalues are bounded below by 0,
+so that the solution behaves as expected (see section 6.3 of
 \cite{risken1989fokker-planck}).
 
-Since we require $\phi_\nu(\xi,\eta)$ to be zero on the boundaries, we
+Since we require $\phi_\nu(x,y)$ to be zero on the boundaries, we
 may represent the eigenfunction as a linear combination of sines
 \[
-  \phi_\nu(\xi,\eta) = \sum_{l=0}^L \sum_{m=0}^M c_{l,m, \nu}
-  \sin\left(2\pi\, l\, \xi \right) \sin\left(2\pi\, m\, \eta \right) := \Psi(\xi,\eta)^T c_\nu,
+  \phi_\nu(x,y) = \sum_{l=0}^L \sum_{m=0}^M c_{l,m, \nu}
+  \sin\left(2\pi\, l\, x \right) \sin\left(2\pi\, m\, y \right) := \Psi(x,y)^T c_\nu,
 \]
 where we have truncated the infinite series for some suitably large
 $L$ and $M$ and defined
 \begin{align*}
-  \psi_{l,m}(\xi,\eta) &= \sin\left(2\pi\, l\, \xi \right)
-                         \sin\left(2\pi\, m\, \eta \right), \\
-  \Psi(\xi,\eta) &= (\psi_{0,0}(\xi,\eta), \ldots, \psi_{L,M}(\xi,\eta))^T, \\
+  \psi_{l,m}(x,y) &= \sin\left(2\pi\, l\, x \right)
+                         \sin\left(2\pi\, m\, y \right), \\
+  \Psi(x,y) &= (\psi_{0,0}(x,y), \ldots, \psi_{L,M}(x,y))^T, \\
   c_\nu &= (c_{0,0,\nu}, \ldots, c_{L,M,\nu})^T.
 \end{align*}
 
@@ -278,116 +293,181 @@ where $\mathcal{L}$ is the differential operator in the normalized
 Fokker-Planck equation. Applying $\mathcal{L}$ to $\phi_\nu$ produces
 the linear system
 \[
-  \mathcal{L}\phi_\nu = \mathcal{L}(\Psi(\xi,\eta)^T c_\nu) =
-  \mathcal{L}(\Psi(\xi,\eta)^T) c_\nu = (A \Psi(\xi,\eta))^T c_\nu,
+  \mathcal{L}\phi_\nu = \mathcal{L}(\Psi(x,y)^T c_\nu) =
+  \mathcal{L}(\Psi(x,y)^T) c_\nu = (A \Psi(x,y))^T c_\nu,
 \] 
 where $A$ is a constant matrix dependent on $\tilde{\theta}$. In the
 case where $\rho = 0$, $A$ is diagonal because
-$\left\{ \psi_{l,m}(\xi,\eta) \right\}_{l,m}$ are the eigenfunctions to
+$\left\{ \psi_{l,m}(x,y) \right\}_{l,m}$ are the eigenfunctions to
 $\mathcal{L}$. When $\rho \neq 0$, $A$ is no longer diagonal and is in
 fact dense. This caused by the mixing terms
 \[
-  \frac{\partial^2}{\partial \xi \partial \eta} \sin\left(2\pi\, l\,
-    \xi\right) \sin\left(2\pi\, m\, \eta\right) = (2\pi\, l)(2\pi\, m)
-  \cos\left(2\pi\, l\, \xi\right) \cos\left(2\pi\, m\, \eta\right)
+  \frac{\partial^2}{\partial x \partial y} \sin\left(2\pi\, l\,
+    x\right) \sin\left(2\pi\, m\, y\right) = (2\pi\, l)(2\pi\, m)
+  \cos\left(2\pi\, l\, x\right) \cos\left(2\pi\, m\, y\right)
 \]
 being the products of cosine functions, which have an inefficient sine
 series representation [CITE]. Substituting the linear representation
 of $\mathcal{L}\phi_\nu$ into the eigenvalue problem
 (\ref{eq:eigenproblem}), we arrive to the system
 \[
-  \Psi(\xi,\eta)^T A^T c_\nu = -\lambda_\nu \Psi(\xi,\eta)^T c_\nu
+  \Psi(x,y)^T A^T c_\nu = -\lambda_\nu \Psi(x,y)^T c_\nu
   \quad \Leftrightarrow \quad A^T c_\nu = -\lambda_\nu c_\nu
 \]
 whose solution gives the family of orthonormal eigenfunctions. As
 mentioned already, the efficiency of this approach is dependent on the
 cost of solving the eigenvalue problem
-$A^T c_\nu = -\lambda_\nu c_\nu$. 
+$A^T c_\nu = -\lambda_\nu c_\nu$.
 
-\subsection{Finite Difference}  \label{sec:finite-difference}
-A finite difference method used to solve the problem (\ref{eq:qq})
-defines an approximate solution over some grid of points
-$\left\{(\xi_l, \eta_m) \right\}_{l=0,m=0}^{L,M}$ over $[0,1] \times [0,1]:$
-\begin{equation}
-  q(\xi,\eta,\tau) \approx \sum_{l}\sum_{m} c_{l,m}(\tau) \delta(\xi-\xi_l) \delta(\eta-\eta_m) = \Delta(\xi,\eta)^T c(t),\label{eq:finite-diff-sol}
-\end{equation}
-where $c(\tau) = (c_{0,0}(\tau), \ldots, c_{L,M}(\tau)^T$ and
-$\Delta(\xi,\eta) = (\delta(\xi-\xi_0) \delta(\eta-\eta_0), \ldots,
-\delta(\xi-\xi_L) \delta(\eta-\eta_M))$, where we have once again
-separated the spatial and temporal components of the problem as in the
-previous section. This is a suitable choice, because the differential
-operator $\mathcal{L}$ is linear and constant and there is therefore
-no need to perform approximation in time, i.e. we take derivative with
-respect to time directly:
+With all of the eigenpairs $(c_\nu, \lambda_\nu)$, the approximate solution is then
 \[
-  \frac{\partial}{\partial \tau}q(\xi,\eta,\tau) \approx \Delta(\xi,\eta)^T \frac{\partial c(\tau)}{\partial \tau}
+  p(x,y,t) \approx \sum_{\nu}\Psi(x,y)^T c_\nu e^{-\lambda_\nu t}.
 \]
-The differential operator $\mathcal{L}$ for the representation in
-equation (\ref{eq:finite-diff-sol}) is approximated with a finite
-difference operator $\mathcal{L}_{FD}$ such that approximate derivatives are defined on the grid:
-\[
-  \mathcal{L}q(\xi,\eta,\tau) \approx \mathcal{L}_{FD}q(\xi,\eta,\tau) = \sum_{l}\sum_{m} f(c_{l,m}(\tau)) \delta(\xi-\xi_l) \delta(\eta-\eta_m) := \Delta(\xi,\eta)^T f(c(t))
-\]
-where $f(c_{l,m}(\tau))$ is a function of some neighboring coefficient
-values at $(\xi_l, \eta_m)$.
+Because the eigenvalue and eigenvectors are functions of the diffusion
+paramters and boundaries, the liklihood
+$\frac{\partial p(x,y,t)}{\partial \Omega}$ must be calculated
+numerically. This reduces to performing a fourth-order finite
+difference with respect to the boundaries, which requires the solution
+of 16 eigenvalue problems.
 
-For a central difference scheme on a regular $N \times N$ grid aligned
-with the boundaries (with step size $h=1/(N-1)$), 
-\[
-  \frac{\partial^2}{\partial \xi^2} q(\xi_l, \eta_m, \tau) \approx
-  \frac{c_{l+1,m}(\tau) - 2c_{l,m}(\tau) + c_{l-1,m}(\tau)}{h^2} = \frac{1}{h^2}A_{l,m,\xi^2} c(\tau),
-\]
-where $A_{l,m,\xi^2}$ is some all-zero row vector except for three
-entries of 1 corresponding to the grid points
-$(\xi_{l-1}, \eta_m), (\xi_l,\eta_m), (\xi_{l+1},\eta_m)$. For the
-mixing term, the approximation is
-\[
-  \frac{\partial^2}{\partial \xi \partial \eta} q(\xi_l, \eta_m, \tau) \approx
-  \frac{c_{l+1,m+1}(\tau) - c_{l+1,m-1}(\tau) - c_{l-1,m+1}(\tau) + c_{l-1,m-1}(\tau)}{4h^2} = \frac{1}{4h^2}A_{l,m,\xi\eta} c(\tau).
-\]
-The finite difference approximation of $\mathcal{L}$ can be written as
-a linear transformation of $c(\tau)$:
-\[
-  \mathcal{L}q(\xi,\eta,\tau) \approx \Delta^T(\xi,\eta) \underbrace{\left( \frac{1}{2}\sigma_\xi^2 \frac{1}{h^2}A_{\xi^2} + \rho\sigma_\xi\sigma_\eta A_{\xi\eta} + \frac{1}{2}\sigma_\xi^2 \frac{1}{h^2}A_{\eta^2}  \right)}_{A} c(\tau),
-\]
-where we have composed the row vectors for the different derivative
-terms as matrices $A_{\xi^2}, A_{\xi\eta},$ and $A_{\eta^2}$. The
-system of differential equations for $c(\tau)$ is therefore completely
-determined by our choice of step size $h$, as well as the parameter
-values $(\sigma_\xi, \sigma_\eta, \rho)$:
+\subsection{Finite Difference} \label{sec:finite-difference} A finite
+difference method which approximates the spatial derivatives in
+problem (\ref{eq:qq}) requires the solution a system of differential equations
 \begin{align}
-   &\frac{\partial c(\tau)}{\partial \tau} = A c(\tau) \nonumber \\
-   \Rightarrow &c(\tau) = \exp\left( A\tau \right)c(0) \label{eq:eigenproblem-fd}
+  \dot{c}(t)= A c(t) &\Rightarrow& c(t) = \exp\left( At \right)c(0) \label{eq:eigenproblem-fd}, 
 \end{align}
-For non-small $\tau$, we must find the eigenvalue decomposition of $A$
-in order to solve the evolution problem. It should be noted here that
-a regular grid approach with a constant $h$ is appealing, because it
-allows us to construct once and store the matrices
-$A_{\xi^2}, A_{\eta^2}, A_{\xi\eta}$, which saves valuable
+which reduces to the eigenvalue decomposition of a matrix $A$. Here,
+$c(t)$ is a vector of coefficients representing the value of the
+solution in (\ref{eq:qq}) on each point on a grid over $\Omega$ at
+time $t$, and the product $Ac(t)$ approximates
+$\mathcal{L}p(x,y,t)$. The system matrix $A$ is dependent on the
+discretization scheme used to approximate $\mathcal{L}$. Using a
+central in space scheme over a \textbf{regular} grid on $\Omega$ with
+$\Delta x = \Delta y = h$,
+\[ A = \frac{1}{2}\sigma_x^2 \frac{1}{h^2}A_{x,x} +
+  \rho\sigma_x\sigma_y \frac{1}{4h^2}A_{x,y} + \frac{1}{2}\sigma_y^2
+  \frac{1}{h^2}A_{y,y},
+\]
+where each of the matrices $A_{x,x}, A_{x,y}, A_{y,y}$ approximate
+$\frac{\partial^2}{\partial x^2}, \frac{\partial^2}{\partial
+  x \partial y}, \frac{\partial^2}{\partial y^2}$, respectively. For
+example, using the labelling $c_{l,m}(t) \to c_k(t)$ on the vector $c(t)$ to denote the approximation of the solution at point $(x_l, y_m)$ on the grid,
+\begin{align*}
+  \frac{1}{2}\sigma_x^2 \frac{\partial^2}{\partial x^2} p(x_l,y_m,t) \approx \frac{1}{2}\sigma_x^2 \left( \frac{c_{l+1,m}(t) - 2c_{l,m}(t) + c_{l-1,m}(t)}{h^2} \right) = \frac{1}{2}\sigma_x^2 \frac{1}{h^2}A_{x,x}[k,] c(t) 
+\end{align*}
+where $A_{x,x}[k,]$ is the $k^{th}$ row of $A_{x,x}$. Similarly,
+\begin{align*}
+  \rho\sigma_x\sigma_y \frac{\partial^2}{\partial x \partial y} p(x_l,y_m,t) \approx \rho\sigma_x\sigma_y \left( \frac{c_{l+1,m+1}(t) - c_{l+1,m-1}(t) - c_{l-1,m+1}(t) + c_{l-1,m-1}(t)}{4h^2} \right) = \rho\sigma_x\sigma_y \frac{1}{4h^2}A_{x,y}[k,] c(t) 
+\end{align*}
+It should be noted here that a regular grid approach with a constant
+$h$ is appealing, because it allows us to construct once and store the
+matrices $A_{x,x}, A_{x,y}, A_{y,y}$, which saves valuable
 computational resources if we are to solve the finite difference
 eigenproblem (\ref{eq:eigenproblem-fd}) repeatedly for different
-parameter values $\tilde{\theta}$.
+parameter values $(\sigma_x,\sigma_y,\rho)$.
 
 Unlike the system matrix for the trigonometric expansion, the system
-matrix here is sparse, as was demonstrated for $A_{\xi^2}$ explicitly.
-The eigenvalue problem is therefore much cheaper to solve. The system
-matrix can be made even sparser on a regular grid by performing a
-$45^{\circ}$ rotation which removes the mixing term from the problem
-PDE and preserves the boundaries.
+matrix $A$ here is sparse: each row of $(A_{x,x}, A_{x,y}, A_{y,y})$
+is compoposed of all zeros except for three or four entries. This
+structure does not change as $h \to 0$. The eigenvalue problem is
+therefore much cheaper to solve. The system matrix can be made even
+sparser on a regular grid by performing a $45^{\circ}$ rotation which
+removes the mixing term
+$\rho\sigma_x \sigma_y\frac{\partial^2}{\partial x \partial y}$ from
+the problem PDE and preserves the boundaries.
+
+% More
+% explicitly, for $p(x_l, y_m, t) \approx c_k(t)$
+
+% \begin{align*}
+%   \frac{\partial}{\partial t} p(x_l, y_m, t) &\approx \dot{ c_k }(t) = \\
+% \end{align*}
+% defines an approximate solution over some grid of points
+% $\left\{(\xi_l, \eta_m) \right\}_{l=0,m=0}^{L,M}$ over
+% $[0,1] \times [0,1]:$
+% \begin{equation}
+%   q(\xi,\eta,\tau) \approx \sum_{l}\sum_{m} c_{l,m}(\tau) \delta(\xi-\xi_l) \delta(\eta-\eta_m) = \Delta(\xi,\eta)^T c(t),\label{eq:finite-diff-sol}
+% \end{equation}
+% where $c(\tau) = (c_{0,0}(\tau), \ldots, c_{L,M}(\tau)^T$ and
+% $\Delta(\xi,\eta) = (\delta(\xi-\xi_0) \delta(\eta-\eta_0), \ldots,
+% \delta(\xi-\xi_L) \delta(\eta-\eta_M))$, where we have once again
+% separated the spatial and temporal components of the problem as in the
+% previous section. This is a suitable choice, because the differential
+% operator $\mathcal{L}$ is linear and constant and there is therefore
+% no need to perform approximation in time, i.e. we take derivative with
+% respect to time directly:
+% \[
+%   \frac{\partial}{\partial \tau}q(\xi,\eta,\tau) \approx \Delta(\xi,\eta)^T \frac{\partial c(\tau)}{\partial \tau}
+% \]
+% The differential operator $\mathcal{L}$ for the representation in
+% equation (\ref{eq:finite-diff-sol}) is approximated with a finite
+% difference operator $\mathcal{L}_{FD}$ such that approximate derivatives are defined on the grid:
+% \[
+%   \mathcal{L}q(\xi,\eta,\tau) \approx \mathcal{L}_{FD}q(\xi,\eta,\tau) = \sum_{l}\sum_{m} f(c_{l,m}(\tau)) \delta(\xi-\xi_l) \delta(\eta-\eta_m) := \Delta(\xi,\eta)^T f(c(t))
+% \]
+% where $f(c_{l,m}(\tau))$ is a function of some neighboring coefficient
+% values at $(\xi_l, \eta_m)$.
+
+% For a central difference scheme on a regular $N \times N$ grid aligned
+% with the boundaries (with step size $h=1/(N-1)$), 
+% \[
+%   \frac{\partial^2}{\partial \xi^2} q(\xi_l, \eta_m, \tau) \approx
+%   \frac{c_{l+1,m}(\tau) - 2c_{l,m}(\tau) + c_{l-1,m}(\tau)}{h^2} = \frac{1}{h^2}A_{l,m,\xi^2} c(\tau),
+% \]
+% where $A_{l,m,\xi^2}$ is some all-zero row vector except for three
+% entries of 1 corresponding to the grid points
+% $(\xi_{l-1}, \eta_m), (\xi_l,\eta_m), (\xi_{l+1},\eta_m)$. For the
+% mixing term, the approximation is
+% \[
+%   \frac{\partial^2}{\partial \xi \partial \eta} q(\xi_l, \eta_m, \tau) \approx
+%   \frac{c_{l+1,m+1}(\tau) - c_{l+1,m-1}(\tau) - c_{l-1,m+1}(\tau) + c_{l-1,m-1}(\tau)}{4h^2} = \frac{1}{4h^2}A_{l,m,\xi\eta} c(\tau).
+% \]
+% The finite difference approximation of $\mathcal{L}$ can be written as
+% a linear transformation of $c(\tau)$:
+% \[
+%   \mathcal{L}q(\xi,\eta,\tau) \approx \Delta^T(\xi,\eta) \underbrace{\left( \frac{1}{2}\sigma_\xi^2 \frac{1}{h^2}A_{\xi^2} + \rho\sigma_\xi\sigma_\eta A_{\xi\eta} + \frac{1}{2}\sigma_\xi^2 \frac{1}{h^2}A_{\eta^2}  \right)}_{A} c(\tau),
+% \]
+% where we have composed the row vectors for the different derivative
+% terms as matrices $A_{\xi^2}, A_{\xi\eta},$ and $A_{\eta^2}$. The
+% system of differential equations for $c(\tau)$ is therefore completely
+% determined by our choice of step size $h$, as well as the parameter
+% values $(\sigma_\xi, \sigma_\eta, \rho)$:
+% \begin{align}
+%    &\frac{\partial c(\tau)}{\partial \tau} = A c(\tau) \nonumber \\
+%    \Rightarrow &c(\tau) = \exp\left( A\tau \right)c(0) \label{eq:eigenproblem-fd}
+                   %   \end{align}
 
 However, the fundamental limitation of using a finite difference
 method is that differentiation with respect to boundaries is also done
 using finite differences and it is of fourth order. Given this high
-order differentiation, $h$ cannot be made too small because roundoff
-error becomes an issue relatively quickly. [\textbf{\color{red} this needs to be a
-  bit more clear. Why isn't this an issue with a smooth
-  approximation?}] This naturally occurring lower bound on $h$ introduces yet another
-practical concerng: on a regular grid, the delta function initial
-condition at $(\xi_0, \eta_0)$ needs to be either rounded to the
-nearest grid point or represented as a weighted sum of delta functions
-on the four nearest grid points. Either approach introduces a
-numerical diffusion into the problem which, for a finite $h$, can bias
-the numerical solution. [\textbf{\color{red} for which we have results}]
+order differentiation, $h$ cannot be made too small because truncation
+error becomes an issue relatively quickly. More explicitly, if we call
+$p_{FD}$ the finite difference approximation, we can write down the
+solution as
+\[
+  p_{FD}(x_l,y_m,t) = p(x_l,y_m,t) + O(h^2).
+\]
+Now if we use finite difference with respect to one of boundaries
+using $p_{FD}$,
+\begin{align*}
+  \frac{p_{FD}(x_l,y_m,t | a_x + \epsilon) - p_{FD}(x_l,y_m,t | a_x - \epsilon)}{2\epsilon} &= \frac{p(x_l,y_m,t | a_x + \epsilon) - p(x_l,y_m,t | a_x - \epsilon) + O(h^2)}{2\epsilon} \\
+                                                                                            &= \frac{p(x_l,y_m,t | a_x + \epsilon) - p(x_l,y_m,t | a_x - \epsilon)}{2\epsilon} + \frac{O(h^2)}{2\epsilon} \\
+                                                                                            &\approx \frac{\partial}{\partial a_x} p(x_l,y_m,t) + O(\epsilon^2) + \frac{O(h^2)}{2\epsilon}
+\end{align*}
+As $\epsilon \to 0$ with $h$ fixed, the term
+$\frac{O(h^2)}{2\epsilon}$ begins to dominate the approximation. If we
+use finite-differene with respect to all four boundaries on $p_{FD}$,
+the error term then becomes $\frac{O(h^2)}{(2\epsilon)^4}$. Hence, for
+a fixed $h$, we have a bound on how accurately we may represent the
+likelihood function.
+
+The finite value for $h$ introduces yet another practical concern. On
+a regular grid, the delta function initial condition needs to be
+either rounded to the nearest grid point or represented as a weighted
+sum of delta functions on the four nearest grid points. Either
+approach introduces a numerical diffusion into the problem which, for
+a finite $h$, can bias the numerical solution. We will demonstrate
+this phenomenon in Section [].
 
 \subsection{Finite Element Method}
 We propose a numerical method which $1)$ maintains a functional
