@@ -214,46 +214,43 @@ motion driving stochastic evolution are appropriate.
 \section{Approximate Numerical Solutions}
 Before considering solutions to the full Fokker-Planck equation
 (\ref{eq:1}) - (\ref{eq:2}), we simplify the PDE by proposing a
-scaling transformation
+scaling transformation and an exponential decomposition of the
+solution, so that we can construct
 \[
-  \left(\begin{array}{c} x'\\ y'\end{array}\right) \to
-  \left( \begin{array}{c} \frac{x' - a_x}{b_x-a_x} \\ \frac{y' -
-        a_y}{b_y-a_y} \end{array} \right) := (x, y)^{T}
+  p(x,y,t) = \exp(\alpha x + \beta y + \gamma t) q\left( x(b_x - a_x) + a_x, \quad y(b_y - a_y) + a_y, \quad t \right),
 \]
-and an exponential decomposition of the solution
-\[
-  p(x,y,t) = \exp(\alpha x + \beta y + \gamma t) q(x,y,t).
-\]
-For
+where
+
+
 \begin{align*}
-  -\left( \begin{array}{c}
-            \mu_x \\
-            \mu_y
-          \end{array} \right) &= \left( \begin{array}{cc}
-                                         \left( \frac{\sigma_x}{(b_x-a_x)} \right)^2 & \rho\frac{\sigma_x}{(b_x-a_x)} \frac{\sigma_y}{(b_y-a_y)} \\
-                                         \rho\frac{\sigma_x}{(b_x-a_x)} \frac{\sigma_y}{(b_y-a_y)} & \left(\frac{\sigma_y}{(b_y-a_y)}\right)^2
-                                       \end{array} \right) \left( \begin{array}{c}
-                                                                    \alpha \\
-                                                                    \beta
-                                                                  \end{array} \right) \\
+  \alpha &= -\frac{\mu_x}{\sigma_x^2} - \frac{\rho}{\sigma_x\sigma_y(1-\rho^2)}\left( -\frac{\mu_y}{\sigma_y^2} + \frac{\mu_x \rho}{\sigma_x \sigma_y} \right), \\
+  \beta &= \left( -\frac{\mu_y}{\sigma_y^2} + \frac{\mu_x \rho}{\sigma_x \sigma_y} \right), \\
   \gamma &= \frac{1}{2}\left( \frac{\sigma_x}{(b_x-a_x)} \right)^2 \alpha^2 + \frac{1}{2}\left(\frac{\sigma_y}{(b_y-a_y)}\right)^2 \beta^2 + \alpha\beta.
 \end{align*}
-$p(x,y,t)$ satisfies the diffusion
-equation:
+This new formula satisfies the simpler diffusion equation:
+\begin{equation}
+  \frac{\partial}{\partial t} p(x,y,t) = \mathcal{L}p(x,y,t),\quad (x,y) \in (0,1) \times (0,1) := \Omega.
+\end{equation}
+subject to the constraints
 \begin{align}
-  \frac{\partial}{\partial t} p(x,y,t) &= \frac{1}{2}\left( \frac{\sigma_x}{(b_x-a_x)} \right)^2
-                                                    \frac{\partial^2}{\partial x^2}p(x,y,t) + \rho\left( \frac{\sigma_x}{(b_x-a_x)} \right)\left( \frac{\sigma_y}{(b_y-a_y)} \right)
-                                                    \frac{\partial^2}{\partial x \partial y}p(x,y,t) +
-                                         \frac{1}{2}\left( \frac{\sigma_y}{(b_y-a_y)} \right)^2 \frac{\partial^2}{\partial y^2}p(x,y,t) , \label{eq:qq} \\
-  &:= \mathcal{L}p(x,y,t),\quad (x,y) \in (0,1) \times (0,1), \\
-  p(x,y,t) &=0 \mbox{ for }  (x,y) \in \{ x | x = 0\} \cup \{ y | y = 0\}, \nonumber \\
-  p(x,y,0) &= \delta\left( x - \frac{x_0-a_x}{b_x - a_x} \right) \delta\left(y-\frac{y_0 - a_y}{b_y - a_y}\right). \nonumber
+  p(x,y,t) &=0, & \mbox{ for } & (x,y) \in \{ x | x = 0\} \cup \{ y | y = 0\}, \nonumber \\
+  p(x,y,0) &= \delta\left( x - \frac{x_0-a_x}{b_x - a_x} \right) \delta\left(y-\frac{y_0 - a_y}{b_y - a_y}\right), \nonumber
 \end{align}
-Note here that under this transformation $\rho$ remains the same as in
-the original coordinate frame. We will call equation (\ref{eq:qq}) the
-\textit{normalized} problem and will consider its solution in terms of
-the diffusion parameters $(\sigma_x, \sigma_y, \rho)$ without a loss
-of generality.
+with the differential operator $\mathcal{L}$ takes the form
+\[
+  \mathcal{L} = \frac{1}{2} \tau_x^2 \frac{\partial^2}{\partial x^2}
+  + \rho\tau_x\tau_y \frac{\partial^2}{\partial x \partial y} + \frac{1}{2}\tau_y^2 \frac{\partial^2}{\partial y^2},
+  % \left(  \right)^2
+  %                                                   \frac{\partial^2}{\partial x^2}p(x,y,t) + \rho\left( \frac{\sigma_x}{(b_x-a_x)} \right)\left( \frac{\sigma_y}{(b_y-a_y)} \right)
+  %                                                   \frac{\partial^2}{\partial x \partial y}p(x,y,t) +
+  %                                        \frac{1}{2}\left( \frac{\sigma_y}{(b_y-a_y)} \right)^2 \frac{\partial^2}{\partial y^2}p(x,y,t) , \label{eq:qq} \\
+\]
+where $\tau_x = \frac{\sigma_x}{(b_x-a_x)}$,
+$\tau_y = \frac{\sigma_y}{(b_y-a_y)}$.  Note here that under this
+transformation $\rho$ remains the same as in the original problem. We
+will call equation (\ref{eq:qq}) the \textit{normalized} problem and
+will consider its solution in terms of the diffusion parameters
+$(\tau_x, \tau_y, \rho)$ without a loss of generality.
 
 \subsection{Eigenfunction Expansion} \label{sec:eigenfunction}
 Following Section 6.2 of \cite{risken1989fokker-planck}, we may use
@@ -323,16 +320,33 @@ With all of the eigenpairs $(c_\nu, \lambda_\nu)$, the approximate solution is t
 \[
   p(x,y,t) \approx \sum_{\nu}\Psi(x,y)^T c_\nu e^{-\lambda_\nu t}.
 \]
-Because the eigenvalue and eigenvectors are functions of the diffusion
-paramters and boundaries, the liklihood
-$\frac{\partial p(x,y,t)}{\partial \Omega}$ must be calculated
-numerically. This reduces to performing a fourth-order finite
-difference with respect to the boundaries, which requires the solution
-of 16 eigenvalue problems.
+
+Recalling equation (\ref{eq:pdf}), to compute the likelihood we are
+interested in we must take derivatives of the solution $p(x,y,t)$ with
+respect to the boundary parameters $(a_x, b_x, a_y, b_y)$. Because the
+eigenvalues and eigenvectors for this problem are functions of the
+parameters without explicit analytic form,
+$\frac{\partial^4}{\partial a_x\partial b_x \partial a_y \partial
+  b_y}p(x,y,t)$ must be computed numerically using a finite difference
+approximation. We must therefore find the eigenvalues and
+eigenvectors for each of the sixteen perturbed problems
+\[
+  p(x,y,t | a_x \pm \epsilon, b_x \pm \epsilon, a_y \pm \epsilon, b_y \pm \epsilon),
+\]
+such that
+\[
+  \frac{\partial^4}{\partial a_x\partial b_x \partial a_y \partial
+    b_y}p(x,y,t) \approx \frac{\sum_{k} c_k p(x,y,t | a_x \pm \epsilon, b_x \pm \epsilon, a_y \pm \epsilon, b_y \pm \epsilon)}{(2\epsilon)^4}.
+\]
+Because a good, working approximation to $p(x,y,t)$ requires many
+terms in the expansion of the eigenfunctions, and because each
+resultant system matrix is dense, repeated computation of the
+likelihood in this way is unfeasible.
 
 \subsection{Finite Difference} \label{sec:finite-difference} A finite
 difference method which approximates the spatial derivatives in
-problem (\ref{eq:qq}) requires the solution a system of differential equations
+problem (\ref{eq:qq}) requires the solution a system of differential
+equations
 \begin{align}
   \dot{c}(t)= A c(t) &\Rightarrow& c(t) = \exp\left( At \right)c(0) \label{eq:eigenproblem-fd}, 
 \end{align}
@@ -344,36 +358,38 @@ $\mathcal{L}p(x,y,t)$. The system matrix $A$ is dependent on the
 discretization scheme used to approximate $\mathcal{L}$. Using a
 central in space scheme over a \textbf{regular} grid on $\Omega$ with
 $\Delta x = \Delta y = h$,
-\[ A = \frac{1}{2}\sigma_x^2 \frac{1}{h^2}A_{x,x} +
-  \rho\sigma_x\sigma_y \frac{1}{4h^2}A_{x,y} + \frac{1}{2}\sigma_y^2
+\[ A = \frac{1}{2}\tau_x^2 \frac{1}{h^2}A_{x,x} +
+  \rho\tau_x\tau_y \frac{1}{4h^2}A_{x,y} + \frac{1}{2}\tau_y^2
   \frac{1}{h^2}A_{y,y},
 \]
 where each of the matrices $A_{x,x}, A_{x,y}, A_{y,y}$ approximate
 $\frac{\partial^2}{\partial x^2}, \frac{\partial^2}{\partial
   x \partial y}, \frac{\partial^2}{\partial y^2}$, respectively. For
-example, using the labelling $c_{l,m}(t) \to c_k(t)$ on the vector $c(t)$ to denote the approximation of the solution at point $(x_l, y_m)$ on the grid,
+example, using the labeling $c_{l,m}(t) \to c_k(t)$ on the vector
+$c(t)$ to denote the approximation of the solution at point
+$(x_l, y_m)$ on the grid,
 \begin{align*}
-  \frac{1}{2}\sigma_x^2 \frac{\partial^2}{\partial x^2} p(x_l,y_m,t) \approx \frac{1}{2}\sigma_x^2 \left( \frac{c_{l+1,m}(t) - 2c_{l,m}(t) + c_{l-1,m}(t)}{h^2} \right) = \frac{1}{2}\sigma_x^2 \frac{1}{h^2}A_{x,x}[k,] c(t) 
+  \frac{1}{2}\tau_x^2 \frac{\partial^2}{\partial x^2} p(x_l,y_m,t) \approx \frac{1}{2}\tau_x^2 \left( \frac{c_{l+1,m}(t) - 2c_{l,m}(t) + c_{l-1,m}(t)}{h^2} \right) = \frac{1}{2}\tau_x^2 \frac{1}{h^2}A_{x,x}[k,] c(t) 
 \end{align*}
 where $A_{x,x}[k,]$ is the $k^{th}$ row of $A_{x,x}$. Similarly,
 \begin{align*}
-  \rho\sigma_x\sigma_y \frac{\partial^2}{\partial x \partial y} p(x_l,y_m,t) \approx \rho\sigma_x\sigma_y \left( \frac{c_{l+1,m+1}(t) - c_{l+1,m-1}(t) - c_{l-1,m+1}(t) + c_{l-1,m-1}(t)}{4h^2} \right) = \rho\sigma_x\sigma_y \frac{1}{4h^2}A_{x,y}[k,] c(t) 
+  \rho\tau_x\tau_y \frac{\partial^2}{\partial x \partial y} p(x_l,y_m,t) \approx \rho\tau_x\tau_y \left( \frac{c_{l+1,m+1}(t) - c_{l+1,m-1}(t) - c_{l-1,m+1}(t) + c_{l-1,m-1}(t)}{4h^2} \right) = \rho\tau_x\tau_y \frac{1}{4h^2}A_{x,y}[k,] c(t) 
 \end{align*}
 It should be noted here that a regular grid approach with a constant
 $h$ is appealing, because it allows us to construct once and store the
 matrices $A_{x,x}, A_{x,y}, A_{y,y}$, which saves valuable
 computational resources if we are to solve the finite difference
 eigenproblem (\ref{eq:eigenproblem-fd}) repeatedly for different
-parameter values $(\sigma_x,\sigma_y,\rho)$.
+parameter values $(\tau_x,\tau_y,\rho)$.
 
 Unlike the system matrix for the trigonometric expansion, the system
 matrix $A$ here is sparse: each row of $(A_{x,x}, A_{x,y}, A_{y,y})$
-is compoposed of all zeros except for three or four entries. This
+is composed of all zeros except for three or four entries. This
 structure does not change as $h \to 0$. The eigenvalue problem is
 therefore much cheaper to solve. The system matrix can be made even
 sparser on a regular grid by performing a $45^{\circ}$ rotation which
 removes the mixing term
-$\rho\sigma_x \sigma_y\frac{\partial^2}{\partial x \partial y}$ from
+$\rho\tau_x \tau_y\frac{\partial^2}{\partial x \partial y}$ from
 the problem PDE and preserves the boundaries.
 
 % More
@@ -441,25 +457,33 @@ However, the fundamental limitation of using a finite difference
 method is that differentiation with respect to boundaries is also done
 using finite differences and it is of fourth order. Given this high
 order differentiation, $h$ cannot be made too small because truncation
-error becomes an issue relatively quickly. More explicitly, if we call
-$p_{FD}$ the finite difference approximation, we can write down the
-solution as
+error becomes an issue relatively quickly. More explicitly, assuming
+consistency and stability of the finite difference approximation to
+$\mathcal{L}$, we can write down the finite difference solution as
 \[
-  p_{FD}(x_l,y_m,t) = p(x_l,y_m,t) + O(h^2).
+  p_{FD}(x_l,y_m,t | a_x) = p(x_l,y_m,t) + O(h^2; a_x).
 \]
-Now if we use finite difference with respect to one of boundaries
-using $p_{FD}$,
+Note here the residual term $O(h^2; a_x)$ a function of the paramter
+$a_x$. The finite difference approximation yields:
 \begin{align*}
-  \frac{p_{FD}(x_l,y_m,t | a_x + \epsilon) - p_{FD}(x_l,y_m,t | a_x - \epsilon)}{2\epsilon} &= \frac{p(x_l,y_m,t | a_x + \epsilon) - p(x_l,y_m,t | a_x - \epsilon) + O(h^2)}{2\epsilon} \\
-                                                                                            &= \frac{p(x_l,y_m,t | a_x + \epsilon) - p(x_l,y_m,t | a_x - \epsilon)}{2\epsilon} + \frac{O(h^2)}{2\epsilon} \\
-                                                                                            &\approx \frac{\partial}{\partial a_x} p(x_l,y_m,t) + O(\epsilon^2) + \frac{O(h^2)}{2\epsilon}
+  \frac{p_{FD}(x_l,y_m,t | a_x) - p_{FD}(x_l,y_m,t | a_x - \epsilon)}{\epsilon} &= \frac{p(x_l,y_m,t | a_x) - p(x_l,y_m,t | a_x - \epsilon)}{\epsilon} + \frac{O(h^2 | a_x) - O(h^2 | a_x - \epsilon)}{\epsilon} \\
+      &\approx \frac{\partial}{\partial a_x} p(x_l,y_m,t) + O(\epsilon) + \frac{O(h^2 | a_x) - O(h^2 | a_x - \epsilon)}{\epsilon}.
 \end{align*}
-As $\epsilon \to 0$ with $h$ fixed, the term
-$\frac{O(h^2)}{2\epsilon}$ begins to dominate the approximation. If we
-use finite-differene with respect to all four boundaries on $p_{FD}$,
-the error term then becomes $\frac{O(h^2)}{(2\epsilon)^4}$. Hence, for
-a fixed $h$, we have a bound on how accurately we may represent the
-likelihood function.
+If the residual term $O(h^2 | a_x)$ is differentiable with respect to
+$a_x$,
+\[
+  \frac{O(h^2 | a_x) - O(h^2 | a_x - \epsilon)}{\epsilon} \to O(h^2) \mbox{ as } \epsilon \to 0.
+\]
+Otherwise
+\[
+  \frac{O(h^2 | a_x) - O(h^2 | a_x - \epsilon)}{\epsilon} \to O(h^2/\epsilon^r) \mbox{ as } \epsilon \to 0.
+\]
+for some $r > 0$. Under this condition, as $\epsilon \to 0$ with $h$
+fixed, the term $O(h^2/\epsilon^r)$ begins to dominate the
+approximation. Hence, for a fixed $h$, we have a bound on how
+accurately we may represent the likelihood function provided the
+finite difference residual term is not differentiable with respect to
+the boundary parameters.
 
 The finite value for $h$ introduces yet another practical concern. On
 a regular grid, the delta function initial condition needs to be
@@ -472,7 +496,7 @@ this phenomenon in Section [].
 \subsection{Finite Element Method}
 We propose a numerical method which $1)$ maintains a functional
 approximation of the differential operator $\mathcal{L}$ while $2)$
-imposing a computational burded comparable to or better than that of
+imposing a computational burden comparable to or better than that of
 the finite difference approach. Further, our method explicitly minimizes
 the error associated with using a finite, smooth representation of the
 initial condition $\delta(\xi-\xi_0)\delta(\eta-\eta_0)$.
