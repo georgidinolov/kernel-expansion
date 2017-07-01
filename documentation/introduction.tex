@@ -165,7 +165,15 @@ structural models in credit risk and default correlations
 \citep{haworth2008modelling, ching2014correlated}. \cite{he1998double}
 use variants of (\ref{eq:pdf}) with respect to some of the boundaries
 to price financial derivative instruments whose payoff depends on
-\textbf{some} of the observed maxima/minima.
+\textbf{some} of the observed maxima/minima. \cite{rodriguez2012} use
+a full likelihood-based (Bayesian) approach to estimate volatility in
+\textit{univariate} financial timeseries where open, closing, highest,
+and lowest prices are included. Their work
+fits into a body of literature and collection of techniques by
+practitioners where the observed range of prices is used to make
+similar estimates. In this paper we will provide the efficient
+numerical methods necessary to carry out similar inferential
+procedures with correlated financial timeseries.
 
 Closed-form solutions to (\ref{eq:1}) - (\ref{eq:2}) are available for
 some parameter regimes. When $\rho = 0$, the transition density of the
@@ -189,18 +197,21 @@ numerical method to solve (\ref{eq:1}) - (\ref{eq:2}).
 It is still possible to approach the general problem by proposing a
 biorthogonal expansion in time and space
 (\cite{risken1989fokker-planck}, sections 6.2), where the
-eigenfunctions for the differential operator are approximated as
-sinusoidal series satisfying the boundary conditions. However, a
-drawback of this out-of-the-box solution is that the system matrix for
-the corresponding eigenvalue problem is large and dense. An
-alternative is to use a finite difference scheme to directly solve the
-evolution problem after suitable transformations. However, both of
-these methods need a high degree of numerical resolution to produce
-practically useful approximations of the transition density. We
-conjecture that these inefficiencies come from either using a
-\textit{separable} representation for the differential operator
-(trigonometric series) or introducing numerical diffusion (finite
-difference).
+eigenfunctions for the differential operator are approximated as a
+sine series satisfying the boundary conditions. However, a drawback of
+this out-of-the-box solution is that the system matrix for the
+corresponding eigenvalue problem is dense. Additionally, for nonzero
+$\rho$, it is necessary to have a large number of basis elements for
+an accurate approximation. The denseness and size of the resultant
+system matrices makes the eigenvalue expansion a slow, if not
+unfeasible, solution. An alternative is to use a finite difference
+scheme to directly solve the evolution problem after suitable
+transformations. However, both of these methods need a high degree of
+numerical resolution to produce practically useful approximations of
+the transition density. We conjecture that these inefficiencies come
+from either using a \textit{separable} representation for the
+differential operator (trigonometric series) or introducing numerical
+diffusion (finite difference).
 
 In this paper, we propose a solution to the general problem
 (\ref{eq:1}) - (\ref{eq:2}) which is obtained by combining a
@@ -211,10 +222,13 @@ small-time solution and propagate it forward in time. We apply our
 computational method to estimate equation parameters with a maximum
 likelihood approach in settings where the model assumptions of
 constant $(\mu_x, \mu_y, \sigma_x, \sigma_y, \rho)$ and Brownian
-motion driving stochastic evolution are appropriate.
+motion driving stochastic evolution are appropriate. Section
+\ref{sec:approximate-sols} outlines some methods we considered,
+including the one we used. Section [] includes our numerical
+experiments.
 
 
-\section{Approximate Numerical Solutions}
+\section{Approximate Numerical Solutions} \label{sec:approximate-sols}
 Before considering solutions to the full Fokker-Planck equation
 (\ref{eq:1}) - (\ref{eq:2}), we simplify the PDE by proposing a
 scaling transformation and an exponential decomposition of the
@@ -324,7 +338,7 @@ With all of the eigenpairs $(c_\nu, \lambda_\nu)$, the approximate solution is t
   p(x,y,t) \approx \sum_{\nu}\Psi(x,y)^T c_\nu e^{-\lambda_\nu t}.
 \]
 
-\subsection{Likelihood Calculation} \label{sec:likelihood-calc}
+\subsubsection{Likelihood Calculation} \label{sec:likelihood-calc}
 Recalling equation (\ref{eq:pdf}), to compute the likelihood we are
 interested in we must take derivatives of the solution $p(x,y,t)$ with
 respect to the boundary parameters $(a_x, b_x, a_y, b_y)$. Because the
@@ -395,67 +409,6 @@ sparser on a regular grid by performing a $45^{\circ}$ rotation which
 removes the mixing term
 $\rho\tau_x \tau_y\frac{\partial^2}{\partial x \partial y}$ from
 the problem PDE and preserves the boundaries.
-
-% More
-% explicitly, for $p(x_l, y_m, t) \approx c_k(t)$
-
-% \begin{align*}
-%   \frac{\partial}{\partial t} p(x_l, y_m, t) &\approx \dot{ c_k }(t) = \\
-% \end{align*}
-% defines an approximate solution over some grid of points
-% $\left\{(\xi_l, \eta_m) \right\}_{l=0,m=0}^{L,M}$ over
-% $[0,1] \times [0,1]:$
-% \begin{equation}
-%   q(\xi,\eta,\tau) \approx \sum_{l}\sum_{m} c_{l,m}(\tau) \delta(\xi-\xi_l) \delta(\eta-\eta_m) = \Delta(\xi,\eta)^T c(t),\label{eq:finite-diff-sol}
-% \end{equation}
-% where $c(\tau) = (c_{0,0}(\tau), \ldots, c_{L,M}(\tau)^T$ and
-% $\Delta(\xi,\eta) = (\delta(\xi-\xi_0) \delta(\eta-\eta_0), \ldots,
-% \delta(\xi-\xi_L) \delta(\eta-\eta_M))$, where we have once again
-% separated the spatial and temporal components of the problem as in the
-% previous section. This is a suitable choice, because the differential
-% operator $\mathcal{L}$ is linear and constant and there is therefore
-% no need to perform approximation in time, i.e. we take derivative with
-% respect to time directly:
-% \[
-%   \frac{\partial}{\partial \tau}q(\xi,\eta,\tau) \approx \Delta(\xi,\eta)^T \frac{\partial c(\tau)}{\partial \tau}
-% \]
-% The differential operator $\mathcal{L}$ for the representation in
-% equation (\ref{eq:finite-diff-sol}) is approximated with a finite
-% difference operator $\mathcal{L}_{FD}$ such that approximate derivatives are defined on the grid:
-% \[
-%   \mathcal{L}q(\xi,\eta,\tau) \approx \mathcal{L}_{FD}q(\xi,\eta,\tau) = \sum_{l}\sum_{m} f(c_{l,m}(\tau)) \delta(\xi-\xi_l) \delta(\eta-\eta_m) := \Delta(\xi,\eta)^T f(c(t))
-% \]
-% where $f(c_{l,m}(\tau))$ is a function of some neighboring coefficient
-% values at $(\xi_l, \eta_m)$.
-
-% For a central difference scheme on a regular $N \times N$ grid aligned
-% with the boundaries (with step size $h=1/(N-1)$), 
-% \[
-%   \frac{\partial^2}{\partial \xi^2} q(\xi_l, \eta_m, \tau) \approx
-%   \frac{c_{l+1,m}(\tau) - 2c_{l,m}(\tau) + c_{l-1,m}(\tau)}{h^2} = \frac{1}{h^2}A_{l,m,\xi^2} c(\tau),
-% \]
-% where $A_{l,m,\xi^2}$ is some all-zero row vector except for three
-% entries of 1 corresponding to the grid points
-% $(\xi_{l-1}, \eta_m), (\xi_l,\eta_m), (\xi_{l+1},\eta_m)$. For the
-% mixing term, the approximation is
-% \[
-%   \frac{\partial^2}{\partial \xi \partial \eta} q(\xi_l, \eta_m, \tau) \approx
-%   \frac{c_{l+1,m+1}(\tau) - c_{l+1,m-1}(\tau) - c_{l-1,m+1}(\tau) + c_{l-1,m-1}(\tau)}{4h^2} = \frac{1}{4h^2}A_{l,m,\xi\eta} c(\tau).
-% \]
-% The finite difference approximation of $\mathcal{L}$ can be written as
-% a linear transformation of $c(\tau)$:
-% \[
-%   \mathcal{L}q(\xi,\eta,\tau) \approx \Delta^T(\xi,\eta) \underbrace{\left( \frac{1}{2}\sigma_\xi^2 \frac{1}{h^2}A_{\xi^2} + \rho\sigma_\xi\sigma_\eta A_{\xi\eta} + \frac{1}{2}\sigma_\xi^2 \frac{1}{h^2}A_{\eta^2}  \right)}_{A} c(\tau),
-% \]
-% where we have composed the row vectors for the different derivative
-% terms as matrices $A_{\xi^2}, A_{\xi\eta},$ and $A_{\eta^2}$. The
-% system of differential equations for $c(\tau)$ is therefore completely
-% determined by our choice of step size $h$, as well as the parameter
-% values $(\sigma_\xi, \sigma_\eta, \rho)$:
-% \begin{align}
-%    &\frac{\partial c(\tau)}{\partial \tau} = A c(\tau) \nonumber \\
-%    \Rightarrow &c(\tau) = \exp\left( A\tau \right)c(0) \label{eq:eigenproblem-fd}
-                   %   \end{align}
 
 However, the fundamental limitation of using a finite difference
 method is that differentiation with respect to boundaries is also done
@@ -734,58 +687,87 @@ $\frac{\partial^4 p_k(x,y,t)}{\partial a_x \partial b_x \partial
   a_y \partial b_y}$ exists and can be computed numerically using
 finite differences.
 
-However, the advantage of these elements is that they better resolve
-the fundamental solution for the unbounded problem by taking into
+The other critical advantage of these elements is that they better
+resolve the small-time solution $p(x,y,t_\epsilon)$ by taking into
 account correlation in the covariance of each kernel.
 [\textbf{\color{red} if not prove, demonstrate. I'm running out of
   steam on this.}].
 
 \section{Estimation}
-Our numerical method is specifically designed for computational
-efficiency for repeatedly evaluating the density function
-(\ref{eq:pdf}). The method is therefore particularly suited for
-performing maximum likelihood estimation of parameter values with
-respect to models involving systems of the type (\ref{eq:X}) -
-(\ref{eq:Y}). In such a scenario, the maximum likelihood estimator
-(MLE) for the true parameters $\theta$ are those which maximize the
-(log-)likelihood function conditional on the observed data. MLEs are
-especially useful in practical settings when they exhibit
-\textit{consistency}, \textit{i.e.}: the MLEs gets closer to the true
-parameter $\theta$ as more data is collected and included in the
-likelihood (assuming the model and its parameters remain constant).
+Consider the problem of estimating the parameters
+$(\mu_x, \mu_y, \sigma_x, \sigma_y, \rho)$ from an i.i.d. sample
+$(Z_1, \ldots, Z_n)$ from the process in (\ref{eq:X}) - (\ref{eq:Y}),
+where each $Z_i$ is the vector of random variables
+\[
+  Z_i = (X_i(t), Y_i(t), A_{x,i}, B_{x,i}, A_{y,i}, B_{y,i}).
+\]
+We say that $Z_i$ is sampled from the distribution corresponding to
+the probability density function (\ref{eq:pdf})
+\[
+  Z_i \sim F(\theta),
+\]
+where the distribution $F$ has the usual interpretation
+\begin{align*}
+  F(z = (x, y, a_x, b_x, a_y, b_y) | \theta) &= \Pr\left(X(t) \leq x,
+    Y(t) \leq y, \min_{t' \leq t} X(t') \leq a_x, \max_{t' \leq t}
+    X(t') \leq b_x, \min_{t' \leq t} Y(t') \leq a_y, \max_{t' \leq t}
+                                               Y(t') \leq b_y\right).
+\end{align*}
 
-In this section, we prove that the MLE based on the
-\textbf{approximate} (weak) finite element solution to the governing
-Fokker-Planck equation (\ref{eq:1}) is consistent. We define $X$ as
-the random variable sampled from the distribution corresponding to the
-true density (\ref{eq:pdf}):
-\[
-  X \sim F(\theta),
-\]
-where we have explicitly made the density $F$ dependent on the model
-parameters $\theta$.
+This estimation problem is of particular importance in quantitative
+finance where the model equations (\ref{eq:X}) - (\ref{eq:Y}) (with
+various bells and whistles attached) are widely used. However, to the
+best of our knowledge, all current \textit{likelihood} methods in the
+literature either ignore the observed maximum/minimum information or
+use some of it. Likelihood-free approaches, like that of
+\cite{rogers1991estimating}, on the other hand suffer from not being
+able to be easily integrated into a bigger inferential framework.
 
-For a family of basis functions
-$\{ \tilde{\psi}_l(x,y| x_k, y_k, \rho, \sigma) \}_{l=0}^k$, let
-$q_k(x,y,t|\theta)$ be the weak solution to the governing
-Fokker-Planck equation (\ref{eq:1}) - (\ref{eq:2}). The approximation
-to the true pdf is then
+Since we do not have a closed-form solution for the likelihood, we
+will use an iterative derivative-free maximization algorithm (the
+Nelder-Mead method; see \cite{lagarias1998convergence} for review and
+convergence properties) which requires repeated evauluation of the
+likelihood. For moderate to large samples sizes this is feasible,
+because our numerical method is specifically designed for
+computational efficiency for repeatedly evaluating the density
+function (\ref{eq:pdf}). The maximum likelihood estimator (MLE) for
+the true parameters based on $n$ samples, which we call
+$\hat{\theta}_n := (\hat{\mu}_x, \hat{\mu}_y, \hat{\sigma}_x,
+\hat{\sigma}_y, \hat{\rho})$, is especially useful in practical
+settings when it exhibits \textit{consistency}, \textit{i.e.}: the MLE
+gets closer to the true parameter vector $\theta$ as more data is
+collected and included in the likelihood (assuming the model and its
+parameters remain constant during the data collection). More
+precise, the estimator $\hat{\theta}_n$ is consistent if
 \[
-  \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial
-    b_y} q_k(x,y,t).
+  \Pr( | \hat{\theta}_n - \theta | ) \to 0 \qquad \mbox{as} \qquad n \to \infty.
 \]
-The distribution corresponding to this density is denoted as
-$F_k(\theta)$. Let $X_k$ be the random variable corresponding to this
-distribution:
+
+\subsection{Consistency}
+In this section we prove that the MLE based on the Galerkin
+approximation $p_k(x,y,t)$ to the governing Fokker-Planck equation
+(\ref{eq:1}) is consistent. To do so, we first show that the
+distribution on $Z$ based on the approximate $p_k(x,y,t)$ converges to
+the true distribution $F$:
 \[
-  X_k \sim F_k(\theta).
+  \lim_{k \to \infty} F_k(z | \theta) = F(z | \theta).
 \]
-We prove Lemma \ref{lem:1}, which states that the distribution of
-random variables sampled according to the approximate solution
-converge in density to random variables sampled from the true
-solution:
+We define $F_k(z | \theta)$ as
+\begin{align}
+  F_k(z | \theta) &= \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y \displaystyle \int_{-\infty}^{a_x} \displaystyle \int_{-\infty}^{a_y} \displaystyle \int_{-\infty}^{b_x} \displaystyle \int_{-\infty}^{b_y} \frac{\partial^4}{\partial a'_x \partial b'_x \partial a'_y \partial b'_y} q_k(x', y', t)\,\,\, dx'\, dy'\, da'_x\, db'_x\, da'_y\, db'_y, \\
+  &:= \Pr_{k} \left(X(t) \leq x,
+    Y(t) \leq y, \min_{t' \leq t} X(t') \leq a_x, \max_{t' \leq t}
+    X(t') \leq b_x, \min_{t' \leq t} Y(t') \leq a_y, \max_{t' \leq t}
+                                               Y(t') \leq b_y\right)
+\end{align}
+where $q_k$ is the approximation to $q$ based on the $p_k$. Put
+simply, we will show that the distribution based on the approximate
+density approaches the true density as $k \to \infty$.
+
+A key idea in the proof will be the interpretation of the measure $q(x,y,t)$ 
+
 \begin{lemma} \label{lem:1}
-  For $X_k$ and $X$ defined above, $X_k \xrightarrow[]{d} X \mbox{ as } k \to \infty.$
+  For $F_k$ and $F$ defined above, $\lim_{k\to \infty} F_k(z) = F(z).$
 \end{lemma}
 \begin{proof}
   \textbf{\color{red}do not read below; I'm working on it tonight}
