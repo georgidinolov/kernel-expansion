@@ -3,6 +3,7 @@
 \usepackage{amsthm}
 \usepackage[toc,page]{appendix}
 \usepackage{amssymb}
+\usepackage{bm}
 \usepackage{pslatex,palatino,avant,graphicx,color}
 \usepackage{colortbl}
 \usepackage{fullpage}
@@ -127,7 +128,8 @@ $\mbox{Cov}(W_1(t), W_2(t)) = \rho t$ for $0 < t' \leq t$. In
 particular, we find the joint transition density function for
 $(X(t), Y(t))$ under the boundary conditions:
 \begin{align}
-  \Pr\left(X(t) \in dx, Y(t) \in dy | \forall t' \in [0,t]\,\, X(t') \in [a_x, b_x], \forall t' \in [0,t]\,\, Y(t') \in [a_y,b_y], X(0)=x_0, Y(0)=y_0, \theta \right), \label{eq:CDF}
+  \Pr\left(X(t) \in dx, Y(t) \in dy,  \min_{t'}X(t') \geq a_x,
+  \max_{t'}X(t')\leq b_x, \min_{t'} Y(t')\geq a_y, \max_{t'} Y(t')\leq b_y|  X(0)=x_0, Y(0)=y_0, \theta \right), \label{eq:CDF}
 \end{align}
 with $\theta := (\mu_x, \mu_y, \sigma_x, \sigma_y, \rho).$ This
 function, which we shorten to $q(x,y,t)$ from now on, is the solution
@@ -180,8 +182,9 @@ no closed-form solution to the general problem in (\ref{eq:1}) -
 (\ref{eq:pdf}), with the most straightforward approach being finite
 difference with respect to the boundary conditions. This, however,
 requires one to solve at least 16 eigenvalue problems to evaluate the
-density function for a single observation, motivating the need for an
-efficient numerical method to solve (\ref{eq:1}) - (\ref{eq:2}).
+density function for a single observation (see Section
+\ref{sec:likelihood-calc}), motivating the need for an efficient
+numerical method to solve (\ref{eq:1}) - (\ref{eq:2}).
 
 It is still possible to approach the general problem by proposing a
 biorthogonal expansion in time and space
@@ -229,14 +232,14 @@ where
 \end{align*}
 This new formula satisfies the simpler diffusion equation:
 \begin{equation}
-  \frac{\partial}{\partial t} p(x,y,t) = \mathcal{L}p(x,y,t),\quad (x,y) \in (0,1) \times (0,1) := \Omega.
+  \frac{\partial}{\partial t} p(x,y,t) = \mathcal{L}p(x,y,t),\quad (x,y) \in (0,1) \times (0,1) := \Omega \label{eq:qq}
 \end{equation}
 subject to the constraints
 \begin{align}
   p(x,y,t) &=0, & \mbox{ for } & (x,y) \in \{ x | x = 0\} \cup \{ y | y = 0\}, \nonumber \\
   p(x,y,0) &= \delta\left( x - \frac{x_0-a_x}{b_x - a_x} \right) \delta\left(y-\frac{y_0 - a_y}{b_y - a_y}\right), \nonumber
 \end{align}
-with the differential operator $\mathcal{L}$ takes the form
+where the differential operator $\mathcal{L}$ takes the form
 \[
   \mathcal{L} = \frac{1}{2} \tau_x^2 \frac{\partial^2}{\partial x^2}
   + \rho\tau_x\tau_y \frac{\partial^2}{\partial x \partial y} + \frac{1}{2}\tau_y^2 \frac{\partial^2}{\partial y^2},
@@ -262,9 +265,9 @@ eigenfunctions and time-dependent coefficients determined by eigenvalues:
 where the eigenfunctions $\phi_\nu(x, y)$ satisfy the boundary
 conditions. Because the differential operator $\mathcal{L}$ is
 self-adjoint, the family of eigenfunctions is complete in the Hilbert
-space $L^2(\Omega)$. Moreover, the eigenvalues are bounded below by 0,
-so that the solution behaves as expected (see section 6.3 of
-\cite{risken1989fokker-planck}).
+space $L_2(\Omega)$. Moreover, the eigenvalues are bounded below by a
+positive constant $c$, so that the solution behaves as expected (see
+section 6.3 of \cite{risken1989fokker-planck}).
 
 Since we require $\phi_\nu(x,y)$ to be zero on the boundaries, we
 may represent the eigenfunction as a linear combination of sines
@@ -321,6 +324,7 @@ With all of the eigenpairs $(c_\nu, \lambda_\nu)$, the approximate solution is t
   p(x,y,t) \approx \sum_{\nu}\Psi(x,y)^T c_\nu e^{-\lambda_\nu t}.
 \]
 
+\subsection{Likelihood Calculation} \label{sec:likelihood-calc}
 Recalling equation (\ref{eq:pdf}), to compute the likelihood we are
 interested in we must take derivatives of the solution $p(x,y,t)$ with
 respect to the boundary parameters $(a_x, b_x, a_y, b_y)$. Because the
@@ -493,69 +497,248 @@ approach introduces a numerical diffusion into the problem which, for
 a finite $h$, can bias the numerical solution. We will demonstrate
 this phenomenon in Section [].
 
-\subsection{Finite Element Method}
-We propose a numerical method which $1)$ maintains a functional
-approximation of the differential operator $\mathcal{L}$ while $2)$
-imposing a computational burden comparable to or better than that of
-the finite difference approach. Further, our method explicitly minimizes
-the error associated with using a finite, smooth representation of the
-initial condition $\delta(\xi-\xi_0)\delta(\eta-\eta_0)$.
+\subsection{Semidiscrete Galerkin Method}
+We propose a semidiscrete Galerkin (continuous in time, discrete in
+space) solution to the general diffusion problem (\ref{eq:qq}). The
+success of this approach is based on an analytic approximation for the
+solution $p(x,y,t)$ for small time $t$ and a basic convergence
+estimate from approximation theory for semidiscrete Galerkin-type
+solutions to parabolic problems. 
 
-As such, our approach consists of two parts
-\begin{enumerate}[i)]
-\item a small-time analytic solution $q(x,y,\tau_\epsilon)$ for the IC/BC problem,
-\item a family of orthonormal basis functions which represent
-  $q(x,y,\tau_\epsilon)$ parsimoniously.
-\end{enumerate}
-By combining $i)$ and $ii)$, we can efficiently find a weak solution
-to the PDE (\ref{eq:qq}) via the finite element method
-\citep{shaidurov2013multigrid}. Convergence of our method to the
-strong solution under the $L^2(\bar{\Omega})$ norm is guaranteed as
-long as the family of basis functions we propose is complete in the
-Hilbert space under $L^2(\bar{\Omega})$ \citep{salsa2016partial}.
+Our numerical method produces a functional representation for the
+approximate solution which $1)$ imposes a computational burden
+comparable to or better than that of the finite difference method and
+$2)$ is infinitely differentiable with respect to the boundary
+parameters, allowing us to perform the crucial numerical
+differentiation with respect to these parameters.
 
+As described in Section \ref{sec:eigenfunction}, the solution to the
+model problem has the eigenfunction expansion 
+\[
+  p(x,y,t) = \sum_{\nu=0}^\infty\phi_\nu(x,y) e^{-\lambda_\nu t}.
+\]
+Proceeding with the standandard Galerkin approach, we propose a
+solution $p_{k}(x,y,t)$ of similar form
+\[
+  p_{k}(x,y,t) = \sum_{i=0}^k c_i(t) \psi_i(x,y),
+\]
+where the basis functions $\psi_i(x,y)$ satisfy the boundary
+conditions. We also require that all first- and second-order
+derivatives of $\psi_i(x,y)$ are in $L_2(\Omega)$, i.e.
+$\psi_k(x,y) \in W_{2}^{2}(\Omega)$. In other words, we look for a
+solution in the span of $S_k = \{\psi_0, \ldots, \psi_k\}$. Since
+$p_k$ is an approximation to the solution $p$, it does not follow the
+differential equation exactly nor can it represent the initial
+condition fully. We capture this by defining residuals
+\begin{align*}
+  \frac{\partial}{\partial t} p_k(x,y,t) - \mathcal{L}p_k(x,y,t) &:= R_e(k), \\
+  p(x,y,0) - p_k(x,y,0) &:= R_0(k).
+\end{align*}
+There are various conditions that could be imposed on the residual
+functions (see Section 2.10.3 of \cite{norrie1973finite} for a
+summary). The \textit{orthogonality} condition coincides with the
+Galerkin procedure:
+\begin{align}
+  \displaystyle \int_{\Omega} R_e(k) \psi_i(x,y) dx\,dy &= 0,& \displaystyle \int_{\Omega} R_0(k) \psi_i(x,y) dx\,dy &= 0,& i = 0,\ldots k, \label{eq:orthogonality-conditions}
+\end{align}
+which is equivalent to the weak formulation of the heat problem
+\begin{align*}
+  \left( \partial_t p_k(x,y,t), \psi_i \right) &= \left(\mathcal{L}p_k(x,y,t), \psi_i \right), \\
+  \left( p_k(x,y,0), \psi_i \right) &= \left(p(x,y,0), \psi_i\right),
+\end{align*}
+where $(\cdot, \cdot)$ is the usual inner product in
+$L_2(\Omega)$. The orthogonality conditions
+(\ref{eq:orthogonality-conditions}) lead to the system of equations
+\begin{align*}
+  M \mathbf{\dot{c}}(t) &= S \mathbf{c}(t), \\
+  M \mathbf{c}(0) &= \mathbf{p}(x,y),
+\end{align*}
+where $M$ is the mass matrix, $S$ is the stiffness matrix, and
+$\mathbf{p}(x,y,0)$ is the vector projection of $p(x,y,0)$ onto the
+span of $S_k$ with elements
+\begin{align*}
+  M_{ij} &= \displaystyle \int_\Omega \psi_i \psi_j dx\,dy, \\
+  S_{ij} &= -\frac{1}{2}\tau_x^2 \displaystyle \int_\Omega \left( \frac{\partial}{\partial x} \psi_i(x,y) \right) \left( \frac{\partial}{\partial x} \psi_j(x,y) \right) dx\,dy -\rho\tau_x\tau_y \displaystyle \int_\Omega \left( \frac{\partial}{\partial x} \psi_i(x,y) \right) \left( \frac{\partial}{\partial y} \psi_j(x,y) \right) dx\,dy \\
+         &\quad -\frac{1}{2}\tau_y^2 \displaystyle \int_\Omega \left( \frac{\partial}{\partial y} \psi_i(x,y) \right) \left( \frac{\partial}{\partial y} \psi_j(x,y) \right) dx\,dy \\
+  \mathbf{p}_i(x,y) &= \displaystyle \int_\Omega p(x,y,0) \psi_i(x,y) dx\,dy.
+\end{align*}
+The entries of $S_{ij}$ are computed with integration by parts and
+using the boundary conditions. The semidiscrete Galerkin approximation
+becomes
+\[
+  p_k(x,y,t) = \boldsymbol{\psi}(x,y)^T \exp\left( M^{-1}S\, t \right) \mathbf{c}(0),
+\]
+with $\boldsymbol{\psi}(x,y) = (\psi_0(x,y), \ldots, \psi_k(x,y))^T.$
+
+A bound on the closeness of the approximate solution $p_k(x,y,t)$ to
+the strong solution $p(x,y,t)$ is developed in \cite{bramble1977some}
+shows that the Galerkin approximation we use converges to the strong
+solution, and it motivates the thrust of our numerical
+solution. First, we define the \textit{error} term
+\[
+  e_k(t) = p(x,y,t) - p_k(x,y,t),
+\]
+as well as the norm
+\[
+  \| w \|_2 = \sum_{j=0}^\infty \lambda_j^2 (w, \phi_j)
+\]
+for the eigenpairs $(\lambda_j, \phi_j)$ of the operator
+$\mathcal{L}$. As referred in \cite{bramble1977some}, functions
+$w \in L_2(\Omega)$ with $\|w\|_2 < \infty$ are also in $W_2^2(\Omega)$. In a
+sense, $\| \cdot \|_2$ measures the variation of functions. Functions
+having higher-order eigenmodes have a bigger norm, and vice
+versa. Finally, if we have the condition (corresponding to equation
+2.1 in \cite{bramble1977some})
+\begin{align}
+  \| p(x,y,0) - p_k(x,y,0) \|_{L_2(\Omega)} &\leq C\, h(k)^2 \| p(x,y,0) \|_2. \label{eq:ic-bound}
+\end{align}
+as a decreasing function $h(k)$, Theorem 2.1 in \cite{bramble1977some}
+applies and we have the error estimate
+\begin{align}
+  \| e(t) \|_{L_2(\Omega)} \leq C h(k)^2 \| p(x,y,0) \|_{2}. \label{eq:error-est}
+\end{align}
+We can ensure condition (\ref{eq:ic-bound}) is met if $S_k$ is complete
+in $L_2(\Omega)$ as $k$ grows. The other two conditions for Theorem
+2.1 to apply are demonstrated by \cite{bramble1977some} for the
+Galerkin method. Equation (\ref{eq:error-est}) can be summarized in a
+simple way: the error of the method is controlled by how much
+variation the initial condition has; the rate of decrease of the error
+is controlled by how well the span of $S_k$ represents the initial
+condition compared to the variation of the initial condition.
+
+However, the initial condition for (\ref{eq:qq}) requires all in
+eigenmodes being included in the representation of the initial
+conditions, so that
+\[
+  \| p(x,y,0) \|_{2} = \left\| \delta\left( x - \frac{x_0 - a_x}{b_x-a_x}
+  \right) \delta\left( y - \frac{y_0 - a_y}{b_y-a_y} \right)\right\|_{2} = +\infty.
+\]
+It is obvious that we cannot apply the error estimates above. However,
+evolving the solution forward in time, even for a short period,
+diffuses the delta-function IC and attenuates out the highest
+frequency modes. Further, because solutions to the diffusion equation
+are smooth, $p(x,y,t_\epsilon)$ will give us a smooth initial function
+which will make the error bounds admissible.
+
+\subsubsection{Small-time Solution}
 The small-time solution is derived by considering the fundamental
-solution $G(\xi,\eta |\tau, \xi_0, \eta_0)$ for the unbounded problem
-in (\ref{eq:qq}), which is the bivariate Gaussian density with mean
-and covariance determined by the initial condition and the diffusion
-parameters \citep{stakgold2011green}. We can then find a small enough
-$t_\epsilon$ such that $G(\xi,\eta |\tau, \xi_0, \eta_0)$ is
-numerically zero on three of the four boundaries of
-$\bar{\Omega}$. The zero-condition on the remaining boundary is
-enforced by suitably moving the source term for the fundamental
-solution to some suitable $(\xi'_0, \eta'_0)$. The small-time solution
-therefore takes on the analytic form
+solution $G(x,y,t)$ for the unbounded problem in (\ref{eq:qq}), which
+is the bivariate Gaussian density with mean and covariance determined
+by the initial condition and the diffusion parameters
+\citep{stakgold2011green}. We can then find a small enough
+$t_\epsilon$ such that
+$G\left(x,y, t_\epsilon \left| \frac{x_0-a_x}{b_x - a_x},
+    \frac{y_0-a_y}{b_y - a_y} \right.\right)$ is numerically zero on
+the boundaries of $\Omega$. This is done in the following way.
+\begin{enumerate}[1.]
+\item Scale and rotate the coordinate axes by
+  \[
+    \left( \begin{array}{c}
+             \xi \\
+             \eta
+           \end{array} \right) = \mbox{Transformation goes here}
+             \left( \begin{array}{cc}
+             x \\
+             y
+           \end{array} \right) 
+       \]
+       so that the problem obeys the diffusion equation. The
+       computational domain is transformed to the parallelogram
+       $\tilde{\Omega}$. The transformed initial condition will be
+       denoted as $(\xi_0, \eta_0)$.
+
+     \item The fundamental solution $G(\xi,\eta,t | \xi_0, \eta_0)$ in
+       this coordinate frame which does not take into account
+       boundaries follows the bivariate Gaussian probability density
+       function
+  \[
+    G(\xi,\eta,t | \xi_0, \eta_0) = \frac{1}{2\pi t} \exp\left(-\frac{(\xi-\xi_0)^2 +
+        (\eta-\eta_0)^2}{2\,t} \right).
+  \]
+  We define \textbf{distance} between $G(\xi,\eta,t | \xi_0, \eta_0)$
+  and any of the linear boundaries of $\tilde{\Omega}$ as the
+  Euclidean norm of the segment of the vector extending from
+  $(\xi_0,\eta_0)$ and normal to the boundary. There are four such
+  distances $d_1, d_2, d_3, d_4$. Assume that they are listed in
+  increasing magnitude.
+
+  Setting $t_\epsilon = d_2/8$ ensures that the fundamental solution
+  $G(\xi,\eta,t_\epsilon | \xi_0, \eta_0)$ is \textit{at most}
+  $\approx 10^{-15}$ on the second-farthest boundary, as well as the
+  other two farthest boundaries. In this way,
+  $G(\xi,\eta,t_\epsilon | xi_0, \eta_0)$ satisfies the boundary
+  condition on the three farthest boundaries numerically.
+
+\item Reflect the point $(\xi_0, \eta_0) \to (\xi_0', \eta_0')$ about
+  the closest boundary. The image function
+  $G(\xi,\eta,t_\epsilon | \xi_0', \eta_0')$ satisfies the diffusion
+  equation and is equal to $G(\xi,\eta,t_\epsilon | \xi_0, \eta_0)$ on
+  the closest boundary. Further,
+  $G(\xi,\eta,t_\epsilon | \xi_0', \eta_0')$ takes on values less than
+  $10^{-15}$ on all other boundaries, because it is outside of
+  $\bar{\Omega}$.
+
+  Considering the difference of the two images, the small-time solution 
+  \[
+    p(\xi,\eta,t_\epsilon) := G(\xi,\eta,t_\epsilon | \xi_0, \eta_0) -
+    G(\xi,\eta,t_\epsilon | \xi_0', \eta_0')
+  \]
+  satisfies all of the boundaries numerically and also satisfies the
+  governing diffusion equation. Performing a change of variables
+  produces the small-time solution $p(x,y,t_\epsilon)$.
+\end{enumerate}
+Using Theorem 5.E of \cite{zeidler1995applied}, we can solve for
+$p(x,y,t)$ by considering the smooth $p(x,y,t_\epsilon)$ as an initial
+condition and evolving it forward in time by $t-t_\epsilon$. The
+bigger $t_\epsilon$, the less eigenmodes present in
+$p(x,y,t_\epsilon)$, and the more accurate our weak solution according
+to the error estimate
 \[
-  q(\xi,\eta,\tau_\epsilon) = G(\xi,\eta|\tau_\epsilon,\xi_0, \eta_0) - G(\xi,\eta|\tau_\epsilon,\xi'_0, \eta'_0).
+  \| e(t) \|_{L_2(\Omega)} \leq C h(k)^2 \| p(x,y,t_\epsilon) \|_{2}.
 \]
 
-The construction of the orthonormal basis functions is also motivated
-by the fundadmental solution for the unbounded problem (\ref{eq:qq}):
-before performing Gram-Schmidt orthogonalization, the finite family of
-basis functions
-$\{ \tilde{\psi}_k(x,y| x_k, y_k, \rho, \sigma) \}_{k}^K$ are of the
-form
+\subsubsection{Orthonormal Basis Family}
+An upper bound of the rate at which the Galerkin approximation
+converges to $p(x,y,t)$ is given by condition (\ref{eq:ic-bound}),
+namely by how well the initial condition may be approximated via a
+projection onto $S_k$. We motivate the construction of the orthonormal
+basis functions by once again considering the fundamental solution for
+the unbounded problem (\ref{eq:qq}). In the absence of boundaries,
+(\ref{eq:qq}) is solved by the function
 \[
-  \tilde{\psi}_k(x,y| x_k, y_k, \rho, \sigma) = N\left( (x,y)^T \left|
-      (x_k, y_k)^T , \quad \left( \begin{array}{cc}
-                                     \sigma^2 & \rho \sigma^2 \\
-                                     \rho \sigma^2 & \sigma^2
-                     \end{array} \right) \right. \right) x(1-x)y(1-y).
+  G(x,y,t | x_0', y_0') = \frac{1}{2\pi\,\,t\,\, \tau_x\tau_y\sqrt{1-\rho^2}} \exp\left\{ -\frac{1}{2(1-\rho^2)} \left( \frac{(x - x_0')^2}{\tau_x^2} - 2\rho \frac{(x-x_0')(y-y_0')}{\tau_x\tau_y} + \frac{(y - y_0')^2}{\tau_y^2}\right) \right\},
 \]
-Essentially, the collection
-$\{ \tilde{\psi}_k(x,y| x_k, y_k, \rho, \sigma) \}_{k}^K$ is composed
-of fundamental solutions to a heat diffusion problem tuned by $\sigma$
-and $\rho$, tapered such that their support is on $\bar{\Omega}$,
-and centered along some grid over $\bar{\Omega}$ and are still smooth.
+with
+$x_0' = (x_0 - a_x)/(b_x-a_x),\quad y_0' = (y_0 - a_y)/(b_y-a_y)$. We
+choose the family of basis functions
+$S_k = (\psi_0(x,y), \ldots, \psi_k(x,y))$
+\begin{align}
+  \psi_i(x,y) &= \frac{1}{2\pi \sigma^2\sqrt{1-\tilde{\rho}^2} } \exp\left\{ -\frac{1}{2(1-\tilde{\rho}^2)\sigma^2} \left( (x - x_i)^2 - 2\tilde{\rho} (x-x_i)(y-y_i) + (y - y_i)^2 \right) \right\} x\left(1-x\right)\, y(1-y)
+\end{align}
+for some parameters $(\tilde{\rho}, \sigma)$ and a collection of
+points $\{ (x_i,y_i) \}_{i=0}^k$ which form a grid over
+$\Omega$. Essentially, the collection
+$\{ \psi_i(x,y| x_i, y_i, \tilde{\rho}, \sigma) \}_{i=0}^k$ is
+composed of fundamental solutions to a heat diffusion problem tuned by
+$\sigma$ and $\tilde{\rho}$, tampered such that their support is on
+$\Omega$, zero on the boundaries, centered on some grid over $\Omega$,
+and still smooth. In this manner, our basis function choice is in
+keeping with the golden rule for the rate of convergence: \textbf{The
+  smoother the solution to the original problem and the smoother the
+  functions in the basis space, the faster the convergence of the
+  Ritz-Galerkin method.} (Remark 1(c) in Chapter 2 of
+\cite{zeidler1995applied}). Moreover, all of the basis functions are
+infinitely differentiable with respect to the boundary and diffusion
+parameters, so that
+$\frac{\partial^4 p_k(x,y,t)}{\partial a_x \partial b_x \partial
+  a_y \partial b_y}$ exists and can be computed numerically using
+finite differences.
 
-The advantage of these elements is that they better resolve the
-fundamental solution for the unbounded problem by taking into account
-$\rho$ in the covariance of each kernel [\textbf{\color{red} if not
-  prove, demonstrate}]. By performing Gram-Schmidt orthogonalization
-under the $L^2(\Omega)$ norm, we arrive at a family of orthonormal
-functions $\{ \psi_k(x,y| x_k, y_k, \rho, \sigma) \}_{k}^K$ which can
-better resolve small-time solutions having a large correlation
-coefficient. [This needs a lot more work].
+However, the advantage of these elements is that they better resolve
+the fundamental solution for the unbounded problem by taking into
+account correlation in the covariance of each kernel.
+[\textbf{\color{red} if not prove, demonstrate. I'm running out of
+  steam on this.}].
 
 \section{Estimation}
 Our numerical method is specifically designed for computational
