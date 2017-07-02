@@ -233,9 +233,9 @@ Before considering solutions to the full Fokker-Planck equation
 (\ref{eq:1}) - (\ref{eq:2}), we simplify the PDE by proposing a
 scaling transformation and an exponential decomposition of the
 solution, so that we can construct
-\[
-  p(x,y,t) = \exp(\alpha x + \beta y + \gamma t) q\left( x(b_x - a_x) + a_x, \quad y(b_y - a_y) + a_y, \quad t \right),
-\]
+\begin{align}
+  p(x,y,t) &= \exp(\alpha x + \beta y + \gamma t) q\left( x(b_x - a_x) + a_x, \,\, y(b_y - a_y) + a_y, \,\, t \right), \label{eq:q-to-p}
+\end{align}
 where
 
 
@@ -748,11 +748,11 @@ In this section we prove that the MLE based on the Galerkin
 approximation $p_k(x,y,t)$ to the governing Fokker-Planck equation
 (\ref{eq:1}) is consistent. To do so, we first show that the
 distribution on $Z$ based on the approximate $p_k(x,y,t)$ converges to
-the true distribution $F$:
+the true distribution $F(\cdot | \theta)$:
 \[
   \lim_{k \to \infty} F_k(z | \theta) = F(z | \theta).
 \]
-We define $F_k(z | \theta)$ as
+The function $F_k(z | \theta)$ is defined as
 \begin{align}
   F_k(z | \theta) &= \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y \displaystyle \int_{-\infty}^{a_x} \displaystyle \int_{-\infty}^{a_y} \displaystyle \int_{-\infty}^{b_x} \displaystyle \int_{-\infty}^{b_y} \frac{\partial^4}{\partial a'_x \partial b'_x \partial a'_y \partial b'_y} q_k(x', y', t)\,\,\, dx'\, dy'\, da'_x\, db'_x\, da'_y\, db'_y, \\
   &:= \Pr_{k} \left(X(t) \leq x,
@@ -760,11 +760,96 @@ We define $F_k(z | \theta)$ as
     X(t') \leq b_x, \min_{t' \leq t} Y(t') \leq a_y, \max_{t' \leq t}
                                                Y(t') \leq b_y\right)
 \end{align}
-where $q_k$ is the approximation to $q$ based on the $p_k$. Put
-simply, we will show that the distribution based on the approximate
-density approaches the true density as $k \to \infty$.
+where $q_k$ is the approximation to $q$ based on the $p_k$ (see
+equation (\ref{eq:q-to-p})). In other words, we will show that the
+distribution-like function $F_k(\cdot |\theta)$ based on the
+approximation
+$\partial^4 q_k(x,y,t)/(\partial a_x\,\partial b_x\, \partial
+a_y\, \partial b_y)$ approaches the true probability distribution
+function $F(\cdot | \theta)$ based on the density
+$\partial^4 q(x,y,t)/(\partial a_x\,\partial b_x\, \partial
+a_y\, \partial b_y)$ as $k \to \infty$.
 
-A key idea in the proof will be the interpretation of the measure $q(x,y,t)$ 
+A key idea in the proof will be the interpretation of the measure $q(x,y,t)$
+\begin{align*}
+  q(x,y,t) = \\
+  \Pr\left(X(t) \in dx, Y(t) \in dy,  \min_{t'}X(t') \geq a_x,
+  \max_{t'}X(t')\leq b_x, \min_{t'} Y(t')\geq a_y, \max_{t'} Y(t')\leq b_y|  X(0)=x_0, Y(0)=y_0, \theta \right) = \\
+  \Pr_{W}\left(\left\{ \omega \in \Omega | X_\omega(t) \in dx,\,\, Y_\omega(t) \in dy,\,\,  \forall t' \in [0,t]\,\, a_x \leq X_\omega(t') \leq b_x,\,\, \forall t' \in [0,t] \,\, a_b \leq Y_\omega(t') \leq b_y,\,\, X_\omega(0) = Y_\omega(0) = 0 \right\} \right)
+\end{align*}
+where $\Pr_{W}$ is the Wiener measure on the samples space of all
+realizations (paths) $(X_\omega(t), Y_\omega(t))$ from the stochastic
+process (\ref{eq:X}) - (\ref{eq:Y}) defined in the usal way using
+Kolmogorov's extension of measure (see \cite{freidlin1985functional},
+Section 1.2). Our strategy will be to define a family of sets $\left\{ \tilde{A}_m(z) \right\}_{m=0}^\infty$ for any $z=(x,y,a_x,b_x,a_y,b_y)$ such that
+\begin{align*}
+  \lim_{m \to \infty} \Pr_W \left(  \tilde{A}_m(z) \right) = 
+  \Pr \left( X(t) \leq x,
+  Y(t) \leq y, \min_{t' \leq t} X(t') \leq a_x, \max_{t' \leq t}
+  X(t') \leq b_x, \min_{t' \leq t} Y(t') \leq a_y, \max_{t' \leq t}
+  Y(t') \leq b_y \right) = F(z | \theta)
+\end{align*}
+
+\begin{lemma}
+  For $z = (x,y,a_x,b_x,a_y,b_y)$, 
+  \[\lim_{m \to \infty} \displaystyle \int_{-\infty}^x \displaystyle
+    \int_{-\infty}^y q(x',y',t, a_x-m, b_x, a_y-m, b_y)\,\, dx'\,dy' -
+    \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y
+    q(x',y',t, a_x, b_x, a_y, b_y)\,\, dx'\,dy' = F(z | \theta)\]
+\end{lemma}
+\begin{proof}
+Given some $z = (x,y,a_x,b_x,a_y,b_y)$, define the sets
+\begin{align*}
+  A_m(z) &= \left\{ \omega \in \Omega | X_\omega(t) \leq x,\,\,
+Y_\omega(t) \leq y,\,\, \right. \\ & \forall t' \in [0,t]\,\, a_x-m
+\leq X_\omega(t') \leq b_x,\,\, \\ & \forall t' \in [0,t] \,\, a_y -
+m\leq Y_\omega(t') \leq b_y,\,\, \\ & \left.X_\omega(0) = Y_\omega(0)
+= 0 \right\}, \quad \quad m = 0,1,2,... \\
+\end{align*}
+Note here that $\Pr_{W}(A_m(z)) = \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y q(x',y',t, a_x-m, b_x, a_y-m, b_y)\,\, dx'\,dy'$.  Next, we define
+\begin{align*}
+  \tilde{A}_{m}(z) &= A_m(z) \,\, \bigcap \,\, A_0^C(z) \\
+                   &= \left\{ \omega \in \Omega | X_\omega(t) \in dx,\,\, \right.\\
+                   & \quad \quad \forall t' \in [0,t]\,\, a_x-m \leq X_\omega(t') \leq b_x,\,\, \\
+                   & \quad \quad \forall t' \in [0,t] \,\, a_y - m\leq Y_\omega(t') \leq b_y,\,\, \\
+                   & \quad \quad \exists t_{a_x} \in [0,t] \,\, s.t. \,\, X_\omega(t_{a_x}) < a_x \,\, , \exists t_{a_y} \in [0,t] \,\, s.t. \,\, X_\omega(t_{a_y}) < a_y, \\
+                   & \quad \quad \left.X_\omega(0) = Y_\omega(0) = 0 \right\}
+\end{align*}
+It is easy to see that $A_{m}(z) \subset A_{m+1}(z)$ and that
+$\tilde{A}_{m}(z) \subset \tilde{A}_{m+1}(z)$. Because of the former
+relation,
+\[
+  \Pr_{W}(\tilde{A}_m(z)) = \Pr_W(A_m(z)) - \Pr_{W}(A_0(z)) = \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y q(x',y',t, a_x-m, b_x, a_y-m, b_y)\,\, dx'\,dy' - \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y q(x',y',t, a_x, b_x, a_y, b_y)\,\, dx'\,dy'.
+\]
+
+Finally,
+\begin{align*}
+  \bigcup_{m=0}^\infty \tilde{A}_m(z) &= \left\{ \omega \in \Omega | X_\omega(t) \in dx,\,\, \right.\\
+                   & \quad \quad \forall t' \in [0,t]\,\, -\infty \leq X_\omega(t') \leq b_x,\,\, \\
+                   & \quad \quad \forall t' \in [0,t] \,\, -\infty \leq Y_\omega(t') \leq b_y,\,\, \\
+                   & \quad \quad \exists t_{a_x} \in [0,t] \,\, s.t. \,\, X_\omega(t_{a_x}) < a_x \,\, , \exists t_{a_y} \in [0,t] \,\, s.t. \,\, X_\omega(t_{a_y}) < a_y, \\
+                   & \quad \quad \left.X_\omega(0) = Y_\omega(0) = 0 \right\},
+\end{align*}
+such that for $\omega \in \bigcup_{m=0}^\infty \tilde{A}_m(z)$,
+$X_\omega(t) \leq x, Y_\omega(t) \leq y, \min_{t'} X_{\omega}(t') \leq
+a_x, \min_{t'} Y_{\omega}(t') \leq a_y, \max_{t'} X_{\omega}(t') \leq
+b_x$, $\max_{t'} Y_{\omega}(t') \leq b_y$, and
+\[
+  \Pr_W\left( \bigcup_{m=0}^\infty \tilde{A}_m(z) \right) = F(z |
+  \theta).
+\]
+Since $\tilde{A}_{m}(z) \subset \tilde{A}_{m+1}(z)$
+\[
+  \lim_{m\to \infty} \Pr_W(\tilde{A}_m(z)) = \lim_{m \to \infty} \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y q(x',y',t, a_x-m, b_x, a_y-m, b_y)\,\, dx'\,dy' - \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y q(x',y',t, a_x, b_x, a_y, b_y)\,\, dx'\,dy'  = F(z | \theta)
+\]
+\end{proof}
+
+\begin{lemma}
+  For a fixed $m$,
+  \[
+    \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y q_k(x',y',t, a_x-m, b_x, a_y-m, b_y)\,\, dx'\,dy' - \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y q_k(x',y',t, a_x, b_x, a_y, b_y)\,\, dx'\,dy' \to \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y q(x',y',t, a_x-m, b_x, a_y-m, b_y)\,\, dx'\,dy' - \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y q(x',y',t, a_x, b_x, a_y, b_y)\,\, dx'\,dy'
+  \]
+\end{lemma}
 
 \begin{lemma} \label{lem:1}
   For $F_k$ and $F$ defined above, $\lim_{k\to \infty} F_k(z) = F(z).$
