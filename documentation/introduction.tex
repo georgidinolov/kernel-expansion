@@ -450,7 +450,7 @@ approach introduces a numerical diffusion into the problem which, for
 a finite $h$, can bias the numerical solution. We will demonstrate
 this phenomenon in Section [].
 
-\subsection{Semidiscrete Galerkin Method}
+\subsection{Semidiscrete Galerkin Method} \label{sec:semidiscrete-galerkin}
 We propose a semidiscrete Galerkin (continuous in time, discrete in
 space) solution to the general diffusion problem (\ref{eq:qq}). The
 success of this approach is based on an analytic approximation for the
@@ -502,18 +502,18 @@ which is equivalent to the weak formulation of the heat problem
 where $(\cdot, \cdot)$ is the usual inner product in
 $L_2(\Omega)$. The orthogonality conditions
 (\ref{eq:orthogonality-conditions}) lead to the system of equations
-\begin{align*}
-  M \mathbf{\dot{c}}(t) &= S \mathbf{c}(t), \\
-  M \mathbf{c}(0) &= \mathbf{p}(x,y),
-\end{align*}
+\begin{align}
+  M \mathbf{\dot{c}}(t) &= S \mathbf{c}(t), \label{eq:orthogonality-conditions-mat-1}\\
+  M \mathbf{c}(0) &= \mathbf{p}(0), \label{eq:orthogonality-conditions-mat-2}
+\end{align}
 where $M$ is the mass matrix, $S$ is the stiffness matrix, and
-$\mathbf{p}(x,y,0)$ is the vector projection of $p(x,y,0)$ onto the
+$\mathbf{p}(0)$ is the vector projection of $p(x,y,0)$ onto the
 span of $S_k$ with elements
 \begin{align*}
   M_{ij} &= \displaystyle \int_\Omega \psi_i \psi_j dx\,dy, \\
   S_{ij} &= -\frac{1}{2}\tau_x^2 \displaystyle \int_\Omega \left( \frac{\partial}{\partial x} \psi_i(x,y) \right) \left( \frac{\partial}{\partial x} \psi_j(x,y) \right) dx\,dy -\rho\tau_x\tau_y \displaystyle \int_\Omega \left( \frac{\partial}{\partial x} \psi_i(x,y) \right) \left( \frac{\partial}{\partial y} \psi_j(x,y) \right) dx\,dy \\
          &\quad -\frac{1}{2}\tau_y^2 \displaystyle \int_\Omega \left( \frac{\partial}{\partial y} \psi_i(x,y) \right) \left( \frac{\partial}{\partial y} \psi_j(x,y) \right) dx\,dy \\
-  \mathbf{p}_i(x,y) &= \displaystyle \int_\Omega p(x,y,0) \psi_i(x,y) dx\,dy.
+  \mathbf{p}_i(0) &= \displaystyle \int_\Omega p(x,y,0) \psi_i(x,y) dx\,dy.
 \end{align*}
 The entries of $S_{ij}$ are computed with integration by parts and
 using the boundary conditions. The semidiscrete Galerkin approximation
@@ -659,7 +659,7 @@ basis functions by once again considering the fundamental solution for
 the unbounded problem (\ref{eq:qq}). In the absence of boundaries,
 (\ref{eq:qq}) is solved by the function
 \[
-  G(x,y,t | x_0', y_0') = \frac{1}{2\pi\,\,t\,\, \tau_x\tau_y\sqrt{1-\rho^2}} \exp\left\{ -\frac{1}{2(1-\rho^2)} \left( \frac{(x - x_0')^2}{\tau_x^2} - 2\rho \frac{(x-x_0')(y-y_0')}{\tau_x\tau_y} + \frac{(y - y_0')^2}{\tau_y^2}\right) \right\},
+  G(x,y,t | x_0', y_0') = \frac{1}{2\pi\,\,t\,\, \tau_x\tau_y\sqrt{1-\rho^2}} \exp\left\{ -\frac{1}{2\,t(1-\rho^2)} \left( \frac{(x - x_0')^2}{\tau_x^2} - 2\rho \frac{(x-x_0')(y-y_0')}{\tau_x\tau_y} + \frac{(y - y_0')^2}{\tau_y^2}\right) \right\},
 \]
 with
 $x_0' = (x_0 - a_x)/(b_x-a_x),\quad y_0' = (y_0 - a_y)/(b_y-a_y)$. We
@@ -748,27 +748,28 @@ In this section we prove that the MLE based on the Galerkin
 approximation $p_k(x,y,t)$ to the governing Fokker-Planck equation
 (\ref{eq:1}) is consistent. To do so, we first show that the
 distribution on $Z$ based on the approximate $p_k(x,y,t)$ converges to
-the true distribution $F(\cdot | \theta)$:
-\[
-  \lim_{k \to \infty} F_k(z | \theta) = F(z | \theta).
-\]
-The function $F_k(z | \theta)$ is defined as
+the true distribution $F(\cdot | \theta)$.
+
+Define the function $F_{k(m)}(z | \theta)$
 \begin{align}
-  F_k(z | \theta) &= \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y \displaystyle \int_{-\infty}^{a_x} \displaystyle \int_{-\infty}^{a_y} \displaystyle \int_{-\infty}^{b_x} \displaystyle \int_{-\infty}^{b_y} \frac{\partial^4}{\partial a'_x \partial b'_x \partial a'_y \partial b'_y} q_k(x', y', t)\,\,\, dx'\, dy'\, da'_x\, db'_x\, da'_y\, db'_y, \\
+  F_{k(m; z)}(z | \theta) &= \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y \displaystyle \int_{-m}^{a_x} \displaystyle \int_{-m}^{a_y} \displaystyle \int_{-\infty}^{b_x} \displaystyle \int_{-\infty}^{b_y} \frac{\partial^4}{\partial a'_x \partial b'_x \partial a'_y \partial b'_y} q_{k(m; z)}(x', y', t)\,\,\, dx'\, dy'\, da'_x\, db'_x\, da'_y\, db'_y, \label{eq:approx-measure} \\
   &:= \Pr_{k} \left(X(t) \leq x,
     Y(t) \leq y, \min_{t' \leq t} X(t') \leq a_x, \max_{t' \leq t}
     X(t') \leq b_x, \min_{t' \leq t} Y(t') \leq a_y, \max_{t' \leq t}
-                                               Y(t') \leq b_y\right)
+                                               Y(t') \leq b_y\right) \label{eq:approx-meausre-2}
 \end{align}
 where $q_k$ is the approximation to $q$ based on the $p_k$ (see
-equation (\ref{eq:q-to-p})). In other words, we will show that the
-distribution-like function $F_k(\cdot |\theta)$ based on the
-approximation
-$\partial^4 q_k(x,y,t)/(\partial a_x\,\partial b_x\, \partial
+equation (\ref{eq:q-to-p})), and $k(m; z)$ is an increasing function of
+$m$ that we will define. We will show that the distribution-like
+function $F_{k(m; z)}(\cdot |\theta)$ based on the approximation
+$\partial^4 q_{k(m; z)}(x,y,t)/(\partial a_x\,\partial b_x\, \partial
 a_y\, \partial b_y)$ approaches the true probability distribution
 function $F(\cdot | \theta)$ based on the density
 $\partial^4 q(x,y,t)/(\partial a_x\,\partial b_x\, \partial
-a_y\, \partial b_y)$ as $k \to \infty$.
+a_y\, \partial b_y)$ as $k \to \infty$. Note here that in
+(\ref{eq:approx-meausre}) - (\ref{eq:approx-meausre-2}) we have
+implicitly defined the probability of paths taking on values
+below $-m$ to be 0.
 
 A key idea in the proof will be the interpretation of the measure $q(x,y,t)$
 \begin{align*}
@@ -790,7 +791,7 @@ Section 1.2). Our strategy will be to define a family of sets $\left\{ \tilde{A}
   Y(t') \leq b_y \right) = F(z | \theta)
 \end{align*}
 
-\begin{lemma}
+\begin{lemma}\label{lem:1}
   For $z = (x,y,a_x,b_x,a_y,b_y)$, 
   \[\lim_{m \to \infty} \displaystyle \int_{-\infty}^x \displaystyle
     \int_{-\infty}^y q(x',y',t, a_x-m, b_x, a_y-m, b_y)\,\, dx'\,dy' -
@@ -821,7 +822,6 @@ relation,
 \[
   \Pr_{W}(\tilde{A}_m(z)) = \Pr_W(A_m(z)) - \Pr_{W}(A_0(z)) = \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y q(x',y',t, a_x-m, b_x, a_y-m, b_y)\,\, dx'\,dy' - \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y q(x',y',t, a_x, b_x, a_y, b_y)\,\, dx'\,dy'.
 \]
-
 Finally,
 \begin{align*}
   \bigcup_{m=0}^\infty \tilde{A}_m(z) &= \left\{ \omega \in \Omega | X_\omega(t) \in dx,\,\, \right.\\
@@ -835,45 +835,107 @@ $X_\omega(t) \leq x, Y_\omega(t) \leq y, \min_{t'} X_{\omega}(t') \leq
 a_x, \min_{t'} Y_{\omega}(t') \leq a_y, \max_{t'} X_{\omega}(t') \leq
 b_x$, $\max_{t'} Y_{\omega}(t') \leq b_y$, and
 \[
-  \Pr_W\left( \bigcup_{m=0}^\infty \tilde{A}_m(z) \right) = F(z |
+  \Pr_W\left( \bigcup_{m=0}^\infty \tilde{A}_m(z) \right) = \lim_{M \to \infty} \Pr_W\left( \bigcup_{m=0}^M \tilde{A}_M(z) \right) = F(z |
   \theta).
 \]
-Since $\tilde{A}_{m}(z) \subset \tilde{A}_{m+1}(z)$
+Since $\tilde{A}_{m}(z) \subset \tilde{A}_{m+1}(z)$,
 \[
   \lim_{m\to \infty} \Pr_W(\tilde{A}_m(z)) = \lim_{m \to \infty} \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y q(x',y',t, a_x-m, b_x, a_y-m, b_y)\,\, dx'\,dy' - \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y q(x',y',t, a_x, b_x, a_y, b_y)\,\, dx'\,dy'  = F(z | \theta)
 \]
 \end{proof}
+For a shorthand, denote
+$
+  \mu_k(\tilde{A}_m(z)) = \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y q_k(x',y',t, a_x-m, b_x, a_y-m, b_y)\,\, dx'\,dy' - \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y q_k(x',y',t, a_x, b_x, a_y, b_y)\,\, dx'\,dy'.
+$
 
-\begin{lemma}
-  For a fixed $m$,
-  \[
-    \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y q_k(x',y',t, a_x-m, b_x, a_y-m, b_y)\,\, dx'\,dy' - \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y q_k(x',y',t, a_x, b_x, a_y, b_y)\,\, dx'\,dy' \to \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y q(x',y',t, a_x-m, b_x, a_y-m, b_y)\,\, dx'\,dy' - \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y q(x',y',t, a_x, b_x, a_y, b_y)\,\, dx'\,dy'
-  \]
-\end{lemma}
-
-\begin{lemma} \label{lem:1}
-  For $F_k$ and $F$ defined above, $\lim_{k\to \infty} F_k(z) = F(z).$
+\begin{lemma} \label{lem:weak}
+  For a fixed $m$, $\mu_k(\tilde{A}_m(z)) \to \Pr_W(\tilde{A}_m(z))$ as $k\to \infty$.
 \end{lemma}
 \begin{proof}
-  \textbf{\color{red}do not read below; I'm working on it tonight}
-  The weak solution $q_k(x,y,t)$ has the property that for any
-  $C^{\infty}(\Omega)$ function $v \in L^2(\Omega)$,
-  \[ \underset{k \to \infty}{\lim}(q_k,v) = (q,v), \] where
-  $(v,u) := \displaystyle \int_{a_x}^{b_x} \int_{a_y}^{b_y}
-  v(x,y,t)u(x,y,t) dx\,dy.$ and $q$ is the strong solution.
+  The proof for this lemma follows direcly from the convergence result
+  $p_k \to p$ as $k\to \infty$ under the $L_2(\Omega)$ norm from
+  Section \ref{sec:semidiscrete-galerkin}.
+\end{proof}
+With the result from Lemma \ref{lem:weak}, we can now define the
+function $k(m; z)$ as
+\[
+  k(m; z) := \inf_{k'}\left\{ \left| \mu_{k'}(\tilde{A}_m(z)) - \Pr_W(\tilde{A}_m(z)) \right| < 1/2m  \right\}
+\]
 
-  Recalling equation (\ref{eq:CDF}), the strong solution has the probabilistic interpretation
+\begin{lemma}\label{lem:convergence-in-dist}
+  For $F_{k(m;z)}$, $F$, and $z$ defined above,
+  \[ \lim_{m\to \infty} F_{k(m;z)}(z | \theta) = F(z | \theta). \]
+\end{lemma}
+
+\begin{proof}
+  For any $\epsilon > 0$, let $M_1 = 2/\epsilon$. By Lemma
+  \ref{lem:1}, we can find $M_2$ such that $\forall m > M_2$
+  $\left| \Pr_W(\tilde{A}_m(z) - F(z | \theta) \right| <
+  \epsilon/2$. Let $M = \max\{M_1, M_2\}$. For any $m > M$,
   \begin{align*}
-    q(x,y,t) &= \Pr\left(X(t) \in dx, Y(t) \in dy, a_x < X(t') < b_x, a_y < Y(t') < b_y |0 < t' \leq t, X(0)=x_0, Y(0)=y_0, \theta \right) \\
-     &= \Pr\left(X(t) \in dx, Y(t) \in dy, \min_{t'}X(t') \geq a_x,
-  \max_{t'}X(t') \leq b_x, \min_{t'} Y(t') \geq a_y, \max_{t'} Y(t') \leq b_y \left| 0 <
-  t' \leq t, X(0)=x_0, Y(0)=y_0, \theta \right.\right)
+    \left| F_{k(m)}(z) - F(z) \right | &= \left| \mu_{k(m)}(\tilde{A}_m(z)) - F(z) \right | \\
+                                       &\leq \left|  \mu_{k(m)}(\tilde{A}_m(z)) - \Pr_W(\tilde{A}_m(z)) \right| + \left|  \Pr_W(\tilde{A}_m(z)) - F(z | \theta) \right|. \\
+                                       &\leq \epsilon/2 + \epsilon/2
   \end{align*}
+  The left term bound is defined by $k(m;z)$.
 \end{proof}
 
+% \begin{lemma}
+%   For a fixed $k$,
+%   $\lim_{m\to \infty} \mu_k(\tilde{A}_m(z)) = c \in \mathbb{R},$ i.e.
+%   $\left\{ \mu_k(\tilde{A}_m(z))\right\}_{m=0}^\infty$ is a convergent
+%   sequence.
+% \end{lemma}
+
+% \begin{proof}[Proof idea]
+%   Here we will present a formal argument, without giving all of the
+%   necessary technical details. As $m \to \infty$, the parameters
+%   $\tau_x, \tau_y$ in the normalized problem are $O(1/m)$.  Further,
+%   the initial condition coordinates tend to
+%   $((1-1/m),(1-1/m))$. Letting $\gamma = 1/m$ for $m >> 1$, the
+%   normalized problem becomes
+%   \begin{equation*}
+%     \frac{\partial}{\partial t} p(x,y,t) = \mathcal{L}p(x,y,t),\quad (x,y) \in = \Omega
+% \end{equation*}
+% with the initial condition
+% \begin{align*}
+%   p(x,y,0) &= \delta\left( x - (1-\gamma) \right) \delta\left(y-(1-\gamma)\right),
+% \end{align*}
+% where the differential operator $\mathcal{L}$ is of order
+% \[
+%   \mathcal{L} = \frac{1}{2} \gamma^2 \frac{\partial^2}{\partial x^2}
+%   + \rho\gamma^2 \frac{\partial^2}{\partial x \partial y} + \frac{1}{2}\gamma^2 \frac{\partial^2}{\partial y^2}.
+% \]
+% This means that fundamental solution to the unbounded problem above is
+% the Gaussian density
+% \[
+%   G(x,y,t'| \gamma) = \frac{1}{2\pi\,\,t'\,\, \gamma^2\sqrt{1-\rho^2}} \exp\left\{ -\frac{1}{2\, t' \, (1-\rho^2)} \left( \frac{(x - 1 + \gamma)^2}{\gamma^2} - 2\rho \frac{(x-1+\gamma)(y-1+\gamma)}{\gamma^2} + \frac{(y - 1 + \gamma)^2}{\gamma^2}\right) \right\}, t' \in (0,t]
+% \]
+% We claim that according to our method, we can find a constant $\Gamma$
+% such that for $\gamma < \Gamma$, $t_\epsilon > t$ for the small-time
+% solution $p(x,y,t_\epsilon)$, which means that $G(x,y,t | \gamma)$
+% solves the above problem. This means that, \textbf{for fixed} $k$, the
+% Galerkin approximation generated by our method is the projection of
+% $p(x,y,t)$ onto the basis family $S_k$ (there is no forward evolution
+% of the problem).
+
+% Further, because
+% $G(x,y,t | \gamma) \to \delta(x-1+\gamma)\delta(y-1+\gamma)$ weakly as
+% $\gamma \to 0$, each of the projections of $G(x,y,t | \gamma)$ onto $S_k$ converge to the basis functions evaluated at $((1-\gamma), (1-\gamma))$:
+% \[
+%   \displaystyle \int_\Omega G(x,y,t | \gamma) \psi_i(x,y) dx\,dy \to \psi_i(1-\gamma,1-\gamma).
+% \]
+% Given $S_k$, the above coefficients uniquely define $p_k$
+% projection is defined only by $p(x,y,t_\epsilon)$ and $S_k$ only on
+% $\mathbf{p}(t_\epsilon)$ (see equation
+% (\ref{eq:orthogonality-conditions-mat-2})) become the same. Because
+% $k$ is fixed, the mass $M$ stays the same, which means that the
+% initial condition vectors in the Galerkin method also converge at
+% $\gamma \to 0$. Fu
+% \end{proof}
 
 \begin{lemma}
-  The maximum likelihood estimator is consistent as $n \to \infty$ and $k \to \infty$:
+  The maximum likelihood estimator is consistent as $n \to \infty$ and $m \to \infty$:
   \[ \hat{\theta}_{n,k} \to \theta \].
 \end{lemma}
 \begin{proof}
