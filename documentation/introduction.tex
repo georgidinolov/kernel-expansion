@@ -331,9 +331,8 @@ of $\mathcal{L}\phi_\nu$ into the eigenvalue problem
 whose solution gives the family of orthonormal eigenfunctions. As
 mentioned already, the efficiency of this approach is dependent on the
 cost of solving the eigenvalue problem
-$A^T c_\nu = -\lambda_\nu c_\nu$.
-
-With all of the eigenpairs $(c_\nu, \lambda_\nu)$, the approximate solution is then
+$A^T c_\nu = -\lambda_\nu c_\nu$.  With all of the eigenpairs
+$(c_\nu, \lambda_\nu)$, the approximate solution is then
 \[
   p(x,y,t) \approx \sum_{\nu}\Psi(x,y)^T c_\nu e^{-\lambda_\nu t}.
 \]
@@ -450,13 +449,13 @@ approach introduces a numerical diffusion into the problem which, for
 a finite $h$, can bias the numerical solution. We will demonstrate
 this phenomenon in Section [].
 
-\subsection{Semidiscrete Galerkin Method} \label{sec:semidiscrete-galerkin}
-We propose a semidiscrete Galerkin (continuous in time, discrete in
-space) solution to the general diffusion problem (\ref{eq:qq}). The
-success of this approach is based on an analytic approximation for the
-solution $p(x,y,t)$ for small time $t$ and a basic convergence
-estimate from approximation theory for semidiscrete Galerkin-type
-solutions to parabolic problems. 
+\section{A Novel Semidiscrete Galerkin
+  Method} \label{sec:semidiscrete-galerkin} We propose a semidiscrete
+Galerkin (continuous in time, discrete in space) solution to the
+general diffusion problem (\ref{eq:qq}). The method relies on an
+analytic approximation for the solution $p(x,y,t)$ for small time $t$
+and a basic convergence estimate from approximation theory for
+semidiscrete Galerkin-type solutions to parabolic problems.
 
 Our numerical method produces a functional representation for the
 approximate solution which $1)$ imposes a computational burden
@@ -471,21 +470,20 @@ model problem has the eigenfunction expansion
   p(x,y,t) = \sum_{\nu=0}^\infty\phi_\nu(x,y) e^{-\lambda_\nu t}.
 \]
 Proceeding with the standandard Galerkin approach, we propose a
-solution $p_{k}(x,y,t)$ of similar form
+solution $p^{(k)}(x,y,t)$ of similar form
 \[
-  p_{k}(x,y,t) = \sum_{i=0}^k c_i(t) \psi_i(x,y),
+  p^{(k)}(x,y,t) = \sum_{i=0}^k c_i(t) \psi_i(x,y),
 \]
 where the basis functions $\psi_i(x,y)$ satisfy the boundary
 conditions. We also require that all first- and second-order
 derivatives of $\psi_i(x,y)$ are in $L_2(\Omega)$, i.e.
-$\psi_k(x,y) \in W_{2}^{2}(\Omega)$. In other words, we look for a
-solution in the span of $S_k = \{\psi_0, \ldots, \psi_k\}$. Since
-$p_k$ is an approximation to the solution $p$, it does not follow the
-differential equation exactly nor can it represent the initial
-condition fully. We capture this by defining residuals
+$\psi_k(x,y) \in W_{2}^{2}(\Omega)$. Since $p^{(k)}$ is an
+approximation to the solution $p$, it does not follow the differential
+equation exactly nor can it represent the initial condition fully. We
+capture this by defining residuals
 \begin{align*}
-  \frac{\partial}{\partial t} p_k(x,y,t) - \mathcal{L}p_k(x,y,t) &:= R_e(k), \\
-  p(x,y,0) - p_k(x,y,0) &:= R_0(k).
+  \frac{\partial}{\partial t} p^{(k)}(x,y,t) - \mathcal{L}p^{(k)}(x,y,t) &:= R_e(k), \\
+  p(x,y,0) - p^{(k)}(x,y,0) &:= R_0(k).
 \end{align*}
 There are various conditions that could be imposed on the residual
 functions (see Section 2.10.3 of \cite{norrie1973finite} for a
@@ -496,10 +494,10 @@ Galerkin procedure:
 \end{align}
 which is equivalent to the weak formulation of the heat problem
 \begin{align*}
-  \left( \partial_t p_k(x,y,t), \psi_i \right) &= \left(\mathcal{L}p_k(x,y,t), \psi_i \right), \\
-  \left( p_k(x,y,0), \psi_i \right) &= \left(p(x,y,0), \psi_i\right),
+  \left< \partial_t p^{(k)}(x,y,t), \psi_i \right> &= \left<\mathcal{L}p^{(k)}(x,y,t), \psi_i \right>, \\
+  \left< p^{(k)}(x,y,0), \psi_i \right> &= \left<p(x,y,0), \psi_i\right>,
 \end{align*}
-where $(\cdot, \cdot)$ is the usual inner product in
+where $<\cdot, \cdot>$ is the usual inner product in
 $L_2(\Omega)$. The orthogonality conditions
 (\ref{eq:orthogonality-conditions}) lead to the system of equations
 \begin{align}
@@ -510,76 +508,29 @@ where $M$ is the mass matrix, $S$ is the stiffness matrix, and
 $\mathbf{p}(0)$ is the vector projection of $p(x,y,0)$ onto the
 span of $S_k$ with elements
 \begin{align*}
-  M_{ij} &= \displaystyle \int_\Omega \psi_i \psi_j dx\,dy, \\
-  S_{ij} &= -\frac{1}{2}\tau_x^2 \displaystyle \int_\Omega \left( \frac{\partial}{\partial x} \psi_i(x,y) \right) \left( \frac{\partial}{\partial x} \psi_j(x,y) \right) dx\,dy -\rho\tau_x\tau_y \displaystyle \int_\Omega \left( \frac{\partial}{\partial x} \psi_i(x,y) \right) \left( \frac{\partial}{\partial y} \psi_j(x,y) \right) dx\,dy \\
+  [M]_{ij} &= \displaystyle \int_\Omega \psi_i \psi_j dx\,dy, \\
+  [S]_{ij} &= -\frac{1}{2}\tau_x^2 \displaystyle \int_\Omega \left( \frac{\partial}{\partial x} \psi_i(x,y) \right) \left( \frac{\partial}{\partial x} \psi_j(x,y) \right) dx\,dy -\rho\tau_x\tau_y \displaystyle \int_\Omega \left( \frac{\partial}{\partial x} \psi_i(x,y) \right) \left( \frac{\partial}{\partial y} \psi_j(x,y) \right) dx\,dy \\
          &\quad -\frac{1}{2}\tau_y^2 \displaystyle \int_\Omega \left( \frac{\partial}{\partial y} \psi_i(x,y) \right) \left( \frac{\partial}{\partial y} \psi_j(x,y) \right) dx\,dy \\
-  \mathbf{p}_i(0) &= \displaystyle \int_\Omega p(x,y,0) \psi_i(x,y) dx\,dy.
+  [\mathbf{p}(0)]_i &= \displaystyle \int_\Omega p(x,y,0) \psi_i(x,y) dx\,dy.
 \end{align*}
 The entries of $S_{ij}$ are computed with integration by parts and
 using the boundary conditions. The semidiscrete Galerkin approximation
 becomes
 \[
-  p_k(x,y,t) = \boldsymbol{\psi}(x,y)^T \exp\left( M^{-1}S\, t \right) \mathbf{c}(0),
+  p^{(k)}(x,y,t) = \boldsymbol{\psi}(x,y)^T \exp\left( M^{-1}S\, t \right) \mathbf{c}(0),
 \]
 with $\boldsymbol{\psi}(x,y) = (\psi_0(x,y), \ldots, \psi_k(x,y))^T.$
 
-A bound on the closeness of the approximate solution $p_k(x,y,t)$ to
-the strong solution $p(x,y,t)$ is developed in \cite{bramble1977some}
-shows that the Galerkin approximation we use converges to the strong
-solution, and it motivates the thrust of our numerical
-solution. First, we define the \textit{error} term
-\[
-  e_k(t) = p(x,y,t) - p_k(x,y,t),
-\]
-as well as the norm
-\[
-  \| w \|_2 = \sum_{j=0}^\infty \lambda_j^2 (w, \phi_j)
-\]
-for the eigenpairs $(\lambda_j, \phi_j)$ of the operator
-$\mathcal{L}$. As referred in \cite{bramble1977some}, functions
-$w \in L_2(\Omega)$ with $\|w\|_2 < \infty$ are also in $W_2^2(\Omega)$. In a
-sense, $\| \cdot \|_2$ measures the variation of functions. Functions
-having higher-order eigenmodes have a bigger norm, and vice
-versa. Finally, if we have the condition (corresponding to equation
-2.1 in \cite{bramble1977some})
-\begin{align}
-  \| p(x,y,0) - p_k(x,y,0) \|_{L_2(\Omega)} &\leq C\, h(k)^2 \| p(x,y,0) \|_2. \label{eq:ic-bound}
-\end{align}
-as a decreasing function $h(k)$, Theorem 2.1 in \cite{bramble1977some}
-applies and we have the error estimate
-\begin{align}
-  \| e(t) \|_{L_2(\Omega)} \leq C h(k)^2 \| p(x,y,0) \|_{2}. \label{eq:error-est}
-\end{align}
-We can ensure condition (\ref{eq:ic-bound}) is met if $S_k$ is complete
-in $L_2(\Omega)$ as $k$ grows. The other two conditions for Theorem
-2.1 to apply are demonstrated by \cite{bramble1977some} for the
-Galerkin method. Equation (\ref{eq:error-est}) can be summarized in a
-simple way: the error of the method is controlled by how much
-variation the initial condition has; the rate of decrease of the error
-is controlled by how well the span of $S_k$ represents the initial
-condition compared to the variation of the initial condition.
-
-However, the initial condition for (\ref{eq:qq}) requires all in
-eigenmodes being included in the representation of the initial
-conditions, so that
-\[
-  \| p(x,y,0) \|_{2} = \left\| \delta\left( x - \frac{x_0 - a_x}{b_x-a_x}
-  \right) \delta\left( y - \frac{y_0 - a_y}{b_y-a_y} \right)\right\|_{2} = +\infty.
-\]
-It is obvious that we cannot apply the error estimates above. However,
-evolving the solution forward in time, even for a short period,
-diffuses the delta-function IC and attenuates out the highest
-frequency modes. Further, because solutions to the diffusion equation
-are smooth, $p(x,y,t_\epsilon)$ will give us a smooth initial function
-which will make the error bounds admissible.
-
-\subsubsection{Small-time Solution}
-The small-time solution is derived by considering the fundamental
-solution $G(x,y,t)$ for the unbounded problem in (\ref{eq:qq}), which
-is the bivariate Gaussian density with mean and covariance determined
-by the initial condition and the diffusion parameters
-\citep{stakgold2011green}. We can then find a small enough
-$t_\epsilon$ such that
+\subsection{Small-time Solution}
+Before solving the Galerkin equations
+(\ref{eq:orthogonality-conditions-mat-1}) -
+(\ref{eq:orthogonality-conditions-mat-2}), we develop a small-time
+analytic solution to the problem. The small-time solution is derived
+by considering the fundamental solution $G(x,y,t)$ for the unbounded
+problem in (\ref{eq:qq}), which is the bivariate Gaussian density with
+mean and covariance determined by the initial condition and the
+diffusion parameters \citep{stakgold2011green}. We can then find a
+small enough $t_\epsilon$ such that
 $G\left(x,y, t_\epsilon \left| \frac{x_0-a_x}{b_x - a_x},
     \frac{y_0-a_y}{b_y - a_y} \right.\right)$ is numerically zero on
 the boundaries of $\Omega$. This is done in the following way.
@@ -642,22 +593,31 @@ the boundaries of $\Omega$. This is done in the following way.
 \end{enumerate}
 Using Theorem 5.E of \cite{zeidler1995applied}, we can solve for
 $p(x,y,t)$ by considering the smooth $p(x,y,t_\epsilon)$ as an initial
-condition and evolving it forward in time by $t-t_\epsilon$. The
-bigger $t_\epsilon$, the less eigenmodes present in
-$p(x,y,t_\epsilon)$, and the more accurate our weak solution according
-to the error estimate
-\[
-  \| e(t) \|_{L_2(\Omega)} \leq C h(k)^2 \| p(x,y,t_\epsilon) \|_{2}.
-\]
+condition and evolving it forward in time by $t-t_\epsilon$. This
+replaces initial condition orthogonality condition in
+(\ref{eq:orthogonality-conditions-mat-2}) with
+\begin{align}
+  M \mathbf{c}(t_\epsilon) &= \mathbf{p}(t_\epsilon), \\
+   [\mathbf{p}(t_\epsilon)]_i &= \displaystyle \int_\Omega p(x,y,t_\epsilon) \psi_i(x,y) dx\,dy. \nonumber
+\end{align}
+Intuitively, the bigger $t_\epsilon$, the smaller both $R_e(k)$ and
+$R_0(k)$ will be, and thef better our method will do.
+% less eigenmodes present in $p(x,y,t_\epsilon)$, and the more accurate
+% our weak solution according to the error estimate
+% \[
+%   \| e(t) \|_{L_2(\Omega)} \leq C h(k)^2 \| p(x,y,t_\epsilon) \|_{2}.
+% \]
 
-\subsubsection{Orthonormal Basis Family}
-An upper bound of the rate at which the Galerkin approximation
-converges to $p(x,y,t)$ is given by condition (\ref{eq:ic-bound}),
-namely by how well the initial condition may be approximated via a
-projection onto $S_k$. We motivate the construction of the orthonormal
-basis functions by once again considering the fundamental solution for
-the unbounded problem (\ref{eq:qq}). In the absence of boundaries,
-(\ref{eq:qq}) is solved by the function
+
+\subsection{Orthonormal Basis Family}
+% An upper bound of the rate at which the Galerkin approximation
+% converges to $p(x,y,t)$ is given by condition (\ref{eq:ic-bound}),
+% namely by how well the initial condition may be approximated via a
+% projection onto $S_k$.
+We motivate the construction of the orthonormal basis functions by
+once again considering the fundamental solution for the unbounded
+problem (\ref{eq:qq}). In the absence of boundaries, (\ref{eq:qq}) is
+solved by the function
 \[
   G(x,y,t | x_0', y_0') = \frac{1}{2\pi\,\,t\,\, \tau_x\tau_y\sqrt{1-\rho^2}} \exp\left\{ -\frac{1}{2\,t(1-\rho^2)} \left( \frac{(x - x_0')^2}{\tau_x^2} - 2\rho \frac{(x-x_0')(y-y_0')}{\tau_x\tau_y} + \frac{(y - y_0')^2}{\tau_y^2}\right) \right\},
 \]
@@ -669,29 +629,86 @@ $S_k = (\psi_0(x,y), \ldots, \psi_k(x,y))$
   \psi_i(x,y) &= \frac{1}{2\pi \sigma^2\sqrt{1-\tilde{\rho}^2} } \exp\left\{ -\frac{1}{2(1-\tilde{\rho}^2)\sigma^2} \left( (x - x_i)^2 - 2\tilde{\rho} (x-x_i)(y-y_i) + (y - y_i)^2 \right) \right\} x\left(1-x\right)\, y(1-y)
 \end{align}
 for some parameters $(\tilde{\rho}, \sigma)$ and a collection of
-points $\{ (x_i,y_i) \}_{i=0}^k$ which form a grid over
-$\Omega$. Essentially, the collection
+points $\{ (x_i,y_i) \}_{i=0}^k$ which form a grid over $\Omega$.
+
+The critical advantage of these elements, however, is that they better
+resolve the small-time solution $p(x,y,t_\epsilon)$ by taking into
+account some degree of correlation $\tilde{\rho}$ in the covariance of
+each kernel.  Essentially, the collection
 $\{ \psi_i(x,y| x_i, y_i, \tilde{\rho}, \sigma) \}_{i=0}^k$ is
 composed of fundamental solutions to a heat diffusion problem tuned by
 $\sigma$ and $\tilde{\rho}$, tampered such that their support is on
-$\Omega$, zero on the boundaries, centered on some grid over $\Omega$,
-and still smooth. In this manner, our basis function choice is in
-keeping with the golden rule for the rate of convergence: \textbf{The
-  smoother the solution to the original problem and the smoother the
-  functions in the basis space, the faster the convergence of the
-  Ritz-Galerkin method.} (Remark 1(c) in Chapter 2 of
-\cite{zeidler1995applied}). Moreover, all of the basis functions are
-infinitely differentiable with respect to the boundary and diffusion
-parameters, so that
-$\frac{\partial^4 p_k(x,y,t)}{\partial a_x \partial b_x \partial
+$\Omega$, zero on the boundaries, still smooth, and inheriting the
+correlation structure of the fundamental solution to the
+problem. % In this manner,
+% our basis function choice is in keeping with the golden rule for the
+% rate of convergence: \textbf{The smoother the solution to the original
+%   problem and the smoother the functions in the basis space, the
+%   faster the convergence of the Ritz-Galerkin method.} (Remark 1(c) in
+% Chapter 2 of \cite{zeidler1995applied}).
+Moreover, all of the basis functions are infinitely differentiable
+with respect to the boundary and diffusion parameters, so that
+$\frac{\partial^4 p^{(k)}(x,y,t)}{\partial a_x \partial b_x \partial
   a_y \partial b_y}$ exists and can be computed numerically using
 finite differences.
 
-The other critical advantage of these elements is that they better
-resolve the small-time solution $p(x,y,t_\epsilon)$ by taking into
-account correlation in the covariance of each kernel.
-[\textbf{\color{red} if not prove, demonstrate. I'm running out of
-  steam on this.}].
+\subsection{Error Bound}
+A bound on the closeness of the approximate solution $p^{(k)}(x,y,t)$
+to the strong solution $p(x,y,t)$ is developed in
+\cite{bramble1977some}.  Their result shows that the Galerkin
+approximation we use converges to the strong solution in
+$L_2(\Omega)$, and it motivates the thrust of our numerical
+solution. First, we define the \textit{error} term
+\[
+  e^{(k)}(t) = p(x,y,t) - p^{(k)}(x,y,t),
+\]
+as well as the norm
+\[
+  \| w \|_2 = \sum_{j=0}^\infty \lambda_j^2 \left<w, \phi_j\right>
+\]
+for the eigenpairs $(\lambda_j, \phi_j)$ of the operator
+$\mathcal{L}$. As referred to in \cite{bramble1977some}, functions
+$w \in L_2(\Omega)$ with $\|w\|_2 < \infty$ are also in
+$W_2^2(\Omega)$. Finally, if we have the condition (corresponding to
+equation 2.1 in \cite{bramble1977some})
+\begin{align}
+  \| p(x,y,t_\epsilon) - p^{(k)}(x,y,t_\epsilon) \|_{L_2(\Omega)} &\leq C\, h(k)^2 \| p(x,y,t_\epsilon) \|_2 \label{eq:ic-bound}
+\end{align}
+as a decreasing function $h(k) \geq 0$, Theorem 2.1 in
+\cite{bramble1977some} applies and we have the error estimate
+\begin{align}
+  \| e^{(k)}(t) \|_{L_2(\Omega)} \leq C h(k)^2 \| p(x,y,t_\epsilon) \|_{2}. \label{eq:error-est}
+\end{align}
+We can ensure condition (\ref{eq:ic-bound}) is met if $S_k$ is
+complete in $L_2(\Omega)$ as $k$ grows. The other two conditions
+necessary for the error bound to apply are demonstrated by
+\cite{bramble1977some} for the Galerkin method. Equation
+(\ref{eq:error-est}) can be summarized in a simple way: the
+\textit{error} of the method is controlled by how much variation the
+small-time solution has; the \textit{rate} of decrease of the error is
+controlled by how well the span of $S_k$ represents the small-time
+solution compared to the variation of the initial condition as $k$
+increases..
+
+In the context of (\ref{eq:error-est}), our method, with its small-time
+analytic solution and choice of basis functions, is specifically
+tailored to minimize the error between the strong solution and its
+Galerkin approximation under $L_2(\Omega)$.
+
+% However, the initial condition for (\ref{eq:qq}) requires all in
+% eigenmodes being included in the representation of the initial
+% conditions, so that
+% \[
+%   \| p(x,y,0) \|_{2} = \left\| \delta\left( x - \frac{x_0 - a_x}{b_x-a_x}
+%   \right) \delta\left( y - \frac{y_0 - a_y}{b_y-a_y} \right)\right\|_{2} = +\infty.
+% \]
+% It is obvious that we cannot apply the error estimates above. However,
+% evolving the solution forward in time, even for a short period,
+% diffuses the delta-function IC and attenuates out the highest
+% frequency modes. Further, because solutions to the diffusion equation
+% are smooth, $p(x,y,t_\epsilon)$ will give us a smooth initial function
+% which will make the error bounds admissible.
+
 
 \section{Estimation}
 Consider the problem of estimating the parameters
@@ -699,7 +716,7 @@ $(\mu_x, \mu_y, \sigma_x, \sigma_y, \rho)$ from an i.i.d. sample
 $(Z_1, \ldots, Z_n)$ from the process in (\ref{eq:X}) - (\ref{eq:Y}),
 where each $Z_i$ is the vector of random variables
 \[
-  Z_i = (X_i(t), Y_i(t), A_{x,i}, B_{x,i}, A_{y,i}, B_{y,i}).
+  Z_i = (X_i(t), Y_i(t), m_{x,i}, M_{x,i}, m_{y,i}, M_{y,i}).
 \]
 We say that $Z_i$ is sampled from the distribution corresponding to
 the probability density function (\ref{eq:pdf})
@@ -709,9 +726,7 @@ the probability density function (\ref{eq:pdf})
 where the distribution $F$ has the usual interpretation
 \begin{align*}
   F(z = (x, y, a_x, b_x, a_y, b_y) | \theta) &= \Pr\left(X(t) \leq x,
-    Y(t) \leq y, \min_{t' \leq t} X(t') \leq a_x, \max_{t' \leq t}
-    X(t') \leq b_x, \min_{t' \leq t} Y(t') \leq a_y, \max_{t' \leq t}
-                                               Y(t') \leq b_y\right).
+    Y(t) \leq y, m_x \leq a_x, M_x \leq b_x, m_y \leq a_y, M_y \leq b_y\right).
 \end{align*}
 
 This estimation problem is of particular importance in quantitative
@@ -745,44 +760,99 @@ precise, the estimator $\hat{\theta}_n$ is consistent if
 
 \subsection{Consistency}
 In this section we prove that the MLE based on the Galerkin
-approximation $p_k(x,y,t)$ to the governing Fokker-Planck equation
+approximation $p^{(k)}(x,y,t)$ to the governing Fokker-Planck equation
 (\ref{eq:1}) is consistent. To do so, we first show that the
-distribution on $Z$ based on the approximate $p_k(x,y,t)$ converges to
-the true distribution $F(\cdot | \theta)$.
-
-Define the function $F_{k(m)}(z | \theta)$
+distribution on $Z$ based on the approximate $p^{(k)}(x,y,t)$ converges to
+the true distribution $F(\cdot | \theta)$. Define the probability densities
 \begin{align}
-  F_{k(m; z)}(z | \theta) &= \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y \displaystyle \int_{-m}^{a_x} \displaystyle \int_{-m}^{a_y} \displaystyle \int_{-\infty}^{b_x} \displaystyle \int_{-\infty}^{b_y} \frac{\partial^4}{\partial a'_x \partial b'_x \partial a'_y \partial b'_y} q_{k(m; z)}(x', y', t)\,\,\, dx'\, dy'\, da'_x\, db'_x\, da'_y\, db'_y, \label{eq:approx-measure} \\
-  &:= \Pr_{k} \left(X(t) \leq x,
-    Y(t) \leq y, \min_{t' \leq t} X(t') \leq a_x, \max_{t' \leq t}
-    X(t') \leq b_x, \min_{t' \leq t} Y(t') \leq a_y, \max_{t' \leq t}
-                                               Y(t') \leq b_y\right) \label{eq:approx-meausre-2}
+  f(z) &= f(x,y,a_x,b_x,a_y,b_y) := \Pr\left(X(t) \in dx, Y(t) \in dy, m_x \in da_x,
+         M_x \in db_x, m_y \in da_y, M_y \in db_y \left| \theta \right.\right) \label{eq:stong-density} \\
+    f^{(k)}(z) &= f^{(k)}(x,y,a_x,b_x,a_y,b_y) := \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial
+         b_y} q^{(k)}(x,y,t | a_x, b_x, a_y, b_y). \label{eq:galerkin-density}
 \end{align}
-where $q_k$ is the approximation to $q$ based on the $p_k$ (see
-equation (\ref{eq:q-to-p})), and $k(m; z)$ is an increasing function of
-$m$ that we will define. We will show that the distribution-like
-function $F_{k(m; z)}(\cdot |\theta)$ based on the approximation
-$\partial^4 q_{k(m; z)}(x,y,t)/(\partial a_x\,\partial b_x\, \partial
-a_y\, \partial b_y)$ approaches the true probability distribution
-function $F(\cdot | \theta)$ based on the density
-$\partial^4 q(x,y,t)/(\partial a_x\,\partial b_x\, \partial
-a_y\, \partial b_y)$ as $k \to \infty$. Note here that in
-(\ref{eq:approx-meausre}) - (\ref{eq:approx-meausre-2}) we have
-implicitly defined the probability of paths taking on values
-below $-m$ to be 0.
+The function $f(z)$ is the probability density function corresponding
+to $q(x,y,t)$, the strong solution to the governing Fokker-Planck
+equation; $f^{(k)}(z)$ corresponds to the Galerkin approximation
+$q^{(k)}$. Before proceeding, we should note that both $f(z)$ and
+$f^{(k)}(z)$ exist. So see the case for $f(z)$, consider the relation
+\begin{align*}
+  &f(x,y,a_x,b_x,a_y,b_y) = \\
+  &\Pr\left(X(t) \in dx, Y(t) \in dy, m_x \in da_x, M_x \in db_x, m_y
+  \in a_y, M_y \in db_y \left| \theta \right.\right) = \\
+  &\mathbb{P}_{W}\left( \underbrace{\left\{ \omega \in W \left| X_\omega(t) = x,
+  Y_\omega(t)=y, \inf_{t'\in [0,1]} X_\omega(t') = a_x,
+  \sup_{t'\in [0,1]} X_\omega(t') = b_x, \inf_{t'\in [0,1]}
+        Y_\omega(t') = a_y, \sup_{t'\in [0,1]} Y_\omega(t') = b_y
+      \right. \right\}}_{A(x,y,a_x,b_x,a_y,b_y) = A(z)}\right)
+\end{align*}
+where $\mathbb{P}_{W}$ is the Wiener measure on the sample space $W$
+of all realizations (paths) $(X_\omega(t), Y_\omega(t))$ from the
+stochastic process (\ref{eq:X}) - (\ref{eq:Y}) defined in the usal way
+using Kolmogorov's extension of measure over cylinder sets on
+$t \to \mathbb{R}^2$ (see \cite{freidlin1985functional}, Section
+1.2). Sets of the form $A(x,y,a_x,b_x,a_y,b_y)$ can be defined as a
+countable intersection/union of cyliner sets on $t \to \mathbb{R}^2$,
+hence they are measurable under $\mathbb{P}_{W}$; therefore $f(z)$ exists and
+is bounded above by 1. Since $q(x,y,t|a_x,b_x,a_y,b_y)$ represents the
+integral of $f(z)$ with respect to the boundary variables, we have
+\[
+  f(x,y,a_x,b_x,a_y,b_y) = \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial
+         b_y} q(x,y,t | a_x, b_x, a_y, b_y).
+\]
+The existence of $f^{(k)}(z)$ as defined in
+(\ref{eq:galerkin-density}) is guaranteed by Theorem 4.1 in
+\cite{singler2008differentiability}. The result states that weak
+solutions to parabolic problems are differentiable with respect to
+parameters as long as the weak (Galerkin-form) operator
+$\left< \mathcal{L} \psi_i(x,y), \psi_j(x,y) \right>$ is
+differentiable with respect to the parameters. The condition certainly
+holds for the normalized problem (\ref{eq:qq}) with our choice of
+basis functions $S_k$, as they are infinitely differentiable with
+repsect to $x,y$, and the boundaries. 
 
-A key idea in the proof will be the interpretation of the measure $q(x,y,t)$
+At this point we will assume that for a sufficiently large $k$,
+$f^{(k)}(z)$ is positivie for all $z \in Z$ and is integrable over
+$Z$. As such, we may regard it as a proper probability density
+function with the cumulative probability density and probability
+measure over $Z$
+\begin{align}
+  F^{(k)}(z | \theta) &= \displaystyle \int_{-\infty}^{a_x} \displaystyle \int_{-\infty}^{a_y} \displaystyle \int_{-\infty}^{b_x} \displaystyle \int_{-\infty}^{b_y} \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y \frac{\partial^4}{\partial a'_x \partial b'_x \partial a'_y \partial b'_y} q^{(k)}(x', y', t | a'_x, b'_x, a'_y, b'_y)\,\,\, dx'\, dy'\, da'_x\, db'_x\, da'_y\, db'_y, \label{eq:approx-measure} \\
+                          \Pr_{k}(A) &:= \displaystyle \int_{A} f^{(k)}(z)\, dz, \quad \mbox{ for any measurable } A \subset Z. \label{eq:approx-measure-2}
+\end{align}
+We will prove that for every $z \in Z$,
+\[
+  \lim_{k\to \infty} F^{(k)}(z | \theta) = F(z | \theta).
+\]
+First, we prove the Lemma
+\begin{lemma}\label{lem:1}
+  For $z = (x, y, a_x, b_x, a_y, b_y)$,
+  \[
+    \lim_{k\to \infty} \displaystyle \int_{a_x}^{b_x} \displaystyle
+    \int_{a_y}^{b_y} f^{(k)}(x,y,a_x,b_x,a_y,b_y)\, dx\,dy =
+    \displaystyle \int_{a_x}^{b_x} \displaystyle \int_{a_y}^{b_y}
+    f(x,y,a_x,b_x,a_y,b_y)\, dx\,dy.
+  \]
+\end{lemma}
+\begin{proof}
+  Define the set
+  \begin{align*}
+    B(a_x, b_x, a_y, b_y) &= \left\{ z \in Z \left| z \in [a_x, b_x]
+        \times [a_y, b_y] \times [a_x, \infty) \times (-\infty, b_x]
+                            \times [a_y, \infty) \times (-\infty, b_y] \right.\right\}, \\
+                          &= \left\{ \omega \in W | X_\omega(t) \in [a_x, b_x], Y_\omega(t) \in [a_y, b_y], m_x \in [a_x,b_x), M_x \in (a_x, b_x] \right\}
+  \end{align*}
+  Then
+  \[
+    \displaystyle \int_{B(a_x, b_x, a_y, b_y)} f(z)\, dz = \displaystyle \int_{a_x}^{\infty} \displaystyle \int_{-\infty}^{b_x} \displaystyle \int_{a_y}^{\infty} \displaystyle \int_{-\infty}^{b_y} \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y f(x', y', a'_x, b'_x, a'_y, b'_y) dx' dy' da_x' db_x' da_y' db_y'  = 
+  \]
+\end{proof}
 \begin{align*}
   q(x,y,t) = \\
   \Pr\left(X(t) \in dx, Y(t) \in dy,  \min_{t'}X(t') \geq a_x,
   \max_{t'}X(t')\leq b_x, \min_{t'} Y(t')\geq a_y, \max_{t'} Y(t')\leq b_y|  X(0)=x_0, Y(0)=y_0, \theta \right) = \\
   \Pr_{W}\left(\left\{ \omega \in \Omega | X_\omega(t) \in dx,\,\, Y_\omega(t) \in dy,\,\,  \forall t' \in [0,t]\,\, a_x \leq X_\omega(t') \leq b_x,\,\, \forall t' \in [0,t] \,\, a_b \leq Y_\omega(t') \leq b_y,\,\, X_\omega(0) = Y_\omega(0) = 0 \right\} \right)
 \end{align*}
-where $\Pr_{W}$ is the Wiener measure on the samples space of all
-realizations (paths) $(X_\omega(t), Y_\omega(t))$ from the stochastic
-process (\ref{eq:X}) - (\ref{eq:Y}) defined in the usal way using
-Kolmogorov's extension of measure (see \cite{freidlin1985functional},
-Section 1.2). Our strategy will be to define a family of sets $\left\{ \tilde{A}_m(z) \right\}_{m=0}^\infty$ for any $z=(x,y,a_x,b_x,a_y,b_y)$ such that
+Our strategy will be to define a family of sets $\left\{ \tilde{A}_m(z) \right\}_{m=0}^\infty$ for any $z=(x,y,a_x,b_x,a_y,b_y)$ such that
 \begin{align*}
   \lim_{m \to \infty} \Pr_W \left(  \tilde{A}_m(z) \right) = 
   \Pr \left( X(t) \leq x,
@@ -791,7 +861,7 @@ Section 1.2). Our strategy will be to define a family of sets $\left\{ \tilde{A}
   Y(t') \leq b_y \right) = F(z | \theta)
 \end{align*}
 
-\begin{lemma}\label{lem:1}
+\begin{lemma}
   For $z = (x,y,a_x,b_x,a_y,b_y)$, 
   \[\lim_{m \to \infty} \displaystyle \int_{-\infty}^x \displaystyle
     \int_{-\infty}^y q(x',y',t, a_x-m, b_x, a_y-m, b_y)\,\, dx'\,dy' -
@@ -853,7 +923,7 @@ $
 \end{lemma}
 \begin{proof}
   The proof for this lemma follows direcly from the convergence result
-  $p_k \to p$ as $k\to \infty$ under the $L_2(\Omega)$ norm from
+  $p^{(k)} \to p$ as $k\to \infty$ under the $L_2(\Omega)$ norm from
   Section \ref{sec:semidiscrete-galerkin}.
 \end{proof}
 With the result from Lemma \ref{lem:weak}, we can now define the
@@ -925,7 +995,7 @@ function $k(m; z)$ as
 % \[
 %   \displaystyle \int_\Omega G(x,y,t | \gamma) \psi_i(x,y) dx\,dy \to \psi_i(1-\gamma,1-\gamma).
 % \]
-% Given $S_k$, the above coefficients uniquely define $p_k$
+% Given $S_k$, the above coefficients uniquely define $p^{(k)}$
 % projection is defined only by $p(x,y,t_\epsilon)$ and $S_k$ only on
 % $\mathbf{p}(t_\epsilon)$ (see equation
 % (\ref{eq:orthogonality-conditions-mat-2})) become the same. Because
@@ -939,9 +1009,7 @@ function $k(m; z)$ as
   \[ \hat{\theta}_{n,k} \to \theta \].
 \end{lemma}
 \begin{proof}
-  \textbf{\color{red} It's a bit sloppy. Also, we do not need
-    asymptotic efficiency to prove equation (\ref{eq:var-lim})} By
-  Lemma \ref{lem:1}
+  By Lemma \ref{lem:1}
     \[ X_k \xrightarrow[]{d} X \mbox { as } k \to \infty. \] Next,
     given Theorem 4.1 in \cite{singler2008differentiability}, we know
     that, for each $k$, $q_k$ is analytic in both the diffusion
