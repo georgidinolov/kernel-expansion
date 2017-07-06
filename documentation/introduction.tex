@@ -652,7 +652,7 @@ $\frac{\partial^4 p^{(k)}(x,y,t)}{\partial a_x \partial b_x \partial
   a_y \partial b_y}$ exists and can be computed numerically using
 finite differences.
 
-\subsection{Error Bound}
+\subsection{Error Bound} \label{sec:error-bound}
 A bound on the closeness of the approximate solution $p^{(k)}(x,y,t)$
 to the strong solution $p(x,y,t)$ is developed in
 \cite{bramble1977some}.  Their result shows that the Galerkin
@@ -814,7 +814,7 @@ At this point we will assume that for a sufficiently large $k$,
 $f^{(k)}(z)$ is positivie for all $z \in Z$ and is integrable over
 $Z$. As such, we may regard it as a proper probability density
 function with the cumulative probability density and probability
-measure over $Z$
+measure over $Z$ being 
 \begin{align}
   F^{(k)}(z | \theta) &= \displaystyle \int_{-\infty}^{a_x} \displaystyle \int_{-\infty}^{a_y} \displaystyle \int_{-\infty}^{b_x} \displaystyle \int_{-\infty}^{b_y} \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y \frac{\partial^4}{\partial a'_x \partial b'_x \partial a'_y \partial b'_y} q^{(k)}(x', y', t | a'_x, b'_x, a'_y, b'_y)\,\,\, dx'\, dy'\, da'_x\, db'_x\, da'_y\, db'_y, \label{eq:approx-measure} \\
                           \Pr_{k}(A) &:= \displaystyle \int_{A} f^{(k)}(z)\, dz, \quad \mbox{ for any measurable } A \subset Z. \label{eq:approx-measure-2}
@@ -834,16 +834,125 @@ First, we prove the Lemma
   \]
 \end{lemma}
 \begin{proof}
-  Define the set
+  Define the sets of form, for $z = (x,y,a_x,b_x,a_y,b_y)$,
   \begin{align*}
-    B(a_x, b_x, a_y, b_y) &= \left\{ z \in Z \left| z \in [a_x, b_x]
+    B(a_x, b_x, a_y, b_y) &= \left\{ z' \in Z \left| z' \in [a_x, b_x]
         \times [a_y, b_y] \times [a_x, \infty) \times (-\infty, b_x]
-                            \times [a_y, \infty) \times (-\infty, b_y] \right.\right\}, \\
-                          &= \left\{ \omega \in W | X_\omega(t) \in [a_x, b_x], Y_\omega(t) \in [a_y, b_y], m_x \in [a_x,b_x), M_x \in (a_x, b_x] \right\}
+                            \times [a_y, \infty) \times (-\infty, b_y] \right.\right\}.
   \end{align*}
+  Elements within $B(a_x, b_x, a_y, b_y)$ are equivalent to sample paths that stay within the region $[a_x, b_x] \times [a_y, b_y]$:
+  \begin{align*}
+    B(a_x, b_x, a_y, b_y) &= \left\{ \omega \in W | X_\omega(t) \in [a_x, b_x], Y_\omega(t) \in [a_y, b_y], m_x \in [a_x,b_x), M_x \in (a_x, b_x] \right\}
+  \end{align*}
+
   Then
+  \begin{align}
+    \Pr(B(a_x, b_x, a_y, b_y)) &= \displaystyle \int_{B(a_x, b_x, a_y, b_y)} f(z)\, dz \nonumber \\ 
+                               &= \displaystyle \int_{a_x}^{\infty} \displaystyle \int_{-\infty}^{b_x} \displaystyle \int_{a_y}^{\infty} \displaystyle \int_{-\infty}^{b_y} \displaystyle \int_{-\infty}^{b_x} \displaystyle \int_{-\infty}^{b_y} f(x', y', a'_x, b'_x, a'_y, b'_y) dx' dy' da_x' db_x' da_y' db_y' \label{eq:full-form} \\
+                               &= \displaystyle \int_{a_x}^{b_x} \displaystyle \int_{a_y}^{b_y} q(x,y,a_x,b_x,a_y,b_y)\, dx\, dy, \nonumber
+  \end{align}
+  
+  where the last equality employs the interpretation of $q$ in
+  (\ref{eq:CDF}) and we can freely change the order of integration as
+  $f$ is bounded for all $z \in Z$. Similarly,
+  \begin{align*}
+    \Pr_k(B(a_x, b_x, a_y, b_y)) &= \displaystyle \int_{a_x}^{b_x} \displaystyle \int_{a_y}^{b_y} q^{(k)}(x,y,a_x,b_x,a_y,b_y)\, dx\, dy.
+  \end{align*}
+  From (\ref{eq:full-form}), the partial derivative of the probability
+  $\Pr(B(a_x,b_x,a_y,b_y))$ is well-defined and can be written as
+  \begin{align*}
+    \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial b_y} \Pr(B(a_x, b_x, a_y, b_y)) &= \displaystyle \int_{a_x}^{b_x} \displaystyle \int_{a_y}^{b_y} f(x,y,a_x,b_x,a_y,b_y)\, dx\, dy.
+  \end{align*}
+  The first-order \textbf{finite difference} approximation the above
+  expression can be expressed as a linear combination of probabilities
+  of perturbed sets $B(\cdot)$:
+  \begin{align*}
+    \lim_{\epsilon \to 0}\quad \frac{1}{\epsilon^4} \sum_{i=1}^{16} c(i) \Pr(B(a_x + k_1(i)\epsilon, b_x + k_2(i)\epsilon, a_y + k_3(i)\epsilon, b_y + k_4(i)\epsilon) = \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial b_y} \Pr(B(a_x, b_x, a_y, b_y)),
+  \end{align*}
+  where $c$ and $k$ are functions from $i$ to the appropriate
+  coefficients in the first-order finite difference approximation
+  $c(i) \to \left\{-1, 1\right\}$, $k_j(i) \to \{-1,1\}$. Using Big-O
+  notation, for a sufficiently small $\epsilon$
+  \begin{equation}
+    \sum_{i=1}^{16} c(i) \Pr(B(a_x + k_1(i)\epsilon, b_x +
+    k_2(i)\epsilon, a_y + k_3(i)\epsilon, b_y + k_4(i)\epsilon) =
+    \epsilon^4 \frac{\partial^4}{\partial a_x \partial b_x \partial
+      a_y \partial b_y} \Pr(B(a_x, b_x, a_y, b_y)) + O(\epsilon^5 ;
+    a_x, b_x, a_y, b_y). \label{eq:fin-diff}
+  \end{equation}
+
+  The convergence result in Section \ref{sec:error-bound} implies that
+  \begin{align*}
+    \Pr_k(B(a_x + k_1(i)\epsilon, b_x + k_2(i)\epsilon, a_y +
+    k_3(i)\epsilon, b_y + k_4(i)\epsilon) = \displaystyle \int_{a_x +
+    k_1(i)}^{b_x + k_2(i)} \displaystyle \int_{a_y + k_3(i)}^{b_y +
+    k_4(i)} q^{(k)}(x,y,a_x,b_x,a_y,b_y)\, dx\, dy \to \\
+    \displaystyle
+    \int_{a_x + k_1(i)}^{b_x + k_2(i)} \displaystyle \int_{a_y +
+    k_3(i)}^{b_y + k_4(i)} q(x,y,a_x,b_x,a_y,b_y)\, dx\, dy =
+    \Pr(B(a_x + k_1(i)\epsilon, b_x + k_2(i)\epsilon, a_y +
+    k_3(i)\epsilon, b_y + k_4(i)\epsilon) \\
+    \mbox{ as } k \to \infty \mbox{ in } L_2(\Omega).
+  \end{align*}
+  Hence, for a sufficiently large $k$ dependent on the supremum over
+  $i$, and given the error estimate in (\ref{eq:error-est}), we have
+  the relation
+  \begin{align*}
+    \Pr_k(B(a_x + k_1(i)\epsilon, b_x + k_2(i)\epsilon, a_y +
+    k_3(i)\epsilon, b_y + k_4(i)\epsilon) &= \Pr(B(a_x + k_1(i)\epsilon, b_x + k_2(i)\epsilon, a_y +
+                                            k_3(i)\epsilon, b_y + k_4(i)\epsilon) \\
+    & + O(h(k)^2; a_x + k_1(i)\epsilon, b_x + k_2(i)\epsilon, a_y + k_3(i)\epsilon, b_y + k_4(i)\epsilon)
+  \end{align*}
+  Note here that the dominating terms $O(h(k)^2; \cdot)$ are
+  differentiable with respect to the boundary parameters
+  $(a_x, b_x, a_y, b_y)$ since $q$ and $q^{(k)}$ have this
+  property. Therefore, if we replace $\Pr(\cdot)$ in
+  (\ref{eq:fin-diff}) with $\Pr_k(\cdot)$
+  \begin{align*}
+    \sum_{i=1}^{16} c(i) \Pr_k(B(a_x + k_1(i)\epsilon, b_x +
+    k_2(i)\epsilon, a_y + k_3(i)\epsilon, b_y + k_4(i)\epsilon) &= \sum_{i=1}^{16} c(i) \Pr(B(a_x + k_1(i)\epsilon, b_x +
+                                                                  k_2(i)\epsilon, a_y + k_3(i)\epsilon, b_y + k_4(i)\epsilon)  \\
+                                                                & + \sum_{i=1}^{16} c(i) O(h(k)^2; a_x + k_1(i)\epsilon, b_x +
+                                                                  k_2(i)\epsilon, a_y + k_3(i)\epsilon, b_y + k_4(i)\epsilon) \\
+    &=     \epsilon^4 \frac{\partial^4}{\partial a_x \partial b_x \partial
+      a_y \partial b_y} \Pr(B(a_x, b_x, a_y, b_y)) + O(\epsilon^5 ;
+      a_x, b_x, a_y, b_y) \\
+                                                                & + \sum_{i=1}^{16} c(i) O(h(k)^2; a_x + k_1(i)\epsilon, b_x +
+                                                                  k_2(i)\epsilon, a_y + k_3(i)\epsilon, b_y + k_4(i)\epsilon).
+  \end{align*}
+  Dividing both sides by $\epsilon^4$ produces
+  \begin{align*}
+    \frac{1}{\epsilon^4} \sum_{i=1}^{16} c(i) \Pr_k(B(a_x + k_1(i)\epsilon, b_x +
+    k_2(i)\epsilon, a_y + k_3(i)\epsilon, b_y + k_4(i)\epsilon) &= \frac{\partial^4}{\partial a_x \partial b_x \partial
+                                                                  a_y \partial b_y} \Pr(B(a_x, b_x, a_y, b_y)) + O(\epsilon;
+                                                                  a_x, b_x, a_y, b_y) \\
+                                                                &+ \frac{1}{\epsilon^4}\sum_{i=1}^{16} c(i) O(h(k)^2; a_x + k_1(i)\epsilon, b_x +
+                                                                  k_2(i)\epsilon, a_y + k_3(i)\epsilon, b_y + k_4(i)\epsilon) \\
+    % = \frac{\partial^4}{\partial a_x \partial b_x \partial
+    % a_y \partial b_y} \Pr(B(a_x, b_x, a_y, b_y)) + O(\epsilon;
+    % a_x, b_x, a_y, b_y) + \frac{\partial^4}{\partial a_x \partial b_x \partial
+    % a_y \partial b_y} O(h(k)^2 ; a_x, b_x, a_y, b_y)
+  \end{align*}
+  As mentioned above $O(h(k)^2; \cdot)$ is differentiable with respect
+  to the boundary parameters, so that the right-most term is still
+  $O(h(k)^2)$ as $\epsilon \to 0$. Taking the limit in $\epsilon$, we have
+  \begin{align*}
+    \displaystyle \int_{a_x}^{b_x} \displaystyle \int_{a_y}^{b_y}
+    f^{(k)}(x,y,a_x,b_x,a_y,b_y)\, dx\, dy =
+    \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial
+    b_y} \Pr_k(B(a_x, b_x, a_y, b_y)) \\
+    = \frac{\partial^4}{\partial
+      a_x \partial b_x \partial a_y \partial b_y} \Pr(B(a_x, b_x, a_y,
+    b_y)) +  O(h(k)^2; a_x, b_x, a_y, b_y) \\
+    =\displaystyle \int_{a_x}^{b_x} \displaystyle \int_{a_y}^{b_y}
+    f(x,y,a_x,b_x,a_y,b_y)\, dx\, dy + O(h(k)^2; a_x, b_x, a_y, b_y).
+  \end{align*}
+  Therefore, we have the desired result:
   \[
-    \displaystyle \int_{B(a_x, b_x, a_y, b_y)} f(z)\, dz = \displaystyle \int_{a_x}^{\infty} \displaystyle \int_{-\infty}^{b_x} \displaystyle \int_{a_y}^{\infty} \displaystyle \int_{-\infty}^{b_y} \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y f(x', y', a'_x, b'_x, a'_y, b'_y) dx' dy' da_x' db_x' da_y' db_y'  = 
+    \lim_{k\to \infty} \displaystyle \int_{a_x}^{b_x} \displaystyle
+    \int_{a_y}^{b_y} f^{(k)}(x,y,a_x,b_x,a_y,b_y)\, dx\,dy =
+    \displaystyle \int_{a_x}^{b_x} \displaystyle \int_{a_y}^{b_y}
+    f(x,y,a_x,b_x,a_y,b_y)\, dx\,dy.
   \]
 \end{proof}
 \begin{align*}
