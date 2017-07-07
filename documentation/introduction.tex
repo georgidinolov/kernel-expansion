@@ -793,7 +793,7 @@ $t \to \mathbb{R}^2$ (see \cite{freidlin1985functional}, Section
 1.2). Sets of the form $A(x,y,a_x,b_x,a_y,b_y)$ can be defined as a
 countable intersection/union of cyliner sets on $t \to \mathbb{R}^2$,
 hence they are measurable under $\mathbb{P}_{W}$; therefore $f(z)$ exists and
-is bounded above by 1. Since $q(x,y,t|a_x,b_x,a_y,b_y)$ represents the
+is bounded above by 1. Moreover, since $q(x,y,t|a_x,b_x,a_y,b_y)$ represents the
 integral of $f(z)$ with respect to the boundary variables, we have
 \[
   f(x,y,a_x,b_x,a_y,b_y) = \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial
@@ -808,7 +808,7 @@ $\left< \mathcal{L} \psi_i(x,y), \psi_j(x,y) \right>$ is
 differentiable with respect to the parameters. The condition certainly
 holds for the normalized problem (\ref{eq:qq}) with our choice of
 basis functions $S_k$, as they are infinitely differentiable with
-repsect to $x,y$, and the boundaries. 
+repsect to $x,y$, the boundaries, and the diffusion parameters. 
 
 At this point we will assume that for a sufficiently large $k$,
 $f^{(k)}(z)$ is positivie for all $z \in Z$ and is integrable over
@@ -955,198 +955,224 @@ First, we prove the Lemma
     f(x,y,a_x,b_x,a_y,b_y)\, dx\,dy.
   \]
 \end{proof}
-\begin{align*}
-  q(x,y,t) = \\
-  \Pr\left(X(t) \in dx, Y(t) \in dy,  \min_{t'}X(t') \geq a_x,
-  \max_{t'}X(t')\leq b_x, \min_{t'} Y(t')\geq a_y, \max_{t'} Y(t')\leq b_y|  X(0)=x_0, Y(0)=y_0, \theta \right) = \\
-  \Pr_{W}\left(\left\{ \omega \in \Omega | X_\omega(t) \in dx,\,\, Y_\omega(t) \in dy,\,\,  \forall t' \in [0,t]\,\, a_x \leq X_\omega(t') \leq b_x,\,\, \forall t' \in [0,t] \,\, a_b \leq Y_\omega(t') \leq b_y,\,\, X_\omega(0) = Y_\omega(0) = 0 \right\} \right)
-\end{align*}
-Our strategy will be to define a family of sets $\left\{ \tilde{A}_m(z) \right\}_{m=0}^\infty$ for any $z=(x,y,a_x,b_x,a_y,b_y)$ such that
-\begin{align*}
-  \lim_{m \to \infty} \Pr_W \left(  \tilde{A}_m(z) \right) = 
-  \Pr \left( X(t) \leq x,
-  Y(t) \leq y, \min_{t' \leq t} X(t') \leq a_x, \max_{t' \leq t}
-  X(t') \leq b_x, \min_{t' \leq t} Y(t') \leq a_y, \max_{t' \leq t}
-  Y(t') \leq b_y \right) = F(z | \theta)
-\end{align*}
 
-\begin{lemma}
-  For $z = (x,y,a_x,b_x,a_y,b_y)$, 
-  \[\lim_{m \to \infty} \displaystyle \int_{-\infty}^x \displaystyle
-    \int_{-\infty}^y q(x',y',t, a_x-m, b_x, a_y-m, b_y)\,\, dx'\,dy' -
-    \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y
-    q(x',y',t, a_x, b_x, a_y, b_y)\,\, dx'\,dy' = F(z | \theta)\]
-\end{lemma}
-\begin{proof}
-Given some $z = (x,y,a_x,b_x,a_y,b_y)$, define the sets
-\begin{align*}
-  A_m(z) &= \left\{ \omega \in \Omega | X_\omega(t) \leq x,\,\,
-Y_\omega(t) \leq y,\,\, \right. \\ & \forall t' \in [0,t]\,\, a_x-m
-\leq X_\omega(t') \leq b_x,\,\, \\ & \forall t' \in [0,t] \,\, a_y -
-m\leq Y_\omega(t') \leq b_y,\,\, \\ & \left.X_\omega(0) = Y_\omega(0)
-= 0 \right\}, \quad \quad m = 0,1,2,... \\
-\end{align*}
-Note here that $\Pr_{W}(A_m(z)) = \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y q(x',y',t, a_x-m, b_x, a_y-m, b_y)\,\, dx'\,dy'$.  Next, we define
-\begin{align*}
-  \tilde{A}_{m}(z) &= A_m(z) \,\, \bigcap \,\, A_0^C(z) \\
-                   &= \left\{ \omega \in \Omega | X_\omega(t) \in dx,\,\, \right.\\
-                   & \quad \quad \forall t' \in [0,t]\,\, a_x-m \leq X_\omega(t') \leq b_x,\,\, \\
-                   & \quad \quad \forall t' \in [0,t] \,\, a_y - m\leq Y_\omega(t') \leq b_y,\,\, \\
-                   & \quad \quad \exists t_{a_x} \in [0,t] \,\, s.t. \,\, X_\omega(t_{a_x}) < a_x \,\, , \exists t_{a_y} \in [0,t] \,\, s.t. \,\, X_\omega(t_{a_y}) < a_y, \\
-                   & \quad \quad \left.X_\omega(0) = Y_\omega(0) = 0 \right\}
-\end{align*}
-It is easy to see that $A_{m}(z) \subset A_{m+1}(z)$ and that
-$\tilde{A}_{m}(z) \subset \tilde{A}_{m+1}(z)$. Because of the former
-relation,
-\[
-  \Pr_{W}(\tilde{A}_m(z)) = \Pr_W(A_m(z)) - \Pr_{W}(A_0(z)) = \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y q(x',y',t, a_x-m, b_x, a_y-m, b_y)\,\, dx'\,dy' - \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y q(x',y',t, a_x, b_x, a_y, b_y)\,\, dx'\,dy'.
-\]
-Finally,
-\begin{align*}
-  \bigcup_{m=0}^\infty \tilde{A}_m(z) &= \left\{ \omega \in \Omega | X_\omega(t) \in dx,\,\, \right.\\
-                   & \quad \quad \forall t' \in [0,t]\,\, -\infty \leq X_\omega(t') \leq b_x,\,\, \\
-                   & \quad \quad \forall t' \in [0,t] \,\, -\infty \leq Y_\omega(t') \leq b_y,\,\, \\
-                   & \quad \quad \exists t_{a_x} \in [0,t] \,\, s.t. \,\, X_\omega(t_{a_x}) < a_x \,\, , \exists t_{a_y} \in [0,t] \,\, s.t. \,\, X_\omega(t_{a_y}) < a_y, \\
-                   & \quad \quad \left.X_\omega(0) = Y_\omega(0) = 0 \right\},
-\end{align*}
-such that for $\omega \in \bigcup_{m=0}^\infty \tilde{A}_m(z)$,
-$X_\omega(t) \leq x, Y_\omega(t) \leq y, \min_{t'} X_{\omega}(t') \leq
-a_x, \min_{t'} Y_{\omega}(t') \leq a_y, \max_{t'} X_{\omega}(t') \leq
-b_x$, $\max_{t'} Y_{\omega}(t') \leq b_y$, and
-\[
-  \Pr_W\left( \bigcup_{m=0}^\infty \tilde{A}_m(z) \right) = \lim_{M \to \infty} \Pr_W\left( \bigcup_{m=0}^M \tilde{A}_M(z) \right) = F(z |
-  \theta).
-\]
-Since $\tilde{A}_{m}(z) \subset \tilde{A}_{m+1}(z)$,
-\[
-  \lim_{m\to \infty} \Pr_W(\tilde{A}_m(z)) = \lim_{m \to \infty} \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y q(x',y',t, a_x-m, b_x, a_y-m, b_y)\,\, dx'\,dy' - \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y q(x',y',t, a_x, b_x, a_y, b_y)\,\, dx'\,dy'  = F(z | \theta)
-\]
-\end{proof}
-For a shorthand, denote
-$
-  \mu_k(\tilde{A}_m(z)) = \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y q_k(x',y',t, a_x-m, b_x, a_y-m, b_y)\,\, dx'\,dy' - \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y q_k(x',y',t, a_x, b_x, a_y, b_y)\,\, dx'\,dy'.
-$
+\begin{lemma}[Convergence in distribution] \label{lem:conv-dist}
+  For any $z \in Z$,
+  $ \lim_{k \to \infty} F^{(k)}(z | \theta) = F(z).$
 
-\begin{lemma} \label{lem:weak}
-  For a fixed $m$, $\mu_k(\tilde{A}_m(z)) \to \Pr_W(\tilde{A}_m(z))$ as $k\to \infty$.
-\end{lemma}
-\begin{proof}
-  The proof for this lemma follows direcly from the convergence result
-  $p^{(k)} \to p$ as $k\to \infty$ under the $L_2(\Omega)$ norm from
-  Section \ref{sec:semidiscrete-galerkin}.
-\end{proof}
-With the result from Lemma \ref{lem:weak}, we can now define the
-function $k(m; z)$ as
-\[
-  k(m; z) := \inf_{k'}\left\{ \left| \mu_{k'}(\tilde{A}_m(z)) - \Pr_W(\tilde{A}_m(z)) \right| < 1/2m  \right\}
-\]
-
-\begin{lemma}\label{lem:convergence-in-dist}
-  For $F_{k(m;z)}$, $F$, and $z$ defined above,
-  \[ \lim_{m\to \infty} F_{k(m;z)}(z | \theta) = F(z | \theta). \]
 \end{lemma}
 
 \begin{proof}
-  For any $\epsilon > 0$, let $M_1 = 2/\epsilon$. By Lemma
-  \ref{lem:1}, we can find $M_2$ such that $\forall m > M_2$
-  $\left| \Pr_W(\tilde{A}_m(z) - F(z | \theta) \right| <
-  \epsilon/2$. Let $M = \max\{M_1, M_2\}$. For any $m > M$,
-  \begin{align*}
-    \left| F_{k(m)}(z) - F(z) \right | &= \left| \mu_{k(m)}(\tilde{A}_m(z)) - F(z) \right | \\
-                                       &\leq \left|  \mu_{k(m)}(\tilde{A}_m(z)) - \Pr_W(\tilde{A}_m(z)) \right| + \left|  \Pr_W(\tilde{A}_m(z)) - F(z | \theta) \right|. \\
-                                       &\leq \epsilon/2 + \epsilon/2
-  \end{align*}
-  The left term bound is defined by $k(m;z)$.
+  Let
+  $I^{(k)}(z) = \displaystyle \int_{a_x}^{x} \displaystyle
+  \int_{a_y}^{y} f^{(k)}(u,v,a_x,b_x,a_y,b_y)\, du\,dv$ and let
+  $I(z) = \displaystyle \int_{a_x}^{x} \displaystyle \int_{a_y}^{y}
+  f(u,v,a_x,b_x,a_y,b_y)\, du\,dv$. It is possible to show that
+  $\lim_{k\to \infty} I^{(k)}(z) = I(z)$ as a consequence of Lemma
+  \ref{lem:1} by considering some $\chi_k(z) \in S_k$ approximating
+  the indicator $1(u \leq x, v \leq y)$ as $k \to \infty$ and setting up a triangle
+  inequality. However, we will omit this technical detail here.
+
+  Next, we know that $I(z)$ is integrable over $(a_x, b_x, a_y, b_y)$
+  as $\Pr(Z) = \mathbb{P}_{W}(W) = 1$. The Dominated Convergence
+  Theorem applies, and we therefore have
+  \[
+    \lim_{k \to \infty} \displaystyle \int_{-\infty}^{a_x} \displaystyle \int_{-\infty}^{b_x} \displaystyle \int_{-\infty}^{a_y} \displaystyle \int_{-\infty}^{b_y} I^{(k)}(z) da_x' db_x' da_y' db_y' = \displaystyle \int_{-\infty}^{a_x} \displaystyle \int_{-\infty}^{b_x} \displaystyle \int_{-\infty}^{a_y} \displaystyle \int_{-\infty}^{b_y} I(z) da_x' db_x' da_y' db_y',
+  \]
+  which implies the result of the Lemma.
 \end{proof}
+% \begin{align*}
+%   q(x,y,t) = \\
+%   \Pr\left(X(t) \in dx, Y(t) \in dy,  \min_{t'}X(t') \geq a_x,
+%   \max_{t'}X(t')\leq b_x, \min_{t'} Y(t')\geq a_y, \max_{t'} Y(t')\leq b_y|  X(0)=x_0, Y(0)=y_0, \theta \right) = \\
+%   \Pr_{W}\left(\left\{ \omega \in \Omega | X_\omega(t) \in dx,\,\, Y_\omega(t) \in dy,\,\,  \forall t' \in [0,t]\,\, a_x \leq X_\omega(t') \leq b_x,\,\, \forall t' \in [0,t] \,\, a_b \leq Y_\omega(t') \leq b_y,\,\, X_\omega(0) = Y_\omega(0) = 0 \right\} \right)
+% \end{align*}
+% Our strategy will be to define a family of sets $\left\{ \tilde{A}_m(z) \right\}_{m=0}^\infty$ for any $z=(x,y,a_x,b_x,a_y,b_y)$ such that
+% \begin{align*}
+%   \lim_{m \to \infty} \Pr_W \left(  \tilde{A}_m(z) \right) = 
+%   \Pr \left( X(t) \leq x,
+%   Y(t) \leq y, \min_{t' \leq t} X(t') \leq a_x, \max_{t' \leq t}
+%   X(t') \leq b_x, \min_{t' \leq t} Y(t') \leq a_y, \max_{t' \leq t}
+%   Y(t') \leq b_y \right) = F(z | \theta)
+% \end{align*}
 
 % \begin{lemma}
-%   For a fixed $k$,
-%   $\lim_{m\to \infty} \mu_k(\tilde{A}_m(z)) = c \in \mathbb{R},$ i.e.
-%   $\left\{ \mu_k(\tilde{A}_m(z))\right\}_{m=0}^\infty$ is a convergent
-%   sequence.
+%   For $z = (x,y,a_x,b_x,a_y,b_y)$, 
+%   \[\lim_{m \to \infty} \displaystyle \int_{-\infty}^x \displaystyle
+%     \int_{-\infty}^y q(x',y',t, a_x-m, b_x, a_y-m, b_y)\,\, dx'\,dy' -
+%     \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y
+%     q(x',y',t, a_x, b_x, a_y, b_y)\,\, dx'\,dy' = F(z | \theta)\]
+% \end{lemma}
+% \begin{proof}
+% Given some $z = (x,y,a_x,b_x,a_y,b_y)$, define the sets
+% \begin{align*}
+%   A_m(z) &= \left\{ \omega \in \Omega | X_\omega(t) \leq x,\,\,
+% Y_\omega(t) \leq y,\,\, \right. \\ & \forall t' \in [0,t]\,\, a_x-m
+% \leq X_\omega(t') \leq b_x,\,\, \\ & \forall t' \in [0,t] \,\, a_y -
+% m\leq Y_\omega(t') \leq b_y,\,\, \\ & \left.X_\omega(0) = Y_\omega(0)
+% = 0 \right\}, \quad \quad m = 0,1,2,... \\
+% \end{align*}
+% Note here that $\Pr_{W}(A_m(z)) = \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y q(x',y',t, a_x-m, b_x, a_y-m, b_y)\,\, dx'\,dy'$.  Next, we define
+% \begin{align*}
+%   \tilde{A}_{m}(z) &= A_m(z) \,\, \bigcap \,\, A_0^C(z) \\
+%                    &= \left\{ \omega \in \Omega | X_\omega(t) \in dx,\,\, \right.\\
+%                    & \quad \quad \forall t' \in [0,t]\,\, a_x-m \leq X_\omega(t') \leq b_x,\,\, \\
+%                    & \quad \quad \forall t' \in [0,t] \,\, a_y - m\leq Y_\omega(t') \leq b_y,\,\, \\
+%                    & \quad \quad \exists t_{a_x} \in [0,t] \,\, s.t. \,\, X_\omega(t_{a_x}) < a_x \,\, , \exists t_{a_y} \in [0,t] \,\, s.t. \,\, X_\omega(t_{a_y}) < a_y, \\
+%                    & \quad \quad \left.X_\omega(0) = Y_\omega(0) = 0 \right\}
+% \end{align*}
+% It is easy to see that $A_{m}(z) \subset A_{m+1}(z)$ and that
+% $\tilde{A}_{m}(z) \subset \tilde{A}_{m+1}(z)$. Because of the former
+% relation,
+% \[
+%   \Pr_{W}(\tilde{A}_m(z)) = \Pr_W(A_m(z)) - \Pr_{W}(A_0(z)) = \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y q(x',y',t, a_x-m, b_x, a_y-m, b_y)\,\, dx'\,dy' - \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y q(x',y',t, a_x, b_x, a_y, b_y)\,\, dx'\,dy'.
+% \]
+% Finally,
+% \begin{align*}
+%   \bigcup_{m=0}^\infty \tilde{A}_m(z) &= \left\{ \omega \in \Omega | X_\omega(t) \in dx,\,\, \right.\\
+%                    & \quad \quad \forall t' \in [0,t]\,\, -\infty \leq X_\omega(t') \leq b_x,\,\, \\
+%                    & \quad \quad \forall t' \in [0,t] \,\, -\infty \leq Y_\omega(t') \leq b_y,\,\, \\
+%                    & \quad \quad \exists t_{a_x} \in [0,t] \,\, s.t. \,\, X_\omega(t_{a_x}) < a_x \,\, , \exists t_{a_y} \in [0,t] \,\, s.t. \,\, X_\omega(t_{a_y}) < a_y, \\
+%                    & \quad \quad \left.X_\omega(0) = Y_\omega(0) = 0 \right\},
+% \end{align*}
+% such that for $\omega \in \bigcup_{m=0}^\infty \tilde{A}_m(z)$,
+% $X_\omega(t) \leq x, Y_\omega(t) \leq y, \min_{t'} X_{\omega}(t') \leq
+% a_x, \min_{t'} Y_{\omega}(t') \leq a_y, \max_{t'} X_{\omega}(t') \leq
+% b_x$, $\max_{t'} Y_{\omega}(t') \leq b_y$, and
+% \[
+%   \Pr_W\left( \bigcup_{m=0}^\infty \tilde{A}_m(z) \right) = \lim_{M \to \infty} \Pr_W\left( \bigcup_{m=0}^M \tilde{A}_M(z) \right) = F(z |
+%   \theta).
+% \]
+% Since $\tilde{A}_{m}(z) \subset \tilde{A}_{m+1}(z)$,
+% \[
+%   \lim_{m\to \infty} \Pr_W(\tilde{A}_m(z)) = \lim_{m \to \infty} \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y q(x',y',t, a_x-m, b_x, a_y-m, b_y)\,\, dx'\,dy' - \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y q(x',y',t, a_x, b_x, a_y, b_y)\,\, dx'\,dy'  = F(z | \theta)
+% \]
+% \end{proof}
+% For a shorthand, denote
+% $
+%   \mu_k(\tilde{A}_m(z)) = \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y q_k(x',y',t, a_x-m, b_x, a_y-m, b_y)\,\, dx'\,dy' - \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y q_k(x',y',t, a_x, b_x, a_y, b_y)\,\, dx'\,dy'.
+% $
+
+% \begin{lemma} \label{lem:weak}
+%   For a fixed $m$, $\mu_k(\tilde{A}_m(z)) \to \Pr_W(\tilde{A}_m(z))$ as $k\to \infty$.
+% \end{lemma}
+% \begin{proof}
+%   The proof for this lemma follows direcly from the convergence result
+%   $p^{(k)} \to p$ as $k\to \infty$ under the $L_2(\Omega)$ norm from
+%   Section \ref{sec:semidiscrete-galerkin}.
+% \end{proof}
+% With the result from Lemma \ref{lem:weak}, we can now define the
+% function $k(m; z)$ as
+% \[
+%   k(m; z) := \inf_{k'}\left\{ \left| \mu_{k'}(\tilde{A}_m(z)) - \Pr_W(\tilde{A}_m(z)) \right| < 1/2m  \right\}
+% \]
+
+% \begin{lemma}\label{lem:convergence-in-dist}
+%   For $F_{k(m;z)}$, $F$, and $z$ defined above,
+%   \[ \lim_{m\to \infty} F_{k(m;z)}(z | \theta) = F(z | \theta). \]
 % \end{lemma}
 
-% \begin{proof}[Proof idea]
-%   Here we will present a formal argument, without giving all of the
-%   necessary technical details. As $m \to \infty$, the parameters
-%   $\tau_x, \tau_y$ in the normalized problem are $O(1/m)$.  Further,
-%   the initial condition coordinates tend to
-%   $((1-1/m),(1-1/m))$. Letting $\gamma = 1/m$ for $m >> 1$, the
-%   normalized problem becomes
-%   \begin{equation*}
-%     \frac{\partial}{\partial t} p(x,y,t) = \mathcal{L}p(x,y,t),\quad (x,y) \in = \Omega
-% \end{equation*}
-% with the initial condition
-% \begin{align*}
-%   p(x,y,0) &= \delta\left( x - (1-\gamma) \right) \delta\left(y-(1-\gamma)\right),
-% \end{align*}
-% where the differential operator $\mathcal{L}$ is of order
-% \[
-%   \mathcal{L} = \frac{1}{2} \gamma^2 \frac{\partial^2}{\partial x^2}
-%   + \rho\gamma^2 \frac{\partial^2}{\partial x \partial y} + \frac{1}{2}\gamma^2 \frac{\partial^2}{\partial y^2}.
-% \]
-% This means that fundamental solution to the unbounded problem above is
-% the Gaussian density
-% \[
-%   G(x,y,t'| \gamma) = \frac{1}{2\pi\,\,t'\,\, \gamma^2\sqrt{1-\rho^2}} \exp\left\{ -\frac{1}{2\, t' \, (1-\rho^2)} \left( \frac{(x - 1 + \gamma)^2}{\gamma^2} - 2\rho \frac{(x-1+\gamma)(y-1+\gamma)}{\gamma^2} + \frac{(y - 1 + \gamma)^2}{\gamma^2}\right) \right\}, t' \in (0,t]
-% \]
-% We claim that according to our method, we can find a constant $\Gamma$
-% such that for $\gamma < \Gamma$, $t_\epsilon > t$ for the small-time
-% solution $p(x,y,t_\epsilon)$, which means that $G(x,y,t | \gamma)$
-% solves the above problem. This means that, \textbf{for fixed} $k$, the
-% Galerkin approximation generated by our method is the projection of
-% $p(x,y,t)$ onto the basis family $S_k$ (there is no forward evolution
-% of the problem).
-
-% Further, because
-% $G(x,y,t | \gamma) \to \delta(x-1+\gamma)\delta(y-1+\gamma)$ weakly as
-% $\gamma \to 0$, each of the projections of $G(x,y,t | \gamma)$ onto $S_k$ converge to the basis functions evaluated at $((1-\gamma), (1-\gamma))$:
-% \[
-%   \displaystyle \int_\Omega G(x,y,t | \gamma) \psi_i(x,y) dx\,dy \to \psi_i(1-\gamma,1-\gamma).
-% \]
-% Given $S_k$, the above coefficients uniquely define $p^{(k)}$
-% projection is defined only by $p(x,y,t_\epsilon)$ and $S_k$ only on
-% $\mathbf{p}(t_\epsilon)$ (see equation
-% (\ref{eq:orthogonality-conditions-mat-2})) become the same. Because
-% $k$ is fixed, the mass $M$ stays the same, which means that the
-% initial condition vectors in the Galerkin method also converge at
-% $\gamma \to 0$. Fu
+% \begin{proof}
+%   For any $\epsilon > 0$, let $M_1 = 2/\epsilon$. By Lemma
+%   \ref{lem:1}, we can find $M_2$ such that $\forall m > M_2$
+%   $\left| \Pr_W(\tilde{A}_m(z) - F(z | \theta) \right| <
+%   \epsilon/2$. Let $M = \max\{M_1, M_2\}$. For any $m > M$,
+%   \begin{align*}
+%     \left| F_{k(m)}(z) - F(z) \right | &= \left| \mu_{k(m)}(\tilde{A}_m(z)) - F(z) \right | \\
+%                                        &\leq \left|  \mu_{k(m)}(\tilde{A}_m(z)) - \Pr_W(\tilde{A}_m(z)) \right| + \left|  \Pr_W(\tilde{A}_m(z)) - F(z | \theta) \right|. \\
+%                                        &\leq \epsilon/2 + \epsilon/2
+%   \end{align*}
+%   The left term bound is defined by $k(m;z)$.
 % \end{proof}
+
+% % \begin{lemma}
+% %   For a fixed $k$,
+% %   $\lim_{m\to \infty} \mu_k(\tilde{A}_m(z)) = c \in \mathbb{R},$ i.e.
+% %   $\left\{ \mu_k(\tilde{A}_m(z))\right\}_{m=0}^\infty$ is a convergent
+% %   sequence.
+% % \end{lemma}
+
+% % \begin{proof}[Proof idea]
+% %   Here we will present a formal argument, without giving all of the
+% %   necessary technical details. As $m \to \infty$, the parameters
+% %   $\tau_x, \tau_y$ in the normalized problem are $O(1/m)$.  Further,
+% %   the initial condition coordinates tend to
+% %   $((1-1/m),(1-1/m))$. Letting $\gamma = 1/m$ for $m >> 1$, the
+% %   normalized problem becomes
+% %   \begin{equation*}
+% %     \frac{\partial}{\partial t} p(x,y,t) = \mathcal{L}p(x,y,t),\quad (x,y) \in = \Omega
+% % \end{equation*}
+% % with the initial condition
+% % \begin{align*}
+% %   p(x,y,0) &= \delta\left( x - (1-\gamma) \right) \delta\left(y-(1-\gamma)\right),
+% % \end{align*}
+% % where the differential operator $\mathcal{L}$ is of order
+% % \[
+% %   \mathcal{L} = \frac{1}{2} \gamma^2 \frac{\partial^2}{\partial x^2}
+% %   + \rho\gamma^2 \frac{\partial^2}{\partial x \partial y} + \frac{1}{2}\gamma^2 \frac{\partial^2}{\partial y^2}.
+% % \]
+% % This means that fundamental solution to the unbounded problem above is
+% % the Gaussian density
+% % \[
+% %   G(x,y,t'| \gamma) = \frac{1}{2\pi\,\,t'\,\, \gamma^2\sqrt{1-\rho^2}} \exp\left\{ -\frac{1}{2\, t' \, (1-\rho^2)} \left( \frac{(x - 1 + \gamma)^2}{\gamma^2} - 2\rho \frac{(x-1+\gamma)(y-1+\gamma)}{\gamma^2} + \frac{(y - 1 + \gamma)^2}{\gamma^2}\right) \right\}, t' \in (0,t]
+% % \]
+% % We claim that according to our method, we can find a constant $\Gamma$
+% % such that for $\gamma < \Gamma$, $t_\epsilon > t$ for the small-time
+% % solution $p(x,y,t_\epsilon)$, which means that $G(x,y,t | \gamma)$
+% % solves the above problem. This means that, \textbf{for fixed} $k$, the
+% % Galerkin approximation generated by our method is the projection of
+% % $p(x,y,t)$ onto the basis family $S_k$ (there is no forward evolution
+% % of the problem).
+
+% % Further, because
+% % $G(x,y,t | \gamma) \to \delta(x-1+\gamma)\delta(y-1+\gamma)$ weakly as
+% % $\gamma \to 0$, each of the projections of $G(x,y,t | \gamma)$ onto $S_k$ converge to the basis functions evaluated at $((1-\gamma), (1-\gamma))$:
+% % \[
+% %   \displaystyle \int_\Omega G(x,y,t | \gamma) \psi_i(x,y) dx\,dy \to \psi_i(1-\gamma,1-\gamma).
+% % \]
+% % Given $S_k$, the above coefficients uniquely define $p^{(k)}$
+% % projection is defined only by $p(x,y,t_\epsilon)$ and $S_k$ only on
+% % $\mathbf{p}(t_\epsilon)$ (see equation
+% % (\ref{eq:orthogonality-conditions-mat-2})) become the same. Because
+% % $k$ is fixed, the mass $M$ stays the same, which means that the
+% % initial condition vectors in the Galerkin method also converge at
+% % $\gamma \to 0$. Fu
+% % \end{proof}
 
 \begin{lemma}
   The maximum likelihood estimator is consistent as $n \to \infty$ and $m \to \infty$:
   \[ \hat{\theta}_{n,k} \to \theta \].
 \end{lemma}
 \begin{proof}
-  By Lemma \ref{lem:1}
-    \[ X_k \xrightarrow[]{d} X \mbox { as } k \to \infty. \] Next,
+  By Lemma \ref{lem:conv-dist}
+    \[ Z_k \xrightarrow[]{d} Z \mbox { as } k \to \infty. \] Next,
     given Theorem 4.1 in \cite{singler2008differentiability}, we know
     that, for each $k$, $q_k$ is analytic in both the diffusion
     parameters and boundary parameters. Hence, the probability density
     function satisfies the criteria A1 - A6 in
     \cite{casella2002statistical} to guarantee that, for data
-    $X_{k} \sim F_k(\theta)$,
-    \[ \hat{\theta}_{n,k}(X_k) \xrightarrow[]{p} \theta \mbox{ as } n
+    $Z_{k} \sim F_k(\theta)$,
+    \[ \hat{\theta}_{n,k}(Z_k) \xrightarrow[]{p} \theta \mbox{ as } n
       \to \infty. \]
 
     Now we need to show that the same holds for data sampled from $F$
     as $k \to \infty$. To do this, we will use Chebyshev's inequality:
   \[
-    \Pr_{X}\left( \left| \hat{\theta}_{n,k}(X) - \theta \right| \geq
-      \epsilon \right) \leq \frac{ \mbox{E}_{X}\left[
-        (\hat{\theta}_{n,k}(X) - \theta)^2 \right] }{ \epsilon^2 }.
+    \Pr_{Z}\left( \left| \hat{\theta}_{n,k}(Z) - \theta \right| \geq
+      \epsilon \right) \leq \frac{ \mbox{E}_{Z}\left[
+        (\hat{\theta}_{n,k}(Z) - \theta)^2 \right] }{ \epsilon^2 }.
   \]
   By the Maximum theorem [REFERENCE], $\hat{\theta}_{n,k}(x)$ is a continuous
   function with respect to $x$, and further because we have bounded
   $\hat{\theta}$ from below and above,
   \[
-    \mbox{E}_{X_k}\left[ (\hat{\theta}_{n,k}(X_k) - \theta)^2 \right]
-    \to \mbox{E}_{X}\left[ (\hat{\theta}_{n,k}(X) - \theta)^2 \right]
+    \mbox{E}_{Z_k}\left[ (\hat{\theta}_{n,k}(Z_k) - \theta)^2 \right]
+    \to \mbox{E}_{Z}\left[ (\hat{\theta}_{n,k}(Z) - \theta)^2 \right]
     \mbox{ as } k \to \infty
   \]
   by the portmanteau lemma. Finally, we can show that
   \begin{equation}
-    \mbox{E}_{X_k}\left[ (\hat{\theta}_{n,k}(X_k) - \theta)^2 \right]
+    \mbox{E}_{Z_k}\left[ (\hat{\theta}_{n,k}(Z_k) - \theta)^2 \right]
     \to 0 \mbox{ as } n \to \infty, \label{eq:var-lim}
   \end{equation}
   since the expected value of the estimator tends to $\theta$ and its
@@ -1154,9 +1180,9 @@ function $k(m; z)$ as
   $\epsilon > 0$ and $\delta > 0$, we can find a sufficiently large
   $n$ and $k$ such that
   \[
-    \Pr_{X}\left( \left| \hat{\theta}_{n,k}(X) - \theta \right| \geq
-      \epsilon \right) \leq \frac{ \mbox{E}_{X}\left[
-        (\hat{\theta}_{n,k}(X) - \theta)^2 \right] }{ \epsilon^2 } < \delta    
+    \Pr_{Z}\left( \left| \hat{\theta}_{n,k}(Z) - \theta \right| \geq
+      \epsilon \right) \leq \frac{ \mbox{E}_{Z}\left[
+        (\hat{\theta}_{n,k}(Z) - \theta)^2 \right] }{ \epsilon^2 } < \delta    
   \]
 \end{proof}
 
