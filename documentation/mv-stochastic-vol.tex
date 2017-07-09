@@ -1,0 +1,155 @@
+\documentclass[10pt]{article}
+
+\usepackage{amsthm}
+\usepackage[toc,page]{appendix}
+\usepackage{amssymb}
+\usepackage{bm}
+\usepackage{pslatex,palatino,avant,graphicx,color}
+\usepackage{colortbl}
+\usepackage{fullpage}
+\usepackage{mathtools}
+\usepackage{natbib}
+\usepackage{amsmath}
+\usepackage{caption}
+%\usepackage{subfigure}
+\usepackage{subcaption}
+\usepackage{bm}
+\usepackage{wrapfig}
+\usepackage{enumerate}
+\usepackage{rotating}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{bbm}
+\usepackage[titles,subfigure]{tocloft} % Alter the style of the Table of Contents
+
+\newtheorem{lemma}{Lemma}
+%\pdfminorversion=4
+% NOTE: To produce blinded version, replace "0" with "1" below.
+\newcommand{\blind}{0}
+
+% DON'T change margins - should be 1 inch all around.
+\addtolength{\oddsidemargin}{0in}%
+\addtolength{\evensidemargin}{0in}%
+\addtolength{\textwidth}{0in}%
+\addtolength{\textheight}{0in}%
+\addtolength{\topmargin}{0in}%
+
+
+\renewcommand{\cftsecfont}{\rmfamily\mdseries\upshape}
+\renewcommand{\cftsecpagefont}{\rmfamily\mdseries\upshape} % No bold!
+
+\newcommand{\indicator}[1]{\mathbbm{1}\left( #1 \right) }
+\newcommand{\hb}{\hat{b}}
+\newcommand{\ha}{\hat{a}}
+\newcommand{\htheta}{\hat{\theta}}
+\newcommand{\halpha}{\hat{\alpha}}
+\newcommand{\hmu}{\hat{\mu}}
+\newcommand{\hsigma}{\hat{\sigma}}
+\newcommand{\hphi}{\hat{\phi}}
+\newcommand{\htau}{\hat{\tau}}
+\newcommand{\heta}{\hat{\eta}}
+\newcommand{\E}[1]{\mbox{E}\left[#1\right]}
+\newcommand{\Var}[1]{\mbox{Var}\left[#1\right]}
+\newcommand{\Indicator}[1]{\mathbbm{1}_{ \left( #1 \right) } }
+\newcommand{\dNormal}[3]{ N\left( #1 \left| #2, #3 \right. \right) }
+\newcommand{\Beta}[2]{\mbox{Beta}\left( #1, #2 \right)}
+\newcommand{\alphaphi}{\alpha_{\hphi}}
+\newcommand{\betaphi}{\beta_{\hphi}}
+\newcommand{\expo}[1]{ \exp\left\{ #1 \right\}}
+\newcommand{\tauSquareDelta}{\htau^2
+  \left(\frac{1-\expo{-2\htheta\Delta}}{2\htheta} \right)}
+\newcommand{\mumu}{\mu_{\hmu}}
+\newcommand{\sigmamu}{\sigma^2_{\hmu}}
+\newcommand{\sigmamuexpr}{\log\left( \frac{\VarX}{\EX^2} + 1 \right)}
+\newcommand{\mumuexpr}{\log(\EX) -  \log\left( \frac{\VarX}{\EX^2} + 1 \right) /2 }
+
+\newcommand{\EX}{\mbox{E}\left[ X \right] }
+\newcommand{\VarX}{\mbox{Var}\left[ X \right] }
+\newcommand{\mueta}{\mu_{\heta} }
+\newcommand{\sigmaeta}{\sigma^2_{\heta}}
+\newcommand{\sigmaetaexpr}{ \log\left( \frac{\VarX}{\EX^2} + 1 \right) }
+\newcommand{\muetaexpr}{ \log(\EX) -  \sigmaetaexpr /2 }
+
+\newcommand{\mualpha}{\mu_{\halpha} }
+\newcommand{\sigmaalpha}{\sigma^2_{\halpha}}
+\newcommand{\sigmaalphaexpr}{ \log\left( \frac{\VarX}{\EX^2} + 1 \right) }
+\newcommand{\mualphaexpr}{ \log(\EX) -  \sigmaalphaexpr /2 }
+
+\newcommand{\mutauexpr}{ \frac{2}{T} \EX }
+\newcommand{\sigmatauexpr}{ \frac{4}{T^2} \Var{X}}
+
+\newcommand{\alphatau}{\alpha_{\htau^2}}
+\newcommand{\betatau}{\beta_{\htau^2}}
+
+\newcommand{\Gam}[2]{\mbox{Gamma}\left( #1, #2 \right) }
+\newcommand{\InvGam}[2]{\mbox{Inv-Gamma}\left( #1, #2 \right) }
+
+%%% END Article customizations
+
+%%% The "real" document content comes below...
+
+% \newbox{\LegendeA}
+% \savebox{\LegendeA}{
+%    (\begin{pspicture}(0,0)(0.6,0)
+%    \psline[linewidth=0.04,linecolor=red](0,0.1)(0.6,0.1)
+%    \end{pspicture})}
+% \newbox{\LegendeB}
+%    \savebox{\LegendeB}{
+%    (\begin{pspicture}(0,0)(0.6,0)
+%    \psline[linestyle=dashed,dash=1pt 2pt,linewidth=0.04,linecolor=blue](0,0.1)(0.6,0.1)
+%    \end{pspicture})}
+
+\title{A Range-Based Bivariate Stochastic Volatility Model}
+\author{Georgi Dinolov, Abel Rodriguez, Hongyun Wang}
+\date{} % Activate to display a given date or no date (if empty),
+         % otherwise the current date is printed 
+
+\begin{document}
+\def\spacingset#1{\renewcommand{\baselinestretch}%
+{#1}\small\normalsize} \spacingset{1}
+
+\bigskip
+
+\vspace{1cm}
+\noindent
+
+\spacingset{1.00} % 
+\section{Introduction}
+
+The estimation and prediction of price volatility from market data is
+an important problem in econometrics and finance
+\citep{abramov2007estimation}, as well as practical risk management
+\citep{brandt2006dynamic}. The literature on the subject of volatility
+estimation is vast. Model-based approaches for a single observable
+asset begin with the ARCH and GARCH models of \cite{engle1982} and
+\cite{bollerslev1986}, moving on to stochastic volatility models (see
+\cite{shephard2005selected-readings}, for example).
+
+Multivariate equivalents for each of these model classes exist (see
+\cite{bauwens2006multivariate} and \cite{asai2006multivariate} for
+reviews of multivariate GARCH and for multivariate stochastic
+volatility, respectively). However, the majority of work on the
+subject uses opening and closing prices as data. This approach
+invariably disregards information traditionally contained in financial
+timeseries: the observed high and low price of an asset over the
+quoted periods. To our current knowledge, only \cite{rodriguez2012}
+use the observed maximum and minimum of prices in a likelihood to
+estimate volatility. They do so, however, in a univariate
+setting.
+
+Explicit model-based approaches in the multivariate setting which take
+into account extrema over observational periods are completely lacking
+in the literature, because deriving an efficient approximation of the
+corresponding likelihood function has hereto been an open problem
+[cite?]. In this paper, we use a result addressing this problem and
+introduce a novel, \textit{bivariate} stochastic volatility model
+which takes into account the highest and lowest observed prices of
+each asset as part of a likelihood-based (Bayesian) estimation
+procedure.
+
+\bibliographystyle{plainnat}
+\bibliography{master-bibliography}
+
+\end{document}
