@@ -1,0 +1,252 @@
+\documentclass[12pt]{article}
+%
+\usepackage{amssymb}
+\usepackage{graphics}
+\usepackage{epsfig}
+\usepackage{epstopdf}
+\usepackage{color}
+%--- double-spaced -----
+\def\dsp{\def\baselinestretch{1.5}\large\normalsize}
+\dsp
+%
+\oddsidemargin   0.0 in
+\evensidemargin  0.0 in
+\topmargin          -0.6 in
+\textwidth       6.5 in
+\textheight      9.0 in
+%\parindent       0.0 in
+\parskip         0.1 in
+%
+\begin{document}
+
+\begin{itemize}
+
+\item In equation (1), change the boundary conditions to 
+$$ \begin{array}{cc}
+a_x \le X(t) \le b_x \\
+a_y \le Y(t) \le b_y
+\end{array}$$
+Or change the boundary conditions in equation (3) to make the two equations 
+consistent with each other. \textcolor{red}{DONE}
+
+\item Delete $0 < t' \le t$ below equation (2). \textcolor{red}{DONE}
+
+\item Change equation (3) to 
+$$\frac{1}{dx dy} \mbox{Pr}\left( \left. \begin{array}{ll}
+X(t) \in [x, x+dx), Y(t) \in [y, y+dy),  \\
+\displaystyle \min_{t'\in[0, t]} X(t') \ge a_x, \max_{t'\in[0, t]} X(t') \le b_x, \\
+\displaystyle \min_{t'\in[0, t]} Y(t') \ge a_y, \max_{t'\in[0, t]} Y(t') \le b_y
+\end{array} \right | X(0)=x_0, Y(0)=y_0, \theta
+\right) $$ \textcolor{red}{DONE}
+
+\item In equation (4), change to $\displaystyle \frac{\partial}{\partial t'} $  \textcolor{red}{DONE}
+
+\item Change equation (6) to 
+$$ \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial b_y} q(x,y,t) = 
+\mbox{density} \left( \left. \begin{array}{ll}
+X(t) =x, Y(t) =y,  \\
+\displaystyle \min_{t'\in[0, t]} X(t') = a_x, \max_{t'\in[0, t]} X(t') = b_x, \\
+\displaystyle \min_{t'\in[0, t]} Y(t') = a_y, \max_{t'\in[0, t]} Y(t') = b_y
+\end{array} \right | X(0)=x_0, Y(0)=y_0, \theta
+\right) $$ \textcolor{red}{DONE}
+
+\item At the end of paragraph after equation (6), change to \\
+  `` ... method necessary for carrying out inferential procedures with ... ''
+  \textcolor{red}{DONE}
+
+\item In the last paragraph of page 1, change to \\
+  `` ... each eigenfunction of the differential operator is a product of two sine functions, one in each dimension ...'' \\
+  \textcolor{red}{DONE}
+
+\item In the last paragraph of page 1 \\
+  Use $a_x, a_y$ instead of $a_1, a_2$ \\
+  Use $b_x, b_y$ instead of $b_1, b_2$
+  \textcolor{red}{DONE}
+
+\item In the last paragraph of page 1, change to  \\
+``This, however, requires one to solve Fokker-Planck equation (4)-(5) accurately for at least 16slightly different sets of boundaries and combine the results with numerical differentiation 
+to evaluate the density function for a just single observation ... ''   \textcolor{red}{DONE}
+
+\item At the beginning of first paragraph on page 2, add \\
+``for non-zero correlation, '' \\
+\textcolor{red}{DONE}
+
+Change to \\
+``... where the eigenfunctions for the differential operator are approximated
+by the eigenvectors of a linear system obtained using a truncated expansion based on 
+a set of separable basis function, each of which is a product of two sine functions (one in each dimension) satisfying the boundary conditions ...'' \\
+\textcolor{red}{DONE}
+
+\item In the middle of first paragraph on page , change to \\
+ ``... makes the expansion a slow, if not unfeasible, solution.'' \\
+ Change to \\
+ ``... from either using a separable representation for the differential operator that is intrinsically 
+ correlated in the two dimensions (trigonometric series) or ... ''
+ \textcolor{red}{DONE}
+
+\item At the beginning of second paragraph on page , change to \\
+``In this paper, we propose a robust and efficient solution to the general problem (4)-(5). The solution is obtained by combining a small-time analytic solution with a Galerkin discretization
+based on basis functions that are correlated. ''
+ \textcolor{red}{DONE}
+
+\item Change equation (9) to 
+$$p(x,y,t) = \sum_v h_v \phi_v (x, y) e^{-\lambda_v t} $$
+where $h_v$ is the coefficient of $\phi_v (x, y) $ in the eigenfunction expansion of $p(x, y, 0)$.
+ \textcolor{red}{DONE}
+
+\item 4 lines below equation (9) on page 3, change to \\
+  ``... we approximate the eigenfunction using a finite set of orthogonal basis functions satisfying boundary conditions, i.e., a finite sequence of sines, ... ''
+   \textcolor{red}{DONE}
+
+\item The equation below equation (9) on page 3, make changes \\
+1. Each index should start at 1, not 0. \\ 
+2. Make the associated changes in the definition of $\Psi(x, y)$ and $c_v$.
+   \textcolor{red}{DONE}
+
+\item In the paragraph below equation (10) on page 3, change to \\ 
+`` ... Applying $L$ to the basis function expansion of $\phi_v $ and again approximating 
+the result using the finite set of basis functions yields ''
+   \textcolor{red}{DONE}
+
+ \item 4 lines below equation (10) on page 3, {\bf what is
+     $\tilde{\theta} $?}  This is the first time this
+   parameter/quantity is mentioned.  \textcolor{red}{DONE}
+
+\item After $\tilde{\theta} $ on page 3, add \\
+``In the last part of the equation above, we have truncated the infinite sine series 
+expansion of $L \psi_{l, m}(x, y)$ ''
+ \textcolor{red}{DONE}
+
+\item 4 lines below equation (10) on page 3, delete the subscript outside the curly bracket \\
+  it should be $ \left\{ \psi_{l, m}(x, y) \right\} $.
+  \textcolor{red}{DONE}
+
+\item 5 lines below equation (10) on page 3, change to \\
+  `` The dense structure of matrix $A$ is caused by the mixing terms
+  ... '' \textcolor{red}{DONE}
+
+\item 9 lines below equation (10) on page 3, change to \\
+  `` ... , we arrive at the matrix eigenvalue problem ''
+  \textcolor{red}{DONE}
+
+\item Equation at the bottom of page 3, move $\Psi(x,y)^T $ outside the summation
+and add the coefficient $h_v$ \\
+It should be
+$$ p(x,y,t) \approx \Psi(x,y)^T \sum_v h_v c_v e^{-\lambda_v t}  $$
+  \textcolor{red}{DONE}
+
+\item Page 4, line 7, change``such that ...'' to \\
+``The 4-th derivative of $p$ with respect to the 4 boundaries is approximated as '' \\
+\begin{eqnarray} 
+& & \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial b_y} p(x, y, t) 
+\nonumber \\
+& & \hspace*{0.5cm} \approx \frac{\displaystyle \sum_{k_1, k_2, k_3, k_4 = \pm 1}
+c_{\{ k_1, k_2, k_3, k_4 \} } p(\left. x, y, t \right| a_x+k_1 \varepsilon, b_x+k_2 \varepsilon, 
+a_y+k_3 \varepsilon, b_y+k_4 \varepsilon) }{(2 \varepsilon )^4} 
+\nonumber
+\end{eqnarray}
+\textcolor{red}{DONE}
+
+\item Page 4, line 9, change to \\
+  `` ... requires many terms in the basis function expansions of the eigenfunctions, ...''
+  \textcolor{red}{DONE}
+
+\item Paragraph after equation (11) on page 4, change to \\
+`` ... Here, c(t) is a vector consisting of values of the solution in (8) on a set of grid points
+over $\Omega$ at time $t$, ... ''
+  \textcolor{red}{DONE}
+
+\item Line 6 below equation (11) on page 4, change to \\
+`` For example, using $c_{l, m}(t) $ 
+to denote the approximation of the solution at grid point $(x_l, y_m)$, and assembling 
+vector $c(t)$ using the index scheme $c_{l, m}(t) \rightarrow c_k(t)$ with  
+$k=  (l-1) M + m$, we can approximate the operator $\frac{\partial^2 }{\partial x^2} $ as
+  \textcolor{red}{DONE}
+
+\item Line 12 below equation (11) on page 4, change to \\
+  `` ... with a constant h independent of parameters is appealing ...''
+    \textcolor{red}{DONE}
+
+\item last sentence of page 4, delete the sentence since we are not discussing 
+the approach in details. If we want to keep the sentence, we need to describe the approach
+in some details, including i) keeping $\tau_x =1$ and 
+$\tau_y = 1$; ii) keeping the 3 boundaries on grid points; iii) having to work with 
+$\Omega \ne \mbox{a square}$; and iv) one side of boundaries not falling on grid points.
+    \textcolor{red}{DONE}
+
+\item Page 5, line 3, change to \\
+`` ... , $h$ cannot be made too small because round-off error and the irregular part of 
+the truncation error become an issue relatively quickly.
+    \textcolor{red}{DONE}
+
+\item Equations and text from line 6 of page 5 to the end of section 2, change to \\
+$$p_{FD}(\left. x, y, t \right| b) = p(\left. x, y, t \right| b) 
++ h^2 \mbox{F}_{reg}(b) + h^2 \mbox{F}_{irreg}(b) + 
+\varepsilon_{mach} \mbox{F}_{round}(b) $$
+where we have included parameter $b $ explicitly as a simplified notation for 
+$[a_x, b_x]$ and $[a_y, b_y]$ after shifting $a_x$ and$a_y$ to 0. 
+
+Note that when expressed using the chain rule, both 
+$\displaystyle \frac{\partial}{\partial a_x}$ and  $\displaystyle \frac{\partial}{\partial b_x}$
+contain $\displaystyle \frac{\partial}{\partial b}$. As a result, 
+$\displaystyle \frac{\partial^2 }{\partial a_x \partial b_x} $ leads to 
+$\displaystyle \frac{\partial^2 }{\partial b^2} $. Although in the discussion below, 
+for simplicity, we only illustrate the numerical differentiation on the first derivative, 
+keep in mind that it is the second derivative that is more relevant in the calculation of 
+ $\displaystyle \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial b_y}
+p(x, y, t) $. 
+
+In the expression of finite difference solution above, 
+$h^2 \mbox{F}_{reg}(b) $ is the regular part of 
+the truncation error from discretizing the differential operator on the grid; 
+$h^2 \mbox{F}_{irreg}(b) $ is the irregular part of the truncation error 
+from the interpolations invoked by $\{x_0, y_0, x, y \}$ not being on grid points; 
+and $\varepsilon_{mach} \mbox{F}_{round}(b) $ is the effect of round-off errors
+with $\varepsilon_{mach} \sim 10^{-16}$ denoting the machine epsilon for 
+IEEE double precision system. 
+The coefficient, $\mbox{F}_{reg}(b) $, of the regular part of truncation error 
+is a smooth function of $b$ with derivative $= O(1)$. 
+The coefficient, $\mbox{F}_{round}(b) $, in the effect of round-off errors, 
+behaves virtually like a random variable, discontinuous in $b$. 
+For the irregular part of truncation error, the coefficient $\mbox{F}_{irreg}(b) $ 
+in general is continuous in $b$ but not smooth in $b$ where the derivative has 
+discontinuities of magnitude $O\left( \frac{1}{h} \right)$. 
+For example, the error in 
+a piece-wise linear interpolation of a smooth function at position $b$ using step $h$ 
+has the general form of 
+$$\mbox{Interpolation error } = O(h^2) (1-\mbox{rem}(b/h,1)) \mbox{rem}(b/h,1)$$ 
+The coefficient part $\mbox{F}_{irreg}(b) = (1-\mbox{rem}(b/h,1)) \mbox{rem}(b/h,1) $ 
+is continuous in $b$ but not differentiable. Its first derivative 
+has the behavior of 
+$$ \frac{\partial }{\partial b} \mbox{F}_{irreg}(b) =  \frac{1}{h} \left(1-2\mbox{rem}(b/h,1) \right)$$
+
+Based on the expression we wrote out above for the finite difference solution, 
+applying the numerical differentiation on t with step $\varepsilon$ yields: 
+\begin{eqnarray}
+& & \frac{p_{FD}(\left. x, y, t \right| b+\varepsilon)-p_{FD}(\left. x, y, t \right| b -\varepsilon)}{2 \varepsilon} \nonumber \\
+& & \hspace*{1cm} =  \frac{\partial }{\partial b} p(\left. x, y, t \right| b) + O(\varepsilon^2)
+ + h^2 \frac{\mbox{F}_{reg}(b+\varepsilon)-\mbox{F}_{reg}(b-\varepsilon)}{2 \varepsilon}  \nonumber \\
+& & \hspace*{1cm} + h^2 \frac{\mbox{F}_{irreg}(b+\varepsilon)-\mbox{F}_{irreg}(b-\varepsilon)}{2 \varepsilon}
+ + \varepsilon_{mach} \frac{\mbox{F}_{round}(b+\varepsilon)-\mbox{F}_{round}(b-\varepsilon)}{2 \varepsilon}  \nonumber
+\end{eqnarray}
+In the equation above, as the step in the numerical differentiation is refined, the first line 
+of the RHS is well behaved, converging to the true value 
+$\frac{\partial }{\partial b} p(\left. x, y, t \right| b)$ as $\varepsilon \rightarrow 0$. 
+The second line of RHS, however, is problematic. As $\varepsilon \rightarrow 0$, 
+the contribution from round-off error blows up to infinity
+$$ \varepsilon_{mach} \frac{\mbox{F}_{round}(b+\varepsilon)-\mbox{F}_{round}(b-\varepsilon)}{2 \varepsilon}  = O\left(\frac{\varepsilon_{mach}}{\varepsilon} \right) 
+\longrightarrow \infty \;\;\;\; \mbox{as } \varepsilon \rightarrow 0 $$
+The contribution from the irregular part of truncation error is 
+$$ h^2 \frac{\mbox{F}_{irreg}(b+\varepsilon)-\mbox{F}_{irreg}(b-\varepsilon)}{2 \varepsilon}  = 
+O\left(\frac{h^2}{\max(\varepsilon, h)} \right) $$ 
+In the second order numerical differentiation, however, the contribution from 
+the irregular part of truncation error behaves like 
+$$ h^2 \frac{\mbox{F}_{irreg}(b+\varepsilon)-2\mbox{F}_{irreg}(b)
++\mbox{F}_{irreg}(b-\varepsilon)}{\varepsilon^2 }  = 
+O\left(\frac{h^2}{\max(\varepsilon^2, h^2)} \right) $$
+    \textcolor{red}{DONE}
+
+\end{itemize}
+
+\end{document}
+
