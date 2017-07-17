@@ -149,6 +149,34 @@ which takes into account the highest and lowest observed prices of
 each asset as part of a likelihood-based (Bayesian) estimation
 procedure.
 
+\section{Model}
+The model we will use is a bivaraite 1-factor stochastic volatility
+model with leverage:
+
+\begin{align}
+  \left( \begin{array}{c}
+           x_t \\
+           y_t
+         \end{array} \right) &= \left( \begin{array}{c}
+                                         x_{t-\Delta} \\
+                                         y_{t-\Delta}
+                                       \end{array} \right) +
+  \left( \begin{array}{c}
+           \mu_x \\
+           \mu_y \end{array} \right) +
+  \left( \begin{array}{cc}
+           \sqrt{1-\rho_t^2}\sigma_{x,t} & \rho_t \frac{\sigma_{x,t}}{\sigma_{y,t}} \\
+           0 & \sigma_{y,t}
+         \end{array} \right)
+               \left( \begin{array}{c}
+                        \epsilon_{x,t} \\
+                        \epsilon_{y,t}
+                      \end{array} \right) \\
+  \log(\sigma_{x,t+\Delta}) &= \alpha_x + \theta_x(\log(\sigma_{x,t}) - \alpha_x) + \tau_x \eta_{x,t} \\
+  \log(\sigma_{y,t+\Delta}) &= \alpha_y + \theta_y(\log(\sigma_{y,t}) - \alpha_y) + \tau_y \eta_{y,t} \\
+  \mbox{logit}((\rho_{t+\Delta} + 1)/2) &= \mbox{logit}((\rho_{t}+1)/2) + \tau_{\rho} \eta_{\rho,t}
+\end{align}
+
 \bibliographystyle{plainnat}
 \bibliography{master-bibliography}
 

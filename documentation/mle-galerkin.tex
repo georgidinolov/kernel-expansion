@@ -1,0 +1,1248 @@
+\documentclass[10pt]{article}
+
+\usepackage{amsthm}
+\usepackage[toc,page]{appendix}
+\usepackage{amssymb}
+\usepackage{bm}
+\usepackage{pslatex,palatino,avant,graphicx,color}
+\usepackage{colortbl}
+\usepackage{fullpage}
+\usepackage{mathtools}
+\usepackage{natbib}
+\usepackage{amsmath}
+\usepackage{caption}
+%\usepackage{subfigure}
+\usepackage{subcaption}
+\usepackage{bm}
+\usepackage{wrapfig}
+\usepackage{enumerate}
+\usepackage{rotating}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{bbm}
+\usepackage[titles,subfigure]{tocloft} % Alter the style of the Table of Contents
+
+\newtheorem{lemma}{Lemma}
+%\pdfminorversion=4
+% NOTE: To produce blinded version, replace "0" with "1" below.
+\newcommand{\blind}{0}
+
+% DON'T change margins - should be 1 inch all around.
+\addtolength{\oddsidemargin}{0in}%
+\addtolength{\evensidemargin}{0in}%
+\addtolength{\textwidth}{0in}%
+\addtolength{\textheight}{0in}%
+\addtolength{\topmargin}{0in}%
+
+
+\renewcommand{\cftsecfont}{\rmfamily\mdseries\upshape}
+\renewcommand{\cftsecpagefont}{\rmfamily\mdseries\upshape} % No bold!
+
+\newcommand{\indicator}[1]{\mathbbm{1}\left( #1 \right) }
+\newcommand{\hb}{\hat{b}}
+\newcommand{\ha}{\hat{a}}
+\newcommand{\htheta}{\hat{\theta}}
+\newcommand{\halpha}{\hat{\alpha}}
+\newcommand{\hmu}{\hat{\mu}}
+\newcommand{\hsigma}{\hat{\sigma}}
+\newcommand{\hphi}{\hat{\phi}}
+\newcommand{\htau}{\hat{\tau}}
+\newcommand{\heta}{\hat{\eta}}
+\newcommand{\E}[1]{\mbox{E}\left[#1\right]}
+\newcommand{\Var}[1]{\mbox{Var}\left[#1\right]}
+\newcommand{\Indicator}[1]{\mathbbm{1}_{ \left( #1 \right) } }
+\newcommand{\dNormal}[3]{ N\left( #1 \left| #2, #3 \right. \right) }
+\newcommand{\Beta}[2]{\mbox{Beta}\left( #1, #2 \right)}
+\newcommand{\alphaphi}{\alpha_{\hphi}}
+\newcommand{\betaphi}{\beta_{\hphi}}
+\newcommand{\expo}[1]{ \exp\left\{ #1 \right\}}
+\newcommand{\tauSquareDelta}{\htau^2
+  \left(\frac{1-\expo{-2\htheta\Delta}}{2\htheta} \right)}
+\newcommand{\mumu}{\mu_{\hmu}}
+\newcommand{\sigmamu}{\sigma^2_{\hmu}}
+\newcommand{\sigmamuexpr}{\log\left( \frac{\VarX}{\EX^2} + 1 \right)}
+\newcommand{\mumuexpr}{\log(\EX) -  \log\left( \frac{\VarX}{\EX^2} + 1 \right) /2 }
+
+\newcommand{\EX}{\mbox{E}\left[ X \right] }
+\newcommand{\VarX}{\mbox{Var}\left[ X \right] }
+\newcommand{\mueta}{\mu_{\heta} }
+\newcommand{\sigmaeta}{\sigma^2_{\heta}}
+\newcommand{\sigmaetaexpr}{ \log\left( \frac{\VarX}{\EX^2} + 1 \right) }
+\newcommand{\muetaexpr}{ \log(\EX) -  \sigmaetaexpr /2 }
+
+\newcommand{\mualpha}{\mu_{\halpha} }
+\newcommand{\sigmaalpha}{\sigma^2_{\halpha}}
+\newcommand{\sigmaalphaexpr}{ \log\left( \frac{\VarX}{\EX^2} + 1 \right) }
+\newcommand{\mualphaexpr}{ \log(\EX) -  \sigmaalphaexpr /2 }
+
+\newcommand{\mutauexpr}{ \frac{2}{T} \EX }
+\newcommand{\sigmatauexpr}{ \frac{4}{T^2} \Var{X}}
+
+\newcommand{\alphatau}{\alpha_{\htau^2}}
+\newcommand{\betatau}{\beta_{\htau^2}}
+
+\newcommand{\Gam}[2]{\mbox{Gamma}\left( #1, #2 \right) }
+\newcommand{\InvGam}[2]{\mbox{Inv-Gamma}\left( #1, #2 \right) }
+
+%%% END Article customizations
+
+%%% The "real" document content comes below...
+
+% \newbox{\LegendeA}
+% \savebox{\LegendeA}{
+%    (\begin{pspicture}(0,0)(0.6,0)
+%    \psline[linewidth=0.04,linecolor=red](0,0.1)(0.6,0.1)
+%    \end{pspicture})}
+% \newbox{\LegendeB}
+%    \savebox{\LegendeB}{
+%    (\begin{pspicture}(0,0)(0.6,0)
+%    \psline[linestyle=dashed,dash=1pt 2pt,linewidth=0.04,linecolor=blue](0,0.1)(0.6,0.1)
+%    \end{pspicture})}
+
+\title{Solution to a Non-Seperable Diffusion Equation on a Regular Domain}
+\author{Georgi Dinolov, Abel Rodriguez, Hongyun Wang}
+\date{} % Activate to display a given date or no date (if empty),
+         % otherwise the current date is printed 
+
+\begin{document}
+\def\spacingset#1{\renewcommand{\baselinestretch}%
+{#1}\small\normalsize} \spacingset{1}
+
+\bigskip
+
+\vspace{1cm}
+\noindent
+
+\spacingset{1.00} % 
+\section{Introduction}
+
+We consider two-dimensional correlated Brownian motion with absorbing boundaries:
+\begin{align}
+  X(t) &= x_0 + \mu_x t + \sigma_x W_x(t) &a_x &\leq X(t) \leq b_x   \label{eq:X} \\
+  Y(t) &= y_0 + \mu_y t + \sigma_y W_y(t) &a_y &\leq Y(t) \leq b_y   \label{eq:Y} 
+\end{align}
+where $W_i$ are standard Brownian motions with
+$\mbox{Cov}(W_1(t), W_2(t)) = \rho t$. In
+particular, we find the joint transition density function for
+$(X(t), Y(t))$ under the boundary conditions:
+\begin{align}
+  \frac{1}{dx dy} \mbox{Pr}\left( \left. \begin{array}{ll}
+X(t) \in [x, x+dx), Y(t) \in [y, y+dy),  \\
+\displaystyle \min_{t'\in[0, t]} X(t') \ge a_x, \max_{t'\in[0, t]} X(t') \le b_x, \\
+\displaystyle \min_{t'\in[0, t]} Y(t') \ge a_y, \max_{t'\in[0, t]} Y(t') \le b_y
+\end{array} \right | X(0)=x_0, Y(0)=y_0, \theta
+\right), \label{eq:CDF}
+  % \Pr\left(X(t) \in dx, Y(t) \in dy,  \min_{t'}X(t') \geq a_x,
+  % \max_{t'}X(t')\leq b_x, \min_{t'} Y(t')\geq a_y, \max_{t'} Y(t')\leq b_y|  X(0)=x_0, Y(0)=y_0, \theta \right), \label{eq:CDF}
+\end{align}
+with $\theta := (\mu_x, \mu_y, \sigma_x, \sigma_y, \rho).$ This
+function, which we shorten to $q(x,y,t)$ from now on, is the solution
+to the Fokker-Planck equation \citep{oksendal2013stochastic}:
+\begin{align}
+  \displaystyle \frac{\partial}{\partial t'} q(x,y,t') &= -\mu_x \frac{\partial}{\partial x}q(x,y,t')
+                                         - \mu_y \frac{\partial}{\partial y}q(x,y,t')
+                                         + \frac{1}{2}\sigma_x^2 \frac{\partial^2}{\partial x^2}q(x,y,t')
+                                         + \rho\sigma_x\sigma_y \frac{\partial^2}{\partial x \partial y}q(x,y,t')
+                                         + \frac{1}{2}\sigma_y^2 \frac{\partial^2}{\partial y^2}q(x,y,t'),
+  \label{eq:1} \\
+  q(a_x, y,t') &= q(b_x,y,t') = q(x,a_y,t') = q(x,b_y,t') = 0, \label{eq:2} \\
+   0 &< t' \leq t. \nonumber
+\end{align}
+Differentiating $q(x,y,t)$ with respect to the boundaries produces the
+transition density of a particle beginning and ending at the points
+$(X_1(0), X_2(0))$ and $(X_1(t), X_2(t))$, respectively, while
+attaining the minima $a_x/a_y$ and maxima $b_x/b_y$ in each coordinate
+direction:
+\begin{align}
+  \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial b_y} q(x,y,t) = 
+\mbox{density} \left( \left. \begin{array}{ll}
+X(t) =x, Y(t) =y,  \\
+\displaystyle \min_{t'\in[0, t]} X(t') = a_x, \max_{t'\in[0, t]} X(t') = b_x, \\
+\displaystyle \min_{t'\in[0, t]} Y(t') = a_y, \max_{t'\in[0, t]} Y(t') = b_y
+\end{array} \right | X(0)=x_0, Y(0)=y_0, \theta
+\right) \label{eq:pdf}
+\end{align}
+The transition density (\ref{eq:CDF}) with less than all four
+boundaries has been used in computing first passage times
+\citep{kou2016first, sacerdote2016first}, with application to
+structural models in credit risk and default correlations
+\citep{haworth2008modelling, ching2014correlated}. \cite{he1998double}
+use variants of (\ref{eq:pdf}) with respect to some of the boundaries
+to price financial derivative instruments whose payoff depends on
+\textbf{some} of the observed maxima/minima. \cite{rodriguez2012} use
+a full likelihood-based (Bayesian) approach to estimate volatility in
+\textit{univariate} financial timeseries where open, closing, highest,
+and lowest prices are included. Their work fits into a body of
+literature and collection of techniques by practitioners where the
+observed range of prices is used to make similar estimates. In this
+paper we will provide the efficient numerical method necessary for
+carrying out inferential procedures with correlated financial
+timeseries.
+
+Closed-form solutions to (\ref{eq:1}) - (\ref{eq:2}) are available for
+some parameter regimes. When $\rho = 0$, the transition density of the
+process is the solution to a well-understood Sturm-Liouville problem
+where the eigenfunctions of the differential operator are sine
+functions. When $a_x = -\infty$ and $b_x = \infty$, the method of
+images can be used to enforce the remaining boundaries. For either
+$a_x, a_y = -\infty$ or $b_x, b_y = \infty$, eigenfunction of the
+Fokker-Plank equation can be found in radial coordinates. Both of
+these techniques are used and detailed by
+\cite{he1998double}. However, to the best of our knowledge, there is
+no closed-form solution to the general problem in (\ref{eq:1}) -
+(\ref{eq:2}). This also limits the available ways to compute
+(\ref{eq:pdf}), with the most straightforward approach being finite
+difference with respect to the boundary conditions. This, however,
+requires one to solve Fokker-Planck equation (\ref{eq:1}) - (\ref{eq:2})
+accurately for at least 16 slightly different sets of boundaries and
+combine the results with numerical differentiation to evaluate the
+density function for a just single observation (see Section
+\ref{sec:likelihood-calc}), motivating the need for an efficient
+numerical method to solve (\ref{eq:1}) - (\ref{eq:2}).
+
+For non-zero correlation, it is still possible to approach the general
+problem by proposing a biorthogonal expansion in time and space
+(\cite{risken1989fokker-planck}, sections 6.2), where the
+eigenfunctions for the differential operator are approximated by the
+eigenvectors of a linear system obtained using a truncated expansion
+based on a set of separable basis function, each of which is a product
+of two sine functions (one in each dimension) satisfying the boundary
+conditions. However, a drawback of this out-of-the-box solution is
+that the system matrix for the corresponding eigenvalue problem is
+dense. Additionally, for nonzero $\rho$, it is necessary to have a
+large number of basis elements for an accurate approximation. The
+denseness and size of the resultant system matrices makes the
+expansion a slow, if not unfeasible, solution. An alternative is to
+use a finite difference scheme to directly solve the evolution problem
+after suitable transformations. However, both of these methods need a
+high degree of numerical resolution to produce practically useful
+approximations of the transition density. We conjecture that these
+inefficiencies come from either using a separable representation for
+the differential operator that is intrinsically correlated in the two
+dimensions (trigonometric series) or introducing numerical
+diffusion (finite difference).
+
+In this paper, we propose a robust and efficient solution to the
+general problem (\ref{eq:1}) - (\ref{eq:2}). The solution is obtained
+by combining a small-time analytic solution with a Galerkin
+discretization based on basis functions that are correlated. Our
+method directly takes into account the correlation parameter present
+in the differential operator in order to efficiently represent the
+analytic small-time solution and propagate it forward in time. We
+apply our computational method to estimate equation parameters with a
+maximum likelihood approach in settings where the model assumptions of
+constant $(\mu_x, \mu_y, \sigma_x, \sigma_y, \rho)$ and Brownian
+motion driving stochastic evolution are appropriate. Section
+\ref{sec:approximate-sols} outlines some methods we considered,
+including the one we used. Section [] includes our numerical
+experiments.
+
+
+\section{Approximate Numerical Solutions} \label{sec:approximate-sols}
+Before considering solutions to the full Fokker-Planck equation
+(\ref{eq:1}) - (\ref{eq:2}), we simplify the PDE by proposing a
+scaling transformation and an exponential decomposition of the
+solution, so that we can construct
+\begin{align}
+  p(x,y,t) &= \exp(\alpha x + \beta y + \gamma t) q\left( x(b_x - a_x) + a_x, \,\, y(b_y - a_y) + a_y, \,\, t \right), \label{eq:q-to-p}
+\end{align}
+where
+
+
+\begin{align*}
+  \alpha &= -\frac{\mu_x}{\sigma_x^2} - \frac{\rho}{\sigma_x\sigma_y(1-\rho^2)}\left( -\frac{\mu_y}{\sigma_y^2} + \frac{\mu_x \rho}{\sigma_x \sigma_y} \right), \\
+  \beta &= \left( -\frac{\mu_y}{\sigma_y^2} + \frac{\mu_x \rho}{\sigma_x \sigma_y} \right), \\
+  \gamma &= \frac{1}{2}\left( \frac{\sigma_x}{(b_x-a_x)} \right)^2 \alpha^2 + \frac{1}{2}\left(\frac{\sigma_y}{(b_y-a_y)}\right)^2 \beta^2 + \alpha\beta.
+\end{align*}
+This new formula satisfies the simpler diffusion equation:
+\begin{equation}
+  \frac{\partial}{\partial t} p(x,y,t) = \mathcal{L}p(x,y,t),\quad (x,y) \in (0,1) \times (0,1) := \Omega \label{eq:qq}
+\end{equation}
+subject to the constraints
+\begin{align}
+  p(x,y,t) &=0, & \mbox{ for } & (x,y) \in \{ x | x = 0\} \cup \{ y | y = 0\}, \nonumber \\
+  p(x,y,0) &= \delta\left( x - \frac{x_0-a_x}{b_x - a_x} \right) \delta\left(y-\frac{y_0 - a_y}{b_y - a_y}\right), \nonumber
+\end{align}
+where the differential operator $\mathcal{L}$ takes the form
+\[
+  \mathcal{L} = \frac{1}{2} \tau_x^2 \frac{\partial^2}{\partial x^2}
+  + \rho\tau_x\tau_y \frac{\partial^2}{\partial x \partial y} + \frac{1}{2}\tau_y^2 \frac{\partial^2}{\partial y^2},
+  % \left(  \right)^2
+  %                                                   \frac{\partial^2}{\partial x^2}p(x,y,t) + \rho\left( \frac{\sigma_x}{(b_x-a_x)} \right)\left( \frac{\sigma_y}{(b_y-a_y)} \right)
+  %                                                   \frac{\partial^2}{\partial x \partial y}p(x,y,t) +
+  %                                        \frac{1}{2}\left( \frac{\sigma_y}{(b_y-a_y)} \right)^2 \frac{\partial^2}{\partial y^2}p(x,y,t) , \label{eq:qq} \\
+\]
+where $\tau_x = \frac{\sigma_x}{(b_x-a_x)}$,
+$\tau_y = \frac{\sigma_y}{(b_y-a_y)}$.  Note here that under this
+transformation $\rho$ remains the same as in the original problem. We
+will call equation (\ref{eq:qq}) the \textit{normalized} problem and
+will consider its solution in terms of the diffusion parameters
+$(\tau_x, \tau_y, \rho)$ without a loss of generality.
+
+\subsection{Eigenfunction Expansion} \label{sec:eigenfunction}
+Following Section 6.2 of \cite{risken1989fokker-planck}, we may use
+the biorthogonal decomposition of the solution as a sum of
+eigenfunctions and time-dependent coefficients determined by eigenvalues:
+\begin{equation}
+  p(x,y,t) =  \sum_\nu h_\nu \phi_\nu (x, y) e^{-\lambda_\nu t}, \label{eq:biorthogonal}
+\end{equation}
+where $h_\nu$ is the coefficient of $\phi_\nu(x, y)$ is the
+eigenfunction expansion of $p(x,y,0)$. Because the differential
+operator $\mathcal{L}$ is self-adjoint, the family of eigenfunctions
+is complete in the Hilbert space $L_2(\Omega)$. Moreover, the
+eigenvalues are bounded below by a positive constant $c$, so that the
+solution behaves as expected (see section 6.3 of
+\cite{risken1989fokker-planck}).
+
+Since we require $\phi_\nu(x,y)$ to be zero on the boundaries, we
+approximate the eigenfunction using a finite set of orthogonal basis
+functions satisfying boundary conditions, i.e., a finite sequence of
+sines,
+\[
+  \phi_\nu(x,y) = \sum_{l=1}^L \sum_{m=1}^M c_{l,m, \nu}
+  \sin\left(2\pi\, l\, x \right) \sin\left(2\pi\, m\, y \right) := \Psi(x,y)^T c_\nu,
+\]
+where we have truncated the infinite series for some suitably large
+$L$ and $M$ and defined
+\begin{align*}
+  \psi_{l,m}(x,y) &= \sin\left(2\pi\, l\, x \right)
+                         \sin\left(2\pi\, m\, y \right), \\
+  \Psi(x,y) &= (\psi_{1,1}(x,y), \ldots, \psi_{L,M}(x,y))^T, \\
+  c_\nu &= (c_{1,1,\nu}, \ldots, c_{L,M,\nu})^T.
+\end{align*}
+
+The biorthogonal representation (\ref{eq:biorthogonal}) leads to the
+eigenvalue problem
+\begin{equation}
+  \mathcal{L} \phi_\nu = -\lambda_\nu \phi_\nu, \label{eq:eigenproblem}
+\end{equation}
+where $\mathcal{L}$ is the differential operator in the normalized
+Fokker-Planck equation. Applying $L$ to the basis function expansion
+of $\phi_v $ and again approximating the result using the finite set
+of basis functions yields
+\[
+  \mathcal{L}\phi_\nu = \mathcal{L}(\Psi(x,y)^T c_\nu) =
+  \mathcal{L}(\Psi(x,y)^T) c_\nu = (A \Psi(x,y))^T c_\nu,
+\] 
+where $A$ is a constant matrix dependent on
+$\theta = (\mu_x, \mu_y, \sigma_x, \sigma_y, \rho)$. In the last part
+of the equation above, we have truncated the infinite sine series
+expansion of $L \psi_{l, m}(x, y)$. In the case where $\rho = 0$, $A$
+is diagonal because $\left\{ \psi_{l,m}(x,y) \right\}$ are the
+eigenfunctions to $\mathcal{L}$. When $\rho \neq 0$, $A$ is no longer
+diagonal and is in fact dense. The dense structure of matrix $A$ is
+caused by the mixing terms
+\[
+  \frac{\partial^2}{\partial x \partial y} \sin\left(2\pi\, l\,
+    x\right) \sin\left(2\pi\, m\, y\right) = (2\pi\, l)(2\pi\, m)
+  \cos\left(2\pi\, l\, x\right) \cos\left(2\pi\, m\, y\right)
+\]
+being the products of cosine functions, which have an inefficient sine
+series representation [CITE]. Substituting the linear representation
+of $\mathcal{L}\phi_\nu$ into the eigenvalue problem
+(\ref{eq:eigenproblem}), we arrive at the matrix eigenvalue problem
+\[
+  \Psi(x,y)^T A^T c_\nu = -\lambda_\nu \Psi(x,y)^T c_\nu
+  \quad \Leftrightarrow \quad A^T c_\nu = -\lambda_\nu c_\nu
+\]
+whose solution gives the family of orthonormal eigenfunctions. As
+mentioned already, the efficiency of this approach is dependent on the
+cost of solving the eigenvalue problem
+$A^T c_\nu = -\lambda_\nu c_\nu$.  With all of the eigenpairs
+$(c_\nu, \lambda_\nu)$, the approximate solution is then
+\[
+  p(x,y,t) \approx \Psi(x,y)^T \sum_{\nu} h_\nu c_\nu e^{-\lambda_\nu t}.
+\]
+
+\subsubsection{Likelihood Calculation} \label{sec:likelihood-calc}
+Recalling equation (\ref{eq:pdf}), to compute the likelihood we are
+interested in we must take derivatives of the solution $p(x,y,t)$ with
+respect to the boundary parameters $(a_x, b_x, a_y, b_y)$. Because the
+eigenvalues and eigenvectors for this problem are functions of the
+parameters without explicit analytic form,
+$\frac{\partial^4}{\partial a_x\partial b_x \partial a_y \partial
+  b_y}p(x,y,t)$ must be computed numerically using a finite difference
+approximation. We must therefore find the eigenvalues and
+eigenvectors for each of the sixteen perturbed problems
+\[
+  p(x,y,t | a_x \pm \epsilon, b_x \pm \epsilon, a_y \pm \epsilon, b_y \pm \epsilon).
+\]
+The $4^{th}$ derivative of $p$ with respect to the 4 boundaries is
+approximated as
+\begin{eqnarray*} 
+& & \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial b_y} p(x, y, t) 
+\nonumber \\
+& & \hspace*{0.5cm} \approx \frac{\displaystyle \sum_{k_1, k_2, k_3, k_4 = \pm 1}
+c_{\{ k_1, k_2, k_3, k_4 \} } p(\left. x, y, t \right| a_x+k_1 \varepsilon, b_x+k_2 \varepsilon, 
+a_y+k_3 \varepsilon, b_y+k_4 \varepsilon) }{(2 \varepsilon )^4} 
+\nonumber
+\end{eqnarray*}
+Because a good, working approximation to $p(x,y,t)$ requires many
+terms in the basis function expansions of the eigenfunctions, and
+because each resultant system matrix is dense, repeated computation of
+the likelihood in this way is unfeasible.
+
+\subsection{Finite Difference} \label{sec:finite-difference} A finite
+difference method which approximates the spatial derivatives in
+problem (\ref{eq:qq}) requires the solution a system of differential
+equations
+\begin{align}
+  \dot{c}(t)= A c(t) &\Rightarrow& c(t) = \exp\left( At \right)c(0) \label{eq:eigenproblem-fd}, 
+\end{align}
+which reduces to the eigenvalue decomposition of a matrix $A$. Here,
+$c(t)$ is a vector consisting of values of the solution in
+(\ref{eq:qq}) on a set of grid points over $\Omega$ at time $t$, and
+the product $Ac(t)$ approximates $\mathcal{L}p(x,y,t)$. The system
+matrix $A$ is dependent on the discretization scheme used to
+approximate $\mathcal{L}$. Using a central in space scheme over a
+\textbf{regular} grid on $\Omega$ with $\Delta x = \Delta y = h$,
+\[ A = \frac{1}{2}\tau_x^2 \frac{1}{h^2}A_{x,x} +
+  \rho\tau_x\tau_y \frac{1}{4h^2}A_{x,y} + \frac{1}{2}\tau_y^2
+  \frac{1}{h^2}A_{y,y},
+\]
+where each of the matrices $A_{x,x}, A_{x,y}, A_{y,y}$ approximate
+$\frac{\partial^2}{\partial x^2}, \frac{\partial^2}{\partial
+  x \partial y}, \frac{\partial^2}{\partial y^2}$, respectively. For
+example, using $c_{l, m}(t) $ to denote the approximation of the
+solution at grid point $(x_l, y_m)$, and assembling vector $c(t)$
+using the index scheme $c_{l, m}(t) \rightarrow c_k(t)$ with
+$k= (l-1) M + m$, we can approximate the operator
+$\frac{\partial^2 }{\partial x^2} $ as
+\begin{align*}
+  \frac{1}{2}\tau_x^2 \frac{\partial^2}{\partial x^2} p(x_l,y_m,t) \approx \frac{1}{2}\tau_x^2 \left( \frac{c_{l+1,m}(t) - 2c_{l,m}(t) + c_{l-1,m}(t)}{h^2} \right) = \frac{1}{2}\tau_x^2 \frac{1}{h^2}A_{x,x}[k,] c(t) 
+\end{align*}
+where $A_{x,x}[k,]$ is the $k^{th}$ row of $A_{x,x}$. Similarly,
+\begin{align*}
+  \rho\tau_x\tau_y \frac{\partial^2}{\partial x \partial y} p(x_l,y_m,t) \approx \rho\tau_x\tau_y \left( \frac{c_{l+1,m+1}(t) - c_{l+1,m-1}(t) - c_{l-1,m+1}(t) + c_{l-1,m-1}(t)}{4h^2} \right) = \rho\tau_x\tau_y \frac{1}{4h^2}A_{x,y}[k,] c(t) 
+\end{align*}
+It should be noted here that a regular grid approach with a constant
+$h$ independent of parameters is appealing, because it allows us to
+construct once and store the matrices $A_{x,x}, A_{x,y}, A_{y,y}$,
+which saves valuable computational resources if we are to solve the
+finite difference eigenproblem (\ref{eq:eigenproblem-fd}) repeatedly
+for different parameter values $(\tau_x,\tau_y,\rho)$.
+
+Unlike the system matrix for the trigonometric expansion, the system
+matrix $A$ here is sparse: each row of $(A_{x,x}, A_{x,y}, A_{y,y})$
+is composed of all zeros except for three or four entries. This
+structure does not change as $h \to 0$. The eigenvalue problem is
+therefore much cheaper to solve.
+
+However, the fundamental limitation of using a finite difference
+method is that differentiation with respect to boundaries is also done
+using finite differences and it is of fourth order. Given this high
+order differentiation, $h$ cannot be made too small because round-off
+error and the irregular part of the truncation error become an issue
+relatively quickly. More explicitly, assuming consistency and
+stability of the finite difference approximation to $\mathcal{L}$, we
+can write down the finite difference solution as
+\[
+  p_{FD}(\left. x, y, t \right| b) = p(\left. x, y, t \right| b) 
++ h^2 \mbox{F}_{reg}(b) + h^2 \mbox{F}_{irreg}(b) + 
+\varepsilon_{mach} \mbox{F}_{round}(b),
+\]
+where we have included parameter $b $ explicitly as a simplified notation for 
+$[a_x, b_x]$ and $[a_y, b_y]$ after shifting $a_x$ and$a_y$ to 0.
+
+Note that when expressed using the chain rule, both 
+$\displaystyle \frac{\partial}{\partial a_x}$ and  $\displaystyle \frac{\partial}{\partial b_x}$
+contain $\displaystyle \frac{\partial}{\partial b}$. As a result, 
+$\displaystyle \frac{\partial^2 }{\partial a_x \partial b_x} $ leads to 
+$\displaystyle \frac{\partial^2 }{\partial b^2} $. Although in the discussion below, 
+for simplicity, we only illustrate the numerical differentiation on the first derivative, 
+keep in mind that it is the second derivative that is more relevant in the calculation of 
+ $\displaystyle \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial b_y}
+p(x, y, t) $. 
+
+In the expression of finite difference solution above, 
+$h^2 \mbox{F}_{reg}(b) $ is the regular part of 
+the truncation error from discretizing the differential operator on the grid; 
+$h^2 \mbox{F}_{irreg}(b) $ is the irregular part of the truncation error 
+from the interpolations invoked by $\{x_0, y_0, x, y \}$ not being on grid points; 
+and $\varepsilon_{mach} \mbox{F}_{round}(b) $ is the effect of round-off errors
+with $\varepsilon_{mach} \sim 10^{-16}$ denoting the machine epsilon for 
+IEEE double precision system. 
+The coefficient, $\mbox{F}_{reg}(b) $, of the regular part of truncation error 
+is a smooth function of $b$ with derivative $= O(1)$. 
+The coefficient, $\mbox{F}_{round}(b) $, in the effect of round-off errors, 
+behaves virtually like a random variable, discontinuous in $b$. 
+For the irregular part of truncation error, the coefficient $\mbox{F}_{irreg}(b) $ 
+in general is continuous in $b$ but not smooth in $b$ where the derivative has 
+discontinuities of magnitude $O\left( \frac{1}{h} \right)$. 
+For example, the error in 
+a piece-wise linear interpolation of a smooth function at position $b$ using step $h$ 
+has the general form of 
+$$\mbox{Interpolation error } = O(h^2) (1-\mbox{rem}(b/h,1)) \mbox{rem}(b/h,1)$$ 
+The coefficient part $\mbox{F}_{irreg}(b) = (1-\mbox{rem}(b/h,1)) \mbox{rem}(b/h,1) $ 
+is continuous in $b$ but not differentiable. Its first derivative 
+has the behavior of 
+$$ \frac{\partial }{\partial b} \mbox{F}_{irreg}(b) =  \frac{1}{h} \left(1-2\mbox{rem}(b/h,1) \right)$$
+
+Based on the expression we wrote out above for the finite difference solution, 
+applying the numerical differentiation on t with step $\varepsilon$ yields: 
+\begin{eqnarray}
+& & \frac{p_{FD}(\left. x, y, t \right| b+\varepsilon)-p_{FD}(\left. x, y, t \right| b -\varepsilon)}{2 \varepsilon} \nonumber \\
+& & \hspace*{1cm} =  \frac{\partial }{\partial b} p(\left. x, y, t \right| b) + O(\varepsilon^2)
+ + h^2 \frac{\mbox{F}_{reg}(b+\varepsilon)-\mbox{F}_{reg}(b-\varepsilon)}{2 \varepsilon}  \nonumber \\
+& & \hspace*{1cm} + h^2 \frac{\mbox{F}_{irreg}(b+\varepsilon)-\mbox{F}_{irreg}(b-\varepsilon)}{2 \varepsilon}
+ + \varepsilon_{mach} \frac{\mbox{F}_{round}(b+\varepsilon)-\mbox{F}_{round}(b-\varepsilon)}{2 \varepsilon}  \nonumber
+\end{eqnarray}
+In the equation above, as the step in the numerical differentiation is refined, the first line 
+of the RHS is well behaved, converging to the true value 
+$\frac{\partial }{\partial b} p(\left. x, y, t \right| b)$ as $\varepsilon \rightarrow 0$. 
+The second line of RHS, however, is problematic. As $\varepsilon \rightarrow 0$, 
+the contribution from round-off error blows up to infinity
+$$ \varepsilon_{mach} \frac{\mbox{F}_{round}(b+\varepsilon)-\mbox{F}_{round}(b-\varepsilon)}{2 \varepsilon}  = O\left(\frac{\varepsilon_{mach}}{\varepsilon} \right) 
+\longrightarrow \infty \;\;\;\; \mbox{as } \varepsilon \rightarrow 0 $$
+The contribution from the irregular part of truncation error is 
+$$ h^2 \frac{\mbox{F}_{irreg}(b+\varepsilon)-\mbox{F}_{irreg}(b-\varepsilon)}{2 \varepsilon}  = 
+O\left(\frac{h^2}{\max(\varepsilon, h)} \right) $$ 
+In the second order numerical differentiation, however, the contribution from 
+the irregular part of truncation error behaves like 
+$$ h^2 \frac{\mbox{F}_{irreg}(b+\varepsilon)-2\mbox{F}_{irreg}(b)
++\mbox{F}_{irreg}(b-\varepsilon)}{\varepsilon^2 }  = 
+O\left(\frac{h^2}{\max(\varepsilon^2, h^2)} \right) $$
+
+\section{A Novel Semidiscrete Galerkin
+  Method} \label{sec:semidiscrete-galerkin} We propose a semidiscrete
+Galerkin (continuous in time, discrete in space) solution to the
+general diffusion problem (\ref{eq:qq}). The method relies on an
+analytic approximation for the solution $p(x,y,t)$ for small time $t$
+and a basic convergence estimate from approximation theory for
+semidiscrete Galerkin-type solutions to parabolic problems.
+
+Our numerical method produces a functional representation for the
+approximate solution which $1)$ imposes a computational burden
+comparable to or better than that of the finite difference method and
+$2)$ is infinitely differentiable with respect to the boundary
+parameters, allowing us to perform the crucial numerical
+differentiation with respect to these parameters.
+
+As described in Section \ref{sec:eigenfunction}, the solution to the
+model problem has the eigenfunction expansion 
+\[
+  p(x,y,t) = \sum_{\nu=0}^\infty\phi_\nu(x,y) e^{-\lambda_\nu t}.
+\]
+Proceeding with the standandard Galerkin approach, we propose a
+solution $p^{(k)}(x,y,t)$ of similar form
+\[
+  p^{(k)}(x,y,t) = \sum_{i=0}^k c_i(t) \psi_i(x,y),
+\]
+where the basis functions $\psi_i(x,y)$ satisfy the boundary
+conditions. We also require that all first- and second-order
+derivatives of $\psi_i(x,y)$ are in $L_2(\Omega)$, i.e.
+$\psi_k(x,y) \in W_{2}^{2}(\Omega)$. Since $p^{(k)}$ is an
+approximation to the solution $p$, it does not follow the differential
+equation exactly nor can it represent the initial condition fully. We
+capture this by defining residuals
+\begin{align*}
+  \frac{\partial}{\partial t} p^{(k)}(x,y,t) - \mathcal{L}p^{(k)}(x,y,t) &:= R_e(k), \\
+  p(x,y,0) - p^{(k)}(x,y,0) &:= R_0(k).
+\end{align*}
+There are various conditions that could be imposed on the residual
+functions (see Section 2.10.3 of \cite{norrie1973finite} for a
+summary). The \textit{orthogonality} condition coincides with the
+Galerkin procedure:
+\begin{align}
+  \displaystyle \int_{\Omega} R_e(k) \psi_i(x,y) dx\,dy &= 0,& \displaystyle \int_{\Omega} R_0(k) \psi_i(x,y) dx\,dy &= 0,& i = 0,\ldots k, \label{eq:orthogonality-conditions}
+\end{align}
+which is equivalent to the weak formulation of the heat problem
+\begin{align*}
+  \left< \partial_t p^{(k)}(x,y,t), \psi_i \right> &= \left<\mathcal{L}p^{(k)}(x,y,t), \psi_i \right>, \\
+  \left< p^{(k)}(x,y,0), \psi_i \right> &= \left<p(x,y,0), \psi_i\right>,
+\end{align*}
+where $<\cdot, \cdot>$ is the usual inner product in
+$L_2(\Omega)$. The orthogonality conditions
+(\ref{eq:orthogonality-conditions}) lead to the system of equations
+\begin{align}
+  M \mathbf{\dot{c}}(t) &= S \mathbf{c}(t), \label{eq:orthogonality-conditions-mat-1}\\
+  M \mathbf{c}(0) &= \mathbf{p}(0), \label{eq:orthogonality-conditions-mat-2}
+\end{align}
+where $M$ is the mass matrix, $S$ is the stiffness matrix, and
+$\mathbf{p}(0)$ is the vector projection of $p(x,y,0)$ onto the
+span of $S_k$ with elements
+\begin{align*}
+  [M]_{ij} &= \displaystyle \int_\Omega \psi_i \psi_j dx\,dy, \\
+  [S]_{ij} &= -\frac{1}{2}\tau_x^2 \displaystyle \int_\Omega \left( \frac{\partial}{\partial x} \psi_i(x,y) \right) \left( \frac{\partial}{\partial x} \psi_j(x,y) \right) dx\,dy -\rho\tau_x\tau_y \displaystyle \int_\Omega \left( \frac{\partial}{\partial x} \psi_i(x,y) \right) \left( \frac{\partial}{\partial y} \psi_j(x,y) \right) dx\,dy \\
+         &\quad -\frac{1}{2}\tau_y^2 \displaystyle \int_\Omega \left( \frac{\partial}{\partial y} \psi_i(x,y) \right) \left( \frac{\partial}{\partial y} \psi_j(x,y) \right) dx\,dy \\
+  [\mathbf{p}(0)]_i &= \displaystyle \int_\Omega p(x,y,0) \psi_i(x,y) dx\,dy.
+\end{align*}
+The entries of $S_{ij}$ are computed with integration by parts and
+using the boundary conditions. The semidiscrete Galerkin approximation
+becomes
+\[
+  p^{(k)}(x,y,t) = \boldsymbol{\psi}(x,y)^T \exp\left( M^{-1}S\, t \right) \mathbf{c}(0),
+\]
+with $\boldsymbol{\psi}(x,y) = (\psi_0(x,y), \ldots, \psi_k(x,y))^T.$
+
+\subsection{Small-time Solution}
+Before solving the Galerkin equations
+(\ref{eq:orthogonality-conditions-mat-1}) -
+(\ref{eq:orthogonality-conditions-mat-2}), we develop a small-time
+analytic solution to the problem. The small-time solution is derived
+by considering the fundamental solution $G(x,y,t)$ for the unbounded
+problem in (\ref{eq:qq}), which is the bivariate Gaussian density with
+mean and covariance determined by the initial condition and the
+diffusion parameters \citep{stakgold2011green}. We can then find a
+small enough $t_\epsilon$ such that
+$G\left(x,y, t_\epsilon \left| \frac{x_0-a_x}{b_x - a_x},
+    \frac{y_0-a_y}{b_y - a_y} \right.\right)$ is numerically zero on
+the boundaries of $\Omega$. This is done in the following way.
+\begin{enumerate}[1.]
+\item Scale and rotate the coordinate axes by
+  \[
+    \left( \begin{array}{c}
+             \xi \\
+             \eta
+           \end{array} \right) = \mbox{Transformation goes here}
+             \left( \begin{array}{cc}
+             x \\
+             y
+           \end{array} \right) 
+       \]
+       so that the problem obeys the diffusion equation. The
+       computational domain is transformed to the parallelogram
+       $\tilde{\Omega}$. The transformed initial condition will be
+       denoted as $(\xi_0, \eta_0)$.
+
+     \item The fundamental solution $G(\xi,\eta,t | \xi_0, \eta_0)$ in
+       this coordinate frame which does not take into account
+       boundaries follows the bivariate Gaussian probability density
+       function
+  \[
+    G(\xi,\eta,t | \xi_0, \eta_0) = \frac{1}{2\pi t} \exp\left(-\frac{(\xi-\xi_0)^2 +
+        (\eta-\eta_0)^2}{2\,t} \right).
+  \]
+  We define \textbf{distance} between $G(\xi,\eta,t | \xi_0, \eta_0)$
+  and any of the linear boundaries of $\tilde{\Omega}$ as the
+  Euclidean norm of the segment of the vector extending from
+  $(\xi_0,\eta_0)$ and normal to the boundary. There are four such
+  distances $d_1, d_2, d_3, d_4$. Assume that they are listed in
+  increasing magnitude.
+
+  Setting $t_\epsilon = d_2/8$ ensures that the fundamental solution
+  $G(\xi,\eta,t_\epsilon | \xi_0, \eta_0)$ is \textit{at most}
+  $\approx 10^{-15}$ on the second-farthest boundary, as well as the
+  other two farthest boundaries. In this way,
+  $G(\xi,\eta,t_\epsilon | xi_0, \eta_0)$ satisfies the boundary
+  condition on the three farthest boundaries numerically.
+
+\item Reflect the point $(\xi_0, \eta_0) \to (\xi_0', \eta_0')$ about
+  the closest boundary. The image function
+  $G(\xi,\eta,t_\epsilon | \xi_0', \eta_0')$ satisfies the diffusion
+  equation and is equal to $G(\xi,\eta,t_\epsilon | \xi_0, \eta_0)$ on
+  the closest boundary. Further,
+  $G(\xi,\eta,t_\epsilon | \xi_0', \eta_0')$ takes on values less than
+  $10^{-15}$ on all other boundaries, because it is outside of
+  $\bar{\Omega}$.
+
+  Considering the difference of the two images, the small-time solution 
+  \[
+    p(\xi,\eta,t_\epsilon) := G(\xi,\eta,t_\epsilon | \xi_0, \eta_0) -
+    G(\xi,\eta,t_\epsilon | \xi_0', \eta_0')
+  \]
+  satisfies all of the boundaries numerically and also satisfies the
+  governing diffusion equation. Performing a change of variables
+  produces the small-time solution $p(x,y,t_\epsilon)$.
+\end{enumerate}
+Using Theorem 5.E of \cite{zeidler1995applied}, we can solve for
+$p(x,y,t)$ by considering the smooth $p(x,y,t_\epsilon)$ as an initial
+condition and evolving it forward in time by $t-t_\epsilon$. This
+replaces initial condition orthogonality condition in
+(\ref{eq:orthogonality-conditions-mat-2}) with
+\begin{align}
+  M \mathbf{c}(t_\epsilon) &= \mathbf{p}(t_\epsilon), \\
+   [\mathbf{p}(t_\epsilon)]_i &= \displaystyle \int_\Omega p(x,y,t_\epsilon) \psi_i(x,y) dx\,dy. \nonumber
+\end{align}
+Intuitively, the bigger $t_\epsilon$, the smaller both $R_e(k)$ and
+$R_0(k)$ will be, and thef better our method will do.
+% less eigenmodes present in $p(x,y,t_\epsilon)$, and the more accurate
+% our weak solution according to the error estimate
+% \[
+%   \| e(t) \|_{L_2(\Omega)} \leq C h(k)^2 \| p(x,y,t_\epsilon) \|_{2}.
+% \]
+
+
+\subsection{Orthonormal Basis Family}
+% An upper bound of the rate at which the Galerkin approximation
+% converges to $p(x,y,t)$ is given by condition (\ref{eq:ic-bound}),
+% namely by how well the initial condition may be approximated via a
+% projection onto $S_k$.
+We motivate the construction of the orthonormal basis functions by
+once again considering the fundamental solution for the unbounded
+problem (\ref{eq:qq}). In the absence of boundaries, (\ref{eq:qq}) is
+solved by the function
+\[
+  G(x,y,t | x_0', y_0') = \frac{1}{2\pi\,\,t\,\, \tau_x\tau_y\sqrt{1-\rho^2}} \exp\left\{ -\frac{1}{2\,t(1-\rho^2)} \left( \frac{(x - x_0')^2}{\tau_x^2} - 2\rho \frac{(x-x_0')(y-y_0')}{\tau_x\tau_y} + \frac{(y - y_0')^2}{\tau_y^2}\right) \right\},
+\]
+with
+$x_0' = (x_0 - a_x)/(b_x-a_x),\quad y_0' = (y_0 - a_y)/(b_y-a_y)$. We
+choose the family of basis functions
+$S_k = (\psi_0(x,y), \ldots, \psi_k(x,y))$
+\begin{align}
+  \psi_i(x,y) &= \frac{1}{2\pi \sigma^2\sqrt{1-\tilde{\rho}^2} } \exp\left\{ -\frac{1}{2(1-\tilde{\rho}^2)\sigma^2} \left( (x - x_i)^2 - 2\tilde{\rho} (x-x_i)(y-y_i) + (y - y_i)^2 \right) \right\} x\left(1-x\right)\, y(1-y)
+\end{align}
+for some parameters $(\tilde{\rho}, \sigma)$ and a collection of
+points $\{ (x_i,y_i) \}_{i=0}^k$ which form a grid over $\Omega$.
+
+The critical advantage of these elements, however, is that they better
+resolve the small-time solution $p(x,y,t_\epsilon)$ by taking into
+account some degree of correlation $\tilde{\rho}$ in the covariance of
+each kernel.  Essentially, the collection
+$\{ \psi_i(x,y| x_i, y_i, \tilde{\rho}, \sigma) \}_{i=0}^k$ is
+composed of fundamental solutions to a heat diffusion problem tuned by
+$\sigma$ and $\tilde{\rho}$, tampered such that their support is on
+$\Omega$, zero on the boundaries, still smooth, and inheriting the
+correlation structure of the fundamental solution to the
+problem. % In this manner,
+% our basis function choice is in keeping with the golden rule for the
+% rate of convergence: \textbf{The smoother the solution to the original
+%   problem and the smoother the functions in the basis space, the
+%   faster the convergence of the Ritz-Galerkin method.} (Remark 1(c) in
+% Chapter 2 of \cite{zeidler1995applied}).
+Moreover, all of the basis functions are infinitely differentiable
+with respect to the boundary and diffusion parameters, so that
+$\frac{\partial^4 p^{(k)}(x,y,t)}{\partial a_x \partial b_x \partial
+  a_y \partial b_y}$ exists and can be computed numerically using
+finite differences.
+
+\subsection{Error Bound} \label{sec:error-bound}
+A bound on the closeness of the approximate solution $p^{(k)}(x,y,t)$
+to the strong solution $p(x,y,t)$ is developed in
+\cite{bramble1977some}.  Their result shows that the Galerkin
+approximation we use converges to the strong solution in
+$L_2(\Omega)$, and it motivates the thrust of our numerical
+solution. First, we define the \textit{error} term
+\[
+  e^{(k)}(t) = p(x,y,t) - p^{(k)}(x,y,t),
+\]
+as well as the norm
+\[
+  \| w \|_2 = \sum_{j=0}^\infty \lambda_j^2 \left<w, \phi_j\right>
+\]
+for the eigenpairs $(\lambda_j, \phi_j)$ of the operator
+$\mathcal{L}$. As referred to in \cite{bramble1977some}, functions
+$w \in L_2(\Omega)$ with $\|w\|_2 < \infty$ are also in
+$W_2^2(\Omega)$. Finally, if we have the condition (corresponding to
+equation 2.1 in \cite{bramble1977some})
+\begin{align}
+  \| p(x,y,t_\epsilon) - p^{(k)}(x,y,t_\epsilon) \|_{L_2(\Omega)} &\leq C\, h(k)^2 \| p(x,y,t_\epsilon) \|_2 \label{eq:ic-bound}
+\end{align}
+as a decreasing function $h(k) \geq 0$, Theorem 2.1 in
+\cite{bramble1977some} applies and we have the error estimate
+\begin{align}
+  \| e^{(k)}(t) \|_{L_2(\Omega)} \leq C h(k)^2 \| p(x,y,t_\epsilon) \|_{2}. \label{eq:error-est}
+\end{align}
+We can ensure condition (\ref{eq:ic-bound}) is met if $S_k$ is
+complete in $L_2(\Omega)$ as $k$ grows. The other two conditions
+necessary for the error bound to apply are demonstrated by
+\cite{bramble1977some} for the Galerkin method. Equation
+(\ref{eq:error-est}) can be summarized in a simple way: the
+\textit{error} of the method is controlled by how much variation the
+small-time solution has; the \textit{rate} of decrease of the error is
+controlled by how well the span of $S_k$ represents the small-time
+solution compared to the variation of the initial condition as $k$
+increases..
+
+In the context of (\ref{eq:error-est}), our method, with its small-time
+analytic solution and choice of basis functions, is specifically
+tailored to minimize the error between the strong solution and its
+Galerkin approximation under $L_2(\Omega)$.
+
+% However, the initial condition for (\ref{eq:qq}) requires all in
+% eigenmodes being included in the representation of the initial
+% conditions, so that
+% \[
+%   \| p(x,y,0) \|_{2} = \left\| \delta\left( x - \frac{x_0 - a_x}{b_x-a_x}
+%   \right) \delta\left( y - \frac{y_0 - a_y}{b_y-a_y} \right)\right\|_{2} = +\infty.
+% \]
+% It is obvious that we cannot apply the error estimates above. However,
+% evolving the solution forward in time, even for a short period,
+% diffuses the delta-function IC and attenuates out the highest
+% frequency modes. Further, because solutions to the diffusion equation
+% are smooth, $p(x,y,t_\epsilon)$ will give us a smooth initial function
+% which will make the error bounds admissible.
+
+
+\section{Estimation}
+Consider the problem of estimating the parameters
+$(\mu_x, \mu_y, \sigma_x, \sigma_y, \rho)$ from an i.i.d. sample
+$(Z_1, \ldots, Z_n)$ from the process in (\ref{eq:X}) - (\ref{eq:Y}),
+where each $Z_i$ is the vector of random variables
+\[
+  Z_i = (X_i(t), Y_i(t), m_{x,i}, M_{x,i}, m_{y,i}, M_{y,i}).
+\]
+We say that $Z_i$ is sampled from the distribution corresponding to
+the probability density function (\ref{eq:pdf})
+\[
+  Z_i \sim F(\theta),
+\]
+where the distribution $F$ has the usual interpretation
+\begin{align*}
+  F(z = (x, y, a_x, b_x, a_y, b_y) | \theta) &= \Pr\left(X(t) \leq x,
+    Y(t) \leq y, m_x \leq a_x, M_x \leq b_x, m_y \leq a_y, M_y \leq b_y\right).
+\end{align*}
+
+This estimation problem is of particular importance in quantitative
+finance where the model equations (\ref{eq:X}) - (\ref{eq:Y}) (with
+various bells and whistles attached) are widely used. However, to the
+best of our knowledge, all current \textit{likelihood} methods in the
+literature either ignore the observed maximum/minimum information or
+use some of it. Likelihood-free approaches, like that of
+\cite{rogers1991estimating}, on the other hand suffer from not being
+able to be easily integrated into a bigger inferential framework.
+
+Since we do not have a closed-form solution for the likelihood, we
+will use an iterative derivative-free maximization algorithm (the
+Nelder-Mead method; see \cite{lagarias1998convergence} for review and
+convergence properties) which requires repeated evauluation of the
+likelihood. For moderate to large samples sizes this is feasible,
+because our numerical method is specifically designed for
+computational efficiency for repeatedly evaluating the density
+function (\ref{eq:pdf}). The maximum likelihood estimator (MLE) for
+the true parameters based on $n$ samples, which we call
+$\hat{\theta}_n := (\hat{\mu}_x, \hat{\mu}_y, \hat{\sigma}_x,
+\hat{\sigma}_y, \hat{\rho})$, is especially useful in practical
+settings when it exhibits \textit{consistency}, \textit{i.e.}: the MLE
+gets closer to the true parameter vector $\theta$ as more data is
+collected and included in the likelihood (assuming the model and its
+parameters remain constant during the data collection). More
+precise, the estimator $\hat{\theta}_n$ is consistent if
+\[
+  \Pr( | \hat{\theta}_n - \theta | ) \to 0 \qquad \mbox{as} \qquad n \to \infty.
+\]
+
+\subsection{Consistency}
+In this section we prove that the MLE based on the Galerkin
+approximation $p^{(k)}(x,y,t)$ to the governing Fokker-Planck equation
+(\ref{eq:1}) is consistent. To do so, we first show that the
+distribution on $Z$ based on the approximate $p^{(k)}(x,y,t)$ converges to
+the true distribution $F(\cdot | \theta)$. Define the probability densities
+\begin{align}
+  f(z) &= f(x,y,a_x,b_x,a_y,b_y) := \Pr\left(X(t) \in dx, Y(t) \in dy, m_x \in da_x,
+         M_x \in db_x, m_y \in da_y, M_y \in db_y \left| \theta \right.\right) \label{eq:stong-density} \\
+    f^{(k)}(z) &= f^{(k)}(x,y,a_x,b_x,a_y,b_y) := \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial
+         b_y} q^{(k)}(x,y,t | a_x, b_x, a_y, b_y). \label{eq:galerkin-density}
+\end{align}
+The function $f(z)$ is the probability density function corresponding
+to $q(x,y,t)$, the strong solution to the governing Fokker-Planck
+equation; $f^{(k)}(z)$ corresponds to the Galerkin approximation
+$q^{(k)}$. Before proceeding, we should note that both $f(z)$ and
+$f^{(k)}(z)$ exist. So see the case for $f(z)$, consider the relation
+\begin{align*}
+  &f(x,y,a_x,b_x,a_y,b_y) = \\
+  &\Pr\left(X(t) \in dx, Y(t) \in dy, m_x \in da_x, M_x \in db_x, m_y
+  \in a_y, M_y \in db_y \left| \theta \right.\right) = \\
+  &\mathbb{P}_{W}\left( \underbrace{\left\{ \omega \in W \left| X_\omega(t) = x,
+  Y_\omega(t)=y, \inf_{t'\in [0,1]} X_\omega(t') = a_x,
+  \sup_{t'\in [0,1]} X_\omega(t') = b_x, \inf_{t'\in [0,1]}
+        Y_\omega(t') = a_y, \sup_{t'\in [0,1]} Y_\omega(t') = b_y
+      \right. \right\}}_{A(x,y,a_x,b_x,a_y,b_y) = A(z)}\right)
+\end{align*}
+where $\mathbb{P}_{W}$ is the Wiener measure on the sample space $W$
+of all realizations (paths) $(X_\omega(t), Y_\omega(t))$ from the
+stochastic process (\ref{eq:X}) - (\ref{eq:Y}) defined in the usal way
+using Kolmogorov's extension of measure over cylinder sets on
+$t \to \mathbb{R}^2$ (see \cite{freidlin1985functional}, Section
+1.2). Sets of the form $A(x,y,a_x,b_x,a_y,b_y)$ can be defined as a
+countable intersection/union of cyliner sets on $t \to \mathbb{R}^2$,
+hence they are measurable under $\mathbb{P}_{W}$; therefore $f(z)$ exists and
+is bounded above by 1. Moreover, since $q(x,y,t|a_x,b_x,a_y,b_y)$ represents the
+integral of $f(z)$ with respect to the boundary variables, we have
+\[
+  f(x,y,a_x,b_x,a_y,b_y) = \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial
+         b_y} q(x,y,t | a_x, b_x, a_y, b_y).
+\]
+The existence of $f^{(k)}(z)$ as defined in
+(\ref{eq:galerkin-density}) is guaranteed by Theorem 4.1 in
+\cite{singler2008differentiability}. The result states that weak
+solutions to parabolic problems are differentiable with respect to
+parameters as long as the weak (Galerkin-form) operator
+$\left< \mathcal{L} \psi_i(x,y), \psi_j(x,y) \right>$ is
+differentiable with respect to the parameters. The condition certainly
+holds for the normalized problem (\ref{eq:qq}) with our choice of
+basis functions $S_k$, as they are infinitely differentiable with
+repsect to $x,y$, the boundaries, and the diffusion parameters. 
+
+At this point we will assume that for a sufficiently large $k$,
+$f^{(k)}(z)$ is positivie for all $z \in Z$ and is integrable over
+$Z$. As such, we may regard it as a proper probability density
+function with the cumulative probability density and probability
+measure over $Z$ being 
+\begin{align}
+  F^{(k)}(z | \theta) &= \displaystyle \int_{-\infty}^{a_x} \displaystyle \int_{-\infty}^{a_y} \displaystyle \int_{-\infty}^{b_x} \displaystyle \int_{-\infty}^{b_y} \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y \frac{\partial^4}{\partial a'_x \partial b'_x \partial a'_y \partial b'_y} q^{(k)}(x', y', t | a'_x, b'_x, a'_y, b'_y)\,\,\, dx'\, dy'\, da'_x\, db'_x\, da'_y\, db'_y, \label{eq:approx-measure} \\
+                          \Pr_{k}(A) &:= \displaystyle \int_{A} f^{(k)}(z)\, dz, \quad \mbox{ for any measurable } A \subset Z. \label{eq:approx-measure-2}
+\end{align}
+We will prove that for every $z \in Z$,
+\[
+  \lim_{k\to \infty} F^{(k)}(z | \theta) = F(z | \theta).
+\]
+First, we prove the Lemma
+\begin{lemma}\label{lem:1}
+  For $z = (x, y, a_x, b_x, a_y, b_y)$,
+  \[
+    \lim_{k\to \infty} \displaystyle \int_{a_x}^{b_x} \displaystyle
+    \int_{a_y}^{b_y} f^{(k)}(x,y,a_x,b_x,a_y,b_y)\, dx\,dy =
+    \displaystyle \int_{a_x}^{b_x} \displaystyle \int_{a_y}^{b_y}
+    f(x,y,a_x,b_x,a_y,b_y)\, dx\,dy.
+  \]
+\end{lemma}
+\begin{proof}
+  Define the sets of form, for $z = (x,y,a_x,b_x,a_y,b_y)$,
+  \begin{align*}
+    B(a_x, b_x, a_y, b_y) &= \left\{ z' \in Z \left| z' \in [a_x, b_x]
+        \times [a_y, b_y] \times [a_x, \infty) \times (-\infty, b_x]
+                            \times [a_y, \infty) \times (-\infty, b_y] \right.\right\}.
+  \end{align*}
+  Elements within $B(a_x, b_x, a_y, b_y)$ are equivalent to sample paths that stay within the region $[a_x, b_x] \times [a_y, b_y]$:
+  \begin{align*}
+    B(a_x, b_x, a_y, b_y) &= \left\{ \omega \in W | X_\omega(t) \in [a_x, b_x], Y_\omega(t) \in [a_y, b_y], m_x \in [a_x,b_x), M_x \in (a_x, b_x] \right\}
+  \end{align*}
+
+  Then
+  \begin{align}
+    \Pr(B(a_x, b_x, a_y, b_y)) &= \displaystyle \int_{B(a_x, b_x, a_y, b_y)} f(z)\, dz \nonumber \\ 
+                               &= \displaystyle \int_{a_x}^{\infty} \displaystyle \int_{-\infty}^{b_x} \displaystyle \int_{a_y}^{\infty} \displaystyle \int_{-\infty}^{b_y} \displaystyle \int_{-\infty}^{b_x} \displaystyle \int_{-\infty}^{b_y} f(x', y', a'_x, b'_x, a'_y, b'_y) dx' dy' da_x' db_x' da_y' db_y' \label{eq:full-form} \\
+                               &= \displaystyle \int_{a_x}^{b_x} \displaystyle \int_{a_y}^{b_y} q(x,y,a_x,b_x,a_y,b_y)\, dx\, dy, \nonumber
+  \end{align}
+  
+  where the last equality employs the interpretation of $q$ in
+  (\ref{eq:CDF}) and we can freely change the order of integration as
+  $f$ is bounded for all $z \in Z$. Similarly,
+  \begin{align*}
+    \Pr_k(B(a_x, b_x, a_y, b_y)) &= \displaystyle \int_{a_x}^{b_x} \displaystyle \int_{a_y}^{b_y} q^{(k)}(x,y,a_x,b_x,a_y,b_y)\, dx\, dy.
+  \end{align*}
+  From (\ref{eq:full-form}), the partial derivative of the probability
+  $\Pr(B(a_x,b_x,a_y,b_y))$ is well-defined and can be written as
+  \begin{align*}
+    \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial b_y} \Pr(B(a_x, b_x, a_y, b_y)) &= \displaystyle \int_{a_x}^{b_x} \displaystyle \int_{a_y}^{b_y} f(x,y,a_x,b_x,a_y,b_y)\, dx\, dy.
+  \end{align*}
+  The first-order \textbf{finite difference} approximation the above
+  expression can be expressed as a linear combination of probabilities
+  of perturbed sets $B(\cdot)$:
+  \begin{align*}
+    \lim_{\epsilon \to 0}\quad \frac{1}{\epsilon^4} \sum_{i=1}^{16} c(i) \Pr(B(a_x + k_1(i)\epsilon, b_x + k_2(i)\epsilon, a_y + k_3(i)\epsilon, b_y + k_4(i)\epsilon) = \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial b_y} \Pr(B(a_x, b_x, a_y, b_y)),
+  \end{align*}
+  where $c$ and $k$ are functions from $i$ to the appropriate
+  coefficients in the first-order finite difference approximation
+  $c(i) \to \left\{-1, 1\right\}$, $k_j(i) \to \{-1,1\}$. Using Big-O
+  notation, for a sufficiently small $\epsilon$
+  \begin{equation}
+    \sum_{i=1}^{16} c(i) \Pr(B(a_x + k_1(i)\epsilon, b_x +
+    k_2(i)\epsilon, a_y + k_3(i)\epsilon, b_y + k_4(i)\epsilon) =
+    \epsilon^4 \frac{\partial^4}{\partial a_x \partial b_x \partial
+      a_y \partial b_y} \Pr(B(a_x, b_x, a_y, b_y)) + O(\epsilon^5 ;
+    a_x, b_x, a_y, b_y). \label{eq:fin-diff}
+  \end{equation}
+
+  The convergence result in Section \ref{sec:error-bound} implies that
+  \begin{align*}
+    \Pr_k(B(a_x + k_1(i)\epsilon, b_x + k_2(i)\epsilon, a_y +
+    k_3(i)\epsilon, b_y + k_4(i)\epsilon) = \displaystyle \int_{a_x +
+    k_1(i)}^{b_x + k_2(i)} \displaystyle \int_{a_y + k_3(i)}^{b_y +
+    k_4(i)} q^{(k)}(x,y,a_x,b_x,a_y,b_y)\, dx\, dy \to \\
+    \displaystyle
+    \int_{a_x + k_1(i)}^{b_x + k_2(i)} \displaystyle \int_{a_y +
+    k_3(i)}^{b_y + k_4(i)} q(x,y,a_x,b_x,a_y,b_y)\, dx\, dy =
+    \Pr(B(a_x + k_1(i)\epsilon, b_x + k_2(i)\epsilon, a_y +
+    k_3(i)\epsilon, b_y + k_4(i)\epsilon) \\
+    \mbox{ as } k \to \infty \mbox{ in } L_2(\Omega).
+  \end{align*}
+  Hence, for a sufficiently large $k$ dependent on the supremum over
+  $i$, and given the error estimate in (\ref{eq:error-est}), we have
+  the relation
+  \begin{align*}
+    \Pr_k(B(a_x + k_1(i)\epsilon, b_x + k_2(i)\epsilon, a_y +
+    k_3(i)\epsilon, b_y + k_4(i)\epsilon) &= \Pr(B(a_x + k_1(i)\epsilon, b_x + k_2(i)\epsilon, a_y +
+                                            k_3(i)\epsilon, b_y + k_4(i)\epsilon) \\
+    & + O(h(k)^2; a_x + k_1(i)\epsilon, b_x + k_2(i)\epsilon, a_y + k_3(i)\epsilon, b_y + k_4(i)\epsilon)
+  \end{align*}
+  Note here that the dominating terms $O(h(k)^2; \cdot)$ are
+  differentiable with respect to the boundary parameters
+  $(a_x, b_x, a_y, b_y)$ since $q$ and $q^{(k)}$ have this
+  property. Therefore, if we replace $\Pr(\cdot)$ in
+  (\ref{eq:fin-diff}) with $\Pr_k(\cdot)$
+  \begin{align*}
+    \sum_{i=1}^{16} c(i) \Pr_k(B(a_x + k_1(i)\epsilon, b_x +
+    k_2(i)\epsilon, a_y + k_3(i)\epsilon, b_y + k_4(i)\epsilon) &= \sum_{i=1}^{16} c(i) \Pr(B(a_x + k_1(i)\epsilon, b_x +
+                                                                  k_2(i)\epsilon, a_y + k_3(i)\epsilon, b_y + k_4(i)\epsilon)  \\
+                                                                & + \sum_{i=1}^{16} c(i) O(h(k)^2; a_x + k_1(i)\epsilon, b_x +
+                                                                  k_2(i)\epsilon, a_y + k_3(i)\epsilon, b_y + k_4(i)\epsilon) \\
+    &=     \epsilon^4 \frac{\partial^4}{\partial a_x \partial b_x \partial
+      a_y \partial b_y} \Pr(B(a_x, b_x, a_y, b_y)) + O(\epsilon^5 ;
+      a_x, b_x, a_y, b_y) \\
+                                                                & + \sum_{i=1}^{16} c(i) O(h(k)^2; a_x + k_1(i)\epsilon, b_x +
+                                                                  k_2(i)\epsilon, a_y + k_3(i)\epsilon, b_y + k_4(i)\epsilon).
+  \end{align*}
+  Dividing both sides by $\epsilon^4$ produces
+  \begin{align*}
+    \frac{1}{\epsilon^4} \sum_{i=1}^{16} c(i) \Pr_k(B(a_x + k_1(i)\epsilon, b_x +
+    k_2(i)\epsilon, a_y + k_3(i)\epsilon, b_y + k_4(i)\epsilon) &= \frac{\partial^4}{\partial a_x \partial b_x \partial
+                                                                  a_y \partial b_y} \Pr(B(a_x, b_x, a_y, b_y)) + O(\epsilon;
+                                                                  a_x, b_x, a_y, b_y) \\
+                                                                &+ \frac{1}{\epsilon^4}\sum_{i=1}^{16} c(i) O(h(k)^2; a_x + k_1(i)\epsilon, b_x +
+                                                                  k_2(i)\epsilon, a_y + k_3(i)\epsilon, b_y + k_4(i)\epsilon) \\
+    % = \frac{\partial^4}{\partial a_x \partial b_x \partial
+    % a_y \partial b_y} \Pr(B(a_x, b_x, a_y, b_y)) + O(\epsilon;
+    % a_x, b_x, a_y, b_y) + \frac{\partial^4}{\partial a_x \partial b_x \partial
+    % a_y \partial b_y} O(h(k)^2 ; a_x, b_x, a_y, b_y)
+  \end{align*}
+  As mentioned above $O(h(k)^2; \cdot)$ is differentiable with respect
+  to the boundary parameters, so that the right-most term is still
+  $O(h(k)^2)$ as $\epsilon \to 0$. Taking the limit in $\epsilon$, we have
+  \begin{align*}
+    \displaystyle \int_{a_x}^{b_x} \displaystyle \int_{a_y}^{b_y}
+    f^{(k)}(x,y,a_x,b_x,a_y,b_y)\, dx\, dy =
+    \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial
+    b_y} \Pr_k(B(a_x, b_x, a_y, b_y)) \\
+    = \frac{\partial^4}{\partial
+      a_x \partial b_x \partial a_y \partial b_y} \Pr(B(a_x, b_x, a_y,
+    b_y)) +  O(h(k)^2; a_x, b_x, a_y, b_y) \\
+    =\displaystyle \int_{a_x}^{b_x} \displaystyle \int_{a_y}^{b_y}
+    f(x,y,a_x,b_x,a_y,b_y)\, dx\, dy + O(h(k)^2; a_x, b_x, a_y, b_y).
+  \end{align*}
+  Therefore, we have the desired result:
+  \[
+    \lim_{k\to \infty} \displaystyle \int_{a_x}^{b_x} \displaystyle
+    \int_{a_y}^{b_y} f^{(k)}(x,y,a_x,b_x,a_y,b_y)\, dx\,dy =
+    \displaystyle \int_{a_x}^{b_x} \displaystyle \int_{a_y}^{b_y}
+    f(x,y,a_x,b_x,a_y,b_y)\, dx\,dy.
+  \]
+\end{proof}
+
+\begin{lemma}[Convergence in distribution] \label{lem:conv-dist}
+  For any $z \in Z$,
+  $ \lim_{k \to \infty} F^{(k)}(z | \theta) = F(z).$
+
+\end{lemma}
+
+\begin{proof}
+  Let
+  $I^{(k)}(z) = \displaystyle \int_{a_x}^{x} \displaystyle
+  \int_{a_y}^{y} f^{(k)}(u,v,a_x,b_x,a_y,b_y)\, du\,dv$ and let
+  $I(z) = \displaystyle \int_{a_x}^{x} \displaystyle \int_{a_y}^{y}
+  f(u,v,a_x,b_x,a_y,b_y)\, du\,dv$. It is possible to show that
+  $\lim_{k\to \infty} I^{(k)}(z) = I(z)$ as a consequence of Lemma
+  \ref{lem:1} by considering some $\chi_k(z) \in S_k$ approximating
+  the indicator $1(u \leq x, v \leq y)$ as $k \to \infty$ and setting up a triangle
+  inequality. However, we will omit this technical detail here.
+
+  Next, we know that $I(z)$ is integrable over $(a_x, b_x, a_y, b_y)$
+  as $\Pr(Z) = \mathbb{P}_{W}(W) = 1$. The Dominated Convergence
+  Theorem applies, and we therefore have
+  \[
+    \lim_{k \to \infty} \displaystyle \int_{-\infty}^{a_x} \displaystyle \int_{-\infty}^{b_x} \displaystyle \int_{-\infty}^{a_y} \displaystyle \int_{-\infty}^{b_y} I^{(k)}(z) da_x' db_x' da_y' db_y' = \displaystyle \int_{-\infty}^{a_x} \displaystyle \int_{-\infty}^{b_x} \displaystyle \int_{-\infty}^{a_y} \displaystyle \int_{-\infty}^{b_y} I(z) da_x' db_x' da_y' db_y',
+  \]
+  which implies the result of the Lemma.
+\end{proof}
+% \begin{align*}
+%   q(x,y,t) = \\
+%   \Pr\left(X(t) \in dx, Y(t) \in dy,  \min_{t'}X(t') \geq a_x,
+%   \max_{t'}X(t')\leq b_x, \min_{t'} Y(t')\geq a_y, \max_{t'} Y(t')\leq b_y|  X(0)=x_0, Y(0)=y_0, \theta \right) = \\
+%   \Pr_{W}\left(\left\{ \omega \in \Omega | X_\omega(t) \in dx,\,\, Y_\omega(t) \in dy,\,\,  \forall t' \in [0,t]\,\, a_x \leq X_\omega(t') \leq b_x,\,\, \forall t' \in [0,t] \,\, a_b \leq Y_\omega(t') \leq b_y,\,\, X_\omega(0) = Y_\omega(0) = 0 \right\} \right)
+% \end{align*}
+% Our strategy will be to define a family of sets $\left\{ \tilde{A}_m(z) \right\}_{m=0}^\infty$ for any $z=(x,y,a_x,b_x,a_y,b_y)$ such that
+% \begin{align*}
+%   \lim_{m \to \infty} \Pr_W \left(  \tilde{A}_m(z) \right) = 
+%   \Pr \left( X(t) \leq x,
+%   Y(t) \leq y, \min_{t' \leq t} X(t') \leq a_x, \max_{t' \leq t}
+%   X(t') \leq b_x, \min_{t' \leq t} Y(t') \leq a_y, \max_{t' \leq t}
+%   Y(t') \leq b_y \right) = F(z | \theta)
+% \end{align*}
+
+% \begin{lemma}
+%   For $z = (x,y,a_x,b_x,a_y,b_y)$, 
+%   \[\lim_{m \to \infty} \displaystyle \int_{-\infty}^x \displaystyle
+%     \int_{-\infty}^y q(x',y',t, a_x-m, b_x, a_y-m, b_y)\,\, dx'\,dy' -
+%     \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y
+%     q(x',y',t, a_x, b_x, a_y, b_y)\,\, dx'\,dy' = F(z | \theta)\]
+% \end{lemma}
+% \begin{proof}
+% Given some $z = (x,y,a_x,b_x,a_y,b_y)$, define the sets
+% \begin{align*}
+%   A_m(z) &= \left\{ \omega \in \Omega | X_\omega(t) \leq x,\,\,
+% Y_\omega(t) \leq y,\,\, \right. \\ & \forall t' \in [0,t]\,\, a_x-m
+% \leq X_\omega(t') \leq b_x,\,\, \\ & \forall t' \in [0,t] \,\, a_y -
+% m\leq Y_\omega(t') \leq b_y,\,\, \\ & \left.X_\omega(0) = Y_\omega(0)
+% = 0 \right\}, \quad \quad m = 0,1,2,... \\
+% \end{align*}
+% Note here that $\Pr_{W}(A_m(z)) = \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y q(x',y',t, a_x-m, b_x, a_y-m, b_y)\,\, dx'\,dy'$.  Next, we define
+% \begin{align*}
+%   \tilde{A}_{m}(z) &= A_m(z) \,\, \bigcap \,\, A_0^C(z) \\
+%                    &= \left\{ \omega \in \Omega | X_\omega(t) \in dx,\,\, \right.\\
+%                    & \quad \quad \forall t' \in [0,t]\,\, a_x-m \leq X_\omega(t') \leq b_x,\,\, \\
+%                    & \quad \quad \forall t' \in [0,t] \,\, a_y - m\leq Y_\omega(t') \leq b_y,\,\, \\
+%                    & \quad \quad \exists t_{a_x} \in [0,t] \,\, s.t. \,\, X_\omega(t_{a_x}) < a_x \,\, , \exists t_{a_y} \in [0,t] \,\, s.t. \,\, X_\omega(t_{a_y}) < a_y, \\
+%                    & \quad \quad \left.X_\omega(0) = Y_\omega(0) = 0 \right\}
+% \end{align*}
+% It is easy to see that $A_{m}(z) \subset A_{m+1}(z)$ and that
+% $\tilde{A}_{m}(z) \subset \tilde{A}_{m+1}(z)$. Because of the former
+% relation,
+% \[
+%   \Pr_{W}(\tilde{A}_m(z)) = \Pr_W(A_m(z)) - \Pr_{W}(A_0(z)) = \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y q(x',y',t, a_x-m, b_x, a_y-m, b_y)\,\, dx'\,dy' - \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y q(x',y',t, a_x, b_x, a_y, b_y)\,\, dx'\,dy'.
+% \]
+% Finally,
+% \begin{align*}
+%   \bigcup_{m=0}^\infty \tilde{A}_m(z) &= \left\{ \omega \in \Omega | X_\omega(t) \in dx,\,\, \right.\\
+%                    & \quad \quad \forall t' \in [0,t]\,\, -\infty \leq X_\omega(t') \leq b_x,\,\, \\
+%                    & \quad \quad \forall t' \in [0,t] \,\, -\infty \leq Y_\omega(t') \leq b_y,\,\, \\
+%                    & \quad \quad \exists t_{a_x} \in [0,t] \,\, s.t. \,\, X_\omega(t_{a_x}) < a_x \,\, , \exists t_{a_y} \in [0,t] \,\, s.t. \,\, X_\omega(t_{a_y}) < a_y, \\
+%                    & \quad \quad \left.X_\omega(0) = Y_\omega(0) = 0 \right\},
+% \end{align*}
+% such that for $\omega \in \bigcup_{m=0}^\infty \tilde{A}_m(z)$,
+% $X_\omega(t) \leq x, Y_\omega(t) \leq y, \min_{t'} X_{\omega}(t') \leq
+% a_x, \min_{t'} Y_{\omega}(t') \leq a_y, \max_{t'} X_{\omega}(t') \leq
+% b_x$, $\max_{t'} Y_{\omega}(t') \leq b_y$, and
+% \[
+%   \Pr_W\left( \bigcup_{m=0}^\infty \tilde{A}_m(z) \right) = \lim_{M \to \infty} \Pr_W\left( \bigcup_{m=0}^M \tilde{A}_M(z) \right) = F(z |
+%   \theta).
+% \]
+% Since $\tilde{A}_{m}(z) \subset \tilde{A}_{m+1}(z)$,
+% \[
+%   \lim_{m\to \infty} \Pr_W(\tilde{A}_m(z)) = \lim_{m \to \infty} \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y q(x',y',t, a_x-m, b_x, a_y-m, b_y)\,\, dx'\,dy' - \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y q(x',y',t, a_x, b_x, a_y, b_y)\,\, dx'\,dy'  = F(z | \theta)
+% \]
+% \end{proof}
+% For a shorthand, denote
+% $
+%   \mu_k(\tilde{A}_m(z)) = \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y q_k(x',y',t, a_x-m, b_x, a_y-m, b_y)\,\, dx'\,dy' - \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y q_k(x',y',t, a_x, b_x, a_y, b_y)\,\, dx'\,dy'.
+% $
+
+% \begin{lemma} \label{lem:weak}
+%   For a fixed $m$, $\mu_k(\tilde{A}_m(z)) \to \Pr_W(\tilde{A}_m(z))$ as $k\to \infty$.
+% \end{lemma}
+% \begin{proof}
+%   The proof for this lemma follows direcly from the convergence result
+%   $p^{(k)} \to p$ as $k\to \infty$ under the $L_2(\Omega)$ norm from
+%   Section \ref{sec:semidiscrete-galerkin}.
+% \end{proof}
+% With the result from Lemma \ref{lem:weak}, we can now define the
+% function $k(m; z)$ as
+% \[
+%   k(m; z) := \inf_{k'}\left\{ \left| \mu_{k'}(\tilde{A}_m(z)) - \Pr_W(\tilde{A}_m(z)) \right| < 1/2m  \right\}
+% \]
+
+% \begin{lemma}\label{lem:convergence-in-dist}
+%   For $F_{k(m;z)}$, $F$, and $z$ defined above,
+%   \[ \lim_{m\to \infty} F_{k(m;z)}(z | \theta) = F(z | \theta). \]
+% \end{lemma}
+
+% \begin{proof}
+%   For any $\epsilon > 0$, let $M_1 = 2/\epsilon$. By Lemma
+%   \ref{lem:1}, we can find $M_2$ such that $\forall m > M_2$
+%   $\left| \Pr_W(\tilde{A}_m(z) - F(z | \theta) \right| <
+%   \epsilon/2$. Let $M = \max\{M_1, M_2\}$. For any $m > M$,
+%   \begin{align*}
+%     \left| F_{k(m)}(z) - F(z) \right | &= \left| \mu_{k(m)}(\tilde{A}_m(z)) - F(z) \right | \\
+%                                        &\leq \left|  \mu_{k(m)}(\tilde{A}_m(z)) - \Pr_W(\tilde{A}_m(z)) \right| + \left|  \Pr_W(\tilde{A}_m(z)) - F(z | \theta) \right|. \\
+%                                        &\leq \epsilon/2 + \epsilon/2
+%   \end{align*}
+%   The left term bound is defined by $k(m;z)$.
+% \end{proof}
+
+% % \begin{lemma}
+% %   For a fixed $k$,
+% %   $\lim_{m\to \infty} \mu_k(\tilde{A}_m(z)) = c \in \mathbb{R},$ i.e.
+% %   $\left\{ \mu_k(\tilde{A}_m(z))\right\}_{m=0}^\infty$ is a convergent
+% %   sequence.
+% % \end{lemma}
+
+% % \begin{proof}[Proof idea]
+% %   Here we will present a formal argument, without giving all of the
+% %   necessary technical details. As $m \to \infty$, the parameters
+% %   $\tau_x, \tau_y$ in the normalized problem are $O(1/m)$.  Further,
+% %   the initial condition coordinates tend to
+% %   $((1-1/m),(1-1/m))$. Letting $\gamma = 1/m$ for $m >> 1$, the
+% %   normalized problem becomes
+% %   \begin{equation*}
+% %     \frac{\partial}{\partial t} p(x,y,t) = \mathcal{L}p(x,y,t),\quad (x,y) \in = \Omega
+% % \end{equation*}
+% % with the initial condition
+% % \begin{align*}
+% %   p(x,y,0) &= \delta\left( x - (1-\gamma) \right) \delta\left(y-(1-\gamma)\right),
+% % \end{align*}
+% % where the differential operator $\mathcal{L}$ is of order
+% % \[
+% %   \mathcal{L} = \frac{1}{2} \gamma^2 \frac{\partial^2}{\partial x^2}
+% %   + \rho\gamma^2 \frac{\partial^2}{\partial x \partial y} + \frac{1}{2}\gamma^2 \frac{\partial^2}{\partial y^2}.
+% % \]
+% % This means that fundamental solution to the unbounded problem above is
+% % the Gaussian density
+% % \[
+% %   G(x,y,t'| \gamma) = \frac{1}{2\pi\,\,t'\,\, \gamma^2\sqrt{1-\rho^2}} \exp\left\{ -\frac{1}{2\, t' \, (1-\rho^2)} \left( \frac{(x - 1 + \gamma)^2}{\gamma^2} - 2\rho \frac{(x-1+\gamma)(y-1+\gamma)}{\gamma^2} + \frac{(y - 1 + \gamma)^2}{\gamma^2}\right) \right\}, t' \in (0,t]
+% % \]
+% % We claim that according to our method, we can find a constant $\Gamma$
+% % such that for $\gamma < \Gamma$, $t_\epsilon > t$ for the small-time
+% % solution $p(x,y,t_\epsilon)$, which means that $G(x,y,t | \gamma)$
+% % solves the above problem. This means that, \textbf{for fixed} $k$, the
+% % Galerkin approximation generated by our method is the projection of
+% % $p(x,y,t)$ onto the basis family $S_k$ (there is no forward evolution
+% % of the problem).
+
+% % Further, because
+% % $G(x,y,t | \gamma) \to \delta(x-1+\gamma)\delta(y-1+\gamma)$ weakly as
+% % $\gamma \to 0$, each of the projections of $G(x,y,t | \gamma)$ onto $S_k$ converge to the basis functions evaluated at $((1-\gamma), (1-\gamma))$:
+% % \[
+% %   \displaystyle \int_\Omega G(x,y,t | \gamma) \psi_i(x,y) dx\,dy \to \psi_i(1-\gamma,1-\gamma).
+% % \]
+% % Given $S_k$, the above coefficients uniquely define $p^{(k)}$
+% % projection is defined only by $p(x,y,t_\epsilon)$ and $S_k$ only on
+% % $\mathbf{p}(t_\epsilon)$ (see equation
+% % (\ref{eq:orthogonality-conditions-mat-2})) become the same. Because
+% % $k$ is fixed, the mass $M$ stays the same, which means that the
+% % initial condition vectors in the Galerkin method also converge at
+% % $\gamma \to 0$. Fu
+% % \end{proof}
+
+\begin{lemma}
+  The maximum likelihood estimator is consistent as $n \to \infty$ and $m \to \infty$:
+  \[ \hat{\theta}_{n,k} \to \theta \].
+\end{lemma}
+\begin{proof}
+  By Lemma \ref{lem:conv-dist}
+    \[ Z_k \xrightarrow[]{d} Z \mbox { as } k \to \infty. \] Next,
+    given Theorem 4.1 in \cite{singler2008differentiability}, we know
+    that, for each $k$, $q_k$ is analytic in both the diffusion
+    parameters and boundary parameters. Hence, the probability density
+    function satisfies the criteria A1 - A6 in
+    \cite{casella2002statistical} to guarantee that, for data
+    $Z_{k} \sim F_k(\theta)$,
+    \[ \hat{\theta}_{n,k}(Z_k) \xrightarrow[]{p} \theta \mbox{ as } n
+      \to \infty. \]
+
+    Now we need to show that the same holds for data sampled from $F$
+    as $k \to \infty$. To do this, we will use Chebyshev's inequality:
+  \[
+    \Pr_{Z}\left( \left| \hat{\theta}_{n,k}(Z) - \theta \right| \geq
+      \epsilon \right) \leq \frac{ \mbox{E}_{Z}\left[
+        (\hat{\theta}_{n,k}(Z) - \theta)^2 \right] }{ \epsilon^2 }.
+  \]
+  By the Maximum theorem [REFERENCE], $\hat{\theta}_{n,k}(x)$ is a continuous
+  function with respect to $x$, and further because we have bounded
+  $\hat{\theta}$ from below and above,
+  \[
+    \mbox{E}_{Z_k}\left[ (\hat{\theta}_{n,k}(Z_k) - \theta)^2 \right]
+    \to \mbox{E}_{Z}\left[ (\hat{\theta}_{n,k}(Z) - \theta)^2 \right]
+    \mbox{ as } k \to \infty
+  \]
+  by the portmanteau lemma. Finally, we can show that
+  \begin{equation}
+    \mbox{E}_{Z_k}\left[ (\hat{\theta}_{n,k}(Z_k) - \theta)^2 \right]
+    \to 0 \mbox{ as } n \to \infty, \label{eq:var-lim}
+  \end{equation}
+  since the expected value of the estimator tends to $\theta$ and its
+  variance goes to 0 when $n \to \infty$. Therefore, given any
+  $\epsilon > 0$ and $\delta > 0$, we can find a sufficiently large
+  $n$ and $k$ such that
+  \[
+    \Pr_{Z}\left( \left| \hat{\theta}_{n,k}(Z) - \theta \right| \geq
+      \epsilon \right) \leq \frac{ \mbox{E}_{Z}\left[
+        (\hat{\theta}_{n,k}(Z) - \theta)^2 \right] }{ \epsilon^2 } < \delta    
+  \]
+\end{proof}
+
+
+\bibliographystyle{plainnat}
+\bibliography{master-bibliography}
+\end{document}
