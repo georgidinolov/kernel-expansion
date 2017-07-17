@@ -15,9 +15,9 @@ Delta = 1 * 6.5*3600*1000 ## one day in ms
 ## Values taken from the microstructure paper
 
 mu.hat = 1.7e-12
-theta.hat = 5.6e-9
+theta.hat = 5.6e-10
 alpha.hat = -13
-tau.hat = sqrt(1.3e-7)
+tau.hat = sqrt(1.3e-9)
 
 mu.x = 0 ## setting it to zero artificically
 mu.y = 0
@@ -35,15 +35,13 @@ tau.rho = 0.0
 leverage.x.rho = 0
 leverage.y.rho = 0
 
-
-
 generate.data <- function(T, Delta, mu.x, mu.y,
                           alpha.x, alpha.y, theta.x, theta.y,
                           tau.x, tau.y, tau.rho,
                           leverage.x.rho, leverage.y.rho) {
     N <- ceiling(T/Delta)
 
-    rho.current <- 0.6
+    rho.current <- -0.3
     rho.tilde.current <- logit((rho.current+1)/2)
 
     x.current <- log(100)
@@ -57,7 +55,12 @@ generate.data <- function(T, Delta, mu.x, mu.y,
                                      ncol=5))
     setnames(innovations, seq(1,5), c("epsilon.x", "epsilon.y",
                                       "eta.x", "eta.y", "eta.rho"))
-    
+
+    innovations[, eta.x := leverage.x.rho*epsilon.x +
+                      sqrt(1-leverage.x.rho^2)*eta.x]
+    innovations[, eta.y := leverage.y.rho*epsilon.y +
+                      sqrt(1-leverage.y.rho^2)*eta.y]
+        
     output <- data.table(x = rep(0,N),
                          y = rep(0,N),
                          log.sigma.x = rep(0,N),
@@ -66,7 +69,7 @@ generate.data <- function(T, Delta, mu.x, mu.y,
 
     for (i in seq(1,N)) {
         dx <- sqrt(1-rho.current^2)*exp(log.sigma.x.current)*innovations[i,1]+
-            rho.current*exp(log.sigma.x.current-log.sigma.y.current)*innovations[i,2]
+            rho.current*exp(log.sigma.x.current)*innovations[i,2]
         dy <- exp(log.sigma.y.current)*innovations[i,2]
         
         x.current <- x.current + mu.x + dx
@@ -87,5 +90,43 @@ generate.data <- function(T, Delta, mu.x, mu.y,
                                             log.sigma.y.current,
                                             rho.tilde.current))]
     }
-    
+
+    out = NULL;
+    out$timeseries.dt <- output
+    out$parameters.hat <- list(T = T,
+                               Delta = Delta,
+                               mu.hat = mu.hat,
+                               theta.hat = theta.hat,
+                               alpha.hat = alpha.hat,
+                               tau.hat = tau.hat)
+    out$parameters <- list(mu.x = mu.x,
+                           mu.y = mu.y,
+                           alpha.x = alpha.x,
+                           alpha.y = alpha.y,
+                           theta.x = theta.x,
+                           theta.y = theta.y,
+                           tau.x = tau.x,
+                           tau.y = tau.y,
+                           tau.rho = tau.rho,
+                           leverage.x.rho = leverage.x.rho,
+                           leverage.y.rho = leverage.y.rho)
+    return (out)
 }
+
+
+data <- generate.data(T,Delta,
+                      mu.x,mu.y,
+                      alpha.x,alpha.y,
+                      theta.x,theta.y,
+                      tau.x, tau.y,tau.rho,
+                      leverage.x.rho, leverage.y.rho)
+
+sample.data <- data$timeseries.dt
+
+par(mfrow=c(3,2),
+    mar=c(1,2,1,1))
+plot(sample.data[,x], type="l")
+plot(sample.data[,y], type="l")
+plot(sample.data[,log.sigma.x], type="l")
+plot(sample.data[,log.sigma.y], type="l")
+plot(sample.data[, logit.inv(rho.tilde)*2-1], type="l")
