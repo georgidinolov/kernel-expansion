@@ -523,20 +523,30 @@ differentiation with respect to these parameters.
 As described in Section \ref{sec:eigenfunction}, the solution to the
 model problem has the eigenfunction expansion 
 \[
-  p(x,y,t) = \sum_{\nu=0}^\infty\phi_\nu(x,y) e^{-\lambda_\nu t}.
+  p(x,y,t) = \sum_{\nu=0}^\infty h_\nu \phi_\nu(x,y) e^{-\lambda_\nu t},
 \]
-Proceeding with the standandard Galerkin approach, we propose a
-solution $p^{(k)}(x,y,t)$ of similar form
+where $h_\nu$ is the coefficient of $\phi_\nu(x,y)$ in the
+eigenfunction expansion of $p(x,y,0)$. Proceeding with the standandard
+Galerkin approach, we propose a solution $p^{(k)}(x,y,t)$ of similar
+form
 \[
   p^{(k)}(x,y,t) = \sum_{i=0}^k c_i(t) \psi_i(x,y),
 \]
 where the basis functions $\psi_i(x,y)$ satisfy the boundary
 conditions. We also require that all first- and second-order
 derivatives of $\psi_i(x,y)$ are in $L_2(\Omega)$, i.e.
-$\psi_k(x,y) \in W_{2}^{2}(\Omega)$. Since $p^{(k)}$ is an
-approximation to the solution $p$, it does not follow the differential
-equation exactly nor can it represent the initial condition fully. We
-capture this by defining residuals
+$\psi_k(x,y) \in W_{2}^{2}(\Omega)$ where
+$\Omega = (0,1) \times (0,1)$ is the domain of the normalized
+problem. This will allow us to take derivatives of the approximate
+solution with respect to the boundaries for the problem. Finally, we
+designate the set of basis functions as
+\[
+  S_k := \left\{ \psi_1(x,y), \ldots, \psi_k(x,y) \right\}
+\]
+
+Since $p^{(k)}$ is an approximation to the solution $p$, it
+does not follow the differential equation exactly nor can it represent
+the initial condition fully. We capture this by defining residuals
 \begin{align*}
   \frac{\partial}{\partial t} p^{(k)}(x,y,t) - \mathcal{L}p^{(k)}(x,y,t) &:= R_e(k), \\
   p(x,y,0) - p^{(k)}(x,y,0) &:= R_0(k).
@@ -562,7 +572,7 @@ $L_2(\Omega)$. The orthogonality conditions
 \end{align}
 where $M$ is the mass matrix, $S$ is the stiffness matrix, and
 $\mathbf{p}(0)$ is the vector projection of $p(x,y,0)$ onto the
-span of $S_k$ with elements
+span of $S_k$. Matrix $M$, matrix $S$, and vector $\bf{p}(0)$ are expressed in elements as:
 \begin{align*}
   [M]_{ij} &= \displaystyle \int_\Omega \psi_i \psi_j dx\,dy, \\
   [S]_{ij} &= -\frac{1}{2}\tau_x^2 \displaystyle \int_\Omega \left( \frac{\partial}{\partial x} \psi_i(x,y) \right) \left( \frac{\partial}{\partial x} \psi_j(x,y) \right) dx\,dy -\rho\tau_x\tau_y \displaystyle \int_\Omega \left( \frac{\partial}{\partial x} \psi_i(x,y) \right) \left( \frac{\partial}{\partial y} \psi_j(x,y) \right) dx\,dy \\
@@ -589,7 +599,9 @@ diffusion parameters \citep{stakgold2011green}. We can then find a
 small enough $t_\epsilon$ such that
 $G\left(x,y, t_\epsilon \left| \frac{x_0-a_x}{b_x - a_x},
     \frac{y_0-a_y}{b_y - a_y} \right.\right)$ is numerically zero on
-the boundaries of $\Omega$. This is done in the following way.
+the boundaries of $\Omega$. We select the largest largest among all
+time instances satisfying this condition. This is done in the
+following way.
 \begin{enumerate}[1.]
 \item Scale and rotate the coordinate axes by
   \[
@@ -602,10 +614,11 @@ the boundaries of $\Omega$. This is done in the following way.
              y
            \end{array} \right) 
        \]
-       so that the problem obeys the diffusion equation. The
-       computational domain is transformed to the parallelogram
-       $\tilde{\Omega}$. The transformed initial condition will be
-       denoted as $(\xi_0, \eta_0)$.
+       so that the problem obeys the diffusion equation with
+       $\tau_x = \tau_y = 1$ and $\rho = 0$ on a computational domain
+       now transformed to a parallelogram $\tilde{\Omega}$. The
+       transformed initial condition will be denoted as
+       $(\xi_0, \eta_0)$.
 
      \item The fundamental solution $G(\xi,\eta,t | \xi_0, \eta_0)$ in
        this coordinate frame which does not take into account
@@ -615,12 +628,16 @@ the boundaries of $\Omega$. This is done in the following way.
     G(\xi,\eta,t | \xi_0, \eta_0) = \frac{1}{2\pi t} \exp\left(-\frac{(\xi-\xi_0)^2 +
         (\eta-\eta_0)^2}{2\,t} \right).
   \]
-  We define \textbf{distance} between $G(\xi,\eta,t | \xi_0, \eta_0)$
-  and any of the linear boundaries of $\tilde{\Omega}$ as the
-  Euclidean norm of the segment of the vector extending from
-  $(\xi_0,\eta_0)$ and normal to the boundary. There are four such
-  distances $d_1, d_2, d_3, d_4$. Assume that they are listed in
-  increasing magnitude.
+  We define the \textbf{distance} between
+  $G(\xi,\eta,t | \xi_0, \eta_0)$ and any of the linear boundaries of
+  $\tilde{\Omega}$ as the shortest distance between $(\xi_0, \eta_0)$
+  to each of the boundary segments.  There are four such distances
+  $d_1, d_2, d_3, d_4$. Assume that they are listed in increasing
+  magnitude. Note that the perpendicular intersection may not fall
+  within the line segment when the 4 line segments form a very skewed
+  diamond. However, the shortest distance to a line segment will be
+  well-behaved since we only need to enforce the boundary condition
+  over a single segment.
 
   Setting $t_\epsilon = d_2/8$ ensures that the fundamental solution
   $G(\xi,\eta,t_\epsilon | \xi_0, \eta_0)$ is \textit{at most}
@@ -636,7 +653,8 @@ the boundaries of $\Omega$. This is done in the following way.
   the closest boundary. Further,
   $G(\xi,\eta,t_\epsilon | \xi_0', \eta_0')$ takes on values less than
   $10^{-15}$ on all other boundaries, because it is outside of
-  $\bar{\Omega}$.
+  $\bar{\Omega}$. For this same reason, the system of images satisfies
+  the initial condition for the problem.
 
   Considering the difference of the two images, the small-time solution 
   \[
@@ -680,7 +698,7 @@ solved by the function
 with
 $x_0' = (x_0 - a_x)/(b_x-a_x),\quad y_0' = (y_0 - a_y)/(b_y-a_y)$. We
 choose the family of basis functions
-$S_k = (\psi_0(x,y), \ldots, \psi_k(x,y))$
+$S_k = \left\{\psi_i(x,y), \,\, 0 \leq i \leq k \right\}$
 \begin{align}
   \psi_i(x,y) &= \frac{1}{2\pi \sigma^2\sqrt{1-\tilde{\rho}^2} } \exp\left\{ -\frac{1}{2(1-\tilde{\rho}^2)\sigma^2} \left( (x - x_i)^2 - 2\tilde{\rho} (x-x_i)(y-y_i) + (y - y_i)^2 \right) \right\} x\left(1-x\right)\, y(1-y)
 \end{align}
@@ -691,7 +709,7 @@ The critical advantage of these elements, however, is that they better
 resolve the small-time solution $p(x,y,t_\epsilon)$ by taking into
 account some degree of correlation $\tilde{\rho}$ in the covariance of
 each kernel.  Essentially, the collection
-$\{ \psi_i(x,y| x_i, y_i, \tilde{\rho}, \sigma) \}_{i=0}^k$ is
+$\{ \psi_i(x,y| \tilde{\rho}, \sigma) \}_{i=0}^k$ is
 composed of fundamental solutions to a heat diffusion problem tuned by
 $\sigma$ and $\tilde{\rho}$, tampered such that their support is on
 $\Omega$, zero on the boundaries, still smooth, and inheriting the
@@ -701,9 +719,15 @@ problem. % In this manner,
 % rate of convergence: \textbf{The smoother the solution to the original
 %   problem and the smoother the functions in the basis space, the
 %   faster the convergence of the Ritz-Galerkin method.} (Remark 1(c) in
-% Chapter 2 of \cite{zeidler1995applied}).
-Moreover, all of the basis functions are infinitely differentiable
-with respect to the boundary and diffusion parameters, so that
+%   Chapter 2 of \cite{zeidler1995applied}).
+At this point, it should be noted that the thus-constructed Galerkin
+solution is infinitely differentiable with respect to the normalized
+problem parameters $(\tau_x, \tau_y, \rho)$. This is a result derived
+in \cite{singler2008differentiability}. In particular, Theorem 4.1
+applies, because the differential operator $\mathcal{L}$ for this
+problem is analytic in the parameters $\tau_x, \tau_y$, and $\rho$ and
+as a consequence $p^{(k)}$ is infinitely differentiable with respect
+to the boundaries. Hence,
 $\frac{\partial^4 p^{(k)}(x,y,t)}{\partial a_x \partial b_x \partial
   a_y \partial b_y}$ exists and can be computed numerically using
 finite differences.
@@ -720,7 +744,7 @@ solution. First, we define the \textit{error} term
 \]
 as well as the norm
 \[
-  \| w \|_2 = \sum_{j=0}^\infty \lambda_j^2 \left<w, \phi_j\right>
+  \| w \|_2 = \sum_{j=0}^\infty \lambda_j^2 \left<w, \phi_j\right>^2
 \]
 for the eigenpairs $(\lambda_j, \phi_j)$ of the operator
 $\mathcal{L}$. As referred to in \cite{bramble1977some}, functions
@@ -728,13 +752,18 @@ $w \in L_2(\Omega)$ with $\|w\|_2 < \infty$ are also in
 $W_2^2(\Omega)$. Finally, if we have the condition (corresponding to
 equation 2.1 in \cite{bramble1977some})
 \begin{align}
-  \| p(x,y,t_\epsilon) - p^{(k)}(x,y,t_\epsilon) \|_{L_2(\Omega)} &\leq C\, h(k)^2 \| p(x,y,t_\epsilon) \|_2 \label{eq:ic-bound}
+  \| p(x,y,t_\epsilon) - p^{(k)}(x,y,t_\epsilon) \|_{L_2(\Omega)} &\leq C\, h(k)^2 \| p(x,y,t_\epsilon) \|_2, \label{eq:ic-bound}
 \end{align}
-as a decreasing function $h(k) \geq 0$, Theorem 2.1 in
+where $h(\cdot)$ is a decreasing function of $k > 0$, Theorem 2.1 in
 \cite{bramble1977some} applies and we have the error estimate
 \begin{align}
   \| e^{(k)}(t) \|_{L_2(\Omega)} \leq C h(k)^2 \| p(x,y,t_\epsilon) \|_{2}. \label{eq:error-est}
 \end{align}
+Here, the  constant $C$  and the  function $h(k)$ are  the same  as in
+(\ref{eq:ic-bound}). The implication is that if the basis functions in
+$S_k$ represent  the small-time  solution $p(x,y,t_\epsilon)$  with no
+error, the Galerkin solution forward in time is also without error.
+
 We can ensure condition (\ref{eq:ic-bound}) is met if $S_k$ is
 complete in $L_2(\Omega)$ as $k$ grows. The other two conditions
 necessary for the error bound to apply are demonstrated by
@@ -768,18 +797,21 @@ Galerkin approximation under $L_2(\Omega)$.
 
 \section{Estimation}
 Consider the problem of estimating the parameters
-$(\mu_x, \mu_y, \sigma_x, \sigma_y, \rho)$ from an i.i.d. sample
-$(Z_1, \ldots, Z_n)$ from the process in (\ref{eq:X}) - (\ref{eq:Y}),
-where each $Z_i$ is the vector of random variables
-\[
-  Z_i = (X_i(t), Y_i(t), m_{x,i}, M_{x,i}, m_{y,i}, M_{y,i}).
-\]
-We say that $Z_i$ is sampled from the distribution corresponding to
-the probability density function (\ref{eq:pdf})
+$(\mu_x, \mu_y, \sigma_x, \sigma_y, \rho)$ from an i.i.d. set of
+samples $(Z_1, \ldots, Z_n)$ from random variable $Z(t)$ at a given
+value of $t$ in the process in (1)-(2). Specifically, $Z(t)$ is formed
+as
+$$ Z(t) =( X(t), Y(t), m_x(t), M_x(t), m_y(t), M_y(t)) $$
+where 
+$$m_x(t)= \min_{0 \le t' \le t} X(t), \;\; 
+M_x(t)= \max_{0 \le t' \le t} X(t), \;\; m_y(t)= \min_{0 \le t' \le t}
+Y(t), \;\; M_y(t)= \max_{0 \le t' \le t} Y(t). $$ We say that $Z_i$ is
+sampled from the distribution corresponding to the probability density
+function (\ref{eq:pdf})
 \[
   Z_i \sim F(\theta),
 \]
-where the distribution $F$ has the usual interpretation
+where the cumulative distribution function $F$ has the usual interpretation
 \begin{align*}
   F(z = (x, y, a_x, b_x, a_y, b_y) | \theta) &= \Pr\left(X(t) \leq x,
     Y(t) \leq y, m_x \leq a_x, M_x \leq b_x, m_y \leq a_y, M_y \leq b_y\right).
@@ -790,7 +822,7 @@ finance where the model equations (\ref{eq:X}) - (\ref{eq:Y}) (with
 various bells and whistles attached) are widely used. However, to the
 best of our knowledge, all current \textit{likelihood} methods in the
 literature either ignore the observed maximum/minimum information or
-use some of it. Likelihood-free approaches, like that of
+use only some of it. Likelihood-free approaches, like that of
 \cite{rogers1991estimating}, on the other hand suffer from not being
 able to be easily integrated into a bigger inferential framework.
 
@@ -809,7 +841,8 @@ settings when it exhibits \textit{consistency}, \textit{i.e.}: the MLE
 gets closer to the true parameter vector $\theta$ as more data is
 collected and included in the likelihood (assuming the model and its
 parameters remain constant during the data collection). More
-precise, the estimator $\hat{\theta}_n$ is consistent if
+precisely, the estimator $\hat{\theta}_n$ is consistent if it
+converges in probability to the true parameter:
 \[
   \Pr( | \hat{\theta}_n - \theta | ) \to 0 \qquad \mbox{as} \qquad n \to \infty.
 \]
@@ -828,9 +861,11 @@ the true distribution $F(\cdot | \theta)$. Define the probability densities
 \end{align}
 The function $f(z)$ is the probability density function corresponding
 to $q(x,y,t)$, the strong solution to the governing Fokker-Planck
-equation; $f^{(k)}(z)$ corresponds to the Galerkin approximation
-$q^{(k)}$. Before proceeding, we should note that both $f(z)$ and
-$f^{(k)}(z)$ exist. So see the case for $f(z)$, consider the relation
+equation; $f^{(k)}(z)$ corresponds to the approximate solution
+$q^{(k)}$ of the unnormalized equation obtained from the Galerkin
+approximation $p^{(k)}$ of the normalized equation. Before proceeding,
+we should note that both $f(z)$ and $f^{(k)}(z)$ exist. So see the
+case for $f(z)$, consider the relation
 \begin{align*}
   &f(x,y,a_x,b_x,a_y,b_y) = \\
   &\Pr\left(X(t) \in dx, Y(t) \in dy, m_x \in da_x, M_x \in db_x, m_y
@@ -919,21 +954,21 @@ First, we prove the Lemma
   \begin{align*}
     \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial b_y} \Pr(B(a_x, b_x, a_y, b_y)) &= \displaystyle \int_{a_x}^{b_x} \displaystyle \int_{a_y}^{b_y} f(x,y,a_x,b_x,a_y,b_y)\, dx\, dy.
   \end{align*}
-  The first-order \textbf{finite difference} approximation the above
+  The second-order \textbf{finite difference} approximation the above
   expression can be expressed as a linear combination of probabilities
   of perturbed sets $B(\cdot)$:
   \begin{align*}
     \lim_{\epsilon \to 0}\quad \frac{1}{\epsilon^4} \sum_{i=1}^{16} c(i) \Pr(B(a_x + k_1(i)\epsilon, b_x + k_2(i)\epsilon, a_y + k_3(i)\epsilon, b_y + k_4(i)\epsilon) = \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial b_y} \Pr(B(a_x, b_x, a_y, b_y)),
   \end{align*}
   where $c$ and $k$ are functions from $i$ to the appropriate
-  coefficients in the first-order finite difference approximation
+  coefficients in the second-order finite difference approximation
   $c(i) \to \left\{-1, 1\right\}$, $k_j(i) \to \{-1,1\}$. Using Big-O
   notation, for a sufficiently small $\epsilon$
   \begin{equation}
     \sum_{i=1}^{16} c(i) \Pr(B(a_x + k_1(i)\epsilon, b_x +
     k_2(i)\epsilon, a_y + k_3(i)\epsilon, b_y + k_4(i)\epsilon) =
     \epsilon^4 \frac{\partial^4}{\partial a_x \partial b_x \partial
-      a_y \partial b_y} \Pr(B(a_x, b_x, a_y, b_y)) + O(\epsilon^5 ;
+      a_y \partial b_y} \Pr(B(a_x, b_x, a_y, b_y)) + O(\epsilon^6 ;
     a_x, b_x, a_y, b_y). \label{eq:fin-diff}
   \end{equation}
 
@@ -941,11 +976,11 @@ First, we prove the Lemma
   \begin{align*}
     \Pr_k(B(a_x + k_1(i)\epsilon, b_x + k_2(i)\epsilon, a_y +
     k_3(i)\epsilon, b_y + k_4(i)\epsilon) = \displaystyle \int_{a_x +
-    k_1(i)}^{b_x + k_2(i)} \displaystyle \int_{a_y + k_3(i)}^{b_y +
-    k_4(i)} q^{(k)}(x,y,a_x,b_x,a_y,b_y)\, dx\, dy \to \\
+    k_1(i)\epsilon}^{b_x + k_2(i)\epsilon} \displaystyle \int_{a_y + k_3(i)\epsilon}^{b_y +
+    k_4(i)\epsilon} q^{(k)}(x,y,a_x,b_x,a_y,b_y)\, dx\, dy \to \\
     \displaystyle
-    \int_{a_x + k_1(i)}^{b_x + k_2(i)} \displaystyle \int_{a_y +
-    k_3(i)}^{b_y + k_4(i)} q(x,y,a_x,b_x,a_y,b_y)\, dx\, dy =
+    \int_{a_x + k_1(i)\epsilon}^{b_x + k_2(i)\epsilon} \displaystyle \int_{a_y +
+    k_3(i)\epsilon}^{b_y + k_4(i)\epsilon} q(x,y,a_x,b_x,a_y,b_y)\, dx\, dy =
     \Pr(B(a_x + k_1(i)\epsilon, b_x + k_2(i)\epsilon, a_y +
     k_3(i)\epsilon, b_y + k_4(i)\epsilon) \\
     \mbox{ as } k \to \infty \mbox{ in } L_2(\Omega).
@@ -971,7 +1006,7 @@ First, we prove the Lemma
                                                                 & + \sum_{i=1}^{16} c(i) O(h(k)^2; a_x + k_1(i)\epsilon, b_x +
                                                                   k_2(i)\epsilon, a_y + k_3(i)\epsilon, b_y + k_4(i)\epsilon) \\
     &=     \epsilon^4 \frac{\partial^4}{\partial a_x \partial b_x \partial
-      a_y \partial b_y} \Pr(B(a_x, b_x, a_y, b_y)) + O(\epsilon^5 ;
+      a_y \partial b_y} \Pr(B(a_x, b_x, a_y, b_y)) + O(\epsilon^6 ;
       a_x, b_x, a_y, b_y) \\
                                                                 & + \sum_{i=1}^{16} c(i) O(h(k)^2; a_x + k_1(i)\epsilon, b_x +
                                                                   k_2(i)\epsilon, a_y + k_3(i)\epsilon, b_y + k_4(i)\epsilon).
@@ -980,7 +1015,7 @@ First, we prove the Lemma
   \begin{align*}
     \frac{1}{\epsilon^4} \sum_{i=1}^{16} c(i) \Pr_k(B(a_x + k_1(i)\epsilon, b_x +
     k_2(i)\epsilon, a_y + k_3(i)\epsilon, b_y + k_4(i)\epsilon) &= \frac{\partial^4}{\partial a_x \partial b_x \partial
-                                                                  a_y \partial b_y} \Pr(B(a_x, b_x, a_y, b_y)) + O(\epsilon;
+                                                                  a_y \partial b_y} \Pr(B(a_x, b_x, a_y, b_y)) + O(\epsilon^2;
                                                                   a_x, b_x, a_y, b_y) \\
                                                                 &+ \frac{1}{\epsilon^4}\sum_{i=1}^{16} c(i) O(h(k)^2; a_x + k_1(i)\epsilon, b_x +
                                                                   k_2(i)\epsilon, a_y + k_3(i)\epsilon, b_y + k_4(i)\epsilon) \\

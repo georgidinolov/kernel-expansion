@@ -1,0 +1,383 @@
+\documentclass[12pt]{article}
+%
+\usepackage{amssymb}
+\usepackage{graphics}
+\usepackage{epsfig}
+\usepackage{epstopdf}
+\usepackage{color}
+%--- double-spaced -----
+\def\dsp{\def\baselinestretch{1.5}\large\normalsize}
+\dsp
+%
+\oddsidemargin   0.0 in
+\evensidemargin  0.0 in
+\topmargin          -0.6 in
+\textwidth       6.5 in
+\textheight      9.0 in
+%\parindent       0.0 in
+\parskip         0.1 in
+%
+\begin{document}
+
+\begin{itemize}
+
+\item In equation (1), change the boundary conditions to 
+$$ \begin{array}{cc}
+a_x \le X(t) \le b_x \\
+a_y \le Y(t) \le b_y
+\end{array}$$
+Or change the boundary conditions in equation (3) to make the two equations 
+consistent with each other. 
+
+\item Delete $0 < t' \le t$ below equation (2). 
+
+\item Change equation (3) to 
+$$\frac{1}{dx dy} \mbox{Pr}\left( \left. \begin{array}{ll}
+X(t) \in [x, x+dx), Y(t) \in [y, y+dy),  \\
+\displaystyle \min_{t'\in[0, t]} X(t') \ge a_x, \max_{t'\in[0, t]} X(t') \le b_x, \\
+\displaystyle \min_{t'\in[0, t]} Y(t') \ge a_y, \max_{t'\in[0, t]} Y(t') \le b_y
+\end{array} \right | X(0)=x_0, Y(0)=y_0, \theta
+\right) $$
+
+\item In equation (4), change to $\displaystyle \frac{\partial}{\partial t'} $ 
+
+\item Change equation (6) to 
+$$ \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial b_y} q(x,y,t) = 
+\mbox{density} \left( \left. \begin{array}{ll}
+X(t) =x, Y(t) =y,  \\
+\displaystyle \min_{t'\in[0, t]} X(t') = a_x, \max_{t'\in[0, t]} X(t') = b_x, \\
+\displaystyle \min_{t'\in[0, t]} Y(t') = a_y, \max_{t'\in[0, t]} Y(t') = b_y
+\end{array} \right | X(0)=x_0, Y(0)=y_0, \theta
+\right) $$
+
+\item At the end of paragraph after equation (6), change to \\
+`` ... method necessary for carrying out inferential procedures with ... ''
+
+\item In the last paragraph of page 1, change to \\
+`` ... each eigenfunction of the differential operator is a product of two sine functions, one in each dimension ...'' \\
+
+\item In the last paragraph of page 1 \\
+Use $a_x, a_y$ instead of $a_1, a_2$ \\
+Use $b_x, b_y$ instead of $b_1, b_2$ 
+
+\item In the last paragraph of page 1, change to  \\
+``This, however, requires one to solve Fokker-Planck equation (4)-(5) accurately for at least 16
+slightly different sets of boundaries and combine the results with numerical differentiation 
+to evaluate the density function for a just single observation ... ''
+
+\item At the beginning of first paragraph on page 2, add \\
+``for non-zero correlation, '' \\
+
+Change to \\
+``... where the eigenfunctions for the differential operator are approximated
+by the eigenvectors of a linear system obtained using a truncated expansion based on 
+a set of separable basis function, each of which is a product of two sine functions (one in each dimension) satisfying the boundary conditions ...'' \\
+
+\item In the middle of first paragraph on page , change to \\
+ ``... makes the expansion a slow, if not unfeasible, solution.'' \\
+ Change to \\
+ ``... from either using a separable representation for the differential operator that is intrinsically 
+ correlated in the two dimensions (trigonometric series) or ... ''
+
+\item At the beginning of second paragraph on page , change to \\
+``In this paper, we propose a robust and efficient solution to the general problem (4)-(5). The solution is obtained by combining a small-time analytic solution with a Galerkin discretization
+based on basis functions that are correlated. ''
+
+\item Change equation (9) to 
+$$p(x,y,t) = \sum_v h_v \phi_v (x, y) e^{-\lambda_v t} $$
+where $h_v$ is the coefficient of $\phi_v (x, y) $ in the eigenfunction expansion of $p(x, y, 0)$. 
+
+\item 4 lines below equation (9) on page 3, change to \\
+``... we approximate the eigenfunction using a finite set of orthogonal basis functions satisfying boundary conditions, i.e., a finite sequence of sines, ... ''
+
+\item The equation below equation (9) on page 3, make changes \\
+1. Each index should start at 1, not 0. \\ 
+2. Make the associated changes in the definition of $\Psi(x, y)$ and $c_v$. 
+
+\item In the paragraph below equation (10) on page 3, change to \\ 
+`` ... Applying $L$ to the basis function expansion of $\phi_v $ and again approximating 
+the result using the finite set of basis functions yields ''
+
+\item 4 lines below equation (10) on page 3,  {\bf what is $\tilde{\theta} $?} 
+This is the first time this parameter/quantity is mentioned.  
+
+\item After $\tilde{\theta} $ on page 3, add \\
+``In the last part of the equation above, we have truncated the infinite sine series 
+expansion of $L \psi_{l, m}(x, y)$ '' 
+
+\item 4 lines below equation (10) on page 3, delete the subscript outside the curly bracket \\
+it should be $ \left\{ \psi_{l, m}(x, y) \right\} $. 
+
+\item 5 lines below equation (10) on page 3, change to \\
+`` The dense structure of matrix $A$ is caused by the mixing terms ... ''
+
+\item 9 lines below equation (10) on page 3, change to \\
+`` ... , we arrive at the matrix eigenvalue problem ''
+
+\item Equation at the bottom of page 3, move $\Psi(x,y)^T $ outside the summation
+and add the coefficient $h_v$ \\
+It should be
+$$ p(x,y,t) \approx \Psi(x,y)^T \sum_v h_v c_v e^{-\lambda_v t}  $$
+
+\item Page 4, line 7, change``such that ...'' to \\
+``The 4-th derivative of $p$ with respect to the 4 boundaries is approximated as '' \\
+\begin{eqnarray} 
+& & \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial b_y} p(x, y, t) 
+\nonumber \\
+& & \hspace*{0.5cm} \approx \frac{\displaystyle \sum_{k_1, k_2, k_3, k_4 = \pm 1}
+c_{\{ k_1, k_2, k_3, k_4 \} } p(\left. x, y, t \right| a_x+k_1 \varepsilon, b_x+k_2 \varepsilon, 
+a_y+k_3 \varepsilon, b_y+k_4 \varepsilon) }{(2 \varepsilon )^4} 
+\nonumber
+\end{eqnarray}
+
+\item Page 4, line 9, change to \\
+`` ... requires many terms in the basis function expansions of the eigenfunctions, ...''
+
+\item Paragraph after equation (11) on page 4, change to \\
+`` ... Here, c(t) is a vector consisting of values of the solution in (8) on a set of grid points
+ over $\Omega$ at time $t$, ... ''
+
+\item Line 6 below equation (11) on page 4, change to \\
+`` For example, using $c_{l, m}(t) $ 
+to denote the approximation of the solution at grid point $(x_l, y_m)$, and assembling 
+vector $c(t)$ using the index scheme $c_{l, m}(t) \rightarrow c_k(t)$ with  
+$k=  (l-1) M + m$, we can approximate the operator $\frac{\partial^2 }{\partial x^2} $ as 
+
+\item Line 12 below equation (11) on page 4, change to \\
+`` ... with a constant h independent of parameters is appealing ...''
+
+\item last sentence of page 4, delete the sentence since we are not discussing 
+the approach in details. If we want to keep the sentence, we need to describe the approach
+in some details, including i) keeping $\tau_x =1$ and 
+$\tau_y = 1$; ii) keeping the 3 boundaries on grid points; iii) having to work with 
+$\Omega \ne \mbox{a square}$; and iv) one side of boundaries not falling on grid points. 
+
+\item Page 5, line 3, change to \\
+`` ... , $h$ cannot be made too small because round-off error and the irregular part of 
+the truncation error become an issue relatively quickly. 
+
+\item Equations and text from line 6 of page 5 to the end of section 2, change to \\
+$$p_{FD}(\left. x, y, t \right| b) = p(\left. x, y, t \right| b) 
++ h^2 \mbox{F}_{reg}(b) + h^2 \mbox{F}_{irreg}(b) + 
+\varepsilon_{mach} \mbox{F}_{round}(b) $$
+where we have included parameter $b $ explicitly as a simplified notation for 
+$[a_x, b_x]$ and $[a_y, b_y]$ after shifting $a_x$ and$a_y$ to 0. 
+
+Note that when expressed using the chain rule, both 
+$\displaystyle \frac{\partial}{\partial a_x}$ and  $\displaystyle \frac{\partial}{\partial b_x}$
+contain $\displaystyle \frac{\partial}{\partial b}$. As a result, 
+$\displaystyle \frac{\partial^2 }{\partial a_x \partial b_x} $ leads to 
+$\displaystyle \frac{\partial^2 }{\partial b^2} $. Although in the discussion below, 
+for simplicity, we only illustrate the numerical differentiation on the first derivative, 
+keep in mind that it is the second derivative that is more relevant in the calculation of 
+ $\displaystyle \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial b_y}
+p(x, y, t) $. 
+
+In the expression of finite difference solution above, 
+$h^2 \mbox{F}_{reg}(b) $ is the regular part of 
+the truncation error from discretizing the differential operator on the grid; 
+$h^2 \mbox{F}_{irreg}(b) $ is the irregular part of the truncation error 
+from the interpolations invoked by $\{x_0, y_0, x, y \}$ not being on grid points; 
+and $\varepsilon_{mach} \mbox{F}_{round}(b) $ is the effect of round-off errors
+with $\varepsilon_{mach} \sim 10^{-16}$ denoting the machine epsilon for 
+IEEE double precision system. 
+The coefficient, $\mbox{F}_{reg}(b) $, of the regular part of truncation error 
+is a smooth function of $b$ with derivative $= O(1)$. 
+The coefficient, $\mbox{F}_{round}(b) $, in the effect of round-off errors, 
+behaves virtually like a random variable, discontinuous in $b$. 
+For the irregular part of truncation error, the coefficient $\mbox{F}_{irreg}(b) $ 
+in general is continuous in $b$ but not smooth in $b$ where the derivative has 
+discontinuities of magnitude $O\left( \frac{1}{h} \right)$. 
+For example, the error in 
+a piece-wise linear interpolation of a smooth function at position $b$ using step $h$ 
+has the general form of 
+$$\mbox{Interpolation error } = O(h^2) (1-\mbox{rem}(b/h,1)) \mbox{rem}(b/h,1)$$ 
+The coefficient part $\mbox{F}_{irreg}(b) = (1-\mbox{rem}(b/h,1)) \mbox{rem}(b/h,1) $ 
+is continuous in $b$ but not differentiable. Its first derivative 
+has the behavior of 
+$$ \frac{\partial }{\partial b} \mbox{F}_{irreg}(b) =  \frac{1}{h} \left(1-2\mbox{rem}(b/h,1) \right)$$
+
+Based on the expression we wrote out above for the finite difference solution, 
+applying the numerical differentiation on t with step $\varepsilon$ yields: 
+\begin{eqnarray}
+& & \frac{p_{FD}(\left. x, y, t \right| b+\varepsilon)-p_{FD}(\left. x, y, t \right| b -\varepsilon)}{2 \varepsilon} \nonumber \\
+& & \hspace*{1cm} =  \frac{\partial }{\partial b} p(\left. x, y, t \right| b) + O(\varepsilon^2)
+ + h^2 \frac{\mbox{F}_{reg}(b+\varepsilon)-\mbox{F}_{reg}(b-\varepsilon)}{2 \varepsilon}  \nonumber \\
+& & \hspace*{1cm} + h^2 \frac{\mbox{F}_{irreg}(b+\varepsilon)-\mbox{F}_{irreg}(b-\varepsilon)}{2 \varepsilon}
+ + \varepsilon_{mach} \frac{\mbox{F}_{round}(b+\varepsilon)-\mbox{F}_{round}(b-\varepsilon)}{2 \varepsilon}  \nonumber
+\end{eqnarray}
+In the equation above, as the step in the numerical differentiation is refined, the first line 
+of the RHS is well behaved, converging to the true value 
+$\frac{\partial }{\partial b} p(\left. x, y, t \right| b)$ as $\varepsilon \rightarrow 0$. 
+The second line of RHS, however, is problematic. As $\varepsilon \rightarrow 0$, 
+the contribution from round-off error blows up to infinity
+$$ \varepsilon_{mach} \frac{\mbox{F}_{round}(b+\varepsilon)-\mbox{F}_{round}(b-\varepsilon)}{2 \varepsilon}  = O\left(\frac{\varepsilon_{mach}}{\varepsilon} \right) 
+\longrightarrow \infty \;\;\;\; \mbox{as } \varepsilon \rightarrow 0 $$
+The contribution from the irregular part of truncation error is 
+$$ h^2 \frac{\mbox{F}_{irreg}(b+\varepsilon)-\mbox{F}_{irreg}(b-\varepsilon)}{2 \varepsilon}  = 
+O\left(\frac{h^2}{\max(\varepsilon, h)} \right) $$ 
+In the second order numerical differentiation, however, the contribution from 
+the irregular part of truncation error behaves like 
+$$ h^2 \frac{\mbox{F}_{irreg}(b+\varepsilon)-2\mbox{F}_{irreg}(b)
++\mbox{F}_{irreg}(b-\varepsilon)}{\varepsilon^2 }  = 
+O\left(\frac{h^2}{\max(\varepsilon^2, h^2)} \right) $$
+
+\item {\Large \bf Below are new in version 2}
+
+\item The first equation in section 3, change to 
+$$p(x,y,t) = \sum_v h_v \phi_v (x, y) e^{-\lambda_v t} $$
+where $h_v$ is the coefficient of $\phi_v (x, y) $ in the eigenfunction expansion of $p(x, y, 0)$. \textcolor{red}{DONE}
+
+\item Line 2 on page 6, change to \\
+`` ... i.e., $\psi_i(x, y) \in W_2^2(\Omega) $ where $\Omega = (0, 1) \times (0, 1)$ is 
+the domain of the normalized problem. '' \\
+{\bf Question:} How about the derivatives with respect to parameters 
+$(\tau_x, \tau_y)$? These derivatives along with the derivatives with respect to $(x, y)$
+will affect the derivatives with respect to $(a_x, b_x, a_y, b_y)$ in the original 
+(unnormalized) problem. \textcolor{red}{DONE}
+
+\item Two lines below equation (14) on page 6, \\
+`` ... span of $S_k$ ... '' \\
+Question: what is $S_k$? You need to define it. 
+Is it the set of basis functions $\{\psi_i(x, y), 1 \le i \le k \}$? 
+If it is already the space spanned by the set of basis functions 
+$\{\psi_i(x, y), 1 \le i \le k \}$, then we just say \\
+`` ... projection of $p(x, y, 0)$ onto subspace $S_k$. '' \textcolor{red}{DONE}
+
+\item Two lines below equation (14) on page 6, replace `` ... with elements'' by \\
+  ``. Matrix $M$, matrix $S$ and vector $\bf{p}(0)$ are expressed in elements as: ''
+  \textcolor{red}{DONE}
+
+\item Line 2 from bottom of page 6, \\
+  `` We can then find a small enough $t_{\varepsilon}$ such that ... '' \\
+  We also need to mention that we select the largest among all the
+  time instances satisfying this condition.  \textcolor{red}{DONE}
+
+\item Line 3 on page 7, \\
+  `` so that the problem obeys the diffusion equation. '' \\
+  Do you mean the diffusion equation with $\tau_x=1$, $\tau_y=1$ and
+  $\rho=0$, obtained by a scaling and rotating transformation on
+  equation (8)? \textcolor{red}{DONE}
+
+\item Line 8 on page 7, \\
+  `` We define distance between ... '' \\
+  There are some minor problems with this definition when we look at
+  the distances between the image of $(\xi_0, \eta_0)$ and the 4
+  boundaries.  How about defining the distance to each boundary as the
+  shortest distance between $(\xi_0, \eta_0)$ and the boundary
+  segment? Note that the perpendicular intersection may not fall
+  within the line segment when the 4 line segments form a very skewed
+  diamond.  When the 4 line segments do form a very skewed diamond and
+  when $(\xi_0, \eta_0)$ is close to a corner with angle larger than
+  $90^o$, the image with respect to one side may well be very close in
+  terms of perpendicular distance to the adjacent side. But the
+  shortest distance to the line segment will be well behaved and the
+  shorted distance is what matters since we only need to enforce the
+  boundary condition over the line segment, not over the whole
+  infinite line.  \textcolor{red}{DONE}
+
+
+\item Line 4 in section 3.2 on page 7, change to \\
+  $S_k = \{\psi_i(x, y), 0 \le i \le k\}$. \\
+  This is the first time $S_k$ is defined. It needs to be defined
+  earlier.  \textcolor{red}{DONE}
+
+\item Line 4 of page 8, change to \\
+  `` ... $\{\psi_i(x, y | \tilde{\rho}, \sigma) \}_{i=0}^k $ ... '' \\
+  {\bf Question:} What about the derivatives of $c_i(t)$ with respect
+  to parameters $(\tau_x, \tau_y)$?  Since the basis functions
+  $\{\psi_i(x, y | \tilde{\rho}, \sigma) \}_{i=0}^k $ are not
+  explicitly dependent on $(\tau_x, \tau_y)$, derivatives of
+  $p^{(k)}(x,y,t) $ with respect to
+  parameters $(\tau_x, \tau_y)$ will mainly affected by those of $c_i(t)$. Correct? \\
+  \textcolor{red}{DONE} {\bf Question:} How do you select the value of
+  $\sigma $?
+
+\item Second equation in section 3.3, page 8 \\
+  {\bf Question:} Should it be
+$$ ... \lambda_j^2 \langle w, \phi_j \rangle^2 $$
+\textcolor{red}{DONE}
+
+\item The line below Equation (17) on page 8 \\
+  {\bf Question/Comments:} Do you mean `` ... $h(k)$ is a decreasing
+  function of $h$ ... ''? What is $h(k)$?  \textcolor{red}{DONE}
+
+\item Equation (18) on page 8 \\
+  {\bf Question/Comments:} Do you mean
+  `` ... for $t > t_{\varepsilon}$ ...''? \\
+  In equation (18), is coefficient $C$ the same as that in equation (17)? \\
+  In equation (18), is $h(k)$ the same as that in equation (17)? \\
+  If so, what/where is the contribution to global error from the
+  discretization when the initial value at $t=t_{\varepsilon} $ is
+  represented exactly with no error?  \textcolor{red}{DONE}
+
+\item First equation in section 4 and the line above, change to  \\
+`` ... an i.i.d set of samples $(Z_1, \ldots, Z_n)$ from random variable $Z(t)$ at a given 
+value of $t$ in the process in (1)-(2). Specifically, $Z(t)$ is formed as 
+$$ Z(t) =( X(t), Y(t), m_x(t), M_x(t), m_y(t), M_y(t)) $$
+where 
+$$m_x(t)= \min_{0 \le t' \le t} X(t), \;\; 
+M_x(t)= \max_{0 \le t' \le t} X(t), \;\; 
+m_y(t)= \min_{0 \le t' \le t} Y(t), \;\; 
+M_y(t)= \max_{0 \le t' \le t} Y(t) $$
+\textcolor{red}{DONE}
+
+\item First equation in section 4 \\
+  {\bf Question:} Do we need to specify $x0_0=0, y_0=0$?
+  \textcolor{red}{DONE}
+
+\item Second and third equations in section 4 \\
+{\bf Question:} What is $F$? density function? cumulative distribution function? \\
+The RHS of third equation looks like CDF but the LHS looks like PDF.
+  \textcolor{red}{DONE; I think this is standard notation} 
+
+\item Line 4 of page 9, change to \\
+  `` ... or use only some of it. ''
+    \textcolor{red}{DONE}
+
+\item The equation above section 4.1 \\
+{\bf Question:} What is the exact meaning of this equation? 
+Is $Pr()$ density function? CDF? 
+Or do you mean the convergence is the sense of probability?
+    \textcolor{red}{DONE}
+
+\item Equation (19) on page 9, \\
+Revise it according to the revision suggested for equation (6). 
+
+\item Line 2 below equation (20) on page 9, change it to \\
+  `` ... $f^{(k)}(z)$ corresponds to the approximate solution
+  $q^{(k)}$ of the unnormalized equation obtained from the Galerkin
+  approximation $p^{(k)}$ of the normalized equation.
+  \textcolor{red}{DONE}
+
+\item Line 1 of page 10,  \\
+{\bf Question:} What about the dependence of coefficients $c_i(t)$ on 
+$(\tau_x, \tau_y)$, and in turn, their dependence on $(a_x, b_x, a_y, b_y)$) ?
+
+\item Line 3 from the bottom of page 10, change to \\
+  ``The second-order finite difference ... '' \\
+  {\bf Note:} This is the second order numerical differentiation. The
+  first order one has 9 terms instead of 16.
+    \textcolor{red}{DONE}
+
+\item Line 1 of page 11, change to \\
+  `` ... in the second-order finite difference ...''
+    \textcolor{red}{DONE}
+
+  \item Page 11, equation (24),  change the last term to \\
+    $O(\varepsilon^6; a_x, b_x, a_y, b_y) $ \textcolor{red}{DONE}
+
+  \item In the two equations after equation (24),  \\
+    All integration limits should be multiplied by $\varepsilon$.
+    \textcolor{red}{DONE}
+
+\item In the third equation after equation (24),  line 3 of RHS, change to  \\
+  $ O(\varepsilon^6; a_x, b_x, a_y, b_y) $ \textcolor{red}{DONE}
+
+  \item In the fourth equation after equation (24),  line 1 of RHS, change to  \\
+    $ O(\varepsilon^2; a_x, b_x, a_y, b_y) $ \textcolor{red}{DONE}
+
+\end{itemize}
+
+\end{document}
+
