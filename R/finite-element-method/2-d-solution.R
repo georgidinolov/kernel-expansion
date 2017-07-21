@@ -1634,15 +1634,19 @@ basis.functions.normal.kernel <- function(rho,
                                           std.dev.factor) {
     sigma <- sqrt(sigma2);
     x.nodes <- c(seq(0.5-sqrt(2), 0.5,
-                     by=std.dev.factor*sigma*sqrt(1-rho)),
+                     by=std.dev.factor*sigma*sqrt(1-rho)/sqrt(1+rho)),
                  seq(0.5, 0.5+sqrt(2),
-                     by=std.dev.factor*sigma*sqrt(1-rho)));
+                     by=std.dev.factor*sigma*sqrt(1-rho)/sqrt(1+rho)));
+    x.nodes <- c(seq(0.5-sqrt(2), 0.5+sqrt(2),
+                     by=std.dev.factor*sigma*sqrt(1-rho)/sqrt(1+rho)));
     x.nodes <- unique(x.nodes);
     
     y.nodes <- c(seq(0.5-sqrt(2), 0.5,
-                     by=std.dev.factor*sigma*sqrt(1+rho)),
+                     by=std.dev.factor*sigma),
                  seq(0.5, 0.5+sqrt(2),
-                     by=std.dev.factor*sigma*sqrt(1+rho)));
+                     by=std.dev.factor*sigma));
+    y.nodes <- c(seq(0.5-sqrt(2), 0.5+sqrt(2),
+                     by=std.dev.factor*sigma))
     y.nodes <- unique(y.nodes);
 
     xy.nodes <- rbind(rep(x.nodes,each=length(y.nodes)),
@@ -1655,8 +1659,14 @@ basis.functions.normal.kernel <- function(rho,
     xieta.nodes <- Rot.mat %*% (xy.nodes - c(0.5,0.5)) + c(0.5,0.5);
     xieta.nodes <- xieta.nodes[, (xieta.nodes[1,] >= 0) & (xieta.nodes[1,] <= 1) &
                                  (xieta.nodes[2,] >= 0) & (xieta.nodes[2,] <= 1)];
+
+    pdf("nodes.pdf")
+    par(mar=c(4,4,1,1))
+    plot(xieta.nodes[1,],xieta.nodes[2,],
+         xlab = "x-coordinate nodes",
+         ylab = "y-coordinate nodes");
+    dev.off()
     
-    plot(xieta.nodes[1,],xieta.nodes[2,]);
     ## sort.bases <- sort.int(sqrt((xieta.nodes[1,]-0.5)^2 +
     ##                             (xieta.nodes[2,]-0.5)^2),
     ##                        index.return = TRUE);

@@ -579,13 +579,35 @@ span of $S_k$. Matrix $M$, matrix $S$, and vector $\bf{p}(0)$ are expressed in e
          &\quad -\frac{1}{2}\tau_y^2 \displaystyle \int_\Omega \left( \frac{\partial}{\partial y} \psi_i(x,y) \right) \left( \frac{\partial}{\partial y} \psi_j(x,y) \right) dx\,dy \\
   [\mathbf{p}(0)]_i &= \displaystyle \int_\Omega p(x,y,0) \psi_i(x,y) dx\,dy.
 \end{align*}
-The entries of $S_{ij}$ are computed with integration by parts and
-using the boundary conditions. The semidiscrete Galerkin approximation
+The entries of $S_{ij}$ are computed with integration by parts to
+enforce the boundary conditions. The semidiscrete Galerkin approximation
 becomes
 \[
   p^{(k)}(x,y,t) = \boldsymbol{\psi}(x,y)^T \exp\left( M^{-1}S\, t \right) \mathbf{c}(0),
 \]
 with $\boldsymbol{\psi}(x,y) = (\psi_0(x,y), \ldots, \psi_k(x,y))^T.$
+Since both $M$ and $S$ are symmetric and infinitely differentiable
+with respect $(\tau_x, \tau_y, \rho)$ (each entry in the matrices has
+this property, which can be seen in the defining expressions above),
+the system matrix $M^{-1}S$ is symmetric, and it is infinitely
+differentiable with respect to the parameters $(\tau_x, \tau_y, \rho)$
+as well. As a consequence, the matrix exponential
+\[
+  \exp\left( M^{-1}S\, t \right) = \sum_{n=0}^\infty \frac{1}{n!}
+  \left(M^{-1}S\right)^n t^n
+\]
+is also infinitely differentiable with respect to the diffusion
+parameters. Hence, we can safely apply
+$\frac{\partial}{\partial a_x \partial b_x \partial a_y \partial b_y}$
+to the Gelerkin approximation $p^{(k)}(x,y,t)$ as long as the
+derivatives of the vectors $\boldsymbol{\psi}(x,y)^T$ and
+$\mathbf{c}(0)$ exist.
+% Theorems 7 and 8 in
+% Chapter 9 of \cite{lax2007linear-algebra} apply, and both the
+% eigenvalues and eigenvectors of the sysmtem matrix are differentiable
+% with respect to the diffusion parameters.
+
+
 
 \subsection{Small-time Solution}
 Before solving the Galerkin equations
