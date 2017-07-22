@@ -117,11 +117,11 @@ for (n in seq(1,length(data))) {
         problem.parameters.original$rho <- 0.6;
         
         l2.1 <- blackbox(function.list,
-                     orthonormal.function.list,
-                     system.mats,
-                     problem.parameters.original,
-                     dx,dy,
-                     TRUE,TRUE);
+                         orthonormal.function.list,
+                         system.mats,
+                         problem.parameters.original,
+                         dx,dy,
+                         TRUE,TRUE);
         print (l2.1 *
                1.0/((problem.parameters.original$bx-
                  problem.parameters.original$ax) *

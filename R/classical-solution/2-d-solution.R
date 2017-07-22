@@ -69,11 +69,15 @@ bivariate.solution.classical <- function(dx, dy, problem.parameters,
 
     if (PLOT.SOLUTION) {
         ## PLOTTING ####
+        pdf("small-time-solution.pdf")
+        par(mar=c(4,4,1,1))
         plot(xis, xis*sqrt(1-rho)/sqrt(1+rho), type="l",
              xlim=c(min(xis.lim[1], etas.lim[1]),
                     max(xis.lim[2], etas.lim[2])),
              ylim=c(min(xis.lim[1], etas.lim[1]),
-                    max(xis.lim[2], etas.lim[2])));
+                    max(xis.lim[2], etas.lim[2])),
+             xlab = expression(xi),
+             ylab = expression(eta));
         lines(xis, (1 + xis*sigma.y*sqrt(1-rho)*cc)/(sigma.y*sqrt(1+rho)*cc));
         lines(xis, -xis*sqrt(1-rho)/sqrt(1+rho));
         lines(xis, -xis*sqrt(1-rho)/sqrt(1+rho) + 1/(sigma.x*sqrt(1+rho)*cc));
@@ -86,7 +90,7 @@ bivariate.solution.classical <- function(dx, dy, problem.parameters,
         (T.mat %*% c(1,0))[2], col = "red");
         points((T.mat %*% c(1,1))[1],
         (T.mat %*% c(1,1))[2], col = "red");
-        points(xi.ic, eta.ic, col = "green");
+        points(xi.ic, eta.ic, col = "green", pch=20);
 
         lines(c(xi.ic, C.1*cos(ss.1)+xi.ic),
               c(eta.ic, C.1*sin(ss.1)+eta.ic),
@@ -319,7 +323,7 @@ bivariate.solution.classical <- function(dx, dy, problem.parameters,
         (sigma.x*sigma.y*sqrt(1-rho)*sqrt(1+rho))
     xi.ic.reflected = 2*sorted.Cs$x[1]*cos(ss.s[sorted.Cs$ix[1]]) + xi.ic;
     eta.ic.reflected = 2*sorted.Cs$x[1]*sin(ss.s[sorted.Cs$ix[1]]) + eta.ic;
-    points(xi.ic.reflected, eta.ic.reflected, col = "purple");
+    points(xi.ic.reflected, eta.ic.reflected, col = "green", pch = 20);
 
     kernel <- function(xieta,tt) {
         out <- (dmvnorm(t(xieta),
@@ -346,8 +350,50 @@ bivariate.solution.classical <- function(dx, dy, problem.parameters,
 
         if (PLOT.SOLUTION) {
             points(xieta[1,],xieta[2,], pch=20,
-                   col=rgb(abs(big.solution[,ii]/Max),0,0));
+                   col=rgb(1,1-abs(big.solution[,ii]/Max),1-abs(big.solution[,ii]/Max)));
+                   ## col=rgb(abs(big.solution[,ii]/Max),0,0));
         }
+    }
+
+    if (PLOT.SOLUTION) {
+    ## PLOTTING OVER START ## 
+    par(mar=c(4,4,1,1))
+        lines(xis, xis*sqrt(1-rho)/sqrt(1+rho), type="l",
+             xlim=c(min(xis.lim[1], etas.lim[1]),
+                    max(xis.lim[2], etas.lim[2])),
+             ylim=c(min(xis.lim[1], etas.lim[1]),
+                    max(xis.lim[2], etas.lim[2])),
+             xlab = expression(xi),
+             ylab = expression(eta));
+        lines(xis, (1 + xis*sigma.y*sqrt(1-rho)*cc)/(sigma.y*sqrt(1+rho)*cc));
+        lines(xis, -xis*sqrt(1-rho)/sqrt(1+rho));
+        lines(xis, -xis*sqrt(1-rho)/sqrt(1+rho) + 1/(sigma.x*sqrt(1+rho)*cc));
+        
+        points((T.mat %*% c(0,0))[1],
+        (T.mat %*% c(0,0))[2], col = "red");
+        points((T.mat %*% c(0,1))[1],
+        (T.mat %*% c(0,1))[2], col = "red");
+        points((T.mat %*% c(1,0))[1],
+        (T.mat %*% c(1,0))[2], col = "red");
+        points((T.mat %*% c(1,1))[1],
+        (T.mat %*% c(1,1))[2], col = "red");
+        points(xi.ic, eta.ic, col = "green", pch=20);
+
+        lines(c(xi.ic, C.1*cos(ss.1)+xi.ic),
+              c(eta.ic, C.1*sin(ss.1)+eta.ic),
+              col="blue");
+        
+        lines(c(xi.ic, C.2*cos(ss.2)+xi.ic),
+              c(eta.ic, C.2*sin(ss.2)+eta.ic),
+              col="blue");
+        lines(c(xi.ic, C.4*cos(ss.4)+xi.ic),
+              c(eta.ic, C.4*sin(ss.4)+eta.ic),
+              col="blue");
+        lines(c(xi.ic, C.3*cos(ss.3)+xi.ic),
+              c(eta.ic, C.3*sin(ss.3)+eta.ic),
+              col="blue");
+        ## PLOTTING OVER END ##
+        dev.off()
     }
 
     ## big.sol <- matrix(nrow=length(xx),ncol=length(yy),0);
