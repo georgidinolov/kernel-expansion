@@ -124,22 +124,25 @@ We consider two-dimensional correlated Brownian motion with absorbing boundaries
   Y(t) &= y_0 + \mu_y t + \sigma_y W_y(t) &a_y &\leq Y(t) \leq b_y   \label{eq:Y} 
 \end{align}
 where $W_i$ are standard Brownian motions with
-$\mbox{Cov}(W_1(t), W_2(t)) = \rho t$. In
-particular, we find the joint transition density function for
-$(X(t), Y(t))$ under the boundary conditions:
+$\mbox{Cov}(W_1(t), W_2(t)) = \rho t$. We find the below probability
+for $(X(t), Y(t))$ and the random variables
+$M_X(t)=\max_{0\leq s\leq t}X(t),$ $m_X(t)=\min_{0\leq s\leq t}X(t),$
+$M_Y(t)=\max_{0\leq s\leq t}Y(t),$ $m_Y(t)=\min_{0\leq s\leq t}Y(t)$
 \begin{align}
-  \frac{1}{dx dy} \mbox{Pr}\left( \left. \begin{array}{ll}
-X(t) \in [x, x+dx), Y(t) \in [y, y+dy),  \\
-\displaystyle \min_{t'\in[0, t]} X(t') \ge a_x, \max_{t'\in[0, t]} X(t') \le b_x, \\
-\displaystyle \min_{t'\in[0, t]} Y(t') \ge a_y, \max_{t'\in[0, t]} Y(t') \le b_y
-\end{array} \right | X(0)=x_0, Y(0)=y_0, \theta
-\right), \label{eq:CDF}
-  % \Pr\left(X(t) \in dx, Y(t) \in dy,  \min_{t'}X(t') \geq a_x,
-  % \max_{t'}X(t')\leq b_x, \min_{t'} Y(t')\geq a_y, \max_{t'} Y(t')\leq b_y|  X(0)=x_0, Y(0)=y_0, \theta \right), \label{eq:CDF}
+  \mbox{Pr}\left( \left. \begin{array}{ll}
+                           X(t) \leq x_t, & Y(t) \leq y_t, \\
+                           M_X(t) \leq b_x, & M_Y(t) \leq b_x, \\
+                           m_X(t) \geq a_x, & m_Y(t) \geq a_y,
+                         \end{array} \right| X(0) = x_0, Y(0) = y_0, \theta \right)
+                                              \label{eq:CDF}
 \end{align}
 with $\theta := (\mu_x, \mu_y, \sigma_x, \sigma_y, \rho).$ This
-function, which we shorten to $q(x,y,t)$ from now on, is the solution
-to the Fokker-Planck equation \citep{oksendal2013stochastic}:
+probability can be expressed as the integral
+\[
+  \displaystyle \int_{a_x}^{x_t} \displaystyle \int_{a_y}^{y_t} q(x,y,t) dx\,dy,
+\]
+where $q(x,y,t)$ is the solution to the Fokker-Planck equation
+\citep{oksendal2013stochastic}:
 \begin{align}
   \displaystyle \frac{\partial}{\partial t'} q(x,y,t') &= -\mu_x \frac{\partial}{\partial x}q(x,y,t')
                                          - \mu_y \frac{\partial}{\partial y}q(x,y,t')
@@ -154,18 +157,15 @@ Differentiating $q(x,y,t)$ with respect to the boundaries produces the
 transition density of a particle beginning and ending at the points
 $(X_1(0), X_2(0))$ and $(X_1(t), X_2(t))$, respectively, while
 attaining the minima $a_x/a_y$ and maxima $b_x/b_y$ in each coordinate
-direction:
+direction. This transition density is equivalent to the joint density
+for $X(t), Y(t), m_X(t), M_X(t), m_Y(t), M_Y(t)| X(0)=x_0, Y(0)=y_0$,
+which we denote as $f(x,y,a_x,b_x,a_y,b_y)$:
 \begin{align}
-  \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial b_y} q(x,y,t) = 
-\mbox{density} \left( \left. \begin{array}{ll}
-X(t) =x, Y(t) =y,  \\
-\displaystyle \min_{t'\in[0, t]} X(t') = a_x, \max_{t'\in[0, t]} X(t') = b_x, \\
-\displaystyle \min_{t'\in[0, t]} Y(t') = a_y, \max_{t'\in[0, t]} Y(t') = b_y
-\end{array} \right | X(0)=x_0, Y(0)=y_0, \theta
-\right) \label{eq:pdf}
+  \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial b_y} q(x,y,t) = f(x,y,a_x,b_x,a_y,b_y).
+  \label{eq:pdf}
 \end{align}
-The transition density (\ref{eq:CDF}) with less than all four
-boundaries has been used in computing first passage times
+Probability functions similar to (\ref{eq:CDF}) with less than all
+four boundaries have been used in computing first passage times
 \citep{kou2016first, sacerdote2016first}, with application to
 structural models in credit risk and default correlations
 \citep{haworth2008modelling, ching2014correlated}. \cite{he1998double}
@@ -218,11 +218,13 @@ expansion a slow, if not unfeasible, solution. An alternative is to
 use a finite difference scheme to directly solve the evolution problem
 after suitable transformations. However, both of these methods need a
 high degree of numerical resolution to produce practically useful
-approximations of the transition density. We conjecture that these
-inefficiencies come from either using a separable representation for
-the differential operator that is intrinsically correlated in the two
-dimensions (trigonometric series) or introducing numerical
-diffusion (finite difference).
+approximations of the transition density. We conjecture that for the
+trigonometric series expansion, inefficiencies arise from either using
+a separable representation for the differential operator that is
+intrinsically correlated in the two dimensions; for the finite
+difference approach, the problem is twofold as the method introduces
+numerical diffusion in the initial condition and it also uses a
+separable approximation for the differential operator.
 
 In this paper, we propose a robust and efficient solution to the
 general problem (\ref{eq:1}) - (\ref{eq:2}). The solution is obtained
@@ -256,7 +258,7 @@ where
   \beta &= \left( -\frac{\mu_y}{\sigma_y^2} + \frac{\mu_x \rho}{\sigma_x \sigma_y} \right), \\
   \gamma &= \frac{1}{2}\left( \frac{\sigma_x}{(b_x-a_x)} \right)^2 \alpha^2 + \frac{1}{2}\left(\frac{\sigma_y}{(b_y-a_y)}\right)^2 \beta^2 + \alpha\beta.
 \end{align*}
-This new formula satisfies the simpler diffusion equation:
+This new formula satisfies the \textit{normalized} diffusion equation:
 \begin{equation}
   \frac{\partial}{\partial t} p(x,y,t) = \mathcal{L}p(x,y,t),\quad (x,y) \in (0,1) \times (0,1) := \Omega \label{eq:qq}
 \end{equation}
@@ -276,10 +278,113 @@ where the differential operator $\mathcal{L}$ takes the form
 \]
 where $\tau_x = \frac{\sigma_x}{(b_x-a_x)}$,
 $\tau_y = \frac{\sigma_y}{(b_y-a_y)}$.  Note here that under this
-transformation $\rho$ remains the same as in the original problem. We
-will call equation (\ref{eq:qq}) the \textit{normalized} problem and
-will consider its solution in terms of the diffusion parameters
-$(\tau_x, \tau_y, \rho)$ without a loss of generality.
+transformation $\rho$ remains the same as in the original
+problem. Without loss of generality, we will concentrate on the
+solution of the normalized problem (\ref{eq:qq}) in terms of the
+diffusion parameters $(\tau_x, \tau_y, \rho)$.
+
+\subsection{Density Calculation} \label{sec:likelihood-calc}
+Recalling equation (\ref{eq:pdf}), to compute the density we are
+interested in, we must take derivatives of the solution $p(x,y,t)$
+with respect to the boundary parameters $(a_x, b_x, a_y,
+b_y)$. Because the approximate solutions we will consider below are
+functions of the parameters without explicit analytic form,
+$\frac{\partial^4}{\partial a_x\partial b_x \partial a_y \partial
+  b_y}p(x,y,t)$ must be computed numerically using a finite difference
+approximation. We must therefore find the solution for each of the
+sixteen perturbed problems
+\[
+  p(x,y,t | a_x \pm \epsilon, b_x \pm \epsilon, a_y \pm \epsilon, b_y
+  \pm \epsilon).
+\]
+The $4^{th}$ derivative of $p$ with respect to the 4 boundaries is
+approximated as
+\begin{eqnarray*}
+& & \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial b_y} p(x, y, t) 
+\nonumber \\
+& & \hspace*{0.5cm} \approx \frac{\displaystyle \sum_{k_1, k_2, k_3, k_4 = \pm 1}
+c_{\{ k_1, k_2, k_3, k_4 \} } p(\left. x, y, t \right| a_x+k_1 \varepsilon, b_x+k_2 \varepsilon, 
+a_y+k_3 \varepsilon, b_y+k_4 \varepsilon) }{(2 \varepsilon )^4} 
+\nonumber
+\end{eqnarray*}
+The finite difference approximation, however, introduces fundamental
+limitations of the type of approximation that can be used and the
+degree of accuracy admissible for this problem.
+
+Consider an approximate solution $p^{(k)}(\left. x, y, t \right| b)$
+where we have included parameter $b $ explicitly as a simplified
+notation for $[a_x, b_x]$ and $[a_y, b_y]$ and we assume that the
+approximation approaches the true solution as $k \to \infty$. In
+general, the truncation error can be represented as
+\begin{align}
+  p^{(k)}(x,y,t | b) - p(x,y,t | b) = \left( \frac{1}{k}
+  \right)^{\alpha} \mbox{F}_{reg}(b) + \left( \frac{1}{k}
+  \right)^{\beta}\mbox{F}_{irreg}(b) + \varepsilon_{mach}F_{round}(b), \label{eq:trunc-error}
+\end{align}
+for some $\alpha, \beta > 0$; $(1/k)^{\alpha} \mbox{F}_{reg}(b) $ is
+the regular part of the truncation error,
+$(1/k)^{\beta} \mbox{F}_{irreg}(b) $ is the irregular part of the
+truncation error, and $\varepsilon_{mach} \mbox{F}_{round}(b) $ is the
+effect of round-off errors with $\varepsilon_{mach} \sim 10^{-16}$
+denoting the machine epsilon for IEEE double precision system.
+
+Note that when expressed using the chain rule, both
+$\displaystyle \frac{\partial}{\partial a_x}$ and
+$\displaystyle \frac{\partial}{\partial b_x}$ contain
+$\displaystyle \frac{\partial}{\partial b}$. As a result,
+$\displaystyle \frac{\partial^2 }{\partial a_x \partial b_x} $ leads
+to $\displaystyle \frac{\partial^2 }{\partial b^2} $. Although in the
+discussion below, for simplicity, we only illustrate the numerical
+differentiation on the first derivative, keep in mind that it is the
+second derivative that is more relevant in the calculation of
+$\displaystyle \frac{\partial^4}{\partial a_x \partial b_x \partial
+  a_y \partial b_y} p(x, y, t) $.
+
+The coefficient, $\mbox{F}_{reg}(b) $, of the regular part of
+truncation error is a smooth function of $b$ with derivative $= O(1)$.
+The coefficient, $\mbox{F}_{round}(b) $, in the effect of round-off
+errors, behaves virtually like a random variable, discontinuous in
+$b$.  For the irregular part of truncation error, the coefficient
+$\mbox{F}_{irreg}(b) $ can be thought of in general as continuous in
+$b$ but not smooth in $b$ where the derivative has
+discontinuities. Linear interpolation, for example, introduces this
+kind of irregular truncation error. Based on the expression we wrote
+out above for the finite difference solution, applying the numerical
+differentiation with step $\varepsilon$ yields:
+\begin{eqnarray}
+  & & \frac{p^{(k)}(\left. x, y, t \right| b+\varepsilon)-p^{(k)}(\left. x, y, t \right| b -\varepsilon)}{2 \varepsilon} \nonumber \\
+  & & \hspace*{1cm} =  \frac{\partial }{\partial b} p(\left. x, y, t \right| b) + O(\varepsilon^2)
+      + \left(\frac{1}{k}\right)^{\alpha} \frac{\mbox{F}_{reg}(b+\varepsilon)-\mbox{F}_{reg}(b-\varepsilon)}{2 \varepsilon}  \nonumber \\
+  & & \hspace*{1cm} + \left(\frac{1}{k}\right)^{\beta} \frac{\mbox{F}_{irreg}(b+\varepsilon)-\mbox{F}_{irreg}(b-\varepsilon)}{2 \varepsilon}
+      + \varepsilon_{mach} \frac{\mbox{F}_{round}(b+\varepsilon)-\mbox{F}_{round}(b-\varepsilon)}{2 \varepsilon}  \nonumber
+\end{eqnarray}
+In the equation above, as the step in the numerical differentiation is
+refined, the first line of the RHS is well behaved, converging to the
+true value $\frac{\partial }{\partial b} p(\left. x, y, t \right| b)$
+as $\varepsilon \rightarrow 0$.  The second line of RHS, however, is
+problematic. As $\varepsilon \rightarrow 0$, the contribution from
+round-off error blows up to infinity
+\[
+  \varepsilon_{mach}
+  \frac{\mbox{F}_{round}(b+\varepsilon)-\mbox{F}_{round}(b-\varepsilon)}{2
+    \varepsilon} = O\left(\frac{\varepsilon_{mach}}{\varepsilon}
+  \right) \longrightarrow \infty \;\;\;\; \mbox{as } \varepsilon
+  \rightarrow 0
+\]
+What is even more severe, for a fourth-order derivative, the error
+contribution of finite machine precision becomes
+$O(\varepsilon_{mach}/\varepsilon^4)$ and a step size as big as
+$\varepsilon \approx 10^{-4}$ produces errors $O(1)$. This is
+catastrophic in instances where values of the density are smaller than 1.
+
+The contribution from the irregular part of truncation error can also
+be problematic if the finite difference approximation of the
+derivative of $F_{irreg}(b)$ is $O(k^\beta/\varepsilon)$; we will show
+that this is the case for the finite difference approximation.  As a
+consequence of both machine precision and possible irregular
+truncation errors, there is a fundamental restriction of the size of
+finite difference steps $\varepsilon$ we can use in any numerical
+method.
 
 \subsection{Eigenfunction Expansion} \label{sec:eigenfunction}
 Following Section 6.2 of \cite{risken1989fokker-planck}, we may use
@@ -326,21 +431,21 @@ of basis functions yields
   \mathcal{L}\phi_\nu = \mathcal{L}(\Psi(x,y)^T c_\nu) =
   \mathcal{L}(\Psi(x,y)^T) c_\nu = (A \Psi(x,y))^T c_\nu,
 \] 
-where $A$ is a constant matrix dependent on
-$\theta = (\mu_x, \mu_y, \sigma_x, \sigma_y, \rho)$. In the last part
-of the equation above, we have truncated the infinite sine series
-expansion of $L \psi_{l, m}(x, y)$. In the case where $\rho = 0$, $A$
-is diagonal because $\left\{ \psi_{l,m}(x,y) \right\}$ are the
-eigenfunctions to $\mathcal{L}$. When $\rho \neq 0$, $A$ is no longer
-diagonal and is in fact dense. The dense structure of matrix $A$ is
-caused by the mixing terms
-\[
-  \frac{\partial^2}{\partial x \partial y} \sin\left(2\pi\, l\,
-    x\right) \sin\left(2\pi\, m\, y\right) = (2\pi\, l)(2\pi\, m)
-  \cos\left(2\pi\, l\, x\right) \cos\left(2\pi\, m\, y\right)
-\]
-being the products of cosine functions, which have an inefficient sine
-series representation [CITE]. Substituting the linear representation
+where $A$ is a constant matrix dependent $(\tau_x, \tau_y, \rho)$. In
+the last part of the equation above, we have truncated the infinite
+sine series expansion of $L \psi_{l, m}(x, y)$. In the case where
+$\rho = 0$, $A$ is diagonal because $\left\{ \psi_{l,m}(x,y) \right\}$
+are the eigenfunctions to $\mathcal{L}$. When $\rho \neq 0$, $A$ is no
+longer diagonal and is in fact dense. % The dense structure of matrix
+% $A$ is caused by the mixing terms
+% \[
+%   \frac{\partial^2}{\partial x \partial y} \sin\left(2\pi\, l\,
+%     x\right) \sin\left(2\pi\, m\, y\right) = (2\pi\, l)(2\pi\, m)
+%   \cos\left(2\pi\, l\, x\right) \cos\left(2\pi\, m\, y\right)
+% \]
+% being the products of cosine functions, which have an inefficient
+% sine series representation [CITE].
+Substituting the linear representation
 of $\mathcal{L}\phi_\nu$ into the eigenvalue problem
 (\ref{eq:eigenproblem}), we arrive at the matrix eigenvalue problem
 \[
@@ -356,154 +461,157 @@ $(c_\nu, \lambda_\nu)$, the approximate solution is then
   p(x,y,t) \approx \Psi(x,y)^T \sum_{\nu} h_\nu c_\nu e^{-\lambda_\nu t}.
 \]
 
-\subsubsection{Likelihood Calculation} \label{sec:likelihood-calc}
-Recalling equation (\ref{eq:pdf}), to compute the likelihood we are
-interested in we must take derivatives of the solution $p(x,y,t)$ with
-respect to the boundary parameters $(a_x, b_x, a_y, b_y)$. Because the
-eigenvalues and eigenvectors for this problem are functions of the
-parameters without explicit analytic form,
-$\frac{\partial^4}{\partial a_x\partial b_x \partial a_y \partial
-  b_y}p(x,y,t)$ must be computed numerically using a finite difference
-approximation. We must therefore find the eigenvalues and
-eigenvectors for each of the sixteen perturbed problems
-\[
-  p(x,y,t | a_x \pm \epsilon, b_x \pm \epsilon, a_y \pm \epsilon, b_y \pm \epsilon).
-\]
-The $4^{th}$ derivative of $p$ with respect to the 4 boundaries is
-approximated as
-\begin{eqnarray*} 
-& & \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial b_y} p(x, y, t) 
-\nonumber \\
-& & \hspace*{0.5cm} \approx \frac{\displaystyle \sum_{k_1, k_2, k_3, k_4 = \pm 1}
-c_{\{ k_1, k_2, k_3, k_4 \} } p(\left. x, y, t \right| a_x+k_1 \varepsilon, b_x+k_2 \varepsilon, 
-a_y+k_3 \varepsilon, b_y+k_4 \varepsilon) }{(2 \varepsilon )^4} 
-\nonumber
-\end{eqnarray*}
-Because a good, working approximation to $p(x,y,t)$ requires many
-terms in the basis function expansions of the eigenfunctions, and
+In terms of density calculations for
+$\frac{\partial^4 p(x,y,t)}{\partial a_x \partial b_x, \partial
+  a_y \partial b_y}$, the eigenfunction expansion does not suffer from
+having irregular truncation errors. However, because a good working
+approximation of $p(x,y,t)$ requires many terms in the expansion, and
 because each resultant system matrix is dense, repeated computation of
-the likelihood in this way is unfeasible.
+the eigenproblem for the density calculation is unfeasible.
 
 \subsection{Finite Difference} \label{sec:finite-difference} A finite
 difference method which approximates the spatial derivatives in
 problem (\ref{eq:qq}) requires the solution a system of differential
 equations
 \begin{align}
-  \dot{c}(t)= A c(t) &\Rightarrow& c(t) = \exp\left( At \right)c(0) \label{eq:eigenproblem-fd}, 
+  \dot{c}(t)= B c(t) &\Rightarrow& c(t) = \exp\left( Bt \right)c(0) \label{eq:eigenproblem-fd}, 
 \end{align}
-which reduces to the eigenvalue decomposition of a matrix $A$. Here,
+which reduces to the eigenvalue decomposition of a matrix $B$. Here,
 $c(t)$ is a vector consisting of values of the solution in
 (\ref{eq:qq}) on a set of grid points over $\Omega$ at time $t$, and
-the product $Ac(t)$ approximates $\mathcal{L}p(x,y,t)$. The system
-matrix $A$ is dependent on the discretization scheme used to
-approximate $\mathcal{L}$. Using a central in space scheme over a
+the product $Bc(t)$ approximates $\mathcal{L}p(x,y,t)$. The system
+matrix $B$ is dependent on the discretization scheme used to
+approximate $\mathcal{L}$. Using a central-in-space scheme over a
 \textbf{regular} grid on $\Omega$ with $\Delta x = \Delta y = h$,
-\[ A = \frac{1}{2}\tau_x^2 \frac{1}{h^2}A_{x,x} +
-  \rho\tau_x\tau_y \frac{1}{4h^2}A_{x,y} + \frac{1}{2}\tau_y^2
-  \frac{1}{h^2}A_{y,y},
+\[ B = \frac{1}{2}\tau_x^2 \frac{1}{h^2}B_{x,x} +
+  \rho\tau_x\tau_y \frac{1}{4h^2}B_{x,y} + \frac{1}{2}\tau_y^2
+  \frac{1}{h^2}B_{y,y},
 \]
-where each of the matrices $A_{x,x}, A_{x,y}, A_{y,y}$ approximate
+where each of the matrices $B_{x,x}, B_{x,y}, B_{y,y}$ approximate
 $\frac{\partial^2}{\partial x^2}, \frac{\partial^2}{\partial
-  x \partial y}, \frac{\partial^2}{\partial y^2}$, respectively. For
-example, using $c_{l, m}(t) $ to denote the approximation of the
-solution at grid point $(x_l, y_m)$, and assembling vector $c(t)$
-using the index scheme $c_{l, m}(t) \rightarrow c_k(t)$ with
-$k= (l-1) M + m$, we can approximate the operator
-$\frac{\partial^2 }{\partial x^2} $ as
-\begin{align*}
-  \frac{1}{2}\tau_x^2 \frac{\partial^2}{\partial x^2} p(x_l,y_m,t) \approx \frac{1}{2}\tau_x^2 \left( \frac{c_{l+1,m}(t) - 2c_{l,m}(t) + c_{l-1,m}(t)}{h^2} \right) = \frac{1}{2}\tau_x^2 \frac{1}{h^2}A_{x,x}[k,] c(t) 
-\end{align*}
-where $A_{x,x}[k,]$ is the $k^{th}$ row of $A_{x,x}$. Similarly,
-\begin{align*}
-  \rho\tau_x\tau_y \frac{\partial^2}{\partial x \partial y} p(x_l,y_m,t) \approx \rho\tau_x\tau_y \left( \frac{c_{l+1,m+1}(t) - c_{l+1,m-1}(t) - c_{l-1,m+1}(t) + c_{l-1,m-1}(t)}{4h^2} \right) = \rho\tau_x\tau_y \frac{1}{4h^2}A_{x,y}[k,] c(t) 
-\end{align*}
+  x \partial y}, \frac{\partial^2}{\partial y^2}$, respectively.
+% For
+% example, using $c_{l, m}(t) $ to denote the approximation of the
+% solution at grid point $(x_l, y_m)$, and assembling vector $c(t)$
+% using the index scheme $c_{l, m}(t) \rightarrow c_k(t)$ with
+% $k= (l-1) M + m$, we can approximate the operator
+% $\frac{\partial^2 }{\partial x^2} $ as
+% \begin{align*}
+%   \frac{1}{2}\tau_x^2 \frac{\partial^2}{\partial x^2} p(x_l,y_m,t) \approx \frac{1}{2}\tau_x^2 \left( \frac{c_{l+1,m}(t) - 2c_{l,m}(t) + c_{l-1,m}(t)}{h^2} \right) = \frac{1}{2}\tau_x^2 \frac{1}{h^2}A_{x,x}[k,] c(t) 
+% \end{align*}
+% where $A_{x,x}[k,]$ is the $k^{th}$ row of $A_{x,x}$. Similarly,
+% \begin{align*}
+%   \rho\tau_x\tau_y \frac{\partial^2}{\partial x \partial y} p(x_l,y_m,t) \approx \rho\tau_x\tau_y \left( \frac{c_{l+1,m+1}(t) - c_{l+1,m-1}(t) - c_{l-1,m+1}(t) + c_{l-1,m-1}(t)}{4h^2} \right) = \rho\tau_x\tau_y \frac{1}{4h^2}A_{x,y}[k,] c(t) 
+% \end{align*}
 It should be noted here that a regular grid approach with a constant
 $h$ independent of parameters is appealing, because it allows us to
-construct once and store the matrices $A_{x,x}, A_{x,y}, A_{y,y}$,
+construct once and store the matrices $B_{x,x}, B_{x,y}, B_{y,y}$,
 which saves valuable computational resources if we are to solve the
 finite difference eigenproblem (\ref{eq:eigenproblem-fd}) repeatedly
 for different parameter values $(\tau_x,\tau_y,\rho)$.
 
 Unlike the system matrix for the trigonometric expansion, the system
-matrix $A$ here is sparse: each row of $(A_{x,x}, A_{x,y}, A_{y,y})$
+matrix $B$ here is sparse: each row of $(B_{x,x}, B_{x,y}, B_{y,y})$
 is composed of all zeros except for three or four entries. This
 structure does not change as $h \to 0$. The eigenvalue problem is
 therefore much cheaper to solve.
 
 However, the fundamental limitation of using a finite difference
-method is that differentiation with respect to boundaries is also done
-using finite differences and it is of fourth order. Given this high
-order differentiation, $h$ cannot be made too small because round-off
-error and the irregular part of the truncation error become an issue
-relatively quickly. More explicitly, assuming consistency and
-stability of the finite difference approximation to $\mathcal{L}$, we
-can write down the finite difference solution as
-\[
-  p_{FD}(\left. x, y, t \right| b) = p(\left. x, y, t \right| b) 
-+ h^2 \mbox{F}_{reg}(b) + h^2 \mbox{F}_{irreg}(b) + 
-\varepsilon_{mach} \mbox{F}_{round}(b),
-\]
-where we have included parameter $b $ explicitly as a simplified notation for 
-$[a_x, b_x]$ and $[a_y, b_y]$ after shifting $a_x$ and$a_y$ to 0.
-
-Note that when expressed using the chain rule, both 
-$\displaystyle \frac{\partial}{\partial a_x}$ and  $\displaystyle \frac{\partial}{\partial b_x}$
-contain $\displaystyle \frac{\partial}{\partial b}$. As a result, 
-$\displaystyle \frac{\partial^2 }{\partial a_x \partial b_x} $ leads to 
-$\displaystyle \frac{\partial^2 }{\partial b^2} $. Although in the discussion below, 
-for simplicity, we only illustrate the numerical differentiation on the first derivative, 
-keep in mind that it is the second derivative that is more relevant in the calculation of 
- $\displaystyle \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial b_y}
-p(x, y, t) $. 
-
-In the expression of finite difference solution above, 
-$h^2 \mbox{F}_{reg}(b) $ is the regular part of 
-the truncation error from discretizing the differential operator on the grid; 
-$h^2 \mbox{F}_{irreg}(b) $ is the irregular part of the truncation error 
-from the interpolations invoked by $\{x_0, y_0, x, y \}$ not being on grid points; 
-and $\varepsilon_{mach} \mbox{F}_{round}(b) $ is the effect of round-off errors
-with $\varepsilon_{mach} \sim 10^{-16}$ denoting the machine epsilon for 
-IEEE double precision system. 
-The coefficient, $\mbox{F}_{reg}(b) $, of the regular part of truncation error 
-is a smooth function of $b$ with derivative $= O(1)$. 
-The coefficient, $\mbox{F}_{round}(b) $, in the effect of round-off errors, 
-behaves virtually like a random variable, discontinuous in $b$. 
-For the irregular part of truncation error, the coefficient $\mbox{F}_{irreg}(b) $ 
-in general is continuous in $b$ but not smooth in $b$ where the derivative has 
-discontinuities of magnitude $O\left( \frac{1}{h} \right)$. 
-For example, the error in 
-a piece-wise linear interpolation of a smooth function at position $b$ using step $h$ 
-has the general form of 
+method is that it introduces irregular truncation error. Referring to
+the notation in (\ref{eq:trunc-error}) with $k := 1/h$, the
+interpolation error introduced by a finite difference scheme at
+position $b$ for the boundary parameters using step $h$ has the general form of
 $$\mbox{Interpolation error } = O(h^2) (1-\mbox{rem}(b/h,1)) \mbox{rem}(b/h,1)$$ 
-The coefficient part $\mbox{F}_{irreg}(b) = (1-\mbox{rem}(b/h,1)) \mbox{rem}(b/h,1) $ 
-is continuous in $b$ but not differentiable. Its first derivative 
-has the behavior of 
-$$ \frac{\partial }{\partial b} \mbox{F}_{irreg}(b) =  \frac{1}{h} \left(1-2\mbox{rem}(b/h,1) \right)$$
-
-Based on the expression we wrote out above for the finite difference solution, 
-applying the numerical differentiation on t with step $\varepsilon$ yields: 
-\begin{eqnarray}
-& & \frac{p_{FD}(\left. x, y, t \right| b+\varepsilon)-p_{FD}(\left. x, y, t \right| b -\varepsilon)}{2 \varepsilon} \nonumber \\
-& & \hspace*{1cm} =  \frac{\partial }{\partial b} p(\left. x, y, t \right| b) + O(\varepsilon^2)
- + h^2 \frac{\mbox{F}_{reg}(b+\varepsilon)-\mbox{F}_{reg}(b-\varepsilon)}{2 \varepsilon}  \nonumber \\
-& & \hspace*{1cm} + h^2 \frac{\mbox{F}_{irreg}(b+\varepsilon)-\mbox{F}_{irreg}(b-\varepsilon)}{2 \varepsilon}
- + \varepsilon_{mach} \frac{\mbox{F}_{round}(b+\varepsilon)-\mbox{F}_{round}(b-\varepsilon)}{2 \varepsilon}  \nonumber
-\end{eqnarray}
-In the equation above, as the step in the numerical differentiation is refined, the first line 
-of the RHS is well behaved, converging to the true value 
-$\frac{\partial }{\partial b} p(\left. x, y, t \right| b)$ as $\varepsilon \rightarrow 0$. 
-The second line of RHS, however, is problematic. As $\varepsilon \rightarrow 0$, 
-the contribution from round-off error blows up to infinity
-$$ \varepsilon_{mach} \frac{\mbox{F}_{round}(b+\varepsilon)-\mbox{F}_{round}(b-\varepsilon)}{2 \varepsilon}  = O\left(\frac{\varepsilon_{mach}}{\varepsilon} \right) 
-\longrightarrow \infty \;\;\;\; \mbox{as } \varepsilon \rightarrow 0 $$
-The contribution from the irregular part of truncation error is 
+The coefficient part
+$\mbox{F}_{irreg}(b) = (1-\mbox{rem}(b/h,1)) \mbox{rem}(b/h,1) $ is
+continuous in $b$ but not differentiable. Its first derivative has the
+behavior of
+$$ \frac{\partial }{\partial b} \mbox{F}_{irreg}(b) =  \frac{1}{h} \left(1-2\mbox{rem}(b/h,1) \right).$$ The contribution from the irregular part of truncation error is 
 $$ h^2 \frac{\mbox{F}_{irreg}(b+\varepsilon)-\mbox{F}_{irreg}(b-\varepsilon)}{2 \varepsilon}  = 
 O\left(\frac{h^2}{\max(\varepsilon, h)} \right) $$ 
 In the second order numerical differentiation, however, the contribution from 
 the irregular part of truncation error behaves like 
 $$ h^2 \frac{\mbox{F}_{irreg}(b+\varepsilon)-2\mbox{F}_{irreg}(b)
-+\mbox{F}_{irreg}(b-\varepsilon)}{\varepsilon^2 }  = 
-O\left(\frac{h^2}{\max(\varepsilon^2, h^2)} \right) $$
+  +\mbox{F}_{irreg}(b-\varepsilon)}{\varepsilon^2 } =
+O\left(\frac{h^2}{\max(\varepsilon^2, h^2)} \right) $$ The interplay
+between $h$ and $\varepsilon$ limits the size $\varepsilon$ we can use
+to perform density calculations for a fixed step size $h$.
+
+
+% differentiation with respect to boundaries is also done
+% using finite differences and it is of fourth order. Given this high
+% order differentiation, $h$ cannot be made too small because round-off
+% error and the irregular part of the truncation error become an issue
+% relatively quickly. More explicitly, assuming consistency and
+% stability of the finite difference approximation to $\mathcal{L}$, we
+% can write down the finite difference solution as
+% \[
+%   p_{FD}(\left. x, y, t \right| b) = p(\left. x, y, t \right| b) 
+% + h^2 \mbox{F}_{reg}(b) + h^2 \mbox{F}_{irreg}(b) + 
+% \varepsilon_{mach} \mbox{F}_{round}(b),
+% \]
+% where we have included parameter $b $ explicitly as a simplified notation for 
+% $[a_x, b_x]$ and $[a_y, b_y]$ after shifting $a_x$ and$a_y$ to 0.
+
+
+% In the expression of finite difference solution above, 
+% $h^2 \mbox{F}_{reg}(b) $ is the regular part of 
+% the truncation error from discretizing the differential operator on the grid; 
+% $h^2 \mbox{F}_{irreg}(b) $ is the irregular part of the truncation error 
+% from the interpolations invoked by $\{x_0, y_0, x, y \}$ not being on grid points; 
+% and $\varepsilon_{mach} \mbox{F}_{round}(b) $ is the effect of round-off errors
+% with $\varepsilon_{mach} \sim 10^{-16}$ denoting the machine epsilon for 
+% IEEE double precision system. 
+% The coefficient, $\mbox{F}_{reg}(b) $, of the regular part of truncation error 
+% is a smooth function of $b$ with derivative $= O(1)$. 
+% The coefficient, $\mbox{F}_{round}(b) $, in the effect of round-off errors, 
+% behaves virtually like a random variable, discontinuous in $b$. 
+% For the irregular part of truncation error, the coefficient $\mbox{F}_{irreg}(b) $ 
+% in general is continuous in $b$ but not smooth in $b$ where the derivative has 
+% discontinuities of magnitude $O\left( \frac{1}{h} \right)$. 
+% For example, the error in 
+% a piece-wise linear interpolation of a smooth function at position $b$ using step $h$ 
+% has the general form of 
+% $$\mbox{Interpolation error } = O(h^2) (1-\mbox{rem}(b/h,1)) \mbox{rem}(b/h,1)$$ 
+% The coefficient part $\mbox{F}_{irreg}(b) = (1-\mbox{rem}(b/h,1)) \mbox{rem}(b/h,1) $ 
+% is continuous in $b$ but not differentiable. Its first derivative 
+% has the behavior of 
+% $$ \frac{\partial }{\partial b} \mbox{F}_{irreg}(b) =  \frac{1}{h} \left(1-2\mbox{rem}(b/h,1) \right)$$
+
+% The contribution from the irregular part of truncation error is 
+% $$ h^2 \frac{\mbox{F}_{irreg}(b+\varepsilon)-\mbox{F}_{irreg}(b-\varepsilon)}{2 \varepsilon}  = 
+% O\left(\frac{h^2}{\max(\varepsilon, h)} \right) $$ 
+% In the second order numerical differentiation, however, the contribution from 
+% the irregular part of truncation error behaves like 
+% $$ h^2 \frac{\mbox{F}_{irreg}(b+\varepsilon)-2\mbox{F}_{irreg}(b)
+% +\mbox{F}_{irreg}(b-\varepsilon)}{\varepsilon^2 }  = 
+% O\left(\frac{h^2}{\max(\varepsilon^2, h^2)} \right) $$
+
+
+% Based on the expression we wrote out above for the finite difference solution, 
+% applying the numerical differentiation on t with step $\varepsilon$ yields: 
+% \begin{eqnarray}
+% & & \frac{p_{FD}(\left. x, y, t \right| b+\varepsilon)-p_{FD}(\left. x, y, t \right| b -\varepsilon)}{2 \varepsilon} \nonumber \\
+% & & \hspace*{1cm} =  \frac{\partial }{\partial b} p(\left. x, y, t \right| b) + O(\varepsilon^2)
+%  + h^2 \frac{\mbox{F}_{reg}(b+\varepsilon)-\mbox{F}_{reg}(b-\varepsilon)}{2 \varepsilon}  \nonumber \\
+% & & \hspace*{1cm} + h^2 \frac{\mbox{F}_{irreg}(b+\varepsilon)-\mbox{F}_{irreg}(b-\varepsilon)}{2 \varepsilon}
+%  + \varepsilon_{mach} \frac{\mbox{F}_{round}(b+\varepsilon)-\mbox{F}_{round}(b-\varepsilon)}{2 \varepsilon}  \nonumber
+% \end{eqnarray}
+% In the equation above, as the step in the numerical differentiation is refined, the first line 
+% of the RHS is well behaved, converging to the true value 
+% $\frac{\partial }{\partial b} p(\left. x, y, t \right| b)$ as $\varepsilon \rightarrow 0$. 
+% The second line of RHS, however, is problematic. As $\varepsilon \rightarrow 0$, 
+% the contribution from round-off error blows up to infinity
+% $$ \varepsilon_{mach} \frac{\mbox{F}_{round}(b+\varepsilon)-\mbox{F}_{round}(b-\varepsilon)}{2 \varepsilon}  = O\left(\frac{\varepsilon_{mach}}{\varepsilon} \right) 
+% \longrightarrow \infty \;\;\;\; \mbox{as } \varepsilon \rightarrow 0 $$
+% The contribution from the irregular part of truncation error is 
+% $$ h^2 \frac{\mbox{F}_{irreg}(b+\varepsilon)-\mbox{F}_{irreg}(b-\varepsilon)}{2 \varepsilon}  = 
+% O\left(\frac{h^2}{\max(\varepsilon, h)} \right) $$ 
+% In the second order numerical differentiation, however, the contribution from 
+% the irregular part of truncation error behaves like 
+% $$ h^2 \frac{\mbox{F}_{irreg}(b+\varepsilon)-2\mbox{F}_{irreg}(b)
+% +\mbox{F}_{irreg}(b-\varepsilon)}{\varepsilon^2 }  = 
+% O\left(\frac{h^2}{\max(\varepsilon^2, h^2)} \right) $$
 
 \section{A Novel Semidiscrete Galerkin
   Method} \label{sec:semidiscrete-galerkin} We propose a semidiscrete
