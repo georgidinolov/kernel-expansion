@@ -601,7 +601,8 @@ parameters. Hence, we can safely apply
 $\frac{\partial}{\partial a_x \partial b_x \partial a_y \partial b_y}$
 to the Gelerkin approximation $p^{(k)}(x,y,t)$ as long as the
 derivatives of the vectors $\boldsymbol{\psi}(x,y)^T$ and
-$\mathbf{c}(0)$ exist.
+$\mathbf{c}(0)$ exist. This is ensured as long as each $\psi_i(x,y)$
+is differentiable with respect to the normalized problem parameters.
 % Theorems 7 and 8 in
 % Chapter 9 of \cite{lax2007linear-algebra} apply, and both the
 % eigenvalues and eigenvectors of the sysmtem matrix are differentiable
@@ -630,15 +631,24 @@ following way.
     \left( \begin{array}{c}
              \xi \\
              \eta
-           \end{array} \right) = \mbox{Transformation goes here}
+           \end{array} \right) = \frac{1}{\sqrt{2}}
+         \left( \begin{array}{cc}
+                  \frac{1}{\tau_x \sqrt{1-\rho}} & -\frac{1}{\tau_y\sqrt{1-\rho}}\\
+                  \frac{1}{\tau_x \sqrt{1+\rho}} & \frac{1}{\tau_y\sqrt{1+\rho}}
+                \end{array} \right)
              \left( \begin{array}{cc}
              x \\
              y
            \end{array} \right) 
        \]
-       so that the problem obeys the diffusion equation with
-       $\tau_x = \tau_y = 1$ and $\rho = 0$ on a computational domain
-       now transformed to a parallelogram $\tilde{\Omega}$. The
+       so that the problem obeys the standard diffusion equation
+       \[
+         \frac{\partial }{\partial t}p(\xi,\eta,t) =
+         \frac{1}{2}\frac{\partial^2 }{\partial^2 \xi} p(\xi,\eta,t)+
+         \frac{1}{2}\frac{\partial^2 }{\partial^2 \eta} p(\xi,\eta,t)
+       \]
+       on a computational domain now transformed to a parallelogram
+       $\tilde{\Omega}$ (see Figure (\ref{fig:step-1-small-time}). The
        transformed initial condition will be denoted as
        $(\xi_0, \eta_0)$.
 
@@ -653,13 +663,14 @@ following way.
   We define the \textbf{distance} between
   $G(\xi,\eta,t | \xi_0, \eta_0)$ and any of the linear boundaries of
   $\tilde{\Omega}$ as the shortest distance between $(\xi_0, \eta_0)$
-  to each of the boundary segments.  There are four such distances
-  $d_1, d_2, d_3, d_4$. Assume that they are listed in increasing
-  magnitude. Note that the perpendicular intersection may not fall
-  within the line segment when the 4 line segments form a very skewed
-  diamond. However, the shortest distance to a line segment will be
-  well-behaved since we only need to enforce the boundary condition
-  over a single segment.
+  to each of the boundary segments (blue line segments in the left
+  panel of Figure (\ref{fig:step-1-small-time})).  There are four such
+  distances $d_1, d_2, d_3, d_4$ and assume that they are listed in
+  increasing magnitude. Note that the perpendicular intersections may
+  not fall within the line segment when the 4 line segments form a
+  very skewed diamond. However, the shortest distance to a line
+  segment will be well-behaved since we only need to enforce the
+  boundary condition over a single segment.
 
   Setting $t_\epsilon = d_2/8$ ensures that the fundamental solution
   $G(\xi,\eta,t_\epsilon | \xi_0, \eta_0)$ is \textit{at most}
@@ -676,7 +687,7 @@ following way.
   $G(\xi,\eta,t_\epsilon | \xi_0', \eta_0')$ takes on values less than
   $10^{-15}$ on all other boundaries, because it is outside of
   $\bar{\Omega}$. For this same reason, the system of images satisfies
-  the initial condition for the problem.
+  the initial condition for the problem. 
 
   Considering the difference of the two images, the small-time solution 
   \[
@@ -685,8 +696,42 @@ following way.
   \]
   satisfies all of the boundaries numerically and also satisfies the
   governing diffusion equation. Performing a change of variables
-  produces the small-time solution $p(x,y,t_\epsilon)$.
+  produces the small-time solution $p(x,y,t_\epsilon)$, as shown in
+  the right panel of Figure (\ref{fig:step-1-small-time}).
 \end{enumerate}
+
+\begin{figure}
+  \centering
+  %%
+  %%
+  \begin{tabular}{cc}
+    \begin{minipage}{0.5\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{small-time-solution.png}
+    \end{minipage}
+    %% 
+    & \begin{minipage}{0.5\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{small-time-solution-contour.png}
+    \end{minipage}
+  \end{tabular}
+  %%
+  %%
+  \caption{An example of the small-time solution
+    $p(\xi,\eta,t_\epsilon)$ on the transformed domain
+    $\tilde{\Omega}$ with $\tau_x = \tau_y = 1$ and $\rho=0.6$. Right:
+    The shaded red region is a heatmap of the small-time solution in
+    the transformed coordinate frame, while the blue line segments
+    represent the distance between the boundaries and the initial
+    condition coordinate. The green point outside of the computational
+    domain is the center of the reflected image $(\xi_0', \eta_0')$
+    about the closest boundary. Left: The small-time solution
+    transformed back to the original coordinate system. Here, the
+    contours denote the level-sets for the function. They very closely
+    approximate the level sets for the fundamental solution of the
+    unbounded problem (\ref{eq:qq})}
+  \label{fig:step-1-small-time}
+\end{figure}
 Using Theorem 5.E of \cite{zeidler1995applied}, we can solve for
 $p(x,y,t)$ by considering the smooth $p(x,y,t_\epsilon)$ as an initial
 condition and evolving it forward in time by $t-t_\epsilon$. This
@@ -724,35 +769,117 @@ $S_k = \left\{\psi_i(x,y), \,\, 0 \leq i \leq k \right\}$
 \begin{align}
   \psi_i(x,y) &= \frac{1}{2\pi \sigma^2\sqrt{1-\tilde{\rho}^2} } \exp\left\{ -\frac{1}{2(1-\tilde{\rho}^2)\sigma^2} \left( (x - x_i)^2 - 2\tilde{\rho} (x-x_i)(y-y_i) + (y - y_i)^2 \right) \right\} x\left(1-x\right)\, y(1-y)
 \end{align}
-for some parameters $(\tilde{\rho}, \sigma)$ and a collection of
-points $\{ (x_i,y_i) \}_{i=0}^k$ which form a grid over $\Omega$.
+for some parameters $(\tilde{\rho}, \sigma)$ and a collection of nodes
+$\{ (x_i,y_i) \}_{i=0}^k$ which form a grid over $\Omega$.
 
-The critical advantage of these elements, however, is that they better
-resolve the small-time solution $p(x,y,t_\epsilon)$ by taking into
-account some degree of correlation $\tilde{\rho}$ in the covariance of
-each kernel.  Essentially, the collection
-$\{ \psi_i(x,y| \tilde{\rho}, \sigma) \}_{i=0}^k$ is
-composed of fundamental solutions to a heat diffusion problem tuned by
-$\sigma$ and $\tilde{\rho}$, tampered such that their support is on
-$\Omega$, zero on the boundaries, still smooth, and inheriting the
-correlation structure of the fundamental solution to the
-problem. % In this manner,
+This grid is determined by the choice of kernel parameters
+$(\tilde{\rho}, \sigma)$ with a scaling parameter $l$, and it is
+defined in the following way. For $(\tilde{\rho}, \sigma, l)$, overlay
+a grid $\{ (x'_j, y'_j) \}_{j=0}^{k'}$ such that
+$(x'_0, y'_0) = (0.5,0.5)$ and the subsequent grid points are
+$l\sigma(1 + \tilde{\rho})$ units apart in the $x-$direction and
+$l\sigma(1 - \tilde{\rho})$ units apart in the $y-$direction over
+$[1/2 - 1/\sqrt{2}, 1/2 + 1/\sqrt{2}] \, \times [1/2 - 1/\sqrt{2}, 1/2
++ 1/\sqrt{2}]$ (see left panel of Figure (\ref{fig:grids})).
+%%
+%%
+\begin{figure}
+  \centering
+  %%
+  %%
+  \begin{tabular}{cc}
+    \begin{minipage}{0.4\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{nodes-1.pdf}
+    \end{minipage}
+    %% 
+    & \begin{minipage}{0.4\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{nodes-2.pdf}
+    \end{minipage}
+  \end{tabular}
+  %%
+  %%
+  \caption{A sample grid design for $l=1$, $\sigma=0.3$ and $\rho=0.6$. The
+    left panel corresponds to the initial grid
+    $\{ (x'_j,y'_j) \}_{j=0}^{k'}$ over $\Omega$ (solid black
+    square). The right panel depicts the rotated initial grid. The set
+    of final node points $\{ (x_i,y_i) \}_{i=0}^{k}$ is contained
+    within $\Omega$ and is denoted by the red solid points.}
+  \label{fig:grids}
+\end{figure}
+%%
+%%
+Next, apply the clockwise, $\pi/4$ rotation centered on
+$(1/2, 1/2)$ to each node
+\begin{align*}
+  \left( \begin{array}{c}
+           x_j \\
+           y_j
+         \end{array} \right) =
+       \left( \begin{array}{cc}
+                1/\sqrt{2} & 1/\sqrt{2} \\
+                -1/\sqrt{2} & 1/\sqrt{2}
+              \end{array} \right) 
+            \left( \begin{array}{c}
+                     x'_j - 1/2\\
+                     y'_j -1/2
+                   \end{array} \right) +
+  \left( \begin{array}{c}
+           1/2 \\ 1/2
+           \end{array} \right).
+\end{align*}
+The grid is comprised of all nodes within $\Omega$:
+$\left\{(x_i, y_i)\right\}_{i=0}^k = \left\{ (x_j, y_j) | (x_j, y_j)
+  \in \Omega, j = 0, \ldots, k' \right\}$ (see right panel of Figure
+(\ref{fig:grids})). It should be noted that the level sets of the heat
+kernel for the basis functions are ellipses with major and minor axes
+aligned with the node points. Further, there is more resolution
+(ie. the node layout is denser) along the direction corresponding to
+the smaller standard deviation of the basis heat kernel in the
+principal coordinate frame. Finally, for a given $l$, nodes in either
+principal direction are separated by $l$ standard deviations of the
+basis heat kernel. This layout naturally takes into account some
+degree of correlation $\tilde{\rho}$ so that the small-time solution,
+having level sets similar to those of the kernels, can be better
+resolved. Essentially, the collection
+$\{ \psi_i(x,y| \tilde{\rho}, \sigma) \}_{i=0}^k$ is composed of
+fundamental solutions to a heat diffusion problem tuned by $\sigma$
+and $\tilde{\rho}$, tampered such that their support is on $\Omega$,
+zero on the boundaries, still smooth, and inheriting the correlation
+structure of the fundamental solution to the problem. More basis
+elements are added by decreasing $\sigma$ and altering $l$, while the
+degree of correlation is obviously controlled by $\tilde{\rho}$. For
+the purposes of this paper, we found that keeping fixed $l=1$ with a
+moderate $\tilde{\rho}$ ($|\tilde{\rho}| \sim 0.6$) yields reasonable
+results. It is important, however, that
+$\mbox{sign}(\tilde{\rho}) = \mbox{sign}(\rho)$ so that the
+problematic, narrow component of the small-time solution (which can be
+seen in the minor axis of the contours of the small-time solution in
+the right panel of Figure (\ref{fig:step-1-small-time})) can be
+resolved.
+
+%
+%In this manner,
 % our basis function choice is in keeping with the golden rule for the
 % rate of convergence: \textbf{The smoother the solution to the original
 %   problem and the smoother the functions in the basis space, the
 %   faster the convergence of the Ritz-Galerkin method.} (Remark 1(c) in
 %   Chapter 2 of \cite{zeidler1995applied}).
-At this point, it should be noted that the thus-constructed Galerkin
-solution is infinitely differentiable with respect to the normalized
-problem parameters $(\tau_x, \tau_y, \rho)$. This is a result derived
-in \cite{singler2008differentiability}. In particular, Theorem 4.1
-applies, because the differential operator $\mathcal{L}$ for this
-problem is analytic in the parameters $\tau_x, \tau_y$, and $\rho$ and
-as a consequence $p^{(k)}$ is infinitely differentiable with respect
-to the boundaries. Hence,
-$\frac{\partial^4 p^{(k)}(x,y,t)}{\partial a_x \partial b_x \partial
-  a_y \partial b_y}$ exists and can be computed numerically using
-finite differences.
+
+At this point, having explicitly defined
+$\psi_i(x,y|\sigma,\tilde{\rho})$, it should be noted that these basis
+functions are constant with respect to the normalized problem
+parameters $(\tau_x, \tau_y, \rho)$. Thus, the derivative of Galerkin
+approximation $p^{(k)}$ with respect to the boundaries takes on the
+form
+\[
+  \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial
+    b_y} p^{(k)}(x,y,t) = \boldsymbol{\psi}(x,y)^T
+  \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial
+    b_y} \left\{ \exp\left( M^{-1}S\, t \right) \mathbf{c}(0) \right\},
+\]
+which is well-defined given the discussion above.
 
 \subsection{Error Bound} \label{sec:error-bound}
 A bound on the closeness of the approximate solution $p^{(k)}(x,y,t)$

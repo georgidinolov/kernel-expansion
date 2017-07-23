@@ -21,9 +21,9 @@ bivariate.solution.classical <- function(dx, dy, problem.parameters,
     boundary.points.mat <- T.mat %*%
         matrix(nrow=2,ncol=4,
                data=c(c(0,0),
-                      c(0,1),
                       c(1,0),
-                      c(1,1)));
+                      c(1,1),
+                      c(0,1)));
 
     slopes <- c(sqrt(1-rho)/sqrt(1+rho),
                 sqrt(1-rho)/sqrt(1+rho),
@@ -69,18 +69,25 @@ bivariate.solution.classical <- function(dx, dy, problem.parameters,
 
     if (PLOT.SOLUTION) {
         ## PLOTTING ####
-        pdf("small-time-solution.pdf")
+        png("small-time-solution.png",
+            width = 5000,
+            height = 5000,
+            res=600)
         par(mar=c(4,4,1,1))
-        plot(xis, xis*sqrt(1-rho)/sqrt(1+rho), type="l",
+        plot(c(boundary.points.mat[1,1],boundary.points.mat[1,2]),
+             c(boundary.points.mat[2,1],boundary.points.mat[2,2]),
              xlim=c(min(xis.lim[1], etas.lim[1]),
                     max(xis.lim[2], etas.lim[2])),
              ylim=c(min(xis.lim[1], etas.lim[1]),
                     max(xis.lim[2], etas.lim[2])),
              xlab = expression(xi),
              ylab = expression(eta));
-        lines(xis, (1 + xis*sigma.y*sqrt(1-rho)*cc)/(sigma.y*sqrt(1+rho)*cc));
-        lines(xis, -xis*sqrt(1-rho)/sqrt(1+rho));
-        lines(xis, -xis*sqrt(1-rho)/sqrt(1+rho) + 1/(sigma.x*sqrt(1+rho)*cc));
+        lines(c(boundary.points.mat[1,2],boundary.points.mat[1,3]),
+              c(boundary.points.mat[2,2],boundary.points.mat[2,3]))
+        lines(c(boundary.points.mat[1,3],boundary.points.mat[1,4]),
+              c(boundary.points.mat[2,3],boundary.points.mat[2,4]));
+        lines(c(boundary.points.mat[1,4],boundary.points.mat[1,1]),
+              c(boundary.points.mat[2,4],boundary.points.mat[2,1]))
         
         points((T.mat %*% c(0,0))[1],
         (T.mat %*% c(0,0))[2], col = "red");
@@ -358,16 +365,20 @@ bivariate.solution.classical <- function(dx, dy, problem.parameters,
     if (PLOT.SOLUTION) {
     ## PLOTTING OVER START ## 
     par(mar=c(4,4,1,1))
-        lines(xis, xis*sqrt(1-rho)/sqrt(1+rho), type="l",
+        lines(c(boundary.points.mat[1,1],boundary.points.mat[1,2]),
+              c(boundary.points.mat[2,1],boundary.points.mat[2,2]),
              xlim=c(min(xis.lim[1], etas.lim[1]),
                     max(xis.lim[2], etas.lim[2])),
              ylim=c(min(xis.lim[1], etas.lim[1]),
                     max(xis.lim[2], etas.lim[2])),
              xlab = expression(xi),
              ylab = expression(eta));
-        lines(xis, (1 + xis*sigma.y*sqrt(1-rho)*cc)/(sigma.y*sqrt(1+rho)*cc));
-        lines(xis, -xis*sqrt(1-rho)/sqrt(1+rho));
-        lines(xis, -xis*sqrt(1-rho)/sqrt(1+rho) + 1/(sigma.x*sqrt(1+rho)*cc));
+        lines(c(boundary.points.mat[1,2],boundary.points.mat[1,3]),
+              c(boundary.points.mat[2,2],boundary.points.mat[2,3]))
+        lines(c(boundary.points.mat[1,3],boundary.points.mat[1,4]),
+              c(boundary.points.mat[2,3],boundary.points.mat[2,4]));
+        lines(c(boundary.points.mat[1,4],boundary.points.mat[1,1]),
+              c(boundary.points.mat[2,4],boundary.points.mat[2,1]))
         
         points((T.mat %*% c(0,0))[1],
         (T.mat %*% c(0,0))[2], col = "red");
@@ -396,6 +407,20 @@ bivariate.solution.classical <- function(dx, dy, problem.parameters,
         dev.off()
     }
 
+    if (PLOT.SOLUTION) {
+        png("small-time-solution-contour.png",
+            width = 6000,
+            height = 6000,
+            res=1000)
+        par(mar=c(4,4,1,1))
+        contour(big.solution,
+                xlim = c(0,1),
+                ylim = c(0,1),
+                xlab = "x",
+                ylab = "y")
+        dev.off()
+    }
+    
     ## big.sol <- matrix(nrow=length(xx),ncol=length(yy),0);
     ## for (jj in seq(700,1000)) {
     ##     print(jj);
