@@ -155,10 +155,10 @@ where $q(x,y,t)$ is the solution to the Fokker-Planck equation
 \end{align}
 Differentiating $q(x,y,t)$ with respect to the boundaries produces the
 transition density of a particle beginning and ending at the points
-$(X_1(0), X_2(0))$ and $(X_1(t), X_2(t))$, respectively, while
+$(X(0), Y(0))$ and $(X(t), Y(t))$, respectively, while
 attaining the minima $a_x/a_y$ and maxima $b_x/b_y$ in each coordinate
 direction. This transition density is equivalent to the joint density
-for $X(t), Y(t), m_X(t), M_X(t), m_Y(t), M_Y(t)| X(0)=x_0, Y(0)=y_0$,
+for $(X(t), Y(t), m_X(t), M_X(t), m_Y(t), M_Y(t))| X(0)=x_0, Y(0)=y_0$,
 which we denote as $f(x,y,a_x,b_x,a_y,b_y)$:
 \begin{align}
   \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial b_y} q(x,y,t) = f(x,y,a_x,b_x,a_y,b_y).
@@ -219,26 +219,28 @@ use a finite difference scheme to directly solve the evolution problem
 after suitable transformations. However, both of these methods need a
 high degree of numerical resolution to produce practically useful
 approximations of the transition density. We conjecture that for the
-trigonometric series expansion, inefficiencies arise from either using
-a separable representation for the differential operator that is
+trigonometric series expansion, inefficiencies arise from using
+a separable representation for a differential operator that is
 intrinsically correlated in the two dimensions; for the finite
 difference approach, the problem is twofold as the method introduces
 numerical diffusion in the initial condition and it also uses a
 separable approximation for the differential operator.
 
 In this paper, we propose a robust and efficient solution to the
-general problem (\ref{eq:1}) - (\ref{eq:2}). The solution is obtained
-by combining a small-time analytic solution with a Galerkin
-discretization based on basis functions that are correlated. Our
-method directly takes into account the correlation parameter present
-in the differential operator in order to efficiently represent the
-analytic small-time solution and propagate it forward in time. We
-apply our computational method to estimate equation parameters with a
-maximum likelihood approach in settings where the model assumptions of
-constant $(\mu_x, \mu_y, \sigma_x, \sigma_y, \rho)$ and Brownian
-motion driving stochastic evolution are appropriate. Section
-\ref{sec:approximate-sols} outlines some methods we considered,
-including the one we used. Section [] includes our numerical
+problems (\ref{eq:1}) - (\ref{eq:2}) and (\ref{eq:pdf}). The solution
+is obtained by combining a small-time analytic solution with a
+Galerkin discretization based on basis functions that are
+correlated. Our method directly takes into account the correlation
+parameter present in the differential operator in order to efficiently
+represent the analytic small-time solution and propagate it forward in
+time. We apply our computational method to estimate equation
+parameters with a maximum likelihood approach in settings where the
+model assumptions of constant
+$(\mu_x, \mu_y, \sigma_x, \sigma_y, \rho)$ and Brownian motion driving
+stochastic evolution are appropriate. Section
+\ref{sec:approximate-sols} outlines some methods we considered for
+this problem. Section \ref{sec:semidiscrete-galerkin} describes the
+Galerkin method we implemented. Section [] includes our numerical
 experiments.
 
 
@@ -276,7 +278,7 @@ where the differential operator $\mathcal{L}$ takes the form
   %                                                   \frac{\partial^2}{\partial x \partial y}p(x,y,t) +
   %                                        \frac{1}{2}\left( \frac{\sigma_y}{(b_y-a_y)} \right)^2 \frac{\partial^2}{\partial y^2}p(x,y,t) , \label{eq:qq} \\
 \]
-where $\tau_x = \frac{\sigma_x}{(b_x-a_x)}$,
+with $\tau_x = \frac{\sigma_x}{(b_x-a_x)}$,
 $\tau_y = \frac{\sigma_y}{(b_y-a_y)}$.  Note here that under this
 transformation $\rho$ remains the same as in the original
 problem. Without loss of generality, we will concentrate on the
@@ -284,7 +286,7 @@ solution of the normalized problem (\ref{eq:qq}) in terms of the
 diffusion parameters $(\tau_x, \tau_y, \rho)$.
 
 \subsection{Density Calculation} \label{sec:likelihood-calc}
-Recalling equation (\ref{eq:pdf}), to compute the density we are
+Recalling problem (\ref{eq:pdf}), to compute the density we are
 interested in, we must take derivatives of the solution $p(x,y,t)$
 with respect to the boundary parameters $(a_x, b_x, a_y,
 b_y)$. Because the approximate solutions we will consider below are
@@ -297,8 +299,8 @@ sixteen perturbed problems
   p(x,y,t | a_x \pm \epsilon, b_x \pm \epsilon, a_y \pm \epsilon, b_y
   \pm \epsilon).
 \]
-The $4^{th}$ derivative of $p$ with respect to the 4 boundaries is
-approximated as
+The derivative of $p$ with respect to the 4 boundaries is approximated
+as
 \begin{eqnarray*}
 & & \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial b_y} p(x, y, t) 
 \nonumber \\
@@ -308,7 +310,7 @@ a_y+k_3 \varepsilon, b_y+k_4 \varepsilon) }{(2 \varepsilon )^4}
 \nonumber
 \end{eqnarray*}
 The finite difference approximation, however, introduces fundamental
-limitations of the type of approximation that can be used and the
+limitations for the type of approximation that can be used and the
 degree of accuracy admissible for this problem.
 
 Consider an approximate solution $p^{(k)}(\left. x, y, t \right| b)$
@@ -371,20 +373,20 @@ round-off error blows up to infinity
   \right) \longrightarrow \infty \;\;\;\; \mbox{as } \varepsilon
   \rightarrow 0
 \]
-What is even more severe, for a fourth-order derivative, the error
+For a fourth-order derivative, the error
 contribution of finite machine precision becomes
 $O(\varepsilon_{mach}/\varepsilon^4)$ and a step size as big as
-$\varepsilon \approx 10^{-4}$ produces errors $O(1)$. This is
+$\varepsilon \sim 10^{-4}$ produces errors $O(1)$. This is
 catastrophic in instances where values of the density are smaller than 1.
 
 The contribution from the irregular part of truncation error can also
 be problematic if the finite difference approximation of the
 derivative of $F_{irreg}(b)$ is $O(k^\beta/\varepsilon)$; we will show
-that this is the case for the finite difference approximation.  As a
+that this is the case for the finite difference method.  As a
 consequence of both machine precision and possible irregular
-truncation errors, there is a fundamental restriction of the size of
-finite difference steps $\varepsilon$ we can use in any numerical
-method.
+truncation errors, we observe that there is a fundamental restriction
+of the size of finite difference steps $\varepsilon$ we can use in the
+numerical methods below.
 
 \subsection{Eigenfunction Expansion} \label{sec:eigenfunction}
 Following Section 6.2 of \cite{risken1989fokker-planck}, we may use
@@ -417,7 +419,6 @@ $L$ and $M$ and defined
   \Psi(x,y) &= (\psi_{1,1}(x,y), \ldots, \psi_{L,M}(x,y))^T, \\
   c_\nu &= (c_{1,1,\nu}, \ldots, c_{L,M,\nu})^T.
 \end{align*}
-
 The biorthogonal representation (\ref{eq:biorthogonal}) leads to the
 eigenvalue problem
 \begin{equation}
@@ -431,9 +432,9 @@ of basis functions yields
   \mathcal{L}\phi_\nu = \mathcal{L}(\Psi(x,y)^T c_\nu) =
   \mathcal{L}(\Psi(x,y)^T) c_\nu = (A \Psi(x,y))^T c_\nu,
 \] 
-where $A$ is a constant matrix dependent $(\tau_x, \tau_y, \rho)$. In
-the last part of the equation above, we have truncated the infinite
-sine series expansion of $L \psi_{l, m}(x, y)$. In the case where
+where $A$ is a matrix analytic in $(\tau_x, \tau_y, \rho)$. In the
+last part of the equation above, we have truncated the infinite sine
+series expansion of $L \psi_{l, m}(x, y)$. In the case where
 $\rho = 0$, $A$ is diagonal because $\left\{ \psi_{l,m}(x,y) \right\}$
 are the eigenfunctions to $\mathcal{L}$. When $\rho \neq 0$, $A$ is no
 longer diagonal and is in fact dense. % The dense structure of matrix
@@ -464,7 +465,10 @@ $(c_\nu, \lambda_\nu)$, the approximate solution is then
 In terms of density calculations for
 $\frac{\partial^4 p(x,y,t)}{\partial a_x \partial b_x, \partial
   a_y \partial b_y}$, the eigenfunction expansion does not suffer from
-having irregular truncation errors. However, because a good working
+having irregular truncation errors, because $A$ is analytic in the
+diffusion parameters and the eigenpairs $(\lambda_\nu, c_\nu)$ inherit
+this property (see Theorems 7 and 8 of Chapter 9 in
+\cite{lax2007linear-algebra}). However, because a good working
 approximation of $p(x,y,t)$ requires many terms in the expansion, and
 because each resultant system matrix is dense, repeated computation of
 the eigenproblem for the density calculation is unfeasible.
@@ -517,10 +521,12 @@ structure does not change as $h \to 0$. The eigenvalue problem is
 therefore much cheaper to solve.
 
 However, the fundamental limitation of using a finite difference
-method is that it introduces irregular truncation error. Referring to
-the notation in (\ref{eq:trunc-error}) with $k := 1/h$, the
-interpolation error introduced by a finite difference scheme at
-position $b$ for the boundary parameters using step $h$ has the general form of
+method is that it introduces irregular truncation error, because of
+the linear interpolation necessary for function arguments not on grid
+points. Referring to the notation in (\ref{eq:trunc-error}), and
+setting $k := 1/h$, the interpolation error introduced by a finite
+difference scheme at position $b$ for the boundary parameters using
+step $h$ has the general form of
 $$\mbox{Interpolation error } = O(h^2) (1-\mbox{rem}(b/h,1)) \mbox{rem}(b/h,1)$$ 
 The coefficient part
 $\mbox{F}_{irreg}(b) = (1-\mbox{rem}(b/h,1)) \mbox{rem}(b/h,1) $ is
@@ -756,9 +762,9 @@ following way.
          \frac{1}{2}\frac{\partial^2 }{\partial^2 \eta} p(\xi,\eta,t)
        \]
        on a computational domain now transformed to a parallelogram
-       $\tilde{\Omega}$ (see Figure (\ref{fig:step-1-small-time}). The
-       transformed initial condition will be denoted as
-       $(\xi_0, \eta_0)$.
+       $\tilde{\Omega}$ (see left panel of Figure
+       (\ref{fig:step-1-small-time})). The transformed initial
+       condition will be denoted as $(\xi_0, \eta_0)$.
 
      \item The fundamental solution $G(\xi,\eta,t | \xi_0, \eta_0)$ in
        this coordinate frame which does not take into account
@@ -773,7 +779,7 @@ following way.
   $\tilde{\Omega}$ as the shortest distance between $(\xi_0, \eta_0)$
   to each of the boundary segments (blue line segments in the left
   panel of Figure (\ref{fig:step-1-small-time})).  There are four such
-  distances $d_1, d_2, d_3, d_4$ and assume that they are listed in
+  distances $d_1, d_2, d_3, d_4$; and assume that they are listed in
   increasing magnitude. Note that the perpendicular intersections may
   not fall within the line segment when the 4 line segments form a
   very skewed diamond. However, the shortest distance to a line
@@ -850,7 +856,7 @@ replaces initial condition orthogonality condition in
    [\mathbf{p}(t_\epsilon)]_i &= \displaystyle \int_\Omega p(x,y,t_\epsilon) \psi_i(x,y) dx\,dy. \nonumber
 \end{align}
 Intuitively, the bigger $t_\epsilon$, the smaller both $R_e(k)$ and
-$R_0(k)$ will be, and thef better our method will do.
+$R_0(k)$ will be, and the better our method will do.
 % less eigenmodes present in $p(x,y,t_\epsilon)$, and the more accurate
 % our weak solution according to the error estimate
 % \[
@@ -957,7 +963,7 @@ and $\tilde{\rho}$, tampered such that their support is on $\Omega$,
 zero on the boundaries, still smooth, and inheriting the correlation
 structure of the fundamental solution to the problem. More basis
 elements are added by decreasing $\sigma$ and altering $l$, while the
-degree of correlation is obviously controlled by $\tilde{\rho}$. For
+degree of correlation is controlled by $\tilde{\rho}$. For
 the purposes of this paper, we found that keeping fixed $l=1$ with a
 moderate $\tilde{\rho}$ ($|\tilde{\rho}| \sim 0.6$) yields reasonable
 results. It is important, however, that
@@ -1030,12 +1036,10 @@ necessary for the error bound to apply are demonstrated by
 small-time solution has; the \textit{rate} of decrease of the error is
 controlled by how well the span of $S_k$ represents the small-time
 solution compared to the variation of the initial condition as $k$
-increases..
-
-In the context of (\ref{eq:error-est}), our method, with its small-time
-analytic solution and choice of basis functions, is specifically
-tailored to minimize the error between the strong solution and its
-Galerkin approximation under $L_2(\Omega)$.
+increases. In the context of (\ref{eq:error-est}), our method, with
+its small-time analytic solution and choice of basis functions, is
+specifically tailored to minimize the error between the strong
+solution and its Galerkin approximation under $L_2(\Omega)$.
 
 % However, the initial condition for (\ref{eq:qq}) requires all in
 % eigenmodes being included in the representation of the initial
