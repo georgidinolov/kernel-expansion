@@ -120,11 +120,29 @@ data <- generate.data(T,Delta,
                       theta.x,theta.y,
                       tau.x, tau.y,tau.rho,
                       leverage.x.rho, leverage.y.rho)
+macro.parameters <- NULL
+macro.parameters$mu.x <- mu.x
+macro.parameters$mu.y <- mu.y
+macro.parameters$alpha.x <- alpha.x
+macro.parameters$alpha.y <- alpha.y
 
+macro.parameters$theta.x <- theta.x
+macro.parameters$theta.y <- theta.y
+
+macro.parameters$tau.x <- tau.x
+macro.parameters$tau.y <- tau.y
+macro.parameters$tau.rho <- tau.rho
+
+macro.parameters$leverage.x.rho <- leverage.x.rho
+macro.parameters$leverage.y.rho <- leverage.y.rho
+    
 sample.data <- data$timeseries.dt
 
+save(file = "mv-stochastic-vol-data.Rdata", list = c("sample.data",
+                                                     "macro.parameters"))
+
 par(mfrow=c(3,2),
-    mar=c(1,2,1,1))
+    mar=c(2,2,1,1))
 plot(sample.data[,x], type="l")
 plot(sample.data[,y], type="l")
 plot(sample.data[,log.sigma.x], type="l")
