@@ -10,7 +10,7 @@ logit.inv <- function(logit.p) {
     return (exp(logit.p)/(exp(logit.p) + 1))
 }
 
-T = 2 * 256 * 6.5 * 3600 * 1000 ## one year ms
+T = 3 * 256 * 6.5 * 3600 * 1000 ## one year ms
 Delta = 1 * 6.5*3600*1000 ## one day in ms
 
 ## Values taken from the microstructure paper
