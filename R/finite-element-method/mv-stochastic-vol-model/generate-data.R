@@ -1,3 +1,4 @@
+rm(list = ls())
 library("data.table")
 
 logit <- function(p) {
@@ -9,7 +10,7 @@ logit.inv <- function(logit.p) {
     return (exp(logit.p)/(exp(logit.p) + 1))
 }
 
-T = 1 * 256 * 6.5 * 3600 * 1000 ## one year ms
+T = 2 * 256 * 6.5 * 3600 * 1000 ## one year ms
 Delta = 1 * 6.5*3600*1000 ## one day in ms
 
 ## Values taken from the microstructure paper
@@ -41,7 +42,7 @@ generate.data <- function(T, Delta, mu.x, mu.y,
                           leverage.x.rho, leverage.y.rho) {
     N <- ceiling(T/Delta)
 
-    rho.current <- -0.3
+    rho.current <- 0
     rho.tilde.current <- logit((rho.current+1)/2)
 
     x.current <- log(100)
