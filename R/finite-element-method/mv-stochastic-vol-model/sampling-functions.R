@@ -130,22 +130,24 @@ log.likelihood <- function(y.t,
                            parameters) {
 
     nominal.t = theta.to.nominal(theta.t)
-
+    sigma.x = exp(theta.t[1])
+    sigma.y = exp(theta.t[2])
+    rho = logit.inv(theta.t[3])*2-1
+    
     ## Y
-    epsilon.2 = (y.t[2] - y.t.minus.1[2] - parameters$mu.y)/nominal.t[2]
+    epsilon.2 = (y.t[2] - y.t.minus.1[2] - parameters$mu.y)/sigma.y
 
-    return( dnorm(epsilon.2,
-                  0,
-                  1,
+    return( dnorm(x = (y.t[2] - y.t.minus.1[2] - parameters$mu.y),
+                  mean = 0,
+                  sd = sigma.y,
                   log=TRUE)  +
-            dnorm((y.t[1] -
-                   y.t.minus.1[1] -
-                   parameters$mu.x -
-                   epsilon.2*nominal.t[3]*nominal.t[1])/
-                  (sqrt(1-nominal.t[3]^2)*nominal.t[1]),
-                  0,
-                  1,
-                  log=TRUE) )
+            dnorm(x = (y.t[1] -
+                       y.t.minus.1[1] -
+                       parameters$mu.x -
+                       epsilon.2*rho*sigma.x),
+                  mean = 0,
+                  sd = (sqrt(1-rho^2)*sigma.x),
+                  log=TRUE)  )
 }
 
 log.likelihood.par <- function(y.t,

@@ -1,16 +1,13 @@
 rm(list = ls())
 library("data.table")
+source("sampling-functions.R")
 
 logit <- function(p) {
     out = log(p/(1-p))
     return (out)
 }
 
-logit.inv <- function(logit.p) {
-    return (exp(logit.p)/(exp(logit.p) + 1))
-}
-
-T = 3 * 256 * 6.5 * 3600 * 1000 ## one year ms
+T = 2 * 256 * 6.5 * 3600 * 1000 ## one year ms
 Delta = 1 * 6.5*3600*1000 ## one day in ms
 
 ## Values taken from the microstructure paper
@@ -36,60 +33,124 @@ tau.rho = 0.0
 leverage.x.rho = 0
 leverage.y.rho = 0
 
+macro.parameters <- NULL
+macro.parameters$mu.x <- mu.x
+macro.parameters$mu.y <- mu.y
+macro.parameters$alpha.x <- alpha.x
+macro.parameters$alpha.y <- alpha.y
+
+macro.parameters$theta.x <- theta.x
+macro.parameters$theta.y <- theta.y
+
+macro.parameters$tau.x <- tau.x
+macro.parameters$tau.y <- tau.y
+macro.parameters$tau.rho <- tau.rho
+
+macro.parameters$leverage.x.rho <- leverage.x.rho
+macro.parameters$leverage.y.rho <- leverage.y.rho
+
 generate.data <- function(T, Delta, mu.x, mu.y,
                           alpha.x, alpha.y, theta.x, theta.y,
                           tau.x, tau.y, tau.rho,
                           leverage.x.rho, leverage.y.rho) {
     N <- ceiling(T/Delta)
 
-    rho.current <- 0
-    rho.tilde.current <- logit((rho.current+1)/2)
+    rho.t <- 0
+    rho.tilde.t <- logit((rho.t+1)/2)
 
-    x.current <- log(100)
-    y.current <- log(100)
+    x.t <- log(100)
+    y.t <- log(100)
 
-    log.sigma.x.current <- alpha.x
-    log.sigma.y.current <- alpha.y
+    log.sigma.x.t <- alpha.x
+    log.sigma.y.t <- alpha.y
 
-    innovations <- data.table(matrix(data=rnorm(n=N*5),
-                                     nrow=N,
+    innovations <- data.table(matrix(data=rnorm(n=(N+1)*5),
+                                     nrow=N+1,
                                      ncol=5))
     setnames(innovations, seq(1,5), c("epsilon.x", "epsilon.y",
                                       "eta.x", "eta.y", "eta.rho"))
 
-    innovations[, eta.x := leverage.x.rho*epsilon.x +
-                      sqrt(1-leverage.x.rho^2)*eta.x]
-    innovations[, eta.y := leverage.y.rho*epsilon.y +
-                      sqrt(1-leverage.y.rho^2)*eta.y]
+    output <- data.table(x = as.numeric(rep(NA,N)),
+                         y = as.numeric(rep(NA,N)),
+                         log.sigma.x = as.numeric(rep(NA,N)),
+                         log.sigma.y = as.numeric(rep(NA,N)),
+                         rho.tilde = as.numeric(rep(NA,N)))
+
+
+    output[1, c("x",
+                "y",
+                "log.sigma.x",
+                "log.sigma.y",
+                "rho.tilde") := as.list(c(x.t,
+                                          y.t,
+                                          log.sigma.x.t,
+                                          log.sigma.y.t,
+                                          rho.tilde.t))]
+    
+    for (i in seq(2,N)) {
+        log.sigma.x.tp1 = alpha.x +
+            theta.x*(log.sigma.x.t - alpha.x) + tau.x*innovations[i-1,eta.x]
+
+        log.sigma.y.tp1 = alpha.y +
+            theta.y*(log.sigma.y.t - alpha.y) + tau.y*innovations[i-1,eta.y]
+
+        rho.tilde.tp1 = rho.tilde.t + tau.rho*innovations[i-1,eta.rho]
+        rho.tp1 = 2*logit.inv(rho.tilde.tp1) - 1
         
-    output <- data.table(x = rep(0,N),
-                         y = rep(0,N),
-                         log.sigma.x = rep(0,N),
-                         log.sigma.y = rep(0,N),
-                         rho.tilde = rep(0,N))
-
-    for (i in seq(1,N)) {
-        dx <- sqrt(1-rho.current^2)*exp(log.sigma.x.current)*innovations[i,1]+
-            rho.current*exp(log.sigma.x.current)*innovations[i,2]
-        dy <- exp(log.sigma.y.current)*innovations[i,2]
+        dx <- exp(log.sigma.x.tp1)*innovations[i,epsilon.x]
+        dy <- exp(log.sigma.y.tp1)*innovations[i,epsilon.y]
         
-        x.current <- x.current + mu.x + dx
-        y.current <- y.current + mu.x + dy
+        x.tp1 <- x.t + mu.x + dx
+        y.tp1 <- y.t + mu.x + dy
 
-        log.sigma.x.current = alpha.x +
-            theta.x*(log.sigma.x.current-alpha.x) + tau.x*innovations[i,3]
 
-        log.sigma.y.current = alpha.y +
-            theta.y*(log.sigma.y.current-alpha.y) + tau.y*innovations[i,4]
+        output[i, c("x","y") := as.list(c(x.tp1, y.tp1))]
+        
+        output[i, c("log.sigma.x",
+                      "log.sigma.y",
+                      "rho.tilde") := as.list(c(log.sigma.x.tp1,
+                                                log.sigma.y.tp1,
+                                                rho.tilde.tp1))]
 
-        rho.tilde.current = rho.tilde.current + tau.rho*innovations[i,5]
-        rho.current = 2*logit.inv(rho.tilde.current) - 1
+        if (i %% 1 == 0) {
+            lls = sapply(X = seq(-6,-3,length.out = 100),
+                         function(x) {
+                             dnorm(x = x.tp1,
+                                   mean = x.t + mu.x,
+                                   sd = exp(x),
+                                   log = TRUE) +
+                                 dnorm(x = y.tp1,
+                                       mean = y.t + mu.x,
+                                       sd = exp(log.sigma.y.tp1),
+                                       log = TRUE)})
 
-        output[i,names(output) := as.list(c(x.current,
-                                            y.current,
-                                            log.sigma.x.current,
-                                            log.sigma.y.current,
-                                            rho.tilde.current))]
+            dnorm(x = x.tp1,
+                  mean = x.t + mu.x,
+                  sd = exp(log.sigma.x.tp1),
+                  log = TRUE)
+            dnorm(x = y.tp1,
+                  mean = y.t + mu.x,
+                  sd = exp(log.sigma.y.tp1),
+                  log = TRUE)
+            
+            lls.2 = log.likelihood.par(y.t = c(x.tp1, y.tp1),
+                                       y.t.minus.1 = c(x.t, y.t),
+                                       theta.t = rbind(seq(-6,-3,length.out = 100),
+                                                       rep(log.sigma.y.tp1, 100),
+                                                       rep(rho.tilde.tp1, 100)),
+                                       parameters = macro.parameters,
+                                       N.particles = 100)
+                        
+            plot(seq(-6,-3,length.out=100), lls)
+            abline(v = log.sigma.x.tp1, col = "red", lwd =2)
+            lines(seq(-6,-3,length.out=100), lls.2)
+        }
+        
+        x.t = x.tp1
+        y.t = y.tp1
+        log.sigma.x.t = log.sigma.x.tp1
+        log.sigma.y.t = log.sigma.y.tp1
+        rho.tilde.t = rho.tilde.tp1
     }
 
     out = NULL;
@@ -121,21 +182,7 @@ data <- generate.data(T,Delta,
                       theta.x,theta.y,
                       tau.x, tau.y,tau.rho,
                       leverage.x.rho, leverage.y.rho)
-macro.parameters <- NULL
-macro.parameters$mu.x <- mu.x
-macro.parameters$mu.y <- mu.y
-macro.parameters$alpha.x <- alpha.x
-macro.parameters$alpha.y <- alpha.y
 
-macro.parameters$theta.x <- theta.x
-macro.parameters$theta.y <- theta.y
-
-macro.parameters$tau.x <- tau.x
-macro.parameters$tau.y <- tau.y
-macro.parameters$tau.rho <- tau.rho
-
-macro.parameters$leverage.x.rho <- leverage.x.rho
-macro.parameters$leverage.y.rho <- leverage.y.rho
     
 sample.data <- data$timeseries.dt
 

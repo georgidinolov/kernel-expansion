@@ -8,8 +8,8 @@ load("mv-stochastic-vol-data.Rdata")
 parameters <- macro.parameters
 parameters$tau.rho <- 0.01
 
-N.particles <- 1500
-weights <- rep(1, N.particles)
+N.particles <- 500
+log.weights <- rep(0, N.particles)
 T <- length(sample.data$y)
 ## Start counting at 1: y_1, y_2, ....
 ## Start sampling at 2: theta_2, theta_3, ...
@@ -67,21 +67,21 @@ for (tt in seq(3,T)) {
                                        y.current = y.t.minus.1,
                                        y.current.m1 = y.t.minus.2,
                                        parameters = parameters)
+    
+    theta.t.mean[1,] = rep(sample.data$log.sigma.x[tt],
+                           N.particles)
+    theta.t.mean[2,] = rep(sample.data$log.sigma.y[tt],
+                           N.particles)
+    theta.t.mean[3,] = rep(sample.data$rho.tilde[tt],
+                           N.particles)
 
-    if (tt < T) {
-        theta.t.mean[1,] = rep(sample.data$log.sigma.x[tt],
-                               N.particles)
-        ## theta.tp1.mean[2,] = sample.data$log.sigma.y[tt+1]
-        ## theta.t.mean[3,] = sample.data$rho.tilde[tt]
-    }
+    lls = log.likelihood.par(y.t = y.t,
+                             y.t.minus.1 = y.t.minus.1,
+                             theta.t = theta.t.mean,
+                             parameters = parameters,
+                             N.particles = N.particles)
     
-    lls = log.likelihood.par(y.t,
-                             y.t.minus.1,
-                             theta.t.mean,
-                             parameters,
-                             N.particles)
-    
-    probs = exp((lls + log(weights)) - max(lls + log(weights)))
+    probs = exp( lls + log.weights - max(lls + log.weights) )
     for (m in seq(1,N.particles)) {
         k = sample(x = seq(1,N.particles),
                    size = 1,
@@ -92,6 +92,7 @@ for (tt in seq(3,T)) {
                                    y.current.m1 = y.t.minus.2,
                                    parameters = parameters)
 
+
         log.new.weight =
             log.likelihood(y.t = y.t, y.t.minus.1 = y.t.minus.1,
                            theta.t = theta.t[,m],
@@ -101,9 +102,9 @@ for (tt in seq(3,T)) {
                            theta.t = theta.t.mean[,k],
                            parameters = parameters)
         
-        weights[m] = exp(log.new.weight)
+        log.weights[m] = log.new.weight
     }
-    weights = weights / sum(weights)
+    log.weights = log.weights - max(log.weights)
 
     theta.tm1 = theta.t
     print(tt)
