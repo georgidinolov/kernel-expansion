@@ -4,14 +4,14 @@ source("2-d-solution.R");
 source("../classical-solution/2-d-solution.R");
 
 PLOT.SOLUTION = TRUE;
-dx = 0.005;
-dy = 0.005;
+dx = 0.004;
+dy = 0.004;
 K.prime = 12;
 
 problem.parameters.generate.data = NULL;
 problem.parameters.generate.data$t <- 1;
-problem.parameters.generate.data$sigma.2.x <- 1.0^2;
-problem.parameters.generate.data$sigma.2.y <- 1.0^2;
+problem.parameters.generate.data$sigma.2.x <- 0.9^2;
+problem.parameters.generate.data$sigma.2.y <- 1.2^2;
 problem.parameters.generate.data$rho <- 0.6;
 problem.parameters.generate.data$x.ic <- 0;
 problem.parameters.generate.data$y.ic <- 0;
@@ -20,12 +20,12 @@ n.samples <- 64;
 
 data <- sample.process(n.samples, dt, problem.parameters.generate.data);
 
-ax = -0.49715709250150114106858723062032;
-x_T = 1.40590589684411759741067271534121;
-bx = 1.75535709803343054069557638285914;
-ay = -0.55389844337502103233106254265294;
-y_T = 1.25288021831189477772738882777048;
-by = 1.93415058868214839726817899645539;
+ax = 2.78267 - 4.60517;
+x_T = 3.72721 - 4.60517;
+bx = 4.93204 -  4.60517;
+ay = 2.94894 -  4.60517;
+y_T = 4.12413 -  4.60517;
+by = 4.80571 -  4.60517;
 
 data[[1]]$ax = ax;
 data[[1]]$x.fc = x_T;
@@ -91,7 +91,7 @@ y <- seq(0,1,by=dy);
 ##     }
 ## }
 
-sigma=0.30;
+sigma=0.25;
 sigma2=sigma^2;
 l=1;
 function.list <-
@@ -138,14 +138,74 @@ for (n in seq(1,length(data))) {
     b.indeces = c(0,1);
     c.indeces = c(-1,0);
     d.indeces = c(0,1);
+
+    ## a.indeces = c(-1,1);
+    ## b.indeces = c(-1,1);
+    ## c.indeces = c(-1,1);
+    ## d.indeces = c(-1,1);
     
     a.power=1;
     b.power=1;
     c.power=1;
     d.power=1;
 
-    h = 1/64;
+    h = 1/512;
     derivative = 0;
+
+    for ( i in seq(1,2)) {
+        if (i==1) { a.power=1; } else { a.power=0; };
+
+        for ( j in seq(1,2)) {
+            if (j==1) { b.power=1; } else { b.power=0; };
+
+            for ( k in seq(1,2)) {
+                if (k==1) { c.power=1; } else { c.power=0; };
+                    
+                problem.parameters.original <- data[[n]];
+                problem.parameters.original$K.prime <- K.prime;
+                problem.parameters.original$number.terms <- 100;
+                
+                problem.parameters.original$ax <-
+                    problem.parameters.original$ax + a.indeces[i]*h;
+                problem.parameters.original$bx <-
+                    problem.parameters.original$bx + b.indeces[j]*h;
+                problem.parameters.original$ay <-
+                    problem.parameters.original$ay + c.indeces[k]*h;
+                
+                current.sol  <- blackbox(function.list,
+                                         orthonormal.function.list,
+                                         system.mats,
+                                         problem.parameters.original,
+                                         dx,dy,
+                                         FALSE, FALSE);
+                
+                L.x <- (problem.parameters.original$bx-
+                        problem.parameters.original$ax);
+                L.y <- (problem.parameters.original$by-
+                        problem.parameters.original$ay);
+                
+                conversion.factor <-
+                    (sqrt(problem.parameters.original$sigma.2.x)/
+                     L.x^4) *
+                    (sqrt(problem.parameters.original$sigma.2.y)/
+                     L.y^4);
+                
+                
+                current.sol = current.sol *
+                    ## 1.0/(L.x * L.y);
+                    conversion.factor;
+                ## print(current.sol);
+                
+                derivative = derivative +
+                    current.sol * (-1)^a.power * (-1)^b.power * (-1)^c.power;
+            }
+        }
+    }
+    print(1/h)
+    print(derivative);
+    full.derivative = derivative / (h^3);
+    print(full.derivative);
+    
   
     for ( i in seq(1,2)) {
         if (i==0) { a.power=1; } else { a.power=0; };
@@ -178,11 +238,23 @@ for (n in seq(1,length(data))) {
                                              problem.parameters.original,
                                              dx,dy,
                                              FALSE, FALSE);
+
+                    L.x <- (problem.parameters.original$bx-
+                            problem.parameters.original$ax);
+                    L.y <- (problem.parameters.original$by-
+                            problem.parameters.original$ay);
+
+                    conversion.factor <-
+                        (sqrt(problem.parameters.original$sigma.2.x)/
+                         L.x^4) *
+                        (sqrt(problem.parameters.original$sigma.2.y)/
+                         L.y^4);
+                    
+                    
                     current.sol = current.sol *
-                        1.0/((problem.parameters.original$bx-
-                              problem.parameters.original$ax) *
-                             (problem.parameters.original$by-
-                              problem.parameters.original$ay))
+                        ## 1.0/(L.x * L.y);
+                        conversion.factor;
+                    ## print(current.sol);
                     
                     derivative = derivative +
                         current.sol *
@@ -191,7 +263,24 @@ for (n in seq(1,length(data))) {
             }
         }
     }
-    derivative = derivative / (h^4);
+    print(derivative)
+    full.derivative = derivative / (h^4);
+    print(full.derivative)
+    
+    dmvnorm(x = c(data[[n]]$x.fc,
+                  data[[n]]$y.fc),
+            mean = rep(0,2),
+            sigma = matrix(nrow=2,ncol=2,
+                           data = c(problem.parameters.generate.data$sigma.2.x,
+                                    sqrt(problem.parameters.generate.data$sigma.2.x)*
+                                    sqrt(problem.parameters.generate.data$sigma.2.y)*
+                                    problem.parameters.generate.data$rho,
+                                    sqrt(problem.parameters.generate.data$sigma.2.x)*
+                                    sqrt(problem.parameters.generate.data$sigma.2.y)*
+                                    problem.parameters.generate.data$rho,
+                                    problem.parameters.generate.data$sigma.2.y)),
+            log=FALSE);
+    
    
     if (derivative < 0) {
         print(paste("DATA POINT ", n , "PRODUCED NEG LIKELIHOOD"));
