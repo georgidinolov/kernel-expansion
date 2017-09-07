@@ -4,14 +4,14 @@ source("2-d-solution.R");
 source("../classical-solution/2-d-solution.R");
 
 PLOT.SOLUTION = TRUE;
-dx = 0.004;
-dy = 0.004;
+dx = 1.0/200
+dy = 1.0/200
 K.prime = 12;
 
 problem.parameters.generate.data = NULL;
 problem.parameters.generate.data$t <- 1;
-problem.parameters.generate.data$sigma.2.x <- 0.9^2;
-problem.parameters.generate.data$sigma.2.y <- 1.2^2;
+problem.parameters.generate.data$sigma.2.x <- 0.006941^2
+problem.parameters.generate.data$sigma.2.y <- 0.001959^2;
 problem.parameters.generate.data$rho <- 0.6;
 problem.parameters.generate.data$x.ic <- 0;
 problem.parameters.generate.data$y.ic <- 0;
@@ -20,12 +20,13 @@ n.samples <- 64;
 
 data <- sample.process(n.samples, dt, problem.parameters.generate.data);
 
-ax = 2.78267 - 4.60517;
-x_T = 3.72721 - 4.60517;
-bx = 4.93204 -  4.60517;
-ay = 2.94894 -  4.60517;
-y_T = 4.12413 -  4.60517;
-by = 4.80571 -  4.60517;
+ax=-0.010240
+x_T=-0.003170
+bx=0.002528
+## ## 
+ay=-0.010083;
+y_T=-0.003316;
+by=0.003052;
 
 data[[1]]$ax = ax;
 data[[1]]$x.fc = x_T;
@@ -91,7 +92,7 @@ y <- seq(0,1,by=dy);
 ##     }
 ## }
 
-sigma=0.25;
+sigma=0.30;
 sigma2=sigma^2;
 l=1;
 function.list <-
@@ -134,10 +135,10 @@ for (n in seq(1,length(data))) {
                   problem.parameters.original$ay));
     }
 
-    a.indeces = c(-1,0);
-    b.indeces = c(0,1);
-    c.indeces = c(-1,0);
-    d.indeces = c(0,1);
+    a.indeces = c(-1,1);
+    b.indeces = c(-1,1);
+    c.indeces = c(-1,1);
+    d.indeces = c(-1,1);
 
     ## a.indeces = c(-1,1);
     ## b.indeces = c(-1,1);
@@ -149,62 +150,72 @@ for (n in seq(1,length(data))) {
     c.power=1;
     d.power=1;
 
-    h = 1/512;
-    derivative = 0;
+    hs = c(1/200, 1/300, 1/400, 1/500, 1/600, 1/700, 1/800, 1/900, 1/1000, 1/1100, 1/1200)
+    likelihoods <- rep(NA, length(hs))
+    for (h in hs) {
+        derivative = 0;
 
-    for ( i in seq(1,2)) {
-        if (i==1) { a.power=1; } else { a.power=0; };
-
-        for ( j in seq(1,2)) {
-            if (j==1) { b.power=1; } else { b.power=0; };
-
-            for ( k in seq(1,2)) {
-                if (k==1) { c.power=1; } else { c.power=0; };
+        for ( i in seq(1,2)) {
+            if (i==1) { a.power=1; } else { a.power=0; };
+            
+            for ( j in seq(1,2)) {
+                if (j==1) { b.power=1; } else { b.power=0; };
+                
+                for ( k in seq(1,2)) {
+                    if (k==1) { c.power=1; } else { c.power=0; };
                     
-                problem.parameters.original <- data[[n]];
-                problem.parameters.original$K.prime <- K.prime;
-                problem.parameters.original$number.terms <- 100;
-                
-                problem.parameters.original$ax <-
-                    problem.parameters.original$ax + a.indeces[i]*h;
-                problem.parameters.original$bx <-
-                    problem.parameters.original$bx + b.indeces[j]*h;
-                problem.parameters.original$ay <-
-                    problem.parameters.original$ay + c.indeces[k]*h;
-                
-                current.sol  <- blackbox(function.list,
-                                         orthonormal.function.list,
-                                         system.mats,
-                                         problem.parameters.original,
-                                         dx,dy,
-                                         FALSE, FALSE);
-                
-                L.x <- (problem.parameters.original$bx-
-                        problem.parameters.original$ax);
-                L.y <- (problem.parameters.original$by-
-                        problem.parameters.original$ay);
-                
-                conversion.factor <-
-                    (sqrt(problem.parameters.original$sigma.2.x)/
-                     L.x^4) *
-                    (sqrt(problem.parameters.original$sigma.2.y)/
-                     L.y^4);
-                
-                
-                current.sol = current.sol *
-                    ## 1.0/(L.x * L.y);
-                    conversion.factor;
-                ## print(current.sol);
-                
-                derivative = derivative +
-                    current.sol * (-1)^a.power * (-1)^b.power * (-1)^c.power;
+                    for ( l in seq(1,2)) {
+                        if (l==1) { d.power=1; } else { d.power=0; };
+                        
+                        problem.parameters.original <- data[[n]];
+                        problem.parameters.original$K.prime <- K.prime;
+                        problem.parameters.original$number.terms <- 100;
+                        
+                        problem.parameters.original$ax <-
+                            problem.parameters.original$ax + a.indeces[i]*h;
+                        problem.parameters.original$bx <-
+                            problem.parameters.original$bx + b.indeces[j]*h;
+                        problem.parameters.original$ay <-
+                            problem.parameters.original$ay + c.indeces[k]*h;
+                        problem.parameters.original$by <-
+                            problem.parameters.original$by + d.indeces[l]*h;
+                        
+                        current.sol  <- blackbox(function.list,
+                                                 orthonormal.function.list,
+                                                 system.mats,
+                                                 problem.parameters.original,
+                                                 dx,dy,
+                                                 FALSE, FALSE);
+                        
+                        L.x <- (problem.parameters.original$bx-
+                                problem.parameters.original$ax);
+                        L.y <- (problem.parameters.original$by-
+                                problem.parameters.original$ay);
+                        
+                        conversion.factor <-
+                            (1/L.x^2) *
+                            (1/L.y^2);
+                        
+                        current.sol = current.sol *
+                            ## 1.0/(L.x * L.y);
+                            conversion.factor;
+                            ## 1.0;
+                        
+                        derivative = derivative +
+                            current.sol * ( (-1)^a.power *
+                                                 (-1)^b.power *
+                                                      (-1)^c.power *
+                                                           (-1)^d.power );
+                    }
+                }
             }
         }
+        print(1/h)
+        print(derivative);
+        full.derivative = derivative / ((2*h)^4);
+        print(full.derivative);
+        likelihoods[which(hs == h)[1]] = derivative
     }
-    print(1/h)
-    print(derivative);
-    full.derivative = derivative / (h^3);
-    print(full.derivative);
     
   
     for ( i in seq(1,2)) {
