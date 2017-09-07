@@ -28,6 +28,9 @@ ay=-0.010083;
 y_T=-0.003316;
 by=0.003052;
 
+Lx = bx-ax
+Ly = by-ay
+
 data[[1]]$ax = ax;
 data[[1]]$x.fc = x_T;
 data[[1]]$bx = bx;
@@ -35,6 +38,10 @@ data[[1]]$bx = bx;
 data[[1]]$ay = ay;
 data[[1]]$y.fc = y_T;
 data[[1]]$by = by;
+
+
+
+
 
 ## data <- load.data.from.csv(
 ##     "~/research/PDE-solvers/src/brownian-motion/data-set-2.csv");
@@ -135,10 +142,10 @@ for (n in seq(1,length(data))) {
                   problem.parameters.original$ay));
     }
 
-    a.indeces = c(-1,1);
-    b.indeces = c(-1,1);
-    c.indeces = c(-1,1);
-    d.indeces = c(-1,1);
+    a.indeces = c(-1,0);
+    b.indeces = c(0,1);
+    c.indeces = c(-1,0);
+    d.indeces = c(0,1);
 
     ## a.indeces = c(-1,1);
     ## b.indeces = c(-1,1);
@@ -150,7 +157,7 @@ for (n in seq(1,length(data))) {
     c.power=1;
     d.power=1;
 
-    hs = c(1/200, 1/300, 1/400, 1/500, 1/600, 1/700, 1/800, 1/900, 1/1000, 1/1100, 1/1200)
+    hs = c(1/100, 1/200, 1/300, 1/400, 1/500, 1/600, 1/700, 1/800, 1/900, 1/1000, 1/1100, 1/1200)
     likelihoods <- rep(NA, length(hs))
     for (h in hs) {
         derivative = 0;
@@ -193,13 +200,13 @@ for (n in seq(1,length(data))) {
                                 problem.parameters.original$ay);
                         
                         conversion.factor <-
-                            (1/L.x^2) *
-                            (1/L.y^2);
+                            (1/L.x^3) *
+                            (1/L.y^3);
                         
                         current.sol = current.sol *
                             ## 1.0/(L.x * L.y);
-                            conversion.factor;
-                            ## 1.0;
+                            ## conversion.factor;
+                            1.0;
                         
                         derivative = derivative +
                             current.sol * ( (-1)^a.power *
@@ -212,9 +219,9 @@ for (n in seq(1,length(data))) {
         }
         print(1/h)
         print(derivative);
-        full.derivative = derivative / ((2*h)^4);
+        full.derivative = derivative / ((h)^4);
         print(full.derivative);
-        likelihoods[which(hs == h)[1]] = derivative
+        likelihoods[which(hs == h)[1]] = full.derivative
     }
     
   
