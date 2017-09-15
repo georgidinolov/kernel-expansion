@@ -2139,11 +2139,42 @@ blackbox <- function(function.list,
         dev.off();
     }
 
-    out = sum(sapply(seq(1,K),
-                     function(x) {
-                         coefs[x]*orthonormal.function.list[[x]][y.fc.index,
-                                                                 x.fc.index]
-                     }));
-    
+    out.22 = sum(sapply(seq(1,K),
+                        function(x) {
+                            coefs[x]*orthonormal.function.list[[x]][y.fc.index,
+                                                                    x.fc.index]
+                        }));
+
+    out.21 = sum(sapply(seq(1,K),
+                        function(x) {
+                            coefs[x]*orthonormal.function.list[[x]][y.fc.index-1,
+                                                                    x.fc.index]
+                        }));
+
+    out.11 = sum(sapply(seq(1,K),
+                        function(x) {
+                            coefs[x]*orthonormal.function.list[[x]][y.fc.index-1,
+                                                                    x.fc.index-1]
+                        }));
+
+    out.12 = sum(sapply(seq(1,K),
+                        function(x) {
+                            coefs[x]*orthonormal.function.list[[x]][y.fc.index,
+                                                                    x.fc.index-1]
+                        }));
+
+    x1 = (x.fc.index-1)*dx
+    x2 = (x.fc.index)*dx
+
+    y1 = (y.fc.index-1)*dx
+    y2 = (y.fc.index)*dx
+
+    out = 1/((x2-x1)*(y2-y1)) *
+        ( (y2 - problem.parameters$y.fc) * ( out.11*(x2-problem.parameters$x.fc) +
+                                             out.21*(problem.parameters$x.fc-x1) ) +
+          ##
+          (problem.parameters$y.fc - y1) * ( out.12*(x2-problem.parameters$x.fc) +
+                                             out.22*(problem.parameters$x.fc-x1) ) )
+            
     return (out);
 }
