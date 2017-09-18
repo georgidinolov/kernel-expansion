@@ -1718,8 +1718,8 @@ basis.functions.normal.kernel <- function(rho,
           c(1,0))
     
     
-    xieta.nodes <- xieta.nodes[, (xieta.nodes[1,] >= 0) & (xieta.nodes[1,] <= 1) &
-                                 (xieta.nodes[2,] >= 0) & (xieta.nodes[2,] <= 1)];
+    xieta.nodes <- xieta.nodes[, (xieta.nodes[1,] >= -0.5) & (xieta.nodes[1,] <= 1.5) &
+                                 (xieta.nodes[2,] >= -0.5) & (xieta.nodes[2,] <= 1.5)];
 
     points(x = xieta.nodes[1,],
            y = xieta.nodes[2,],
