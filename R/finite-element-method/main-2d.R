@@ -8,22 +8,24 @@ dx = 1.0/400
 dy = 1.0/400
 K.prime = 12;
 
+sigma_x=0.021320 * 1.0;
+sigma_y=0.032554 * 1.0;
 
-ax=-0.010240
-x_T=-0.003170
-bx=0.002528
-## ## 
-ay=-0.010083;
-y_T=-0.003316;
-by=0.003052;
+ax=-0.018268;
+x_T=-0.017759;
+bx=0.007022; 
+## ##
+ay=-0.014171;
+y_T=-0.013896;
+by=0.008332;
 
 Lx = bx-ax
 Ly = by-ay
 
 problem.parameters.generate.data = NULL;
-problem.parameters.generate.data$t <- 1;
-problem.parameters.generate.data$sigma.2.x <- (0.003941/Lx)^2; 
-problem.parameters.generate.data$sigma.2.y <- (0.006959/Ly)^2;
+problem.parameters.generate.data$t <- 1 * ( (sigma_y/Ly)^2 );
+problem.parameters.generate.data$sigma.2.x <- ( (sigma_x/Lx)^2 ) / ( (sigma_y/Ly)^2 ); 
+problem.parameters.generate.data$sigma.2.y <- ( (sigma_y/Ly)^2 ) / ( (sigma_y/Ly)^2 );
 problem.parameters.generate.data$rho <- 0.6;
 problem.parameters.generate.data$x.ic <- 0;
 problem.parameters.generate.data$y.ic <- 0;
@@ -45,22 +47,25 @@ data[[1]]$by = by/Ly;
 
 problem.parameters <- data[[1]];
 problem.parameters$K.prime <- K.prime;
-problem.parameters$number.terms <- 100;
+terms <- 100;
 
 K <- (K.prime-1)^2;
 function.list <- vector("list", K);
 
 x <- seq(0,1,by=dx);
 y <- seq(0,1,by=dy);
-sigma=0.20;
+sigma.x=0.12;
+sigma.y=0.40;
 
 for (std.dev.factor in c(1.0)) {
-    sigma2=sigma^2;
+    sigma2.x=sigma.x^2;
+    sigma2.y=sigma.y^2;
     l=1;
     function.list <-
         basis.functions.normal.kernel(rho=problem.parameters.generate.data$rho,
                                       l=l,
-                                      sigma2=sigma^2,
+                                      sigma2.x=sigma2.x,
+                                      sigma2.y=sigma2.y,
                                       dx,dy,
                                       std.dev.factor=std.dev.factor);
     orthonormal.function.list <- function.list;
@@ -71,6 +76,7 @@ for (std.dev.factor in c(1.0)) {
                                    dx,dy);
     
     n = 1
+    par(mfrow=c(3,2))
     problem.parameters.original <- data[[n]];
     problem.parameters.original$K.prime <- K.prime;
     problem.parameters.original$number.terms <- 100;
@@ -86,9 +92,9 @@ for (std.dev.factor in c(1.0)) {
             problem.parameters.original$ay);
     print(current.sol / (L.x*L.y))
     
-    a.indeces = c( 1, -1);
+    a.indeces = c( 0, -1);
     b.indeces = c(-1,  1);
-    c.indeces = c( 1, -1);
+    c.indeces = c( 0, -1);
     d.indeces = c(-1,  1);
     
     a.power=0;
@@ -96,16 +102,16 @@ for (std.dev.factor in c(1.0)) {
     c.power=0;
     d.power=0;
     
-    xs <- seq(exp(-2.0) + ax/Lx, -exp(-2.0) + bx/Lx, length.out = 20);
-    ys <- seq(exp(-2.0) + ay/Ly, -exp(-2.0) + by/Ly, length.out = 20);
+    xs <- seq(exp(-2.5) + ax/Lx, -exp(-2.5) + bx/Lx, length.out = 20);
+    ys <- seq(exp(-2.5) + ay/Ly, -exp(-2.5) + by/Ly, length.out = 20);
     
-    h.ay = exp(-3.5);
-    h.by = exp(-4.0);
-    h.bx = exp(-4.0);
-    h.ax = exp(-4.0);
+    h.ay = exp(-2.7);
+    h.by = exp(-2.7);
+    h.bx = exp(-2.7);
+    h.ax = exp(-2.7);
     
-    hs = exp(seq(-8,-3.0, length.out=5))
-    hs = exp(-3.0)
+    hs = exp(-2.7)
+    h = exp(-2.7)
     
     plot.data <- matrix(nrow = length(hs),
                         ncol = length(ys));
@@ -118,8 +124,8 @@ for (std.dev.factor in c(1.0)) {
 
             for (yy in ys) {
                 data[[1]]$y.fc = yy
+
                 derivative = 0;
-                
                 a.power=0;
                 b.power=0;
                 c.power=0;
@@ -175,9 +181,13 @@ for (std.dev.factor in c(1.0)) {
                         }
                     }
                 }
+
+                derivative <- derivative /
+                    (2*h.ax * 2*h.bx * 2*h.ay * 2*h.by);
                 print(c(derivative, h));
-                print(c(which(hs==h), which(ys==yy), derivative/(2*h*2*h.ay*2*h.by*2*h.ax)))
-                derivs[which(xs==xx), which(ys == yy)] = derivative/(2*h*2*h.ay*2*h.by*2*h.ax)
+                
+                print(c(which(hs==h), which(ys==yy), derivative))
+                derivs[which(xs==xx), which(ys == yy)] = derivative
             }
             plot(ys, derivs[which(xs==xx),], type = "l")
             abline(h=0,lwd=2, col = "red")

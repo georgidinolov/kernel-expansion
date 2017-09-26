@@ -1085,7 +1085,8 @@ best of our knowledge, all current \textit{likelihood} methods in the
 literature either ignore the observed maximum/minimum information or
 use only some of it. Likelihood-free approaches, like that of
 \cite{rogers1991estimating}, on the other hand suffer from not being
-able to be easily integrated into a bigger inferential framework.
+able to be easily integrated into inferential frameworks that require
+explicit estimates of probability.
 
 Since we do not have a closed-form solution for the likelihood, we
 will use an iterative derivative-free maximization algorithm (the
@@ -1538,6 +1539,13 @@ First, we prove the Lemma
   \]
 \end{proof}
 
+To illustrate the working of our Galerkin approximation, we sample
+from the repeated sampling distributions of the MLE $\hat{\theta}$. To
+do so, we sample from the data-generating stochastic process using
+forward Euler, keeping track of the obtained discrete-time extrema. We
+thus generate 500 data sets, each consisting of 128 data points. We
+then find the MLE $\hat{\theta}$ for each data set. The collection of
+estimators are 
 
 \bibliographystyle{plainnat}
 \bibliography{master-bibliography}

@@ -1629,12 +1629,14 @@ apply.generator <- function(poly, k, problem.parameters.x) {
 
 basis.functions.normal.kernel <- function(rho,
                                           l,
-                                          sigma2,
+                                          sigma2.x,
+                                          sigma2.y,
                                           dx,dy,
                                           std.dev.factor) {
-    sigma <- sqrt(sigma2);
-
-    by.x <- std.dev.factor*sigma*sqrt(1+rho)
+    sigma.x <- sqrt(sigma2.x);
+    sigma.y <- sqrt(sigma2.y);
+    
+    by.x <- std.dev.factor*sigma.x*sqrt(1+rho)
     x.nodes <- c(rev(seq(from=0.5, to=0.5-sqrt(2), by=-by.x)),
                  seq(0.5, 0.5+sqrt(2), by=by.x))
     ## x.nodes <- c(seq(0.5-sqrt(2), 0.5,
@@ -1647,7 +1649,7 @@ basis.functions.normal.kernel <- function(rho,
     ##                  by=std.dev.factor*sigma*sqrt(1+rho)));
     x.nodes <- unique(x.nodes);
 
-    by.y <- std.dev.factor*sigma*sqrt(1-rho)
+    by.y <- std.dev.factor*sigma.y*sqrt(1-rho)
     y.nodes <- c(rev(seq(from=0.5, to=0.5-sqrt(2), by=-by.y)),
                  seq(0.5, 0.5+sqrt(2), by=by.y))
 
@@ -1747,8 +1749,8 @@ basis.functions.normal.kernel <- function(rho,
     function.params=NULL;
     for (k in seq(1,K)) {
         function.params$mu = c(xieta.nodes[1,k], xieta.nodes[2,k]);
-        function.params$epsilon = matrix(nrow=2,ncol=2,data=c(c(sigma2, rho*sigma2),
-                                                              c(rho*sigma2, sigma2)));
+        function.params$epsilon = matrix(nrow=2,ncol=2,data=c(c(sigma2.x, rho*sigma.x*sigma.y),
+                                                              c(rho*sigma.x*sigma.y, sigma2.y)));
         function.params$l = 1;
         function.list[[k]] = basis.function.normal.kernel.xy(x, y, function.params);
     }
