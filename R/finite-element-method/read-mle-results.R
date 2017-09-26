@@ -3,6 +3,13 @@ library("parallel");
 source("2-d-solution.R");
 path = "~/research/PDE-solvers/data/";
 
+
+## MLE ## 
+data.files.list <-
+    as.list(paste(path, "data-set-", seq(1,500), ".csv", sep=""))
+
+
+
 files.list.16 <-
     list.files(path = "~/research/PDE-solvers/data/", pattern = "*order-16-5e-3-linear-256.csv");
 files.list.32 <-

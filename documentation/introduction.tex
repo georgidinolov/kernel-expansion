@@ -1539,13 +1539,15 @@ First, we prove the Lemma
   \]
 \end{proof}
 
-To illustrate the working of our Galerkin approximation, we sample
-from the repeated sampling distributions of the MLE $\hat{\theta}$. To
-do so, we sample from the data-generating stochastic process using
-forward Euler, keeping track of the obtained discrete-time extrema. We
-thus generate 500 data sets, each consisting of 128 data points. We
-then find the MLE $\hat{\theta}$ for each data set. The collection of
-estimators are 
+\subsection{Simulation Study}
+Next we present results from a simulation study. Data was generated
+from the model with zero drift via forward Euler discretization where
+the obtained discrete-time extrema were recorded and used as the
+realized extrema. There were 500 data sets, each comprised of 128 data
+points. For each dataset, the MLE was found, and thereby approximating
+the repeated-sampling distribution for the estimator. Results were
+compared to the RSD of the MLE based on the usual bivariate normal
+likelihood which disregards the boundaries.
 
 \bibliographystyle{plainnat}
 \bibliography{master-bibliography}
