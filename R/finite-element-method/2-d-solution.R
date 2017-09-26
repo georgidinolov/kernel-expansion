@@ -1,3 +1,5 @@
+library(mvtnorm)
+
 estimator.rodgers <- function(data.files.list,
                               rho.true) {
     dx = 0.001;

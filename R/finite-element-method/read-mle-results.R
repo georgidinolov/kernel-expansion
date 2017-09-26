@@ -1,23 +1,33 @@
 rm(list=ls());
 library("parallel");
 source("2-d-solution.R");
-path = "~/research/PDE-solvers/data/";
+path = "~/PDE-solvers/data/";
 
 
 ## MLE ## 
 data.files.list <-
-    as.list(paste(path, "data-set-", seq(1,500), ".csv", sep=""))
+    as.list(paste(path, "data-set-", seq(1,500), ".csv", sep=""));
+datum <- load.data.from.csv(data.files.list[[1]]);
 
+unconstrained.mles <- lapply(X=data.files.list,
+                             FUN=function(x) {
+                                 mle.estimator.no.boundary(load.data.from.csv(x), 1, 1, 0.0)
+                             })
+
+unlisted.unconstrained.mles <- unlist(unconstrained.mles)
+sigma.x.classical <- unlist(lapply(X=unconstrained.mles, function(x) { return (x$sigma.x.mle) } ))
+sigma.y.classical <- unlist(lapply(X=unconstrained.mles, function(x) { return (x$sigma.y.mle) } ))
+rho.classical <- unlist(lapply(X=unconstrained.mles, function(x) { return (x$rho) } ))
 
 
 files.list.16 <-
-    list.files(path = "~/research/PDE-solvers/data/", pattern = "*order-16-5e-3-linear-256.csv");
+    list.files(path = "~/PDE-solvers/data/", pattern = "*order-16-5e-3-linear-256.csv");
 files.list.32 <-
-    list.files(path = "~/research/PDE-solvers/data/", pattern = "*order-32-5e-3-linear-256.csv");
+    list.files(path = "~/PDE-solvers/data/", pattern = "*order-32-5e-3-linear-256.csv");
 files.list.64 <-
-    list.files(path = "~/research/PDE-solvers/data/", pattern = "*order-64-5e-3-linear-256.csv");
+    list.files(path = "~/PDE-solvers/data/", pattern = "*order-64-5e-3-linear-256.csv");
 files.list.128 <-
-    list.files(path = "~/research/PDE-solvers/data/", pattern = "*order-128-5e-3-linear-256.csv");
+    list.files(path = "~/PDE-solvers/data/", pattern = "*order-128-5e-3-linear-256.csv");
 
 length(files.list.16);
 length(files.list.32);
@@ -40,11 +50,39 @@ for (i in seq(1, length(files.list.16))) {
     rhos.16[i] =  result[[3]];
 }
 
-par(mfrow=c(2,2));
-hist(sigma.xs.16, prob=T); lines(density(sigma.xs.16)); abline(v=1.0, lwd=2, col="red");
-hist(sigma.ys.16, prob=T); lines(density(sigma.ys.16)); abline(v=1.0, lwd=2, col="red");
-plot(density(rhos.16)); abline(v=0.6, lwd=2, col="red");
-print(c(mean(rhos.16), median(rhos.16)));
+par(mfrow=c(1,3),
+    mar=c(4.5,4.5,4.5,4.5),
+    );
+plot(density(sigma.xs.16), main="",
+     xlim=c(min(min(sigma.xs.16), min(sigma.x.classical)),
+            max(max(sigma.xs.16), max(sigma.x.classical))),
+     lwd=2,
+     xlab = "sigma_x",
+     ylab = "density");
+abline(v=1.0, lwd=2, col="red");
+lines(density(sigma.x.classical), col="blue", lwd=2);
+print(c(sqrt(mean((sigma.xs.16 - mean(sigma.xs.16))^2)),
+        sqrt(mean((sigma.x.classical - mean(sigma.x.classical))^2))))
+
+plot(density(sigma.ys.16), main="",
+     xlim=c(min(min(sigma.ys.16), min(sigma.y.classical)),
+            max(max(sigma.ys.16), max(sigma.y.classical))),
+     lwd=2,
+     xlab = "sigma_y",
+     ylab = "density");
+abline(v=1.0, lwd=2, col="red");
+lines(density(sigma.y.classical), col="blue", lwd=2);
+print(c(sqrt(mean((sigma.ys.16 - mean(sigma.ys.16))^2)),
+        sqrt(mean((sigma.y.classical - mean(sigma.y.classical))^2))))
+
+plot(density(rhos.16), lwd=2, xlab="rho");
+abline(v=0.6, lwd=2, col="red");
+lines(density(rho.classical), col="blue", lwd=2)
+
+print(c(mean(rhos.16), median(rhos.16), mean(rho.classical)));
+print(c(sd(rhos.16), sd(rho.classical)))
+print(c(sqrt(mean((rhos.16 - mean(rhos.16))^2)),
+        sqrt(mean((rho.classical - mean(rho.classical))^2))))
 ##############################################
 
 ##############################################
@@ -61,10 +99,19 @@ for (i in seq(1, length(files.list.32))) {
 }
 
 par(mfrow=c(2,2));
-hist(sigma.xs.32, prob=T); lines(density(sigma.xs.32)); abline(v=1.0, lwd=2, col="red");
-hist(sigma.ys.32, prob=T); lines(density(sigma.ys.32)); abline(v=1.0, lwd=2, col="red");
-plot(density(rhos.32)); abline(v=0.6, lwd=2, col="red");
-print(c(mean(rhos.32), median(rhos.32)));
+hist(sigma.xs.32, prob=T);
+lines(density(sigma.xs.32));
+abline(v=1.0, lwd=2, col="red");
+lines(density(sigma.x.classical), col="blue");
+
+hist(sigma.ys.32, prob=T); lines(density(sigma.ys.32)); abline(v=1.0, lwd=2, col="red"); lines(density(sigma.y.classical), col="blue");
+
+plot(density(rhos.32)); abline(v=0.6, lwd=2, col="red"); lines(density(rho.classical), col="blue");
+
+print(c(mean(rhos.32), median(rhos.32), mean(rho.classical)));
+print(c(sd(rhos.32), sd(rho.classical)))
+print(c(sqrt(mean((rhos.32 - mean(rhos.32))^2)),
+        sqrt(mean((rho.classical - mean(rho.classical))^2))))
 ##############################################
 
 ##############################################
@@ -81,10 +128,24 @@ for (i in seq(1, length(files.list.64))) {
 }
 
 par(mfrow=c(2,2));
-hist(sigma.xs.64, prob=T); lines(density(sigma.xs.64)); abline(v=1.0, lwd=2, col="red");
-hist(sigma.ys.64, prob=T); lines(density(sigma.ys.64)); abline(v=1.0, lwd=2, col="red");
-plot(density(rhos.64)); abline(v=0.6, lwd=2, col="red");
-print(c(mean(rhos.64), median(rhos.64)));
+hist(sigma.xs.64, prob=T);
+lines(density(sigma.xs.64));
+abline(v=1.0, lwd=2, col="red");
+lines(density(sigma.x.classical), col="blue");
+
+hist(sigma.ys.64, prob=T);
+lines(density(sigma.ys.64));
+abline(v=1.0, lwd=2, col="red");
+lines(density(sigma.y.classical), col="blue");
+
+plot(density(rhos.64));
+abline(v=0.6, lwd=2, col="red");
+lines(density(rho.classical), col="blue");
+
+print(c(mean(rhos.64), median(rhos.64), mean(rho.classical)));
+print(c(sd(rhos.64), sd(rho.classical)));
+print(c(sqrt(mean((rhos.64 - mean(rhos.64))^2)),
+        sqrt(mean((rho.classical - mean(rho.classical))^2))))
 ##############################################
 
 ##############################################
@@ -100,7 +161,12 @@ for (i in seq(1, length(files.list.128))) {
     rhos.128[i] =  result[[3]];
 }
 lines(density(rhos.128), col="blue");
-print(c(mean(rhos.128), median(rhos.128)));
+
+print(c(mean(rhos.128), median(rhos.128), mean(rho.classical)));
+print(c(sd(rhos.128), sd(rho.classical)))
+
+print(c(sqrt(mean((rhos.128 - mean(rhos.128))^2)),
+        sqrt(mean((rho.classical - mean(rho.classical))^2))))
 ##############################################
 
 par(mfrow=c(2,2));
