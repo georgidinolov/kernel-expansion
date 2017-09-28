@@ -50,9 +50,9 @@ for (i in seq(1, length(files.list.16))) {
     rhos.16[i] =  result[[3]];
 }
 
+pdf("mle-comparison.pdf", width=8, height=4)
 par(mfrow=c(1,3),
-    mar=c(4.5,4.5,4.5,4.5),
-    );
+    mar=c(4.5,4.5,4.5,4.5));
 plot(density(sigma.xs.16), main="",
      xlim=c(min(min(sigma.xs.16), min(sigma.x.classical)),
             max(max(sigma.xs.16), max(sigma.x.classical))),
@@ -83,6 +83,7 @@ print(c(mean(rhos.16), median(rhos.16), mean(rho.classical)));
 print(c(sd(rhos.16), sd(rho.classical)))
 print(c(sqrt(mean((rhos.16 - mean(rhos.16))^2)),
         sqrt(mean((rho.classical - mean(rho.classical))^2))))
+dev.off()
 ##############################################
 
 ##############################################
