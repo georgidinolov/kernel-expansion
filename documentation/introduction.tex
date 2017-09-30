@@ -1540,27 +1540,33 @@ First, we prove the Lemma
 \end{proof}
 
 \subsection{Simulation Study}
-Next we present results from a simulation study. Data is generated
-from the model with zero drift via forward Euler discretization where
-the obtained discrete-time extrema are recorded and used as the
-realized extrema of the process. We use 500 data sets, each
-comprised of 128 simulations generated with the same parameters
+Next we present some numerical simulation results for the Galerkin
+method. The finite-difference step used to derive the likelihood
+function is of size $\Delta = 1/16$ with the $\mathcal{O}(\Delta^2)$
+order accuracy. If the inital/final condition is forced outside of the
+computation domain, the $\mathcal{O}(\Delta)$ finite difference
+approximation is used instead. The inner products that need to be
+computed to establish the system of equations for the method are
+computed using the trapezoidal rule on a regular $400 \times 400$
+grid.
+
+Data is generated from the model with zero drift via forward
+Euler discretization where the obtained discrete-time extrema are
+recorded and used as the realized extrema of the process. We use 500
+data sets, each comprised of 128 simulations generated with the same
+parameters
 \[
   \mu_x = 0,\quad \mu_y  = 0,\quad \sigma_x = 1,\quad \sigma_y = 1,\quad \rho = 0.6.
 \]
 The drift parameters are assumed known, so that the MLE is comprised
 of the diffusion and correlation parameters:
 $\hat{\theta} = (\hat{\sigma}_x, \hat{\sigma}_y, \hat{\rho}).$ For
-each dataset, the MLE was found, each one being an approximate sample
-from the repeated-sampling distrubtion for $\hat{\theta}$. Results
-were compared to the repeated-sampling distribution of the MLE based on the usual bivariate
-normal likelihood which disregards the boundaries.
-
-Results are shown in Figure (\ref{fig:mle-comparison}). We can see
-that the two estimators are comparable, except that the boundary-based
-likelihood produces a better calibrated estimators since the RMS error
-is smaller. It should be noted here that we use a discretization step
-of 1/16 with inner products computed using the trapezoidal rule. 
+each dataset, the MLE found is a sample from the repeated-sampling
+distrubtion for $\hat{\theta}$. Results are compared to the
+repeated-sampling distribution of the MLE based on the usual bivariate
+normal likelihood which does not take into account the
+boundaries. Results are shown in Figure (\ref{fig:mle-comparison}),
+including the root-mean-square-errors of the two estimators.
 
 \begin{figure}
   \centering
@@ -1581,7 +1587,11 @@ of 1/16 with inner products computed using the trapezoidal rule.
       \includegraphics[width=1\linewidth]{mle-comparison-rho.pdf}
     \end{minipage}
   \end{tabular}
-    \caption{}
+  \caption{Kernel-density plots of the MLE samples obtained from the
+    Galerkin likelihood (blue) and the classical likelihood
+    (green). The data-generating parameters are denoted with the
+    vertical solid line. The root-mean-square errors for the pairs of
+    estimators are}
   \label{fig:mle-comparison}
 \end{figure}
 
