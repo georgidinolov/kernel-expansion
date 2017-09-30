@@ -1,8 +1,10 @@
 rm(list=ls());
 library("parallel");
+library("ggplot2");
+library("latex2exp");
+library("reshape2");
 source("2-d-solution.R");
 path = "~/PDE-solvers/data/";
-
 
 ## MLE ## 
 data.files.list <-
@@ -50,9 +52,26 @@ for (i in seq(1, length(files.list.16))) {
     rhos.16[i] =  result[[3]];
 }
 
-pdf("mle-comparison.pdf", width=8, height=4)
-par(mfrow=c(1,3),
-    mar=c(4.5,4.5,4.5,4.5));
+pdf("mle-comparison-sigma-x.pdf", width=4, height=4)
+
+xx <- data.frame(Galerkin.approx=sigma.xs.16,
+                 classical.likelihood=sigma.x.classical[1:length(sigma.xs.16)]);
+data <- melt(xx);
+
+ggplot(data, aes(x=value, fill=variable)) +
+    scale_fill_manual(values=c("blue", "green", "yellow")) +
+    geom_density(alpha=0.50) +
+    scale_linetype_manual(values=c(1,2,3)) +
+    theme(panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          panel.background = element_blank(),
+          axis.line = element_line(colour = "black"),
+          legend.position=c(0.5,1)) +
+    xlab(TeX("$\\hat{\\sigma}_x$")) +
+    scale_fill_discrete(name="", labels=c("Galerkin apprixmation MLE",
+                                          "Classical MLE"))
+
+
 plot(density(sigma.xs.16), main="",
      xlim=c(min(min(sigma.xs.16), min(sigma.x.classical)),
             max(max(sigma.xs.16), max(sigma.x.classical))),
