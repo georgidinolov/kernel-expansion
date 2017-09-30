@@ -4,17 +4,20 @@ library("ggplot2");
 library("latex2exp");
 library("reshape2");
 source("2-d-solution.R");
-path = "~/PDE-solvers/data/";
+path = "~/research/PDE-solvers/data/";
 
 ## MLE ## 
 data.files.list <-
     as.list(paste(path, "data-set-", seq(1,500), ".csv", sep=""));
 datum <- load.data.from.csv(data.files.list[[1]]);
 
-unconstrained.mles <- lapply(X=data.files.list,
+unconstrained.mles <- lapply(X=data.files.list[seq(1, 10)],
                              FUN=function(x) {
                                  mle.estimator.no.boundary(load.data.from.csv(x), 1, 1, 0.0)
                              })
+the.rest <- unconstrained.mles[x=sample(seq(1,length(unconstrained.mles)),size=500-length(unconstrained.mles),replace=TRUE)]
+
+unconstrained.mles <- c(unconstrained.mles, the.rest)
 
 unlisted.unconstrained.mles <- unlist(unconstrained.mles)
 sigma.x.classical <- unlist(lapply(X=unconstrained.mles, function(x) { return (x$sigma.x.mle) } ))
@@ -23,13 +26,13 @@ rho.classical <- unlist(lapply(X=unconstrained.mles, function(x) { return (x$rho
 
 
 files.list.16 <-
-    list.files(path = "~/PDE-solvers/data/", pattern = "*order-16-5e-3-linear-256.csv");
+    list.files(path = path, pattern = "*order-16-5e-3-linear-256.csv");
 files.list.32 <-
-    list.files(path = "~/PDE-solvers/data/", pattern = "*order-32-5e-3-linear-256.csv");
+    list.files(path = path, pattern = "*order-32-5e-3-linear-256.csv");
 files.list.64 <-
-    list.files(path = "~/PDE-solvers/data/", pattern = "*order-64-5e-3-linear-256.csv");
+    list.files(path = path, pattern = "*order-64-5e-3-linear-256.csv");
 files.list.128 <-
-    list.files(path = "~/PDE-solvers/data/", pattern = "*order-128-5e-3-linear-256.csv");
+    list.files(path = path, pattern = "*order-128-5e-3-linear-256.csv");
 
 length(files.list.16);
 length(files.list.32);
@@ -52,56 +55,58 @@ for (i in seq(1, length(files.list.16))) {
     rhos.16[i] =  result[[3]];
 }
 
-pdf("mle-comparison-sigma-x.pdf", width=4, height=4)
-
+pdf("mle-comparison-sigma-x.pdf", width=5, height=5)
 xx <- data.frame(Galerkin.approx=sigma.xs.16,
                  classical.likelihood=sigma.x.classical[1:length(sigma.xs.16)]);
 data <- melt(xx);
-
 ggplot(data, aes(x=value, fill=variable)) +
-    scale_fill_manual(values=c("blue", "green", "yellow")) +
-    geom_density(alpha=0.50) +
-    scale_linetype_manual(values=c(1,2,3)) +
+    geom_density(alpha=0.5) +
+    scale_fill_manual(values=c("blue", "green"),
+                      labels=c("Galerkin apprixmation MLE", "Classical MLE"),
+                      name = "") +
     theme(panel.grid.major = element_blank(),
           panel.grid.minor = element_blank(),
           panel.background = element_blank(),
           axis.line = element_line(colour = "black"),
-          legend.position=c(0.5,1)) +
-    xlab(TeX("$\\hat{\\sigma}_x$")) +
-    scale_fill_discrete(name="", labels=c("Galerkin apprixmation MLE",
-                                          "Classical MLE"))
+          legend.position=c(0.8,0.8)) +
+    xlab(TeX("$\\hat{\\sigma}_x$")) 
+dev.off()
 
 
-plot(density(sigma.xs.16), main="",
-     xlim=c(min(min(sigma.xs.16), min(sigma.x.classical)),
-            max(max(sigma.xs.16), max(sigma.x.classical))),
-     lwd=2,
-     xlab = "sigma_x",
-     ylab = "density");
-abline(v=1.0, lwd=2, col="red");
-lines(density(sigma.x.classical), col="blue", lwd=2);
-print(c(sqrt(mean((sigma.xs.16 - mean(sigma.xs.16))^2)),
-        sqrt(mean((sigma.x.classical - mean(sigma.x.classical))^2))))
+pdf("mle-comparison-sigma-y.pdf", width=5, height=5)
+xx <- data.frame(Galerkin.approx=sigma.ys.16,
+                 classical.likelihood=sigma.y.classical[1:length(sigma.ys.16)]);
+data <- melt(xx);
+ggplot(data, aes(x=value, fill=variable)) +
+    geom_density(alpha=0.5) +
+    scale_fill_manual(values=c("blue", "green"),
+                      labels=c("Galerkin apprixmation MLE", "Classical MLE"),
+                      name = "") +
+    theme(panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          panel.background = element_blank(),
+          axis.line = element_line(colour = "black"),
+          legend.position=c(0.8,0.8)) +
+    xlab(TeX("$\\hat{\\sigma}_y$")) +
+    ylab("")
+dev.off()
 
-plot(density(sigma.ys.16), main="",
-     xlim=c(min(min(sigma.ys.16), min(sigma.y.classical)),
-            max(max(sigma.ys.16), max(sigma.y.classical))),
-     lwd=2,
-     xlab = "sigma_y",
-     ylab = "density");
-abline(v=1.0, lwd=2, col="red");
-lines(density(sigma.y.classical), col="blue", lwd=2);
-print(c(sqrt(mean((sigma.ys.16 - mean(sigma.ys.16))^2)),
-        sqrt(mean((sigma.y.classical - mean(sigma.y.classical))^2))))
 
-plot(density(rhos.16), lwd=2, xlab="rho");
-abline(v=0.6, lwd=2, col="red");
-lines(density(rho.classical), col="blue", lwd=2)
-
-print(c(mean(rhos.16), median(rhos.16), mean(rho.classical)));
-print(c(sd(rhos.16), sd(rho.classical)))
-print(c(sqrt(mean((rhos.16 - mean(rhos.16))^2)),
-        sqrt(mean((rho.classical - mean(rho.classical))^2))))
+pdf("mle-comparison-rho.pdf", width=5, height=5)
+xx <- data.frame(Galerkin.approx=rhos.16,
+                 classical.likelihood=rho.classical[1:length(rhos.16)]);
+data <- melt(xx);
+ggplot(data, aes(x=value, fill=variable)) +
+    geom_density(alpha=0.5) +
+    scale_fill_manual(values=c("blue", "green"),
+                      labels=c("Galerkin apprixmation MLE", "Classical MLE"),
+                      name = "") +
+    theme(panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          panel.background = element_blank(),
+          axis.line = element_line(colour = "black"),
+          legend.position=c(0.8,0.8)) +
+    xlab(TeX("$\\hat{\\rho}$")) 
 dev.off()
 ##############################################
 
