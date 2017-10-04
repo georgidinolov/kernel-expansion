@@ -235,10 +235,11 @@ estimate the collection of time-dependent parameters which we abbreviate to
   \sigma_t := (\sigma_{x,t}, \sigma_{y,t}, \rho_t),
 \]
 as well as all of the time-constant parameters governing the evolution
-of the process
+of the process which we transform to be on the $(-\infty, \infty)$ scale
 \[
-  \phi := (\alpha_x, \alpha_y, \alpha_\rho, \theta_x, \theta_y, \theta_\rho,
-  \tau_x, \tau_y, \tau_\rho, \rho_x, \rho_y).
+  \phi := (\alpha_x, \alpha_y, \alpha_\rho, \theta_x, \theta_y,
+  \theta_\rho, \log(\tau_x), \log(\tau_y), \log(\tau_\rho),
+  \mbox{logit}(\rho_x), \mbox{logit}(\rho_y)).
 \]
 Particle filters use a discrete mixture to represent the posterior
 distribution $p(\sigma_t, \phi | \mathcal{D}_t)$, where
@@ -273,7 +274,7 @@ the posterior $p(\sigma_{t+\Delta} | \phi, \mathcal{D}_{t+\Delta})$ is
                                                            p(x_{t+\Delta}, y_{t+\Delta}, a_{x,t+\Delta}, b_{x, t+\Delta},
                                                            a_{y,t+\Delta}, b_{y, t+\Delta} | \sigma_{t+\Delta}, k, \phi,
                                                            \mathcal{D}_t)p(\sigma_{t+\Delta},k | \phi, \mathcal{D}_t), \\
-                                                         &= p(\mathbf{y}_{t+\Delta} | \sigma_{t+\Delta}, \phi, \mathcal{D}_t) p(\sigma_{t+\Delta} | \sigma_{t}^{(k)}, \phi) \omega^{(k)}_t.
+                                                         &= p(\mathbf{y}_{t+\Delta} | \sigma_{t+\Delta}, \phi, \mathcal{D}_t) p(\sigma_{t+\Delta} | \sigma_{t}^{(k)}, \phi) \omega^{(k)}_t. \label{eq:augmented-posterior}
 \end{align}
 \cite{pitt1999filtering} sample the joint posterior with a proposal
 distribution which replaces $\sigma_{t+\Delta}$ with a representative
@@ -283,10 +284,28 @@ mean. In this way $k$ is sampled then $\sigma_{t+\Delta}$ from the
 predictive distribution conditional on $k$. The new weight
 $\omega_{t+\Delta}^{(k)}$ is proportional to the ratio of the sampled
 $\sigma_{t+\Delta}$ and representative value in the likelihood for the
-data.
-
-
-
+data. \cite{liu2001combined} extend the augemented particle filter of
+\cite{pitt1999filtering} to allow for the estimation of the constant
+structural parameter $\phi$. This is done by introducing an artificial
+evolution for the fixed parameter, indexing it by $t$ and defining the
+transition density
+\[
+  p(\phi_{t+\Delta} | \mathcal{D}_t) \approx \sum_{k=1}^K
+  N(\phi_{t+\Delta} | a\phi_t^{(k)} + (1-a)\bar{\phi}_t, (1-a^2)^2 V_t),
+\]
+where $a$ is a discount factor between 0 and 1, $\bar{\phi}_t$ is the
+average of samples for $\phi$ at $t$ and $V_t$ is the respective sample
+covariance at time $t$. The augmented posterior becomes
+\begin{align}
+  p(\sigma_{t+\Delta}, \phi_{t+\Delta}, k | \mathcal{D}_{t+\Delta}) \propto p(\mathbf{y}_{t+\Delta} | \sigma_{t+\Delta}, \phi_{t+\Delta}, \mathcal{D}_t) p(\sigma_{t+\Delta} | \phi_{t+\Delta}, \sigma_{t}^{(k)}, \mathcal{D}_t)N(\phi_{t+\Delta} | a\phi_t^{(k)} + (1-a)\bar{\phi}_t, (1-a^2)^2 V_t) \omega^{(k)}_t. \label{eq:augmented-posterior-liu}
+\end{align}
+Sampling from the posterior (\ref{eq:augmented-posterior-liu}) is also
+done with via a proposal where $(\sigma_{t+\Delta}, \phi_{t+\Delta})$
+are replaced with the predictive means conditional on $k$:
+\begin{align}
+  p(\sigma_{t+\Delta}, \phi_{t+\Delta}, k | \mathcal{D}_{t+\Delta}) &\propto p(\mathbf{y}_{t+\Delta} | E[\sigma_{t+\Delta} | \sigma_{t}^{(k)}, \phi_t^{(k)}], a\phi_t^{(k)} + (1-a)\bar{\phi}_t) \\
+  & \times p(\sigma_{t+\Delta} | a\phi_t^{(k)} + (1-a)\bar{\phi}_t, \sigma_{t}^{(k)}) N(\phi_{t+\Delta} | a\phi_t^{(k)} + (1-a)\bar{\phi}_t, (1-a^2)^2 V_t) \omega^{(k)}_t. \label{eq:proposal-liu}
+\end{align}
 \section{Calibration Study}
 
 \section{Application}
