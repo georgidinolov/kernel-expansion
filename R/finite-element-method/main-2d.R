@@ -8,7 +8,7 @@ dx = 1.0/400
 dy = 1.0/400
 K.prime = 12;
 
-sigma_x=0.021320 * 1.0;
+sigma_x=0.001320 * 1.0;
 sigma_y=0.032554 * 1.0;
 
 ax=-0.018268;
@@ -23,7 +23,7 @@ Lx = bx-ax
 Ly = by-ay
 
 problem.parameters.generate.data = NULL;
-problem.parameters.generate.data$t <- 1 * ( (sigma_y/Ly)^2 );
+problem.parameters.generate.data$t <- 2.0 * ( (sigma_y/Ly)^2 );
 problem.parameters.generate.data$sigma.2.x <- ( (sigma_x/Lx)^2 ) / ( (sigma_y/Ly)^2 ); 
 problem.parameters.generate.data$sigma.2.y <- ( (sigma_y/Ly)^2 ) / ( (sigma_y/Ly)^2 );
 problem.parameters.generate.data$rho <- 0.6;
@@ -54,7 +54,8 @@ function.list <- vector("list", K);
 
 x <- seq(0,1,by=dx);
 y <- seq(0,1,by=dy);
-sigma.x=0.12;
+
+sigma.x=0.10;
 sigma.y=0.40;
 
 for (std.dev.factor in c(1.0)) {
@@ -183,7 +184,7 @@ for (std.dev.factor in c(1.0)) {
                 }
 
                 derivative <- derivative /
-                    (2*h.ax * 2*h.bx * 2*h.ay * 2*h.by);
+                    (h.ax * 2*h.bx * h.ay * 2*h.by);
                 print(c(derivative, h));
                 
                 print(c(which(hs==h), which(ys==yy), derivative))

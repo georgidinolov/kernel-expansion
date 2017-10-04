@@ -142,15 +142,14 @@ setting.
 Explicit model-based approaches in the multivariate setting which take
 into account extrema over observational periods are completely lacking
 in the literature, because deriving an efficient approximation of the
-corresponding likelihood function has hereto been an open problem
-[cite?]. In this paper, we use a result addressing this problem and
-introduce a novel, \textit{bivariate} stochastic volatility model
-which takes into account the highest and lowest observed prices of
-each asset as part of a likelihood-based (Bayesian) estimation
-procedure.
+corresponding likelihood function has hereto been an open problem. In
+this paper, we use a result addressing this problem and introduce a
+\textit{bivariate} stochastic volatility model which takes into
+account the highest and lowest observed prices of each asset as part
+of a likelihood-based (Bayesian) estimation procedure.
 
 \section{Model}
-The model we will use is a bivaraite 1-factor stochastic volatility
+The model we will estimate is a bivaraite, 1-factor stochastic volatility
 model with leverage:
 
 \begin{align}
@@ -162,8 +161,8 @@ model with leverage:
                                          y_{t-\Delta}
                                        \end{array} \right) +
   \left( \begin{array}{c}
-           \mu_x \\
-           \mu_y \end{array} \right) +
+           \mu_x\Delta \\
+           \mu_y\Delta \end{array} \right) +
   \left( \begin{array}{cc}
            \sqrt{1-\rho_t^2}\sigma_{x,t} & \rho_t \sigma_{x,t} \\
            0 & \sigma_{y,t}
@@ -171,11 +170,45 @@ model with leverage:
                \left( \begin{array}{c}
                         \epsilon_{x,t} \\
                         \epsilon_{y,t}
-                      \end{array} \right) \\
-  \log(\sigma_{x,t+\Delta}) &= \alpha_x + \theta_x(\log(\sigma_{x,t}) - \alpha_x) + \tau_x \eta_{x,t} \\
-  \log(\sigma_{y,t+\Delta}) &= \alpha_y + \theta_y(\log(\sigma_{y,t}) - \alpha_y) + \tau_y \eta_{y,t} \\
-  \mbox{logit}((\rho_{t+\Delta} + 1)/2) &= \mbox{logit}((\rho_{t}+1)/2) + \tau_{\rho} \eta_{\rho,t}
+                      \end{array} \right), \label{eq:process-evolution}\\
+  a_{x,t} &\leq x_\tau \leq b_{x,t}, \quad  a_{y,t}\leq y_\tau \leq b_{y,t} &\forall \tau \in [t-\Delta, t], \nonumber \\
+  \log(\sigma_{x,t+\Delta}) &= \alpha_x + \theta_x(\log(\sigma_{x,t}) - \alpha_x) + \tau_x \eta_{x,t}, \\
+  \log(\sigma_{y,t+\Delta}) &= \alpha_y + \theta_y(\log(\sigma_{y,t}) - \alpha_y) + \tau_y \eta_{y,t}, \\
+  \mbox{logit}((\rho_{t+\Delta} + 1)/2) &= \alpha_\rho + \theta_\rho\left(\mbox{logit}((\rho_{t}+1)/2) - \alpha_\rho\right) + \tau_{\rho} \eta_{\rho,t}.
 \end{align}
+The marginal distribution for all of the innovation terms
+$\epsilon_{x,t}, \epsilon_{y,t}, \eta_{x,t}, \eta_{y,t},
+\eta_{\rho,t}$ is the standard Gaussian distribution. The
+\textit{leverage} terms are defined as
+$E\left[\epsilon_{x,t}\, \eta_{x,t}\right] = \rho_{x}$ and
+$E\left[\epsilon_{x,t}\, \eta_{x,t}\right] = \rho_{y}$. It should be
+noted here that we are explicitly allowing the correlation of the
+process to change over time in a mean-reverting fashion. Finally, we
+explicitly write down the realized extrema over the periods
+$[t-\Delta,t]$ to be included as data into the likelihood for the
+dynamical model.
+
+\subsection{Likelihood for the observables}
+Each period $[t-\Delta,t]$ has six associated observables: opening
+coordinate $(x_{t-\Delta},y_{t-\Delta})$, closing coordinate
+$(x_{t},y_{t})$, and the observed extrema in each nominal direction
+$(a_{x,t}, b_{x,t}), (a_{y,t},b_{y,t})$. Given the evolution model in
+(\ref{eq:process-evolution}), disregarding the information contained in
+the extrema yields the usual bivariate Gaussian density in terms of
+the volatility parameters and the state of the process at time $t-\Delta$: 
+
+\[
+  p(x_t,y_t| x_{t-\Delta}, y_{t-\Delta}, \mu_x, \mu_y, \sigma_{x,t}, \sigma_{y,t}, \rho_t) =
+\]
+\[
+  \frac{1}{2\pi\,\,\Delta\,\,
+    \sigma_{x,t}\sigma_{y,t}\sqrt{1-\rho_t^2}} \exp\left\{
+    -\frac{1}{2\,\Delta(1-\rho_t^2)} \left( \frac{(x_t -
+        x_{t-\Delta})^2}{\sigma_{x,t}^2} - 2\rho_t
+      \frac{(x_{t}-x_{t-\Delta})(y_t-y_{t-\Delta})}{\sigma_{x,t}\sigma_{y,t}}
+      + \frac{(y_t - y_{t-\Delta})^2}{\sigma_{y,t}^2}\right) \right\}.
+\]
+
 
 \bibliographystyle{plainnat}
 \bibliography{master-bibliography}
