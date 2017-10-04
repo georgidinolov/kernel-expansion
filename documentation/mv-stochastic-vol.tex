@@ -171,10 +171,11 @@ model with leverage:
                         \epsilon_{x,t} \\
                         \epsilon_{y,t}
                       \end{array} \right), \label{eq:process-evolution}\\
-  a_{x,t} &\leq x_\tau \leq b_{x,t}, \quad  a_{y,t}\leq y_\tau \leq b_{y,t} &\forall \tau \in [t-\Delta, t], \nonumber \\
+  \inf_{[t-\Delta,t]} x_\tau &= a_{x,t}&  \sup_{[t-\Delta,t]} x_\tau &= b_{x,t} & \inf_{[t-\Delta,t]} y_\tau &= a_{y,t} 
+                                                                     & \sup_{[t-\Delta,t]} y_\tau &= b_{y,t} \nonumber \\
   \log(\sigma_{x,t+\Delta}) &= \alpha_x + \theta_x(\log(\sigma_{x,t}) - \alpha_x) + \tau_x \eta_{x,t}, \\
   \log(\sigma_{y,t+\Delta}) &= \alpha_y + \theta_y(\log(\sigma_{y,t}) - \alpha_y) + \tau_y \eta_{y,t}, \\
-  \mbox{logit}((\rho_{t+\Delta} + 1)/2) &= \alpha_\rho + \theta_\rho\left(\mbox{logit}((\rho_{t}+1)/2) - \alpha_\rho\right) + \tau_{\rho} \eta_{\rho,t}.
+  \mbox{logit}((\rho_{t+\Delta} + 1)/2) &= \alpha_\rho + \theta_\rho\left(\mbox{logit}((\rho_{t}+1)/2) - \alpha_\rho\right) + \tau_{\rho} \eta_{\rho,t}. \label{eq:correlation-evolution}
 \end{align}
 The marginal distribution for all of the innovation terms
 $\epsilon_{x,t}, \epsilon_{y,t}, \eta_{x,t}, \eta_{y,t},
@@ -186,7 +187,9 @@ noted here that we are explicitly allowing the correlation of the
 process to change over time in a mean-reverting fashion. Finally, we
 explicitly write down the realized extrema over the periods
 $[t-\Delta,t]$ to be included as data into the likelihood for the
-dynamical model.
+dynamical model. We estimate all parameters and dynamical factors in a
+fully Bayes framework via the augmented particle filter of
+\cite{liu2001combined} which we will describe below.
 
 \subsection{Likelihood for the observables}
 Each period $[t-\Delta,t]$ has six associated observables: opening
@@ -208,7 +211,53 @@ the volatility parameters and the state of the process at time $t-\Delta$:
       \frac{(x_{t}-x_{t-\Delta})(y_t-y_{t-\Delta})}{\sigma_{x,t}\sigma_{y,t}}
       + \frac{(y_t - y_{t-\Delta})^2}{\sigma_{y,t}^2}\right) \right\}.
 \]
+Incorporating the extreme values over $[t-\Delta,t]$ is accomplished
+by considering the Fokker-Planck Equation for the forward,
+continuous-time evolution of the probability density function of
+$(x_t, y_t)$ and including $(a_{x,t}, b_{x,t}), (a_{y,t},b_{y,t})$ as
+boundary conditions where the density is zero. The previous work
+describes the method by which the full likelihood function is
+found. However, for the purposes of the particle filter used to
+estimate the model in this work, we improve upon the computational
+method by performing a set of normalizing transformations, allowing
+for more flexibility in the parameters for the basis functions in the
+Galerkin approximation, and extrapolating over certain low-probability
+regions of the parameter space.
 
+\subsection{Improved likelihood computational method for low probability data}
+
+\section{Estimation Methodology}
+Given the highly non-linear hierarchical model
+(\ref{eq:process-evolution}) - (\ref{eq:correlation-evolution}) and
+the non-Gaussian observational likelihood, we use a particle filter to
+estimate the collection of time-dependent parameters which we abbreviate to
+\[
+  \sigma_t := (\sigma_{x,t}, \sigma_{y,t}, \rho_t),
+\]
+as well as all of the time-constant parameters governing the evolution
+of the process
+\[
+  \phi := (\alpha_x, \alpha_y, \alpha_\rho, \theta_x, \theta_y, \theta_\rho,
+  \tau_x, \tau_y, \tau_\rho, \rho_x, \rho_y).
+\]
+Particle filters use a discrete mixture to represent the posterior
+distribution $p(\sigma_t, \phi | \mathcal{D}_t)$, where
+$\mathcal{D}_t$ represents all of the observable information up to
+time $t$:
+\[
+  \mathcal{D}_t = (x_0, y_0, a_{x,\Delta}, b_{x,\Delta}, a_{y,\Delta},
+  b_{y,\Delta}, x_\Delta, y_\Delta, \ldots, x_{t-\Delta},
+  y_{t-\Delta}, a_{x,t}, b_{x,t}, a_{y,t}, b_{y,t}, x_t, y_t)
+\]
+Given $p(\sigma_t, \phi | \mathcal{D}_t)$, additional information at
+time $t+\Delta$ is incorporated by updating each particle via an
+appropriately chosen (importance) sampling distribution and Bayes'
+Theorem. In the case of the augmented particle filter, [CITE], which
+treats the structural parameters $\phi$ as known and fixed,
+
+\section{Calibration Study}
+
+\section{Application}
 
 \bibliographystyle{plainnat}
 \bibliography{master-bibliography}
