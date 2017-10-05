@@ -225,6 +225,36 @@ Galerkin approximation, and extrapolating over certain low-probability
 regions of the parameter space.
 
 \subsection{Improved likelihood computational method for low probability data}
+The method we use to estimate the model
+(\ref{eq:process-evolution}) - (\ref{eq:correlation-evolution}) is
+essentially comprised of a sequence of importance samples whose weight
+in the posterior is a function of the ratio of the likelihood function
+evaluated at different parameter values. For this reason, our method
+for approximating the likelihood needs to be able to accomodate
+proposed parameters for given data values in low-likelihood
+regions. To ensure this property, the previous method used to
+approximate the likelihood is modified in the following way:
+\begin{enumerate}
+\item When computing the numerical derivative of the Galerkin
+  solution, perturb the computational boundaries on an already
+  normalized domain. This requires an additional change of paramters
+  for the likelihood.
+
+\item Perform either a $\pi/2$ or -$\pi/2$ rotation so that the
+  greater normalized diffusion parameter corresponds to the same
+  principal direction. Then perform a scaling of the diffusion
+  timescale so that the greater diffusion parameter is always unity.
+
+\item Given the constant diffusion parameter in a single direction, we
+  can use different resolution with the basis functions in each
+  principal direction. In this way we can control separately the slow
+  and fast diffusion phenomena for the process.
+
+\item In the cases where the likelihood is invalid (negative), perform
+  an extrapolation from a parameter combination that does give a valid
+  likelihood approximation.
+\end{enumerate}
+
 
 \section{Estimation Methodology}
 Given the highly non-linear hierarchical model
@@ -301,11 +331,15 @@ covariance at time $t$. The augmented posterior becomes
 \end{align}
 Sampling from the posterior (\ref{eq:augmented-posterior-liu}) is also
 done with via a proposal where $(\sigma_{t+\Delta}, \phi_{t+\Delta})$
-are replaced with the predictive means conditional on $k$:
+are replaced with predictive means conditional on $k$:
 \begin{align}
-  p(\sigma_{t+\Delta}, \phi_{t+\Delta}, k | \mathcal{D}_{t+\Delta}) &\propto p(\mathbf{y}_{t+\Delta} | E[\sigma_{t+\Delta} | \sigma_{t}^{(k)}, \phi_t^{(k)}], a\phi_t^{(k)} + (1-a)\bar{\phi}_t) \\
+  p(\sigma_{t+\Delta}, \phi_{t+\Delta}, k | \mathcal{D}_{t+\Delta}) &\propto p(\mathbf{y}_{t+\Delta} | E[\sigma_{t+\Delta} | \sigma_{t}^{(k)}, \phi_t^{(k)}], a\phi_t^{(k)} + (1-a)\bar{\phi}_t) \nonumber \\
   & \times p(\sigma_{t+\Delta} | a\phi_t^{(k)} + (1-a)\bar{\phi}_t, \sigma_{t}^{(k)}) N(\phi_{t+\Delta} | a\phi_t^{(k)} + (1-a)\bar{\phi}_t, (1-a^2)^2 V_t) \omega^{(k)}_t. \label{eq:proposal-liu}
 \end{align}
+With (\ref{eq:proposal-liu}), we can integrate out
+$(\sigma_{t+\Delta}, \phi_{t+\Delta})$ to propose $k$, then sample the
+two remaining parameters respectively. The new weights are computed as
+the likelihood ratio of the likelihood function.
 \section{Calibration Study}
 
 \section{Application}
