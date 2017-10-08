@@ -11,11 +11,17 @@ data.files.list <-
     as.list(paste(path, "data-set-", seq(1,500), ".csv", sep=""));
 datum <- load.data.from.csv(data.files.list[[1]]);
 
+rho.rogers <- estimator.rodgers(data.files.list, 0.6);
+
 unconstrained.mles <- lapply(X=data.files.list[seq(1, 500)],
                              FUN=function(x) {
                                  mle.estimator.no.boundary(load.data.from.csv(x), 1, 1, 0.0)
                              })
-the.rest <- unconstrained.mles[x=sample(seq(1,length(unconstrained.mles)),size=500-length(unconstrained.mles),replace=TRUE)]
+
+
+the.rest <- unconstrained.mles[x=sample(seq(1,length(unconstrained.mles)),
+                                        size=500-length(unconstrained.mles),
+                                        replace=TRUE)]
 
 unconstrained.mles <- c(unconstrained.mles, the.rest)
 
@@ -74,11 +80,15 @@ RMSE.rho.galerkin = round(sqrt(mean((rhos.16 -
                               digits=3);
 RMSE.rho.classical = round(sqrt(mean((rho.classical[1:length(rhos.16)] -
                                         mean(rho.classical[1:length(rhos.16)]))^2)),
-                             digits=3);
+                           digits=3);
+
+RMSE.rho.rogers = round(sqrt(mean((rho.rogers[1:length(rhos.16)]-
+                                   mean(rho.rogers[1:length(rhos.16)]))^2)),
+                        digits=3)
 
 pdf("../../documentation/mle-comparison-sigma-x.pdf", width=3, height=3)
 xx <- data.frame(Galerkin.approx=sigma.xs.16,
-                 classical.likelihood=sigma.x.classical[1:length(sigma.xs.16)]);
+                 classical.likelihood=sigma.x.classical[1:length(sigma.xs.16)])
 data <- melt(xx);
 ggplot(data, aes(x=value, fill=variable)) +
     geom_density(alpha=0.5) +
@@ -121,13 +131,15 @@ dev.off()
 
 pdf("../../documentation/mle-comparison-rho.pdf", width=3, height=3)
 xx <- data.frame(Galerkin.approx=rhos.16,
-                 classical.likelihood=rho.classical[1:length(rhos.16)]);
+                 classical.likelihood=rho.classical[1:length(rhos.16)],
+                 Rogers.estimator=rho.rogers[1:length(rhos.16)]);
 data <- melt(xx);
 ggplot(data, aes(x=value, fill=variable)) +
     geom_density(alpha=0.5) +
-    scale_fill_manual(values=c("blue", "green"),
+    scale_fill_manual(values=c("blue", "green", "yellow"),
                       labels=c(paste("RMSE(Galerkin) = ", RMSE.rho.galerkin, sep=""),
-                               paste("RMSE(Classical) = ", RMSE.rho.classical, sep="")),
+                               paste("RMSE(Classical) = ", RMSE.rho.classical, sep=""),
+                               paste("RMSE(Rogers) = ", RMSE.rho.rogers, sep="")),
                       name = "") +
         geom_vline(xintercept=0.6, col="red",
                lwd=1.0) +
@@ -135,7 +147,7 @@ ggplot(data, aes(x=value, fill=variable)) +
           panel.grid.minor = element_blank(),
           panel.background = element_blank(),
           axis.line = element_line(colour = "black"),
-          legend.position=c(-0.01,0.99)) +
+          legend.position=c(-0.01,0.95)) +
     xlab(TeX("$\\hat{\\rho}$")) +
     ylab("");
 dev.off()
@@ -170,6 +182,8 @@ hist(sigma.ys.32, prob=T); lines(density(sigma.ys.32)); abline(v=1.0, lwd=2, col
 plot(density(rhos.32)); abline(v=0.6, lwd=2, col="red"); lines(density(rho.classical), col="blue");
 
 print(c(mean(rhos.32), median(rhos.32), mean(rho.classical)));
+print(paste("RMSE(rho.Galerkin.32) = ",
+            sqrt(mean( (rhos.32 - mean(rhos.32))^2 ))))
 print(c(sd(rhos.32), sd(rho.classical)))
 print(c(sqrt(mean((rhos.32 - mean(rhos.32))^2)),
         sqrt(mean((rho.classical - mean(rho.classical))^2))))
@@ -207,6 +221,9 @@ print(c(mean(rhos.64), median(rhos.64), mean(rho.classical)));
 print(c(sd(rhos.64), sd(rho.classical)));
 print(c(sqrt(mean((rhos.64 - mean(rhos.64))^2)),
         sqrt(mean((rho.classical - mean(rho.classical))^2))))
+
+print(paste("RMSE(rho.Galerkin.64) = ",
+            sqrt(mean( (rhos.64 - mean(rhos.64))^2 ))))
 ##############################################
 
 ##############################################

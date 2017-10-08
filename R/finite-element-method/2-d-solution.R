@@ -6,7 +6,7 @@ estimator.rodgers <- function(data.files.list,
     nu = seq(dx, 100, by=dx);
     b = 2*log(2) - 1;
         
-    rhos <- seq(-1+dx, 1-dx, by=0.005);
+    rhos <- seq(-1+dx, 1-dx, by=0.001);
     phis <- rep(NA, length(rhos));
     for (rho in rhos) {
         alpha.pos = asin(rho);
@@ -53,10 +53,11 @@ estimator.rodgers <- function(data.files.list,
                     "; sd(rho.estimate) = ", sd(rho.rz.hats)),
               sep="");
     }
-    MSE <- sqrt(mean((estimates-rho.true)^2));
+    RMSE <- sqrt(mean((estimates-rho.true)^2));
     sd(estimates);
 
-    print(paste("MSE = ", MSE, sep=""));
+    print(paste("RMSE = ", RMSE, sep=""));
+    return(estimates);
 }
 
 mle.estimator.no.boundary <- function(data,
