@@ -104,7 +104,7 @@
 \title{A Range-Based Bivariate Stochastic Volatility Model}
 \author{Georgi Dinolov, Abel Rodriguez, Hongyun Wang}
 \date{} % Activate to display a given date or no date (if empty),
-         % otherwise the current date is printed 
+         % otherwise the current date is printed
 
 \begin{document}
 \def\spacingset#1{\renewcommand{\baselinestretch}%
@@ -115,7 +115,7 @@
 \vspace{1cm}
 \noindent
 
-\spacingset{1.00} % 
+\spacingset{1.00} %
 \section{Introduction}
 
 The estimation and prediction of price volatility from market data is
@@ -171,7 +171,7 @@ model with leverage:
                         \epsilon_{x,t} \\
                         \epsilon_{y,t}
                       \end{array} \right), \label{eq:process-evolution}\\
-  \inf_{[t-\Delta,t]} x_\tau &= a_{x,t}&  \sup_{[t-\Delta,t]} x_\tau &= b_{x,t} & \inf_{[t-\Delta,t]} y_\tau &= a_{y,t} 
+  \inf_{[t-\Delta,t]} x_\tau &= a_{x,t}&  \sup_{[t-\Delta,t]} x_\tau &= b_{x,t} & \inf_{[t-\Delta,t]} y_\tau &= a_{y,t}
                                                                      & \sup_{[t-\Delta,t]} y_\tau &= b_{y,t} \nonumber \\
   \log(\sigma_{x,t+\Delta}) &= \alpha_x + \theta_x(\log(\sigma_{x,t}) - \alpha_x) + \tau_x \eta_{x,t}, \\
   \log(\sigma_{y,t+\Delta}) &= \alpha_y + \theta_y(\log(\sigma_{y,t}) - \alpha_y) + \tau_y \eta_{y,t}, \\
@@ -198,7 +198,7 @@ $(x_{t},y_{t})$, and the observed extrema in each nominal direction
 $(a_{x,t}, b_{x,t}), (a_{y,t},b_{y,t})$. Given the evolution model in
 (\ref{eq:process-evolution}), disregarding the information contained in
 the extrema yields the usual bivariate Gaussian density in terms of
-the volatility parameters and the state of the process at time $t-\Delta$: 
+the volatility parameters and the state of the process at time $t-\Delta$:
 
 \[
   p(x_t,y_t| x_{t-\Delta}, y_{t-\Delta}, \mu_x, \mu_y, \sigma_{x,t}, \sigma_{y,t}, \rho_t) =
@@ -237,8 +237,16 @@ approximate the likelihood is modified in the following way:
 \begin{enumerate}
 \item When computing the numerical derivative of the Galerkin
   solution, perturb the computational boundaries on an already
-  normalized domain. This requires an additional change of paramters
-  for the likelihood.
+  normalized domain. This \textit{does not} require an additional
+  transformation if the numerical precision of a double is enough:
+  \begin{align}
+    \Delta x &= h \cdot L_x, \\
+    \Delta y &= h \cdot L_y,
+  \end{align}
+  where $h$ fixed
+  \[
+    (L_x + \Delta x) / L_x = 1 + h\cdot L_x / L_x.
+  \]
 
 \item Perform either a $\pi/2$ or -$\pi/2$ rotation so that the
   greater normalized diffusion parameter corresponds to the same
@@ -256,21 +264,38 @@ approximate the likelihood is modified in the following way:
 \end{enumerate}
 
 
-\section{Estimation Methodology}
-Given the highly non-linear hierarchical model
-(\ref{eq:process-evolution}) - (\ref{eq:correlation-evolution}) and
-the non-Gaussian observational likelihood, we use a particle filter to
-estimate the collection of time-dependent parameters which we abbreviate to
+\section{Particle Filtering}
+Bayesian approaches for estimating complex hierarchical models like
+those in (\ref{eq:process-evolution}) -
+(\ref{eq:correlation-evolution}) are common. The primary focus of such
+inferential algorithms is the generation of dependent samples from the
+posterior distributions of model parameters and unobservable latent
+trajectories via Markov Chain Monte Carlo (MCMC). However, the highly
+non-linear nature of the state-space model considered here prohibits
+conditional Gaussian representations and thereby limits the
+application of MCMC methods. Instead, we use a particle filtering
+approach, which is a particular version of a sequential Monte Carlo
+algorithm (see \cite{doucet2001sequential} for an overview), to
+generate samples from the posterior distribution of the collection of
+time-dependent parameters, which we abbreviate to
 \[
   \sigma_t := (\sigma_{x,t}, \sigma_{y,t}, \rho_t),
 \]
 as well as all of the time-constant parameters governing the evolution
-of the process which we transform to be on the $(-\infty, \infty)$ scale
+of the process, which we transform to be on the $(-\infty, \infty)$
+scale and denote
 \[
   \phi := (\alpha_x, \alpha_y, \alpha_\rho, \theta_x, \theta_y,
   \theta_\rho, \log(\tau_x), \log(\tau_y), \log(\tau_\rho),
   \mbox{logit}(\rho_x), \mbox{logit}(\rho_y)).
 \]
+Most sequential Monte Carlo algorithms assume the structural
+parameters $\phi$ to be known and fixed, which is not the case for the
+considered problem. We therefore follow \cite{rodriguez2012} and use a
+version of the augmented particle filter of \cite{pitt1999filtering}
+developed by \cite{liu2001combined} to sample from the full
+posterior.
+
 Particle filters use a discrete mixture to represent the posterior
 distribution $p(\sigma_t, \phi | \mathcal{D}_t)$, where
 $\mathcal{D}_t$ represents all of the observable information up to
@@ -284,7 +309,7 @@ In this mixture approximation, the information about the parameters
 given the current data is captured in the parameter values and weights
 associated with each particle:
 \[
-  p(\sigma_t, \phi | \mathcal{D}_t) \approx \sum_{k=1}^K \delta(\sigma_t^{(k)} - \sigma_t) \delta(\phi^{(k)} - \phi) \omega_t^{(k)}
+  p(\sigma_t, \phi | \mathcal{D}_t) \approx \sum_{k=1}^K \delta(\sigma_t^{(k)} - \sigma_t) \delta(\phi^{(k)} - \phi) w_t^{(k)}
 \]
 Given this approximation of $p(\sigma_t, \phi | \mathcal{D}_t)$,
 additional information at time $t+\Delta$ is incorporated by updating
@@ -295,16 +320,16 @@ treats the structural parameters $\phi$ are known and fixed, the
 approximate distribution of the state of the system at time $t$ is
 \[
   p(\sigma_t | \phi, \mathcal{D}_t) \approx \sum_{k=1}^K
-  \delta(\sigma_t^{(k)} - \sigma_t) \omega_t^{(k)};
+  \delta(\sigma_t^{(k)} - \sigma_t) w_t^{(k)};
 \]
 the posterior $p(\sigma_{t+\Delta} | \phi, \mathcal{D}_{t+\Delta})$ is
-\textit{augmented} with the particle index $k$ and sampled:
+\textit{augmented} with the particle index $k$ and sampled with Bayes' Theorem:
 \begin{align}
   p(\sigma_{t+\Delta}, k | \phi, \mathcal{D}_{t+\Delta}) &\propto
                                                            p(x_{t+\Delta}, y_{t+\Delta}, a_{x,t+\Delta}, b_{x, t+\Delta},
                                                            a_{y,t+\Delta}, b_{y, t+\Delta} | \sigma_{t+\Delta}, k, \phi,
                                                            \mathcal{D}_t)p(\sigma_{t+\Delta},k | \phi, \mathcal{D}_t), \\
-                                                         &= p(\mathbf{y}_{t+\Delta} | \sigma_{t+\Delta}, \phi, \mathcal{D}_t) p(\sigma_{t+\Delta} | \sigma_{t}^{(k)}, \phi) \omega^{(k)}_t. \label{eq:augmented-posterior}
+                                                         &= p(\mathbf{y}_{t+\Delta} | \sigma_{t+\Delta}, \phi, \mathcal{D}_t) p(\sigma_{t+\Delta} | \sigma_{t}^{(k)}, \phi) w^{(k)}_t. \label{eq:augmented-posterior}
 \end{align}
 \cite{pitt1999filtering} sample the joint posterior with a proposal
 distribution which replaces $\sigma_{t+\Delta}$ with a representative
@@ -312,29 +337,40 @@ value in the one-step predictive distribution
 $p(\sigma_{t+\Delta} | \sigma_t^{(k)}, \phi)$, such as the predictive
 mean. In this way $k$ is sampled then $\sigma_{t+\Delta}$ from the
 predictive distribution conditional on $k$. The new weight
-$\omega_{t+\Delta}^{(k)}$ is proportional to the ratio of the sampled
+$w_{t+\Delta}^{(k)}$ is proportional to the ratio of the sampled
 $\sigma_{t+\Delta}$ and representative value in the likelihood for the
-data. \cite{liu2001combined} extend the augemented particle filter of
+data.
+
+
+\cite{liu2001combined} extend the augemented particle filter of
 \cite{pitt1999filtering} to allow for the estimation of the constant
 structural parameter $\phi$. This is done by introducing an artificial
-evolution for the fixed parameter, indexing it by $t$ and defining the
-transition density
+evolution for the fixed parameter, which is now indexed by $t$, and
+defining the transition density
 \[
   p(\phi_{t+\Delta} | \mathcal{D}_t) \approx \sum_{k=1}^K
   N(\phi_{t+\Delta} | a\phi_t^{(k)} + (1-a)\bar{\phi}_t, (1-a^2)^2 V_t),
 \]
 where $a$ is a discount factor between 0 and 1, $\bar{\phi}_t$ is the
-average of samples for $\phi$ at $t$ and $V_t$ is the respective sample
-covariance at time $t$. The augmented posterior becomes
+average of samples for $\phi$ at $t$ and $V_t$ is the respective
+sample covariance at time $t$. The Gaussian perturbation of $\phi_t$
+is appropriate, as we have transformed each of the structural
+parameters to $\mathbb{R}$, while the shrinkage kernel approximation
+preserves the mean and covariance structure of the posterior
+distribution from $t$ to $t+\Delta$. This limits the injection of
+entropy into the system that would otherwise occur with simpler,
+conditionally independent Gaussian perturbations.
+
+The augmented posterior then becomes
 \begin{align}
-  p(\sigma_{t+\Delta}, \phi_{t+\Delta}, k | \mathcal{D}_{t+\Delta}) \propto p(\mathbf{y}_{t+\Delta} | \sigma_{t+\Delta}, \phi_{t+\Delta}, \mathcal{D}_t) p(\sigma_{t+\Delta} | \phi_{t+\Delta}, \sigma_{t}^{(k)}, \mathcal{D}_t)N(\phi_{t+\Delta} | a\phi_t^{(k)} + (1-a)\bar{\phi}_t, (1-a^2)^2 V_t) \omega^{(k)}_t. \label{eq:augmented-posterior-liu}
+  p(\sigma_{t+\Delta}, \phi_{t+\Delta}, k | \mathcal{D}_{t+\Delta}) \propto p(\mathbf{y}_{t+\Delta} | \sigma_{t+\Delta}, \phi_{t+\Delta}, \mathcal{D}_t) p(\sigma_{t+\Delta} | \phi_{t+\Delta}, \sigma_{t}^{(k)}, \mathcal{D}_t)N(\phi_{t+\Delta} | a\phi_t^{(k)} + (1-a)\bar{\phi}_t, (1-a^2)^2 V_t) w^{(k)}_t. \label{eq:augmented-posterior-liu}
 \end{align}
 Sampling from the posterior (\ref{eq:augmented-posterior-liu}) is also
 done with via a proposal where $(\sigma_{t+\Delta}, \phi_{t+\Delta})$
 are replaced with predictive means conditional on $k$:
 \begin{align}
   p(\sigma_{t+\Delta}, \phi_{t+\Delta}, k | \mathcal{D}_{t+\Delta}) &\propto p(\mathbf{y}_{t+\Delta} | E[\sigma_{t+\Delta} | \sigma_{t}^{(k)}, \phi_t^{(k)}], a\phi_t^{(k)} + (1-a)\bar{\phi}_t) \nonumber \\
-  & \times p(\sigma_{t+\Delta} | a\phi_t^{(k)} + (1-a)\bar{\phi}_t, \sigma_{t}^{(k)}) N(\phi_{t+\Delta} | a\phi_t^{(k)} + (1-a)\bar{\phi}_t, (1-a^2)^2 V_t) \omega^{(k)}_t. \label{eq:proposal-liu}
+  & \times p(\sigma_{t+\Delta} | a\phi_t^{(k)} + (1-a)\bar{\phi}_t, \sigma_{t}^{(k)}) N(\phi_{t+\Delta} | a\phi_t^{(k)} + (1-a)\bar{\phi}_t, (1-a^2)^2 V_t) w^{(k)}_t. \label{eq:proposal-liu}
 \end{align}
 With (\ref{eq:proposal-liu}), we can integrate out
 $(\sigma_{t+\Delta}, \phi_{t+\Delta})$ to propose $k$, then sample the

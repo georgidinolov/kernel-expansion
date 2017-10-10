@@ -2048,7 +2048,9 @@ blackbox <- function(function.list,
     if (PLOT.SOLUTION) {
         approx.sol <- bivariate.solution.approx(orthonormal.function.list,
                                                 K,
-                                                coefs);
+                                                coefs) /
+            ((problem.parameters$bx - problem.parameters$ax) *
+             (problem.parameters$by - problem.parameters$ay));
 
         ## ## function.params$mu = c(mu.x, mu.y);
         ## ## function.params$epsilon = matrix(nrow=2,ncol=2,data=c(c(sigma2, rho*sigma2),

@@ -23,7 +23,7 @@ Lx = bx-ax
 Ly = by-ay
 
 problem.parameters.generate.data = NULL;
-problem.parameters.generate.data$t <- 2.0 * ( (sigma_y/Ly)^2 );
+problem.parameters.generate.data$t <- 1.0 * ( (sigma_y/Ly)^2 );
 problem.parameters.generate.data$sigma.2.x <- ( (sigma_x/Lx)^2 ) / ( (sigma_y/Ly)^2 ); 
 problem.parameters.generate.data$sigma.2.y <- ( (sigma_y/Ly)^2 ) / ( (sigma_y/Ly)^2 );
 problem.parameters.generate.data$rho <- 0.6;
@@ -55,8 +55,8 @@ function.list <- vector("list", K);
 x <- seq(0,1,by=dx);
 y <- seq(0,1,by=dy);
 
-sigma.x=0.10;
-sigma.y=0.40;
+sigma.x=0.20;
+sigma.y=0.20;
 
 for (std.dev.factor in c(1.0)) {
     sigma2.x=sigma.x^2;
