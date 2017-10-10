@@ -224,7 +224,7 @@ for more flexibility in the parameters for the basis functions in the
 Galerkin approximation, and extrapolating over certain low-probability
 regions of the parameter space.
 
-\subsection{Improved likelihood computational method for low probability data}
+\subsection{Improved likelihood computational method for low probability data} \label{sec:improvements}
 The method we use to estimate the model
 (\ref{eq:process-evolution}) - (\ref{eq:correlation-evolution}) is
 essentially comprised of a sequence of importance samples whose weight
@@ -367,15 +367,65 @@ The augmented posterior then becomes
 \end{align}
 Sampling from the posterior (\ref{eq:augmented-posterior-liu}) is also
 done with via a proposal where $(\sigma_{t+\Delta}, \phi_{t+\Delta})$
-are replaced with predictive means conditional on $k$:
+are replaced with predictive means conditional on $k$ in the
+likelihood:
 \begin{align}
-  p(\sigma_{t+\Delta}, \phi_{t+\Delta}, k | \mathcal{D}_{t+\Delta}) &\propto p(\mathbf{y}_{t+\Delta} | E[\sigma_{t+\Delta} | \sigma_{t}^{(k)}, \phi_t^{(k)}], a\phi_t^{(k)} + (1-a)\bar{\phi}_t) \nonumber \\
-  & \times p(\sigma_{t+\Delta} | a\phi_t^{(k)} + (1-a)\bar{\phi}_t, \sigma_{t}^{(k)}) N(\phi_{t+\Delta} | a\phi_t^{(k)} + (1-a)\bar{\phi}_t, (1-a^2)^2 V_t) w^{(k)}_t. \label{eq:proposal-liu}
+  p(\sigma_{t+\Delta}, \phi_{t+\Delta}, k | \mathcal{D}_{t+\Delta}) &= p(\mathbf{y}_{t+\Delta} | E[\sigma_{t+\Delta} | \sigma_{t}^{(k)}, \phi_t^{(k)}], a\phi_t^{(k)} + (1-a)\bar{\phi}_t) \nonumber \\
+  & \times p(\sigma_{t+\Delta} | \phi_{t+\Delta}^{(k)}, \sigma_{t}^{(k)}) N(\phi_{t+\Delta} | a\phi_t^{(k)} + (1-a)\bar{\phi}_t, (1-a^2)^2 V_t) w^{(k)}_t. \label{eq:proposal-liu}
 \end{align}
 With (\ref{eq:proposal-liu}), we can integrate out
 $(\sigma_{t+\Delta}, \phi_{t+\Delta})$ to propose $k$, then sample the
 two remaining parameters respectively. The new weights are computed as
-the likelihood ratio of the likelihood function.
+the likelihood ratio of the likelihood function. If we denote the
+predictive means to be
+\begin{align}
+  m^{(k)}_{t+\Delta} &:= E[\sigma_{t+\Delta} | \sigma_{t}^{(k)}, \phi_t^{(k)}], \\
+  \mu^{(k)}_{t+\Delta} &:= E[\phi_{t+\Delta} | k, \mathcal{D}_t] = a\phi_t^{(k)} + (1-a)\bar{\phi}_t,
+\end{align}
+our proposal distribution can be written as
+\begin{align}
+  p(\sigma_{t+\Delta}, \phi_{t+\Delta}, k | \mathcal{D}_{t+\Delta}) &= p(\mathbf{y}_{t+\Delta} | m^{(k)}_{t+\Delta}, \mu^{(k)}_{t+\Delta}) \nonumber \\
+  & \times p(\sigma_{t+\Delta} | \phi_{t+\Delta}^{(k)}, \sigma_{t}^{(k)}) N(\phi_{t+\Delta} | \mu_{t+\Delta}^{(k)}, (1-a^2)^2 V_t) w^{(k)}_t. \label{eq:proposal-liu-2}
+\end{align}
+The steps in the particle filtering scheme are explicitly
+\begin{enumerate}[1)]
+\item Sample the particle indicator $k$ from the marginal proposal
+  \[
+    p(k| \mathcal{D}_{t+\Delta})= \displaystyle
+    \int_{\sigma_{t+\Delta}} \displaystyle \int_{\phi_{t+\Delta}}
+    p(\sigma_{t+\Delta}, \phi_{t+\Delta}, k | \mathcal{D}_{t+\Delta})
+    d\sigma_{t+\Delta} \,d\phi_{t+\Delta} \propto p(\mathbf{y}_{t+\Delta} | m^{(k)}_{t+\Delta}, \mu^{(k)}_{t+\Delta}) w^{(k)}_t.
+  \]
+\item Conditional on $k$, sample $(\sigma_{t+\Delta}, \phi_{t+\Delta})$ from
+  \begin{align*}
+    \phi_{t+\Delta}^{(k)} &\sim N(\phi_{t+\Delta} | \mu_{t+\Delta}^{(k)}, (1-a^2)^2 V_t), \\
+    \sigma_{t+\Delta}^{(k)} &\sim p(\sigma_{t+\Delta} | \phi_{t+\Delta}^{(k)}, \sigma_{t}^{(k)}).
+  \end{align*}
+\item Compute the new weight as the ratio of likelihoods:
+  \begin{align*}
+    w_{t+\Delta}^{(k)} \propto \frac{p(\mathbf{y}_{t+\Delta} | \sigma^{(k)}_{t+\Delta}, \phi^{(k)}_{t+\Delta})}{p(\mathbf{y}_{t+\Delta} | m^{(k)}_{t+\Delta}, \mu^{(k)}_{t+\Delta})}
+  \end{align*}
+\end{enumerate}
+Steps 1) and 3) require a reliable way to compute the likelihood for
+the observed process. This is particularly true in instances where
+proposed and predictive values for the parameters are very unlikely
+given the observation $\mathbf{y}_{t+\Delta}$. The finite precision of
+the method we developed to compute the likelihood, mainly arising from
+the truncation of the basis expansion of the solution, may yield
+negative values for the likelihood. The ad-hoc correction of replacing
+such values with numerically zero but positive values can yield
+deleterious results, as what would otherwise be a small value for
+$w_{t+\Delta}^{(k)}$ may be replaced with unity in the case where the
+likelihood computation fails when evaluating both
+$p(\mathbf{y}_{t+\Delta} | \sigma^{(k)}_{t+\Delta},
+\phi^{(k)}_{t+\Delta})$ and
+$p(\mathbf{y}_{t+\Delta} | m^{(k)}_{t+\Delta},
+\mu^{(k)}_{t+\Delta})$. To deal with this numerical instability, we
+introduce a series of improvements to our likelihood computation
+method which a) increase the resolution of the expansion for the fixed
+number of basis elements, and b) perform a 1st order approximation in
+instances where the likelihood is negative. The details are described
+in Section \ref{sec:improvements}.
 
 \section{Calibration Study}
 In this calibration study, we simulate from the model with parameters
