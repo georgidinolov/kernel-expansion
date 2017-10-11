@@ -224,43 +224,77 @@ for more flexibility in the parameters for the basis functions in the
 Galerkin approximation, and extrapolating over certain low-probability
 regions of the parameter space.
 
-\subsection{Improved likelihood computational method for low probability data} \label{sec:improvements}
-The method we use to estimate the model
-(\ref{eq:process-evolution}) - (\ref{eq:correlation-evolution}) is
-essentially comprised of a sequence of importance samples whose weight
-in the posterior is a function of the ratio of the likelihood function
-evaluated at different parameter values. For this reason, our method
-for approximating the likelihood needs to be able to accomodate
-proposed parameters for given data values in low-likelihood
-regions. To ensure this property, the previous method used to
-approximate the likelihood is modified in the following way:
+\subsection{Improved likelihood computational method for low
+  probability data} \label{sec:improvements} Our method for
+approximating the likelihood needs to be able to accomodate proposed
+parameters for given data values in low-likelihood regions. To ensure
+this property, the previous method used to approximate the likelihood
+is modified in the following ways:
 \begin{enumerate}
-\item When computing the numerical derivative of the Galerkin
-  solution, perturb the computational boundaries on an already
-  normalized domain. This \textit{does not} require an additional
-  transformation if the numerical precision of a double is enough:
+\item First, when computing the numerical derivative of the Galerkin
+  solution, we use finite difference steps \textit{proportional} to
+  the range of the process in each direction
   \begin{align}
     \Delta x &= h \cdot L_x, \\
     \Delta y &= h \cdot L_y,
   \end{align}
-  where $h$ fixed
-  \[
-    (L_x + \Delta x) / L_x = 1 + h\cdot L_x / L_x.
-  \]
+  where $h$ fixed. In this way, the discretization step size in the
+  normalized problem are constant and equal to $h$, having the same
+  interpretation accross any combination of $L_x$ and $L_y$. This is
+  in contrast to our previous practice of using $h$ directly on the
+  unnormalized problem. In cases where the observed ranges $L_x$ and
+  $L_y$ are close to unity this approach is acceptable. However, this
+  fails for ``fat'' or ``skinny'' computational domains and this
+  simple change addresses this problem. 
 
-\item Perform either a $\pi/2$ or -$\pi/2$ rotation so that the
-  greater normalized diffusion parameter corresponds to the same
-  principal direction. Then perform a scaling of the diffusion
-  timescale so that the greater diffusion parameter is always unity.
+\item Given diffusion parameters $(\tau_x, \tau_y, \rho)$ for the
+  normalized problem solved by our numerical method, we assume,
+  without loss of generality, that $\tau_x >= \tau_y$. We introduce
+  another transformation of the time variable:
+  \[ \tilde{t} = t\tau_x^2.\]
+  The new normalized diffusion problem then becomes
+  \begin{align}
+    \frac{\partial p}{\partial \tilde{t}} = \frac{1}{2}
+    \frac{\partial^2 p}{\partial x^2} + \rho
+    \left(\frac{\tau_y}{\tau_x}\right)\frac{\partial^2 p}{\partial
+      x\partial y} + \frac{1}{2}\left(\frac{\tau_y}{\tau_x}\right)^2
+    \frac{\partial^2 p}{\partial y^2}, \label{eq:new-normalized}
+  \end{align}
+  where the domain is still the unit square and we find the solution
+  $p(x,y,\tau_x^2)$. This transformation re-organizes the basis
+  expansion so that, condiional on the correlation term $\rho$, the
+  quality of the solution is goverend by the resolution in the
+  principal $x-$direction, which requires fewer terms because of the
+  greater diffusion coefficient, and the resolution in the
+  $y-$direction, which requires more terms because of the smaller
+  diffusion coefficient. This motivatives the next augmentation of the
+  computational method.
 
-\item Given the constant diffusion parameter in a single direction, we
-  can use different resolution with the basis functions in each
-  principal direction. In this way we can control separately the slow
-  and fast diffusion phenomena for the process.
+\item We change the form of the basis functions in the Galerkin
+  solution to account for different resolutions in the principal $x-$
+  and $y-$ directions. The basis elements in (17) of Chapter 2 then become
+  \begin{align}
+    \psi_i(x,y) &= \frac{1}{2\pi \tilde{\sigma}_x \tilde{\sigma}_y \sqrt{1-\tilde{\rho}^2}}  \exp\left\{ -\frac{1}{2(1-\tilde{\rho}^2)} \left( \frac{(x - x_i)^2}{\tilde{\sigma}_x^2} - 2\tilde{\rho} \frac{(x-x_i)(y-y_i)}{\tilde{\sigma}_x\tilde{\sigma}_y} +  \frac{(y - y_i)^2}{\tilde{\sigma}_y^2}  \right)  \right\}
+\end{align}
+for some parameters
+$(\tilde{\rho}, \tilde{\sigma}_x, \tilde{\sigma}_y)$ which together
+control the resolution of the solution in the two principal
+directions. The scheme used to set the node points over the
+computational domain remains the same. As discussed above, we need
+$\tilde{\sigma}_y << \tilde{\sigma}_x$ as our 
 
-\item In the cases where the likelihood is invalid (negative), perform
-  an extrapolation from a parameter combination that does give a valid
-  likelihood approximation.
+The new normalized problem (\ref{eq:new-normalized}) also provides an
+easy computational for identifying tolerances of parameters governing
+the solution over problem likelihood regions. This will be discussed
+in the results section. 
+
+\item The finite constraints imposed by the implementation of our
+  numerical solution means that there may be unlikely data points
+  which produce a negative likelihood, even after the above
+  precautions have been placed. When performing posterior inference
+  with particle filters, in such instances it is entirely insufficient
+  to replace negative likelihoods with arbitrary small, but positive,
+  constants. 
 \end{enumerate}
 
 

@@ -204,10 +204,10 @@ sample.process <- function(n.samples,
         by <- y.current;
         for (j in seq(1,n.timesteps)) {
             
-            dx <- sqrt(dt*sigma.2.x)*rnorm(1);
-            dy <- sigma.2.y/sigma.2.x*rho*
-                (dx) +
-                sqrt((1-rho^2)*sigma.2.y*dt)*rnorm(1);
+            dx <- rnorm(1, 0, dt*sigma.2.x);
+            dy <- rnorm(1,
+                        sqrt(sigma.2.y)/sqrt(sigma.2.x)*rho*(dx),
+                        (1-rho^2)*sigma.2.y*dt);
             x.new <- x.current + dx;
             y.new <- y.current + dy;
 
