@@ -238,18 +238,18 @@ is modified in the following ways:
     \Delta x &= h \cdot L_x, \\
     \Delta y &= h \cdot L_y,
   \end{align}
-  where $h$ fixed. In this way, the discretization step size in the
+  where $h$ fixed. In this way, the discretization step sizes in the
   normalized problem are constant and equal to $h$, having the same
-  interpretation accross any combination of $L_x$ and $L_y$. This is
-  in contrast to our previous practice of using $h$ directly on the
-  unnormalized problem. In cases where the observed ranges $L_x$ and
-  $L_y$ are close to unity this approach is acceptable. However, this
-  fails for ``fat'' or ``skinny'' computational domains and this
-  simple change addresses this problem. 
+  effect on the order accuracy accross any combination of $L_x$ and
+  $L_y$. This is in contrast to our previous practice of using $h$
+  directly on the unnormalized problem. In cases where the observed
+  ranges $L_x$ and $L_y$ are close to unity this approach is
+  acceptable. However, it fails for ``fat'' or ``skinny''
+  computational domains.
 
-\item Given diffusion parameters $(\tau_x, \tau_y, \rho)$ for the
+\item Given the diffusion parameters $(\tau_x, \tau_y, \rho)$ for the
   normalized problem solved by our numerical method, we assume,
-  without loss of generality, that $\tau_x >= \tau_y$. We introduce
+  without loss of generality, that $\tau_x \geq \tau_y$. We introduce
   another transformation of the time variable:
   \[ \tilde{t} = t\tau_x^2.\]
   The new normalized diffusion problem then becomes
@@ -262,15 +262,24 @@ is modified in the following ways:
   \end{align}
   where the domain is still the unit square and we find the solution
   $p(x,y,\tau_x^2)$. This transformation re-organizes the basis
-  expansion so that, condiional on the correlation term $\rho$, the
+  expansion so that, conditional on the correlation term $\rho$, the
   quality of the solution is goverend by the resolution in the
   principal $x-$direction, which requires fewer terms because of the
   greater diffusion coefficient, and the resolution in the
   $y-$direction, which requires more terms because of the smaller
   diffusion coefficient. This motivatives the next augmentation of the
-  computational method.
+  computational method which introduces a more general basis element
+  type.
 
-\item We change the form of the basis functions in the Galerkin
+\item
+  \begin{figure}
+    \centering
+    \includegraphics[scale=0.5]{solution-2-2.pdf}
+    \caption{.}
+    \label{fig:surface}
+  \end{figure}
+  
+  We change the form of the basis functions in the Galerkin
   solution to account for different resolutions in the principal $x-$
   and $y-$ directions. The basis elements in (17) of Chapter 2 then become
   \begin{align}
@@ -280,13 +289,67 @@ for some parameters
 $(\tilde{\rho}, \tilde{\sigma}_x, \tilde{\sigma}_y)$ which together
 control the resolution of the solution in the two principal
 directions. The scheme used to set the node points over the
-computational domain remains the same. As discussed above, we need
-$\tilde{\sigma}_y << \tilde{\sigma}_x$ as our 
+computational domain remains the same.
 
 The new normalized problem (\ref{eq:new-normalized}) also provides an
-easy computational for identifying tolerances of parameters governing
-the solution over problem likelihood regions. This will be discussed
-in the results section. 
+easy computational method for identifying tolerances of parameters governing
+the solution over problem likelihood regions which are intuitively
+associated with $\tau_y/\tau_x << 1$ and $\tilde{t} << 1$. The order
+magnitude of what constitute small values for these parameters can be
+explored by sampling the parameters in the following way.  Sample the
+diffusion parameters $\sigma_x$ and $\sigma_y$ independently from a
+heavy-tailed distribution. For our purposes, we sample
+\begin{align}
+  \log(\sigma_x) &\overset{\mbox{\small i.i.d.}}{\sim} N(1,1), &
+  \log(\sigma_y) &\overset{\mbox{\small i.i.d.}}{\sim} N(1,1),
+\end{align}
+$100,000$ time then, for each pair of sampled values,
+(\ref{eq:process-evolution}) is solved with a forward Euler
+discretization (step $\Delta = 1\cdot 10^{-6}$) where the extreme
+values are approximated by the obtained extreme, discrete-time values
+of the process. Then the parameters are normalized as in
+(\ref{eq:new-normalized}). The samples for $\log(\tau_y/\tau_x)$ and
+$\log(\tilde{t})$ are shown in Figure
+(\ref{fig:small-sigma-y-t-samples}). Across the three regimes of
+$\rho$, likely values for the normalized parameters are roughly
+bounded below by $\tilde{t} > 0.08$ and $\tau_y/\tau_x > 0.3$. Hence,
+if our numerical method can accommodate $\tau_y/\tau_x \approx 0.3$
+with $\tilde{t} \approx 0.08$, then it will fail to produce a valid
+likelihood once in 100,000 times. Here, accommodation is defined by 1)
+attenuating high-frequency modes of the solution by terminal time, and
+2) producing positive likelihood values across the range of initial
+and final conditions. Firgure (\ref{fig:surface}) shows a countour
+plot of a solution for a particular initial condition where
+$\rho = 0.7$, $\tau_y/\tau_x = 0.35$, and $\tilde{t} = 0.08$, which
+satisfies 1) above. The parameters for the solution are
+\begin{align}
+  \tilde{\sigma}_x &= 0.3 &\tilde{\sigma}_y &= 0.08 &\tilde{\rho} &= 0.8.
+\end{align}
+
+\begin{figure}
+  \centering
+  %%
+  %%
+  \begin{tabular}{ccc}
+    \begin{minipage}{0.3\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{small-sigma-t-scatterplot--09.pdf}
+    \end{minipage}
+    %% 
+    & \begin{minipage}{0.3\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{small-sigma-t-scatterplot-0.pdf}
+    \end{minipage}
+    & \begin{minipage}{0.3\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{small-sigma-t-scatterplot-09.pdf}
+    \end{minipage}
+  \end{tabular}
+  \caption{.}
+  \label{fig:small-sigma-y-t-samples}
+\end{figure}
+
+
 
 \item The finite constraints imposed by the implementation of our
   numerical solution means that there may be unlikely data points

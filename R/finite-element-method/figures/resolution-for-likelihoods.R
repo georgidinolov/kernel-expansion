@@ -25,7 +25,7 @@ Lx = bx-ax
 Ly = by-ay
 
 problem.parameters.generate.data = NULL;
-problem.parameters.generate.data$t <- 2.0 * ( (sigma_y/Ly)^2 );
+problem.parameters.generate.data$t <- 1.0 * ( (sigma_y/Ly)^2 );
 problem.parameters.generate.data$sigma.2.x <- ( (sigma_x/Lx)^2 ) / ( (sigma_y/Ly)^2 ); 
 problem.parameters.generate.data$sigma.2.y <- ( (sigma_y/Ly)^2 ) / ( (sigma_y/Ly)^2 );
 problem.parameters.generate.data$rho <- 0.6;

@@ -193,6 +193,14 @@ sample.process <- function(n.samples,
     sigma.2.y <- problem.parameters.generate.data$sigma.2.y;
 
     out <- vector("list", n.samples);
+    dxdy <- rmvnorm(n=round(n.timesteps),
+                    mean=c(0,0),
+                    sigma=matrix(nrow=2,ncol=2,
+                                 data=dt*c(sigma.2.x,
+                                           rho*sqrt(sigma.2.x)*sqrt(sigma.2.y),
+                                           ## ##
+                                           rho*sqrt(sigma.2.x)*sqrt(sigma.2.y),
+                                           sigma.2.y)))
     
     for (i in seq(1,n.samples)) {
         x.current = problem.parameters.generate.data$x.ic;
@@ -204,10 +212,14 @@ sample.process <- function(n.samples,
         by <- y.current;
         for (j in seq(1,n.timesteps)) {
             
-            dx <- rnorm(1, 0, dt*sigma.2.x);
-            dy <- rnorm(1,
-                        sqrt(sigma.2.y)/sqrt(sigma.2.x)*rho*(dx),
-                        (1-rho^2)*sigma.2.y*dt);
+            ## dx <- rnorm(1, 0, dt*sigma.2.x);
+            ## dy <- rnorm(1,
+            ##             sqrt(sigma.2.y*dt)/sqrt(sigma.2.x*dt)*rho*(dx),
+            ##             (1-rho^2)*sigma.2.y*dt);
+
+            dx <- dxdy[j,1];
+            dy <- dxdy[j,2];
+            
             x.new <- x.current + dx;
             y.new <- y.current + dy;
 
