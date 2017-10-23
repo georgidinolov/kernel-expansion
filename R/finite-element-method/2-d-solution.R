@@ -147,7 +147,7 @@ rescale.problem <- function(problem.parameters.original) {
     ax <- ax - ax; 
     sigma.2.x <- sigma.2.x;
 
-    y.ic <- problem.parameters.generate.data$y.ic - ay
+    y.ic <- problem.parameters.original$y.ic - ay
     y.current <- y.current - ay
     by <- by - ay;
     ay <- ay - ay;

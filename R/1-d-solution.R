@@ -38,11 +38,11 @@ mean.var.sum.sq <- function(x, mean, var) {
 }
 
 univariate.solution <- function(x, problem.parameters) {
-    a = problem.parameters$a;
-    b = problem.parameters$b;
+    a = problem.parameters$ax;
+    b = problem.parameters$bx;
     x.ic = problem.parameters$x.ic;
     t = problem.parameters$t;
-    sigma.2 = problem.parameters$sigma.2;
+    sigma.2 = problem.parameters$sigma.2.x;
     number.terms = problem.parameters$number.terms;
     
     if ( x.ic < a || x.ic > b) {
