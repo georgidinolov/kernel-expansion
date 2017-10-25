@@ -344,7 +344,7 @@ likelihood surface. Figure (\ref{fig:small-t-sol}) similarly shows the
 likelihood surface for the small $\tilde{t}$ (red) point in Figure
 (\ref{fig:small-sigma-y-t-samples}). We see that the choice of basis parameters
 \begin{align}
-  \tilde{\sigma}_x &= 0.3 &\tilde{\sigma}_y &= 0.07 &\tilde{\rho} &= 0.0,
+  \tilde{\sigma}_x &= 0.3 &\tilde{\sigma}_y &= 0.1 &\tilde{\rho} &= 0.0,
 \end{align}
 for the $\rho = 0$ case is capable of resolving the main probability
 mass in the likelihood function for both extreme cases considered. A
@@ -355,11 +355,16 @@ surface for all other samples in the middle panel of Figure
 (\ref{fig:small-sigma-y-t-samples}).
 
 Finally, Figure (\ref{fig:rho-09}) shows the likelihood surfaces for
-the extreme parameter combinations where $\rho = 0.9$. The solution generated
-has properties consisent with those of the analytic $\rho=0$ solution:
-conditional on either $\tau_y/\tau_x$ or $\tilde{t}$, the solution
-formed, when valid, exibits unimodality and constant concavity around
-the mode. 
+the extreme parameter combinations where $\rho = 0.9$, with parameters
+used for the basis generation being
+\begin{align}
+  \tilde{\sigma}_x &= 0.3 &\tilde{\sigma}_y &= 0.1 &\tilde{\rho} &= 0.8.
+\end{align}
+The solution generated has properties consisent with those of the
+analytic $\rho=0$ solution: conditional on either $\tau_y/\tau_x$ or
+$\tilde{t}$, the solution formed, when valid, exibits unimodality and
+constant concavity around the mode. As such, we can conclude that we
+have reasonably resolved the likelihood in its important regions.
 
 \begin{figure}
   \centering
@@ -524,8 +529,38 @@ introduce an analytic extension of our numerical solution.
       domain (which is image $k$ in (\ref{eq:inv-Gam-likelihood})) since they
       scale away linearly as a function of the number of reflections.
 
-      A similar analysis can be performed for $\tau_x/\tau_y$
-            
+      A similar analysis can be performed for $(\tau_x/\tau_y)^2$, where $\alpha \leq 7/2$ and 
+      \[
+        \beta \geq \frac{(y-y_k)}{2(1-\rho^2)\tilde{t}_\varepsilon} \geq \frac{1}{2\tilde{t}_\varepsilon}.
+      \]
+      Hence, the mode for the likelihood as a function of
+      $\tau_y/\tau_x$ conditional on $\rho$ is bounded by
+      \[
+        \sqrt{\frac{\beta}{\alpha+1}} \geq \sqrt{\frac{1}{7\tilde{t}_\varepsilon}} \geq 0.33.
+      \]
+
+      The above derived bounds for where the main probability mass of
+      the likelihood abides within the parameter space corroborates
+      our empirical observations, and they also further support our
+      choice for basis parameters and their capability of resolving
+      the main parts of the likelihood surface.
+
+      However, the parametric approximations derived motivate the
+      inverse Gamma approximation we use to evaulate the likelihood in
+      inadmissible regions of the parameter space. We extend into
+      either the small $\tilde{t}$ or small $\tau_y/\tau_x$ regions by
+      fitting the function
+      \[
+        f(x) = C\, x^{-\alpha-1} \exp\left( -\frac{\beta}{x} \right)
+      \]
+      using three valid likelihood points with bigger $\tilde{t}$ or
+      $\tau_y/\tau_x$ values. For points falling in the small
+      parameter region for both $\tilde{t}$ and $\tau_y/\tau_x$, we
+      first approximate likelihood values into one then the other
+      regions. Although more computationally intensive, this
+      correction allows us to validly evaulate likelihoods in the
+      parameter space for the normalized problem that cannot be
+      resolved by our Galerkin solution.
 \end{enumerate}
 
 
