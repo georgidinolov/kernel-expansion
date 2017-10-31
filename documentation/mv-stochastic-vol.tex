@@ -150,8 +150,48 @@ account the highest and lowest observed prices of each asset as part
 of a likelihood-based (Bayesian) estimation procedure.
 
 \section{Model}
-The model we will estimate is a bivaraite, 1-factor stochastic volatility
-model with leverage:
+As in Chapter 1, we begin with the continuous-time stochastic
+volatility model of \cite{hull1987pricing}, where the log-prices of two assets
+$(\hat{x}_t, \hat{y}_t)$ follow Brownian motions and the
+time-varying log-volatility processes $(\log(\hat{\sigma}_{x,t}, \log(\hat{\sigma}_{y,t}))$ follow a
+mean-reverting Ornstein-Uhlenbeck (OU) processes,
+\begin{align}
+  d\hat{x}_t &= \hat{\mu}_x\, dt + \hat{\sigma}_{t,x}\, \sqrt{dt} \hat{\epsilon}_{t,x}  ,  \label{eq:price_evo-x} \\
+  d\hat{y}_t &= \hat{\mu}_y\, dt + \hat{\sigma}_{t,y}\, \sqrt{dt} \hat{\epsilon}_{t,y}  ,  \label{eq:price_evo-y} \\
+  d\log( \hat{ \sigma }_{t,x}) &= -\hat{\theta}_x ( \log(\hat{\sigma}_{t,x} ) - \hat{\alpha}_x )\, dt + \hat{\tau}_x\, \sqrt{dt} \hat{\epsilon}_{t,1}  ,  \label{eq:vol_evo-x} \\
+  d\log( \hat{ \sigma }_{t,y}) &= -\hat{\theta}_y ( \log(\hat{\sigma}_{t,y} ) - \hat{\alpha}_y )\, dt + \hat{\tau}_y\, \sqrt{dt} \hat{\epsilon}_{t,2}  ,  \label{eq:vol_evo-y} \\
+  d\mbox{logit}((\hat{\rho}_{t} + 1)/2) &= -\hat{\theta}_\rho\left(\mbox{logit}((\hat{\rho}_{t}+1)/2) - \hat{\alpha}_\rho\right) + \hat{\tau}_{\rho} \hat{\epsilon}_{t,\rho}. \label{eq:correlation-evolution-continuous}
+\end{align}
+The terms $\hat{\epsilon}_{t,x}$, $\hat{\epsilon}_{t,y}$,
+$\hat{\epsilon}_{t,1}$, $\hat{\epsilon}_{t,2}$, $\hat{\epsilon}_{t,\rho}$ are all Wiener
+processes with instantaneous correlation structure 
+\begin{align*}
+  \E{\hat{\epsilon}_{t,x}\hat{\epsilon}_{t,1}} &= \E{\hat{\epsilon}_{t,y}\hat{\epsilon}_{t,2}} = \rho_{l}, & \E{\hat{\epsilon}_{t,x}\hat{\epsilon}_{t,y}} &= \hat{\rho}_t, & \E{\hat{\epsilon}_{t,1}\hat{\epsilon}_{t,2}} &= 0.
+\end{align*}
+Here, $\rho_l$ captures is the leverage effect of volatility shocks to
+the innovations in prices, while $\hat{\rho}_t$ is the time-dependent
+correlation between prices that also follows a mean-reverting process
+on the logit scale. The Wiener process $\epsilon_{t,\rho}$ driving
+$\hat{\rho}_t$ is independent of all other processes so far. Over any
+finite period $[t-\Delta, t]$, we denote the extrema obtained by the
+processes $(\hat{x}_t, \hat{y}_t)$ as
+\begin{align}
+M_X(t) &=\max_{t-\Delta\leq s\leq t}\hat{x}_s, & m_X(t) &=\min_{t-\Delta\leq s\leq t}\hat{x}_s, &
+M_Y(t) &=\max_{t-\Delta\leq s\leq t}\hat{y}_s, & m_Y(t)=\min_{t-\Delta \leq s\leq t}\hat{y}_s. \label{eq:extrema}
+\end{align}
+The estimation of models of the form (\ref{eq:price_evo-x}) -
+(\ref{eq:correlation-evolution-continuous}) in the literature is
+largely done without taking into account the extrema in
+(\ref{eq:extrema}). Out of the works which do attempt to include
+period ranges in a likelihood setting, no one has succesffully done so
+for the bivariate case wher $\rho_t \neq 0$. This work aims to fill
+this gap in the literature. 
+
+To do so, we first discretize the continuous-time model. Follwing
+Chapter 1, we can discretize the model in (\ref{eq:price_evo-x}) -
+(\ref{eq:correlation-evolution-continuous}) by using the solution to
+the Ornstein-Uhlenbeck process.  The model we then estimate is a
+bivaraite, 1-factor stochastic volatility model with leverage:
 
 \begin{align}
   \left( \begin{array}{c}
@@ -180,12 +220,7 @@ model with leverage:
 \end{align}
 The marginal distribution for all of the innovation terms
 $\epsilon_{x,t}, \epsilon_{y,t}, \eta_{x,t}, \eta_{y,t},
-\eta_{\rho,t}$ is the standard Gaussian distribution. The
-\textit{leverage} terms are defined as
-$E\left[\epsilon_{x,t}\, \eta_{x,t}\right] = \rho_{x}$ and
-$E\left[\epsilon_{x,t}\, \eta_{x,t}\right] = \rho_{y}$. It should be
-noted here that we are explicitly allowing the correlation of the
-process to change over time in a mean-reverting fashion. Finally, we
+\eta_{\rho,t}$ is the standard Gaussian distribution. We
 explicitly write down the realized extrema over the periods
 $[t-\Delta,t]$ to be included as data into the likelihood for the
 dynamical model. We estimate all parameters and dynamical factors in a
@@ -730,10 +765,23 @@ in Section \ref{sec:improvements}.
 \section{Calibration Study}
 In this calibration study, we simulate from the model with parameters
 corresponding to the continuous-time version of the model, where we
-pick the parameters as we did in the first paper.
+pick the parameters as we did in Chapter 1.
+
+\begin{figure}
+  \begin{tabular}{cc}
+    \begin{minipage}{0.45\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{ochl.pdf}
+    \end{minipage}
+    %% 
+    & \begin{minipage}{0.45\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{ochl-classical.pdf}
+    \end{minipage}    
+  \end{tabular}
+\end{figure}
 
 \section{Application}
-I will need a bit more guidance here.
 
 \bibliographystyle{plainnat}
 \bibliography{master-bibliography}
