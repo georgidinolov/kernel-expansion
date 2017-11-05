@@ -1651,9 +1651,18 @@ basis.functions.normal.kernel <- function(rho,
     sigma.x <- sqrt(sigma2.x);
     sigma.y <- sqrt(sigma2.y);
     
-    by.x <- std.dev.factor*sigma.x*sqrt(1+rho)
-    x.nodes <- c(rev(seq(from=0.5, to=0.5-sqrt(2), by=-by.x)),
-                 seq(0.5, 0.5+sqrt(2), by=by.x))
+    if (rho >= 0) {
+        by.x <- std.dev.factor*sqrt(1-rho)/sqrt(1+rho);
+    } else {
+        by.x <- std.dev.factor;
+    }
+    
+    x.nodes <- c(rev(seq(from=0.5/sigma.x,
+                         to=0.5/sigma.x - sqrt(1/4 * (1/sigma2.x + 1/sigma2.y)),
+                         by=-by.x)),
+                 seq(from=0.5/sigma.x,
+                         to=0.5/sigma.x + sqrt(1/4 * (1/sigma2.x + 1/sigma2.y)),
+                         by=by.x))
     ## x.nodes <- c(seq(0.5-sqrt(2), 0.5,
     ##                  by=std.dev.factor*sigma*sqrt(1-rho)/sqrt(1+rho)),
     ##              seq(0.5, 0.5+sqrt(2),
@@ -1664,9 +1673,18 @@ basis.functions.normal.kernel <- function(rho,
     ##                  by=std.dev.factor*sigma*sqrt(1+rho)));
     x.nodes <- unique(x.nodes);
 
-    by.y <- std.dev.factor*sigma.y*sqrt(1-rho)
-    y.nodes <- c(rev(seq(from=0.5, to=0.5-sqrt(2), by=-by.y)),
-                 seq(0.5, 0.5+sqrt(2), by=by.y))
+    if (rho >= 0) {
+        by.y <- std.dev.factor;
+    } else {
+        by.y <- std.dev.factor*sqrt(1+rho)/sqrt(1-rho);
+    }
+    
+    y.nodes <- c(rev(seq(from=0.5/sigma.y,
+                         to=0.5/sigma.y - sqrt(1/4 * (1/sigma2.x + 1/sigma2.y)),
+                         by=-by.y)),
+                 seq(from = 0.5/sigma.y,
+                     to = 0.5/sigma.y + sqrt(1/4 * (1/sigma2.x + 1/sigma2.y)),
+                     by=by.y))
 
     ## y.nodes <- c(seq(0.5-sqrt(2), 0.5,
     ##                  by=std.dev.factor*sigma),
@@ -1681,8 +1699,8 @@ basis.functions.normal.kernel <- function(rho,
     xy.nodes <- rbind(rep(x.nodes,each=length(y.nodes)),
                       rep(y.nodes,length(x.nodes)));
 
-    xlim <- c(0.5 - 1/sqrt(2), 0.5 + 1/sqrt(2))
-    ylim <- c(0.5 - 1/sqrt(2), 0.5 + 1/sqrt(2))
+    xlim <- c(0.5/sigma.x - sqrt(2/sigma.x), 0.5/sigma.x + sqrt(2/sigma.x))
+    ylim <- c(0.5/sigma.x - sqrt(2/sigma.y), 0.5/sigma.y + sqrt(2/sigma.y))
 
     pdf("nodes-1.pdf", 6, 6)
     par(mar=c(4,4,1,1))
@@ -1693,26 +1711,40 @@ basis.functions.normal.kernel <- function(rho,
          xlim = xlim,
          ylim = ylim)
     ## border 1
-    lines(c(0,1),
+    lines(c(0,1/sigma.y),
           c(0,0))
     ## border 2
-    lines(c(1,1),
-          c(0,1))
+    lines(c(1/sigma.x,1/sigma.y),
+          c(0,1/sigma.y))
     ## border 3
-    lines(c(1,0),
-          c(1,1))
+    lines(c(1/sigma.x,0),
+          c(1/sigma.x,1/sigma.y))
     ## border 4
     lines(c(0,0),
-          c(1,0))
+          c(1/sigma.x,0))
     dev.off()
     
     ## plot(xy.nodes[1,], xy.nodes[2,]);
-    theta <- pi/4;
+    theta <- -pi/4;
     Rot.mat <- matrix(nrow=2,ncol=2,
-                      data=c(c(sin(theta), cos(theta)),
-                             c(-cos(theta), sin(theta))));
-    xieta.nodes <- Rot.mat %*% (xy.nodes - c(0.5,0.5)) + c(0.5,0.5);
+                      data=c(cos(theta), sin(theta),
+                             -sin(theta),  cos(theta)),
+                      byrow=FALSE);
+    xieta.nodes <- Rot.mat %*% (xy.nodes - c(0.5/sigma.x,0.5/sigma.y)) + c(0.5/sigma.x,0.5/sigma.y)
+    plot(xieta.nodes[1,],
+         xieta.nodes[2,])
 
+    Rot.mat <- matrix(nrow=2,ncol=2,
+                      data=c(sigma.x*cos(theta), sigma.y*sin(theta),
+                             sigma.x*-sin(theta),  sigma.y*cos(theta)),
+                      byrow=FALSE);
+xieta.nodes <- Rot.mat %*% (xy.nodes - c(0.5/sigma.x,0.5/sigma.y)) + c(0.5,0.5);
+    plot(xieta.nodes[1,],
+         xieta.nodes[2,])
+
+    xlim <- c(0.5 - sqrt(2), 0.5 + sqrt(2))
+    ylim <- c(0.5 - sqrt(2), 0.5 + sqrt(2))
+    
     pdf("nodes-2.pdf")
     par(mar=c(4,4,1,1))
     plot(x = xieta.nodes[1,],
@@ -1733,8 +1765,7 @@ basis.functions.normal.kernel <- function(rho,
     ## border 4
     lines(c(0,0),
           c(1,0))
-    
-    
+        
     xieta.nodes <- xieta.nodes[, (xieta.nodes[1,] >= -0.5) & (xieta.nodes[1,] <= 1.5) &
                                  (xieta.nodes[2,] >= -0.5) & (xieta.nodes[2,] <= 1.5)];
 

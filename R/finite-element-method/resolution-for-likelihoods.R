@@ -1,5 +1,3 @@
-## This script generates figures which compare the profile of the
-## likelihood with respect to resolution in the ``small'' direction
 rm(list=ls());
 library("mvtnorm");
 source("2-d-solution.R");
@@ -302,9 +300,9 @@ analytic.derivative.compute <- function(problem.parameters) {
     return (out.x * out.y);
 };
 
-sigma.x=0.30;
-sigma.y=0.10;
-rho=0.9;
+sigma.x=0.3;
+sigma.y=0.07;
+rho=0.7;
 std.dev.factor = 1;
     
 sigma2.x=sigma.x^2;
@@ -330,30 +328,73 @@ function.list <-
 orthonormal.function.list <- function.list;
 orthonormal.function.list <- orthonormal.functions(function.list,
                                                    dx,dy,x,y,
-                                                   FALSE);
+                                                   TRUE);
 system.mats <- system.matrices(orthonormal.function.list,
                                dx,dy);
-save(file="basis-functions-0.3-0.1-0.9.Rdata", list=c("orthonormal.function.list",
+save(file="basis-functions-0.3-0.07-0.7.Rdata", list=c("orthonormal.function.list",
                                                        "system.mats",
                                                        "sigma.x",
                                                        "sigma.y",
-                                                       "rho"));
+                                                       "rho",
+                                                       "dx"));
 
-load("basis-functions-0.3-0.1-0.9.Rdata");
-load("./figures/sample-small-sigma-and-t.Rdata");
+## load("basis-functions-0.3-0.1-0.9.Rdata");
+## load("./figures/sample-small-sigma-and-t.Rdata");
 
-datum <- sample.results[[3]]$samples$data[[sample.results[[3]]$min.log.sigma.index]]
+datum = NULL;
+datum$sigma.2.y = (0.008695)^2;
+datum$sigma.2.x = (0.009606)^2;
+datum$rho=0.637663;
+datum$ay=-0.005448;
+datum$y.fc=0.005183;
+datum$by=0.015722;
+datum$ax=-0.001143;
+datum$x.fc=0.004881;
+datum$bx=0.014078;
+datum$x.ic=0.0;
+datum$y.ic=0.0;
+datum$t = 0.75;
+datum$number.terms = 100;
+
+## datum <- sample.results[[2]]$samples$data[[sample.results[[2]]$min.t.index]]
+datum$number.terms = 100;
+datum$t = 1.0;
+
+Lx = datum$bx - datum$ax;
+Ly = datum$by - datum$ay;
+
+tau.x <- sqrt(datum$sigma.2.x)/Lx;
+tau.y <- sqrt(datum$sigma.2.y)/Ly;
+
+t.tilde <- datum$t*(tau.x)^2
+sigma.y.tilde <- tau.y/tau.x
+
+datum$sigma.2.y <- sigma.y.tilde^2;
+datum$sigma.2.x <- 1;
+datum$rho <- 0.54;
+datum$ay= datum$ay/Ly
+datum$y.fc= datum$y.fc/Ly
+datum$by= datum$by/Ly
+datum$ax= datum$ax/Lx
+datum$x.fc= datum$x.fc/Lx
+datum$bx= datum$bx/Lx
+datum$x.ic=0.0;
+datum$y.ic=0.0;
+datum$t = t.tilde;
+
+analytic.derivative.compute(problem.parameters = datum);
+
 likelihood.surfaces <- produce.likelihood.surfaces(datum=datum,
                                                    orthonormal.function.list = orthonormal.function.list,
                                                    system.mats=system.mats,
-                                                   rho = 0,
+                                                   rho = 0.0,
                                                    dx = 1/500,
-                                                   h = exp(-2.7),
-                                                   sigma.ys = seq(0.1,1,by=0.1),
-                                                   ts=exp(seq(-5,1,length.out=15)));
+                                                   h = 1/400,
+                                                   sigma.ys = c(sigma.y.tilde),
+                                                   ts=c(t.tilde));
 save(file="./figures/likelihood-surfaces-rho-0.9-small-sigma.Rdata", list = c("likelihood.surfaces"));
 
-datum <- sample.results[[3]]$samples$data[[sample.results[[3]]$min.t.index]]
+datum <- sample.results[[2]]$samples$data[[sample.results[[2]]$min.t.index]]
 ## datum <- sample.results[[2]]$samples$data[[sample(x=seq(1,5000), size=1)]]
 likelihood.surfaces <- produce.likelihood.surfaces(datum=datum,
                                                    orthonormal.function.list = orthonormal.function.list,
