@@ -1658,10 +1658,10 @@ basis.functions.normal.kernel <- function(rho,
     }
     
     x.nodes <- c(rev(seq(from=0.5/sigma.x,
-                         to=0.5/sigma.x - sqrt(1/4 * (1/sigma2.x + 1/sigma2.y)),
+                         to=0.5/sigma.x - sqrt( (1/sigma2.x + 1/sigma2.y)),
                          by=-by.x)),
                  seq(from=0.5/sigma.x,
-                         to=0.5/sigma.x + sqrt(1/4 * (1/sigma2.x + 1/sigma2.y)),
+                         to=0.5/sigma.x + sqrt( (1/sigma2.x + 1/sigma2.y)),
                          by=by.x))
     ## x.nodes <- c(seq(0.5-sqrt(2), 0.5,
     ##                  by=std.dev.factor*sigma*sqrt(1-rho)/sqrt(1+rho)),
@@ -1680,10 +1680,10 @@ basis.functions.normal.kernel <- function(rho,
     }
     
     y.nodes <- c(rev(seq(from=0.5/sigma.y,
-                         to=0.5/sigma.y - sqrt(1/4 * (1/sigma2.x + 1/sigma2.y)),
+                         to=0.5/sigma.y - sqrt( (1/sigma2.x + 1/sigma2.y)),
                          by=-by.y)),
                  seq(from = 0.5/sigma.y,
-                     to = 0.5/sigma.y + sqrt(1/4 * (1/sigma2.x + 1/sigma2.y)),
+                     to = 0.5/sigma.y + sqrt( (1/sigma2.x + 1/sigma2.y)),
                      by=by.y))
 
     ## y.nodes <- c(seq(0.5-sqrt(2), 0.5,

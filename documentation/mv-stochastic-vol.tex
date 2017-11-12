@@ -150,10 +150,11 @@ account the highest and lowest observed prices of each asset as part
 of a likelihood-based (Bayesian) estimation procedure.
 
 \section{Model}
-As in Chapter 1, we begin with the continuous-time stochastic
-volatility model of \cite{hull1987pricing}, where the log-prices of two assets
-$(\hat{x}_t, \hat{y}_t)$ follow Brownian motions and the
-time-varying log-volatility processes $(\log(\hat{\sigma}_{x,t}, \log(\hat{\sigma}_{y,t}))$ follow a
+As in Chapter 1, we begin with a two-asset version of the
+continuous-time stochastic volatility model of \cite{hull1987pricing},
+where the log-prices of the two assets $(\hat{x}_t, \hat{y}_t)$ follow
+Brownian motions and the time-varying log-volatility processes
+$(\log(\hat{\sigma}_{x,t}, \log(\hat{\sigma}_{y,t}))$ follow a
 mean-reverting Ornstein-Uhlenbeck (OU) processes,
 \begin{align}
   d\hat{x}_t &= \hat{\mu}_x\, dt + \hat{\sigma}_{t,x}\, \sqrt{dt} \hat{\epsilon}_{t,x}  ,  \label{eq:price_evo-x} \\
@@ -166,7 +167,7 @@ The terms $\hat{\epsilon}_{t,x}$, $\hat{\epsilon}_{t,y}$,
 $\hat{\epsilon}_{t,1}$, $\hat{\epsilon}_{t,2}$, $\hat{\epsilon}_{t,\rho}$ are all Wiener
 processes with instantaneous correlation structure 
 \begin{align*}
-  \E{\hat{\epsilon}_{t,x}\hat{\epsilon}_{t,1}} &= \E{\hat{\epsilon}_{t,y}\hat{\epsilon}_{t,2}} = \rho_{l}, & \E{\hat{\epsilon}_{t,x}\hat{\epsilon}_{t,y}} &= \hat{\rho}_t, & \E{\hat{\epsilon}_{t,1}\hat{\epsilon}_{t,2}} &= 0.
+  \E{\hat{\epsilon}_{t,x}\hat{\epsilon}_{t,1}} &= \E{\hat{\epsilon}_{t,y}\hat{\epsilon}_{t,2}} = \rho_{l}, & \E{\hat{\epsilon}_{t,x}\hat{\epsilon}_{t,y}} &= \hat{\rho}_t, & \E{\hat{\epsilon}_{t,1}\hat{\epsilon}_{t,2}} = \E{\hat{\epsilon}_{t,1}\hat{\epsilon}_{t,\rho}} = \E{\hat{\epsilon}_{t,2}\hat{\epsilon}_{t,\rho}} &= 0.
 \end{align*}
 Here, $\rho_l$ captures is the leverage effect of volatility shocks to
 the innovations in prices, while $\hat{\rho}_t$ is the time-dependent
@@ -184,48 +185,32 @@ The estimation of models of the form (\ref{eq:price_evo-x}) -
 largely done without taking into account the extrema in
 (\ref{eq:extrema}). Out of the works which do attempt to include
 period ranges in a likelihood setting, no one has succesffully done so
-for the bivariate case wher $\rho_t \neq 0$. This work aims to fill
+for the bivariate case wher $\tilde{\rho}_t \neq 0$. This paper aims to fill
 this gap in the literature. 
 
 To do so, we first discretize the continuous-time model. Follwing
 Chapter 1, we can discretize the model in (\ref{eq:price_evo-x}) -
 (\ref{eq:correlation-evolution-continuous}) by using the solution to
-the Ornstein-Uhlenbeck process.  The model we then estimate is a
-bivaraite, 1-factor stochastic volatility model with leverage:
+the Ornstein-Uhlenbeck process.  We then estimate a
+bivaraite, 1-factor stochastic volatility model with leverage, where
+the extrema of the observable processes are part of the model:
 
 \begin{align}
-  \left( \begin{array}{c}
-           x_t \\
-           y_t
-         \end{array} \right) &= \left( \begin{array}{c}
-                                         x_{t-\Delta} \\
-                                         y_{t-\Delta}
-                                       \end{array} \right) +
-  \left( \begin{array}{c}
-           \mu_x\Delta \\
-           \mu_y\Delta \end{array} \right) +
-  \left( \begin{array}{cc}
-           \sqrt{1-\rho_t^2}\sigma_{x,t} & \rho_t \sigma_{x,t} \\
-           0 & \sigma_{y,t}
-         \end{array} \right)
-               \left( \begin{array}{c}
-                        \epsilon_{x,t} \\
-                        \epsilon_{y,t}
-                      \end{array} \right), \label{eq:process-evolution}\\
-  \inf_{[t-\Delta,t]} x_\tau &= a_{x,t}&  \sup_{[t-\Delta,t]} x_\tau &= b_{x,t} & \inf_{[t-\Delta,t]} y_\tau &= a_{y,t}
-                                                                     & \sup_{[t-\Delta,t]} y_\tau &= b_{y,t} \nonumber \\
-  \log(\sigma_{x,t+\Delta}) &= \alpha_x + \theta_x(\log(\sigma_{x,t}) - \alpha_x) + \tau_x \eta_{x,t}, \\
+  x_t &= x_{t-\Delta} + \hat{\mu}_x\Delta + \sigma_{x,t} \epsilon_{x,t} & \inf_{[t-\Delta,t]} x_\tau &= a_{x,t}&  \sup_{[t-\Delta,t]} x_\tau &= b_{x,t} \label{eq:evolution-process} \\
+  y_t &= y_{t-\Delta} + \hat{\mu}_y\Delta + \sigma_{y,t} \epsilon_{y,t} & \inf_{[t-\Delta,t]} y_\tau &= a_{y,t}&  \sup_{[t-\Delta,t]} y_\tau &= b_{y,t}\\
+   \log(\sigma_{x,t+\Delta}) &= \alpha_x + \theta_x(\log(\sigma_{x,t}) - \alpha_x) + \tau_x \eta_{x,t}, \\
   \log(\sigma_{y,t+\Delta}) &= \alpha_y + \theta_y(\log(\sigma_{y,t}) - \alpha_y) + \tau_y \eta_{y,t}, \\
   \mbox{logit}((\rho_{t+\Delta} + 1)/2) &= \alpha_\rho + \theta_\rho\left(\mbox{logit}((\rho_{t}+1)/2) - \alpha_\rho\right) + \tau_{\rho} \eta_{\rho,t}. \label{eq:correlation-evolution}
 \end{align}
 The marginal distribution for all of the innovation terms
 $\epsilon_{x,t}, \epsilon_{y,t}, \eta_{x,t}, \eta_{y,t},
-\eta_{\rho,t}$ is the standard Gaussian distribution. We
-explicitly write down the realized extrema over the periods
-$[t-\Delta,t]$ to be included as data into the likelihood for the
-dynamical model. We estimate all parameters and dynamical factors in a
-fully Bayes framework via the augmented particle filter of
-\cite{liu2001combined} which we will describe below.
+\eta_{\rho,t}$ is a multivariate Gaussian distribution with the
+correlation structure. We explicitly write down the realized extrema
+over the periods $[t-\Delta,t]$ to be included as data into the
+likelihood for the dynamical model. We estimate all parameters and
+dynamical factors in a fully Bayes framework via the augmented
+particle filter of \cite{liu2001combined} which we will describe
+below.
 
 \subsection{Likelihood for the observables}
 Each period $[t-\Delta,t]$ has six associated observables: opening
@@ -243,22 +228,31 @@ the volatility parameters and the state of the process at time $t-\Delta$:
   \frac{1}{2\pi\,\,\Delta\,\,
     \sigma_{x,t}\sigma_{y,t}\sqrt{1-\rho_t^2}} \exp\left\{
     -\frac{1}{2\,\Delta(1-\rho_t^2)} \left( \frac{(x_t -
-        x_{t-\Delta})^2}{\sigma_{x,t}^2} - 2\rho_t
-      \frac{(x_{t}-x_{t-\Delta})(y_t-y_{t-\Delta})}{\sigma_{x,t}\sigma_{y,t}}
-      + \frac{(y_t - y_{t-\Delta})^2}{\sigma_{y,t}^2}\right) \right\}.
+        x_{t-\Delta} - \mu_x \Delta)^2}{\sigma_{x,t}^2} - 2\rho_t
+      \frac{(x_{t}-x_{t-\Delta} - \mu_x\Delta)(y_t-y_{t-\Delta} - \mu_y\Delta)}{\sigma_{x,t}\sigma_{y,t}}
+      + \frac{(y_t - y_{t-\Delta} - \mu_y\Delta)^2}{\sigma_{y,t}^2}\right) \right\}.
 \]
 Incorporating the extreme values over $[t-\Delta,t]$ is accomplished
 by considering the Fokker-Planck Equation for the forward,
 continuous-time evolution of the probability density function of
 $(x_t, y_t)$ and including $(a_{x,t}, b_{x,t}), (a_{y,t},b_{y,t})$ as
-boundary conditions where the density is zero. The previous work
-describes the method by which the full likelihood function is
-found. However, for the purposes of the particle filter used to
-estimate the model in this work, we improve upon the computational
-method by performing a set of normalizing transformations, allowing
-for more flexibility in the parameters for the basis functions in the
-Galerkin approximation, and extrapolating over certain low-probability
-regions of the parameter space.
+boundary conditions where the density is zero. Chapter 2 introduces a
+method by which we solve the Fokker-Planck Equation. The likelihood
+takes on the form
+\[
+  p(x_t,y_t| x_{t-\Delta}, y_{t-\Delta}, a_{x,t}, b_{x,t}, a_{y,t},b_{y,t},\mu_x, \mu_y, \sigma_{x,t}, \sigma_{y,t}, \rho_t) =
+\]
+\[
+  \frac{\partial^4}{\partial a_x \partial a_y\partial b_x \partial
+    b_y} \left( \sum_{i=1}^I c_i(t) \psi_i(x,y) \right)
+\]
+However, for
+the purposes of the particle filter used to estimate the model in this
+work, we improve upon the computational method by performing a set of
+normalizing transformations, allowing for more flexibility in the
+parameters for the basis functions in the Galerkin approximation, and
+extrapolating over certain low-probability regions of the parameter
+space.
 
 \subsection{Improved likelihood computational method for low
   probability data} \label{sec:improvements} Our method for

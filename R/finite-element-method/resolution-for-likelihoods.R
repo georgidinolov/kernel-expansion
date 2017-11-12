@@ -301,7 +301,7 @@ analytic.derivative.compute <- function(problem.parameters) {
 };
 
 sigma.x=0.3;
-sigma.y=0.07;
+sigma.y=0.10;
 rho=0.7;
 std.dev.factor = 1;
     
@@ -328,7 +328,7 @@ function.list <-
 orthonormal.function.list <- function.list;
 orthonormal.function.list <- orthonormal.functions(function.list,
                                                    dx,dy,x,y,
-                                                   TRUE);
+                                                   FALSE);
 system.mats <- system.matrices(orthonormal.function.list,
                                dx,dy);
 save(file="basis-functions-0.3-0.07-0.7.Rdata", list=c("orthonormal.function.list",
