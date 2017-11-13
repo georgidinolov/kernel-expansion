@@ -301,7 +301,7 @@ analytic.derivative.compute <- function(problem.parameters) {
 };
 
 sigma.x=0.3;
-sigma.y=0.10;
+sigma.y=0.07;
 rho=0.7;
 std.dev.factor = 1;
     
@@ -331,7 +331,7 @@ orthonormal.function.list <- orthonormal.functions(function.list,
                                                    FALSE);
 system.mats <- system.matrices(orthonormal.function.list,
                                dx,dy);
-save(file="basis-functions-0.3-0.07-0.7.Rdata", list=c("orthonormal.function.list",
+save(file="basis-functions-0.3-0.1-0.7.Rdata", list=c("orthonormal.function.list",
                                                        "system.mats",
                                                        "sigma.x",
                                                        "sigma.y",
@@ -394,16 +394,16 @@ likelihood.surfaces <- produce.likelihood.surfaces(datum=datum,
                                                    ts=c(t.tilde));
 save(file="./figures/likelihood-surfaces-rho-0.9-small-sigma.Rdata", list = c("likelihood.surfaces"));
 
-datum <- sample.results[[2]]$samples$data[[sample.results[[2]]$min.t.index]]
 ## datum <- sample.results[[2]]$samples$data[[sample(x=seq(1,5000), size=1)]]
+datum <- sample.results[[3]]$samples$data[[sample.results[[3]]$min.t.index]]
 likelihood.surfaces <- produce.likelihood.surfaces(datum=datum,
                                                    orthonormal.function.list = orthonormal.function.list,
                                                    system.mats=system.mats,
-                                                   rho = 0,
-                                                   dx = 1/450,
+                                                   rho = 0.9,
+                                                   dx = 1/500,
                                                    h = exp(-2.7),
-                                                   sigma.ys = seq(0.1,1,by=0.1),
-                                                   ts=exp(seq(-5,1,length.out=15)));
+                                                   sigma.ys = seq(0.4,1,by=0.1),
+                                                   ts=exp(seq(-5,1,length.out=15))[10:15]);
 save(file="./figures/likelihood-surfaces-rho-0.9-small-t.Rdata", list = c("likelihood.surfaces"));
 
 rel.error.2 <- matrix(NA, nrow=10,ncol=15)
@@ -436,7 +436,7 @@ filled.contour(sigma.ys, ts, diff,
                color.palette = heat.colors)
 
 
-pdf("~/PDE-solvers/src/kernel-expansion/documentation/small-sigma-Galerkin-no-filter-rho-09.pdf", 8,8)
+pdf("~/PDE-solvers/src/kernel-expansion/documentation/small-t-Galerkin-no-filter-rho--09.pdf", 8,8)
 filled.contour(sigma.ys, ts, likelihoods,
                xlab = TeX("$\\tau_y / \\tau_x$"),
                ylab = TeX("$\\tilde{t}$"),
@@ -461,13 +461,13 @@ for (ii in seq(4,10)) {
     plot(ts, likelihoods[ii,], ylim=c(0,3));
 }
 
-f1 <- likelihoods[6,9];
+f1 <- likelihoods[6,10];p
 x1 <- sigma.ys[6];
 
-f2 <- likelihoods[7,9];
+f2 <- likelihoods[7,10];
 x2 <- sigma.ys[7]
 
-f3 <- likelihoods[10,9];
+f3 <- likelihoods[10,10];
 x3 <- sigma.ys[10];
 
 neg.alpha.min.1 <- (log(f2/f3) - log(f1/f2)/(1/x1 - 1/x2)*(1/x2 - 1/x3)) /
@@ -477,6 +477,9 @@ alpha <- -1*neg.alpha.min.1 + 1
 beta <- -(log(f1/f2) + (alpha+1)*log(x1/x2))/(1/x1 - 1/x2)
 CC <- exp(log(f1) + (alpha+1)*log(x1) + beta/x1);
 
-plot(sigma.ys, likelihoods[,9], ylim=c(0,max(likelihoods[,9], na.rm=TRUE)))
+plot(sigma.ys, likelihoods[,10], ylim=c(0,max(likelihoods[,10], na.rm=TRUE)))
 lines(sigma.ys, CC*sigma.ys^(-(alpha+1))*exp(-beta/sigma.ys), col = "blue")
 lines(sigma.ys, analytic.likelihoods[,9], col="red")
+
+likelihoods <- matrix(nrow=10,ncol=15);
+likelihoods[4:10, 10:15] <- likelihood.surfaces$analytic.likelihoods
