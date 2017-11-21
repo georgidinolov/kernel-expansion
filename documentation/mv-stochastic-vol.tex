@@ -150,12 +150,14 @@ account the highest and lowest observed prices of each asset as part
 of a likelihood-based (Bayesian) estimation procedure.
 
 \section{Model}
-As in Chapter 1, we begin with a two-asset version of the
-continuous-time stochastic volatility model of \cite{hull1987pricing},
-where the log-prices of the two assets $(\hat{x}_t, \hat{y}_t)$ follow
-Brownian motions and the time-varying log-volatility processes
+We begin with a two-asset version of the continuous-time stochastic
+volatility model of \cite{hull1987pricing}, where the log-prices of
+the two assets $(\hat{x}_t, \hat{y}_t)$ follow Brownian motions and
+the time-varying log-volatility processes
 $(\log(\hat{\sigma}_{x,t}, \log(\hat{\sigma}_{y,t}))$ follow a
-mean-reverting Ornstein-Uhlenbeck (OU) processes,
+mean-reverting Ornstein-Uhlenbeck (OU) processes. However, we
+additionally posit that the logit-transformed instantaneour
+correlation of the assets also follows an OU process:
 \begin{align}
   d\hat{x}_t &= \hat{\mu}_x\, dt + \hat{\sigma}_{t,x}\, \sqrt{dt} \hat{\epsilon}_{t,x}  ,  \label{eq:price_evo-x} \\
   d\hat{y}_t &= \hat{\mu}_y\, dt + \hat{\sigma}_{t,y}\, \sqrt{dt} \hat{\epsilon}_{t,y}  ,  \label{eq:price_evo-y} \\
@@ -167,15 +169,13 @@ The terms $\hat{\epsilon}_{t,x}$, $\hat{\epsilon}_{t,y}$,
 $\hat{\epsilon}_{t,1}$, $\hat{\epsilon}_{t,2}$, $\hat{\epsilon}_{t,\rho}$ are all Wiener
 processes with instantaneous correlation structure 
 \begin{align*}
-  \E{\hat{\epsilon}_{t,x}\hat{\epsilon}_{t,1}} &= \E{\hat{\epsilon}_{t,y}\hat{\epsilon}_{t,2}} = \rho_{l}, & \E{\hat{\epsilon}_{t,x}\hat{\epsilon}_{t,y}} &= \hat{\rho}_t, & \E{\hat{\epsilon}_{t,1}\hat{\epsilon}_{t,2}} = \E{\hat{\epsilon}_{t,1}\hat{\epsilon}_{t,\rho}} = \E{\hat{\epsilon}_{t,2}\hat{\epsilon}_{t,\rho}} &= 0.
+  \E{\hat{\epsilon}_{t,x}\hat{\epsilon}_{t,y}} &= \hat{\rho}_t, &\E{\hat{\epsilon}_{t,x}\hat{\epsilon}_{t,1}} &= \rho_{l,x}, & \E{\hat{\epsilon}_{t,y}\hat{\epsilon}_{t,2}} &= \rho_{l,y}, & \E{\hat{\epsilon}_{t,1}\hat{\epsilon}_{t,2}} = \E{\hat{\epsilon}_{t,1}\hat{\epsilon}_{t,\rho}} = \E{\hat{\epsilon}_{t,2}\hat{\epsilon}_{t,\rho}} &= 0.
 \end{align*}
-Here, $\rho_l$ captures is the leverage effect of volatility shocks to
-the innovations in prices, while $\hat{\rho}_t$ is the time-dependent
-correlation between prices that also follows a mean-reverting process
-on the logit scale. The Wiener process $\epsilon_{t,\rho}$ driving
-$\hat{\rho}_t$ is independent of all other processes so far. Over any
-finite period $[t-\Delta, t]$, we denote the extrema obtained by the
-processes $(\hat{x}_t, \hat{y}_t)$ as
+Here, $\rho_{l, \cdot}$ captures the leverage effect of volatility
+shocks to the innovations in prices. The Wiener process
+$\epsilon_{t,\rho}$ driving $\hat{\rho}_t$ is independent of all other
+processes so far. Over any finite period $[t-\Delta, t]$, we denote
+the extrema obtained by the processes $(\hat{x}_t, \hat{y}_t)$ as
 \begin{align}
 M_X(t) &=\max_{t-\Delta\leq s\leq t}\hat{x}_s, & m_X(t) &=\min_{t-\Delta\leq s\leq t}\hat{x}_s, &
 M_Y(t) &=\max_{t-\Delta\leq s\leq t}\hat{y}_s, & m_Y(t)=\min_{t-\Delta \leq s\leq t}\hat{y}_s. \label{eq:extrema}
@@ -184,35 +184,71 @@ The estimation of models of the form (\ref{eq:price_evo-x}) -
 (\ref{eq:correlation-evolution-continuous}) in the literature is
 largely done without taking into account the extrema in
 (\ref{eq:extrema}). Out of the works which do attempt to include
-period ranges in a likelihood setting, no one has succesffully done so
-for the bivariate case wher $\tilde{\rho}_t \neq 0$. This paper aims to fill
-this gap in the literature. 
+period ranges in a likelihood setting, no one has done so for the
+bivariate case wher $\tilde{\rho}_t \neq 0$. This paper aims to fill
+this gap in the literature.
 
 To do so, we first discretize the continuous-time model. Follwing
 Chapter 1, we can discretize the model in (\ref{eq:price_evo-x}) -
 (\ref{eq:correlation-evolution-continuous}) by using the solution to
-the Ornstein-Uhlenbeck process.  We then estimate a
-bivaraite, 1-factor stochastic volatility model with leverage, where
-the extrema of the observable processes are part of the model:
+the Ornstein-Uhlenbeck process. This produces a bivaraite,
+single-factor stochastic volatility model with leverage, where the
+extrema of the observable processes are part of the model:
 
 \begin{align}
-  x_t &= x_{t-\Delta} + \hat{\mu}_x\Delta + \sigma_{x,t} \epsilon_{x,t} & \inf_{[t-\Delta,t]} x_\tau &= a_{x,t}&  \sup_{[t-\Delta,t]} x_\tau &= b_{x,t} \label{eq:evolution-process} \\
-  y_t &= y_{t-\Delta} + \hat{\mu}_y\Delta + \sigma_{y,t} \epsilon_{y,t} & \inf_{[t-\Delta,t]} y_\tau &= a_{y,t}&  \sup_{[t-\Delta,t]} y_\tau &= b_{y,t}\\
+  x_t &= x_{t-\Delta} + \mu_x + \sigma_{x,t} \epsilon_{x,t} & \inf_{[t-\Delta,t]} x_\tau &= a_{x,t}&  \sup_{[t-\Delta,t]} x_\tau &= b_{x,t} \label{eq:evolution-process} \\
+  y_t &= y_{t-\Delta} + \mu_y + \sigma_{y,t} \epsilon_{y,t} & \inf_{[t-\Delta,t]} y_\tau &= a_{y,t}&  \sup_{[t-\Delta,t]} y_\tau &= b_{y,t}\\
    \log(\sigma_{x,t+\Delta}) &= \alpha_x + \theta_x(\log(\sigma_{x,t}) - \alpha_x) + \tau_x \eta_{x,t}, \\
   \log(\sigma_{y,t+\Delta}) &= \alpha_y + \theta_y(\log(\sigma_{y,t}) - \alpha_y) + \tau_y \eta_{y,t}, \\
-  \mbox{logit}((\rho_{t+\Delta} + 1)/2) &= \alpha_\rho + \theta_\rho\left(\mbox{logit}((\rho_{t}+1)/2) - \alpha_\rho\right) + \tau_{\rho} \eta_{\rho,t}. \label{eq:correlation-evolution}
+  \mbox{logit}((\rho_{t+\Delta} + 1)/2) &= \alpha_\rho + \theta_\rho\left(\mbox{logit}((\rho_{t}+1)/2) - \alpha_\rho\right) + \tau_{\rho} \eta_{\rho,t}, \label{eq:correlation-evolution}
 \end{align}
-The marginal distribution for all of the innovation terms
-$\epsilon_{x,t}, \epsilon_{y,t}, \eta_{x,t}, \eta_{y,t},
-\eta_{\rho,t}$ is a multivariate Gaussian distribution with the
-correlation structure. We explicitly write down the realized extrema
-over the periods $[t-\Delta,t]$ to be included as data into the
-likelihood for the dynamical model. We estimate all parameters and
-dynamical factors in a fully Bayes framework via the augmented
-particle filter of \cite{liu2001combined} which we will describe
-below.
+where
+\begin{align}
+  \sigma_{j+1,i} &= \hat{\sigma}_{(j+1)\Delta,i}\sqrt{\Delta}, &\alpha(\Delta) &= \halpha + \frac{1}{2}\log(\Delta) , &
+  \mu(\Delta) &= \hat{\mu} \Delta , & \theta_i(\Delta) &= \exp\left\{
+    -\hat{\theta}_i \Delta \right\} , & \tau_i(\Delta) &= \hat{\tau}_i
+  \sqrt{ \frac{1 - \exp \left\{ -2\hat{\theta}_i \Delta
+      \right\}}{2\hat{\theta}_i } }, \label{eq:mu_sigma_tau}
+\end{align}
+Integrating over the extrema $(a_{x,t}, b_{x,t}, a_{y,t}, b_{y,t})$
+produces a Gaussian marginal distribution for all of the innovation
+terms
+$(\epsilon_{x,t}, \epsilon_{y,t}, \eta_{x,t}, \eta_{y,t},
+\eta_{\rho,t})$
+\begin{align}
+  \left( \begin{array}{c}
+           \epsilon_{x,t} \\
+           \epsilon_{y,t} \\
+           \eta_{x,t} \\
+           \eta_{y,t} \\
+           \eta_{\rho,t}
+         \end{array} \right) &\sim N\left(
+                               \left( \begin{array}{c}
+                                        0\\
+                                        0\\
+                                        0\\
+                                        0\\
+                                        0
+                                      \end{array} \right),
+  \left( \begin{array}{ccccc}
+           1 & \rho_t & \rho_{l,x} & 0 & 0 \\
+           \rho_t & 1 & 0 & \rho_{l,y} & 0 \\
+           \rho_{l,x} & 0 & 1 & 0 & 0 \\
+           0 & \rho_{l,y} & 0 & 1 & 0 \\
+           0 & 0 & 0 & 0 & 1
+           \end{array} \right) \right). \label{eq:marginal-errors}
+\end{align}
+We explicitly write down the realized extrema over the periods
+$[t-\Delta,t]$ to be included as data into the likelihood for the
+dynamical model. This precludes us from using
+(\ref{eq:marginal-errors}) to derive the likelihood for the model,
+which will be discussed below in Section
+\ref{sec:likelihood-for-obs}. We estimate all parameters and dynamical
+factors in a fully Bayes framework via the augmented particle filter
+of \cite{liu2001combined} which we will describe in Section
+\ref{particle-filtering}.
 
-\subsection{Likelihood for the observables}
+\subsection{Likelihood for the observables} \label{sec:likelihood-for-obs}
 Each period $[t-\Delta,t]$ has six associated observables: opening
 coordinate $(x_{t-\Delta},y_{t-\Delta})$, closing coordinate
 $(x_{t},y_{t})$, and the observed extrema in each nominal direction
@@ -221,38 +257,55 @@ $(a_{x,t}, b_{x,t}), (a_{y,t},b_{y,t})$. Given the evolution model in
 the extrema yields the usual bivariate Gaussian density in terms of
 the volatility parameters and the state of the process at time $t-\Delta$:
 
-\[
-  p(x_t,y_t| x_{t-\Delta}, y_{t-\Delta}, \mu_x, \mu_y, \sigma_{x,t}, \sigma_{y,t}, \rho_t) =
-\]
-\[
-  \frac{1}{2\pi\,\,\Delta\,\,
+\begin{align*}
+  &p(x_t,y_t| x_{t-\Delta}, y_{t-\Delta}, \mu_x, \mu_y, \sigma_{x,t}, \sigma_{y,t}, \rho_t) & = &\\
+&  \frac{1}{2\pi\,\,\Delta\,\,
     \sigma_{x,t}\sigma_{y,t}\sqrt{1-\rho_t^2}} \exp\left\{
     -\frac{1}{2\,\Delta(1-\rho_t^2)} \left( \frac{(x_t -
         x_{t-\Delta} - \mu_x \Delta)^2}{\sigma_{x,t}^2} - 2\rho_t
       \frac{(x_{t}-x_{t-\Delta} - \mu_x\Delta)(y_t-y_{t-\Delta} - \mu_y\Delta)}{\sigma_{x,t}\sigma_{y,t}}
-      + \frac{(y_t - y_{t-\Delta} - \mu_y\Delta)^2}{\sigma_{y,t}^2}\right) \right\}.
-\]
+      + \frac{(y_t - y_{t-\Delta} - \mu_y\Delta)^2}{\sigma_{y,t}^2}\right) \right\}.&
+\end{align*}
+
 Incorporating the extreme values over $[t-\Delta,t]$ is accomplished
 by considering the Fokker-Planck Equation for the forward,
-continuous-time evolution of the probability density function of
-$(x_t, y_t)$ and including $(a_{x,t}, b_{x,t}), (a_{y,t},b_{y,t})$ as
-boundary conditions where the density is zero. Chapter 2 introduces a
-method by which we solve the Fokker-Planck Equation. The likelihood
-takes on the form
+continuous-time evolution of the probability density function for the
+bounded process $(x_t, y_t)$ and including
+$(a_{x,t}, b_{x,t}), (a_{y,t},b_{y,t})$ as boundary conditions:
+
+\begin{align}
+  \displaystyle \frac{\partial q}{\partial t}  &= -\mu_x \frac{\partial q}{\partial x}
+                                         - \mu_y \frac{\partial q}{\partial y}
+                                         + \frac{1}{2}\sigma_{x,t}^2 \frac{\partial^2 q }{\partial x^2}
+                                         + \rho_t\sigma_{x,t}\sigma_{y,t} \frac{\partial^2 q}{\partial x \partial y}
+                                         + \frac{1}{2}\sigma_{y,t}^2 \frac{\partial^2 q}{\partial y^2}, \\
+  q(a_{x,t}, y,t') &= q(b_{x,t},y,t') = q(x,a_{y,t},t') = q(x,b_{y,t},t') = 0,& t-\Delta &< t' \leq t, \\
+  q(x,y,t-\Delta) &= \delta(x_{t-\Delta} - x)\delta(y_{t-\Delta} - y).
+\end{align}
+Chapter 2 introduces an efficient method by which we approximate the
+solution to the Fokker-Planck Equation above via a non-seperable basis
+expansion capable of resolving the correlation in the process. The
+likelihood for the joint distribution of the observables is obtained
+by differentiating with respect to the boundaries
+
 \[
-  p(x_t,y_t| x_{t-\Delta}, y_{t-\Delta}, a_{x,t}, b_{x,t}, a_{y,t},b_{y,t},\mu_x, \mu_y, \sigma_{x,t}, \sigma_{y,t}, \rho_t) =
+  p(x_t,y_t, a_{x,t}, b_{x,t}, a_{y,t},b_{y,t},| x_{t-\Delta},
+  y_{t-\Delta}, \mu_x, \mu_y, \sigma_{x,t}, \sigma_{y,t}, \rho_t) =
 \]
 \[
   \frac{\partial^4}{\partial a_x \partial a_y\partial b_x \partial
-    b_y} \left( \sum_{i=1}^I c_i(t) \psi_i(x,y) \right)
+    b_y} q(x_t, y_t, a_{x,t}, b_{x,t}, a_{y,t}, b_{y,t} |
+  x_{t-\Delta}, y_{t-\Delta}, \mu_x, \mu_y, \sigma_{x,t},
+  \sigma_{y,t}, \rho_t) = \frac{\partial^4}{\partial a_x \partial
+    a_y\partial b_x \partial b_y} \left( \sum_{i=1}^I c_i(t)
+    \psi_i(x,y) \right)
 \]
-However, for
-the purposes of the particle filter used to estimate the model in this
-work, we improve upon the computational method by performing a set of
-normalizing transformations, allowing for more flexibility in the
-parameters for the basis functions in the Galerkin approximation, and
-extrapolating over certain low-probability regions of the parameter
-space.
+However, for the purposes of the particle filter used to estimate the
+model in this work, we improve upon the computational method by
+performing a set of normalizing transformations, allowing for more
+flexibility in the parameters for the basis functions in the Galerkin
+approximation, and extrapolating over certain low-probability regions
+of the parameter space.
 
 \subsection{Improved likelihood computational method for low
   probability data} \label{sec:improvements} Our method for
@@ -612,8 +665,24 @@ respect to the boundaries and having the form
 
       Our method is illustrated in Figure (\ref{eq:extrapolating})
       below. The left panel shows the analytic and extended Galerkin
-      likleihoods over the range for $\tilde{t}$
+      likleihoods over the range for $\tau_x/\tau_y$.
 
+      \begin{figure}
+  \centering
+  \begin{tabular}{cc}
+    \begin{minipage}{0.45\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{small-sigma-extrapolation-rho-0.pdf}
+    \end{minipage}
+    %% 
+    & \begin{minipage}{0.45\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{small-t-extrapolation-rho-0.pdf}
+    \end{minipage}
+  \end{tabular}
+  \caption{.}
+  \label{fig:extrapolation}
+\end{figure}
       \begin{figure}
         \centering
         \includegraphics[scale=0.5]{small-sigma-extrapolation-rho-0.pdf}
@@ -624,7 +693,7 @@ respect to the boundaries and having the form
     \end{enumerate}
 
 
-\section{Particle Filtering}
+\section{Particle Filtering} \label{particle-filtering}
 Bayesian approaches for estimating complex hierarchical models like
 those in (\ref{eq:process-evolution}) -
 (\ref{eq:correlation-evolution}) are common. The primary focus of such
