@@ -156,26 +156,72 @@ the two assets $(\hat{x}_t, \hat{y}_t)$ follow Brownian motions and
 the time-varying log-volatility processes
 $(\log(\hat{\sigma}_{x,t}, \log(\hat{\sigma}_{y,t}))$ follow a
 mean-reverting Ornstein-Uhlenbeck (OU) processes. However, we
-additionally posit that the logit-transformed instantaneour
-correlation of the assets also follows an OU process:
+additionally posit that the logit-transformed instantaneous
+correlation of the assets also follows an OU process. We write down
+the continuous-time process in its stochastic differential equation form:
 \begin{align}
-  d\hat{x}_t &= \hat{\mu}_x\, dt + \hat{\sigma}_{t,x}\, \sqrt{dt} \hat{\epsilon}_{t,x}  ,  \label{eq:price_evo-x} \\
-  d\hat{y}_t &= \hat{\mu}_y\, dt + \hat{\sigma}_{t,y}\, \sqrt{dt} \hat{\epsilon}_{t,y}  ,  \label{eq:price_evo-y} \\
-  d\log( \hat{ \sigma }_{t,x}) &= -\hat{\theta}_x ( \log(\hat{\sigma}_{t,x} ) - \hat{\alpha}_x )\, dt + \hat{\tau}_x\, \sqrt{dt} \hat{\epsilon}_{t,1}  ,  \label{eq:vol_evo-x} \\
-  d\log( \hat{ \sigma }_{t,y}) &= -\hat{\theta}_y ( \log(\hat{\sigma}_{t,y} ) - \hat{\alpha}_y )\, dt + \hat{\tau}_y\, \sqrt{dt} \hat{\epsilon}_{t,2}  ,  \label{eq:vol_evo-y} \\
-  d\mbox{logit}((\hat{\rho}_{t} + 1)/2) &= -\hat{\theta}_\rho\left(\mbox{logit}((\hat{\rho}_{t}+1)/2) - \hat{\alpha}_\rho\right) + \hat{\tau}_{\rho} \hat{\epsilon}_{t,\rho}. \label{eq:correlation-evolution-continuous}
+  d \left( \begin{array}{c}
+           \hat{x}_t \\
+           \hat{y}_t \\
+           \log( \hat{ \sigma }_{t,x}) \\
+           \log( \hat{ \sigma }_{t,y}) \\
+           \mbox{logit}((\hat{\rho}_{t} + 1)/2)
+         \end{array} \right) & =
+                               \underbrace{\left( \begin{array}{c}
+                                        \hat{\mu}_x \\
+                                        \hat{\mu}_y \\
+                                        -\hat{\theta}_x(\log(\hat{\sigma}_{t,x}) - \hat{\alpha}_x) \\
+                                        -\hat{\theta}_y(\log(\hat{\sigma}_{t,y}) - \hat{\alpha}_y) \\
+                                        -\hat{\theta}_\rho\left(\mbox{logit}((\hat{\rho}_{t}+1)/2) - \hat{\alpha}_\rho\right)
+                                      \end{array} \right)}_{\mu(X_t)}\,dt  + \nonumber \\
+  & \underbrace{ \left( \begin{array}{ccccc}
+           \hat{\sigma}_{t,x} & 0 & 0 & 0 & 0 \\
+           \hat{\sigma}_{t,y}\hat{\rho}_t & \hat{\sigma}_{t,y}\sqrt{1-\hat{\rho}_t^2} &0 &0 &0 \\
+           \hat{\tau}_x \rho_{x,l} & 0 & \hat{\tau}_x\sqrt{1-\hat{\rho}_{x,l}^2} & 0 & 0 \\
+           0 & \hat{\tau}_y\rho_{y,l} & 0 & \hat{\tau}_y\sqrt{1-\rho_{y,l}^2} & 0 \\
+           0& 0& 0& 0& \hat{\tau}_{\rho}
+         \end{array} \right)}_{\sigma(X_t)}
+  \left( \begin{array}{c}
+           dW_{x,t} \\
+           dW_{y,t} \\
+           dB_{x,t} \\
+           dB_{y,t} \\
+           dB_{\rho,t}
+         \end{array} \right) \label{eq:cont-evoluation}
 \end{align}
-The terms $\hat{\epsilon}_{t,x}$, $\hat{\epsilon}_{t,y}$,
-$\hat{\epsilon}_{t,1}$, $\hat{\epsilon}_{t,2}$, $\hat{\epsilon}_{t,\rho}$ are all Wiener
-processes with instantaneous correlation structure 
-\begin{align*}
-  \E{\hat{\epsilon}_{t,x}\hat{\epsilon}_{t,y}} &= \hat{\rho}_t, &\E{\hat{\epsilon}_{t,x}\hat{\epsilon}_{t,1}} &= \rho_{l,x}, & \E{\hat{\epsilon}_{t,y}\hat{\epsilon}_{t,2}} &= \rho_{l,y}, & \E{\hat{\epsilon}_{t,1}\hat{\epsilon}_{t,2}} = \E{\hat{\epsilon}_{t,1}\hat{\epsilon}_{t,\rho}} = \E{\hat{\epsilon}_{t,2}\hat{\epsilon}_{t,\rho}} &= 0.
-\end{align*}
-Here, $\rho_{l, \cdot}$ captures the leverage effect of volatility
-shocks to the innovations in prices. The Wiener process
-$\epsilon_{t,\rho}$ driving $\hat{\rho}_t$ is independent of all other
-processes so far. Over any finite period $[t-\Delta, t]$, we denote
-the extrema obtained by the processes $(\hat{x}_t, \hat{y}_t)$ as
+where
+$X_t := (\hat{x}_t, \hat{y}_t, \log(\hat{\sigma}_{t,x}),
+\log(\hat{\sigma}_{t,y}), \mbox{logit}((\hat{\rho}_{t} + 1)/2))$. The
+terms $ dW_{x,t} , dW_{y,t} , dB_{x,t} , dB_{y,t} , dB_{\rho,t}$ are
+all standard Wiener processes, and the matrix $\sigma(\mathbf{x})$
+induces the correlation structure of the process. Here, $\rho_{x,l}$
+and $\rho_{y,l}$ capture the leverage effect of volatility shocks to
+the innovations in prices. Given $\mu(\mathbf{x})$ and
+$\sigma(\mathbf{x})$, the probability density for the process
+satisfies the Fokker-Planck equation
+\begin{align}
+  \frac{\partial q(\mathbf{x},t)}{\partial t} &= -\sum_{i} \frac{\partial}{\partial x_i} \left[\mu_i(\mathbf{x}) q(\mathbf{x},t) \right] + \frac{1}{2} \sum_i \sum_j \frac{\partial^2}{\partial x_i \partial x_j} \left[ D_{ij}(\mathbf{x}) q(\mathbf{x},t) \right], \label{eq:fokker} \\
+  D_{ij}(\mathbf{x}) &= \sum_k \sigma(\mathbf{x})_{ik}\sigma(\mathbf{x})_{jk}, \nonumber \\
+  q(\mathbf{x},0) &= \prod_i \delta(x_{i,0} - x_i) := q(\mathbf{x}, 0 | \mathbf{x}_0), \nonumber
+\end{align}
+where $\mathbf{x}_0$ is the state of the system at time $t=0$. We
+denote the solution to (\ref{eq:fokker}) as
+$q(\mathbf{x}, t | \mathbf{x}_0)$. It should be noted here that
+$\sigma(\mathbf{x})$ in the SDE (\ref{eq:cont-evoluation}) is not
+unique in generating the PDE (\ref{eq:fokker}), so that there are
+other, equivalent parameterizations of the continuous-time process. In
+this paper, we estimate all parameters and latent processes defining
+(\ref{eq:cont-evoluation}) within a discrete-time setting, because we
+cannot observe the process $(\hat{x}_t, \hat{y}_t)$ continuously.
+
+Disregarding the extrema of $(\hat{x}_t, \hat{y}_t)$, the observable
+data over any finite period $[t-\Delta, t]$ are the opening and
+closing values $(\hat{x}_{t-\Delta}, \hat{y}_{t-\Delta})$,
+$(\hat{x}_{t}, \hat{y}_{t})$. The likelihood for the observed data 
+
+
+we denote the extrema obtained by the
+processes $(\hat{x}_t, \hat{y}_t)$ as
 \begin{align}
 M_X(t) &=\max_{t-\Delta\leq s\leq t}\hat{x}_s, & m_X(t) &=\min_{t-\Delta\leq s\leq t}\hat{x}_s, &
 M_Y(t) &=\max_{t-\Delta\leq s\leq t}\hat{y}_s, & m_Y(t)=\min_{t-\Delta \leq s\leq t}\hat{y}_s. \label{eq:extrema}
@@ -365,7 +411,7 @@ for approximating the likelihood:
       \centering
       \includegraphics[width=1\linewidth]{small-sigma-t-scatterplot--09.pdf}
     \end{minipage}
-    %% 
+    %%
     & \begin{minipage}{0.3\textwidth}
       \centering
       \includegraphics[width=1\linewidth]{small-sigma-t-scatterplot-0.pdf}
@@ -489,7 +535,7 @@ considered.
       \centering
       \includegraphics[width=1\linewidth]{small-t-analytic.pdf}
     \end{minipage}
-    %% 
+    %%
     & \begin{minipage}{0.33\textwidth}
       \centering
       \includegraphics[width=1\linewidth]{small-t-Galerkin-no-filter.pdf}
@@ -622,7 +668,7 @@ respect to the boundaries and having the form
       domain (which is image $k$ in (\ref{eq:inv-Gam-likelihood})) since they
       scale away linearly as a function of the number of reflections.
 
-      A similar analysis can be performed for $(\tau_x/\tau_y)^2$, where $\alpha \leq 7/2$ and 
+      A similar analysis can be performed for $(\tau_x/\tau_y)^2$, where $\alpha \leq 7/2$ and
       \[
         \beta \geq \frac{(y-y_k)}{2(1-\rho^2)\tilde{t}_\varepsilon} \geq \frac{1}{2\tilde{t}_\varepsilon}.
       \]
@@ -674,7 +720,7 @@ respect to the boundaries and having the form
       \centering
       \includegraphics[width=1\linewidth]{small-sigma-extrapolation-rho-0.pdf}
     \end{minipage}
-    %% 
+    %%
     & \begin{minipage}{0.45\textwidth}
       \centering
       \includegraphics[width=1\linewidth]{small-t-extrapolation-rho-0.pdf}
@@ -689,7 +735,7 @@ respect to the boundaries and having the form
         \caption{.}
         \label{fig:extrapolation}
       \end{figure}
-      
+
     \end{enumerate}
 
 
@@ -867,11 +913,11 @@ pick the parameters as we did in Chapter 1.
       \centering
       \includegraphics[width=1\linewidth]{ochl.pdf}
     \end{minipage}
-    %% 
+    %%
     & \begin{minipage}{0.45\textwidth}
       \centering
       \includegraphics[width=1\linewidth]{ochl-classical.pdf}
-    \end{minipage}    
+    \end{minipage}
   \end{tabular}
 \end{figure}
 
