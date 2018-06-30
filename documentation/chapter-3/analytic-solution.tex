@@ -115,34 +115,37 @@
 \vspace{1cm}
 
 In this chapter we develop an analytic solution to the normalized
-problem for small $\tilde{\sigma}$ values. We illustrate our approach
-with the simple case where $\rho=0$.
+problem for small $t$ values. We illustrate our approach with the
+simple case where $\rho=0$, then develop a general approach for
+$\rho \neq 0$ cases.
 
 \section{A small-parameter analytic solution}
-In the previous chapter we introduced a numerical solution that works
-for relatively benign parameter ranges. However, the numerical
-solution fails for small parameters of $(\tilde{\sigma},
-\tilde{t})$. Here, we introduce an analytic solution that works for
-certain small-$\tilde{\sigma}$.
+In the previous chapter we introduced a finite element (Galerkin)
+solution that works for relatively benign parameter ranges. However,
+the numerical solution fails for small parameters of
+$(\tilde{\sigma}, \tilde{t})$. Here, we introduce an analytic solution
+that works for small $t$ ranges.
 
 \subsection{Illustration with $\rho=0$ and sufficiently small
   $t^{*}$}
 Consider the normalized diffusion problem with $\rho=0$
 \begin{equation}
-  \frac{\partial q}{\partial t} = \frac{1}{2}\frac{\partial^2 q}{\partial x^2} + \frac{1}{2}\tilde{\sigma}^2 \frac{\partial^2 q}{\partial y^2}. \label{eq:standard-diffusion}
+  \frac{\partial q}{\partial t} = \frac{1}{2}\frac{\partial^2 q}{\partial x^2} + \rho\tilde{\sigma}\frac{\partial^2 q}{\partial x \partial y} + \frac{1}{2}\tilde{\sigma}^2 \frac{\partial^2 q}{\partial y^2}. \label{eq:standard-diffusion}
 \end{equation}
-and an intial condition $(x_0, y_0)$ with absorbing boundaries on the
-unit square. The fundamental solution to the problem is an
-uncorrelated bivariate Gaussian with variances $t$ and
-$t\tilde{\sigma}^2$ in the $x$ and $y$ directions, respectively. The
-problem setup and a contour plot of the fundamental solution is
-illustrated in Figure (\ref{fig:normalized-problem-rho-0}). As in
-Chapter 2, we can scale, rotate, and scale again the problem, so that
-the boundaries of the computational domain have changed, but the
-fundamental solution to the problem is defined by an uncorrelated
-bivariate Gaussian distribution with variance $t$ in each
-direction. The transformed problem is shown in Figure
-(\ref{fig:transformed-problem-rho-0}).
+and an initial condition $(x_0, y_0)$ with absorbing boundaries on the
+unit square. Let the unit square, and its subsequent transformation be
+labeled as $\Omega$ and referred to as the \textit{computational domain}.
+
+The fundamental solution to the problem is an uncorrelated bivariate
+Gaussian with variances $t$ and $t\tilde{\sigma}^2$ in the $x$ and $y$
+directions, respectively. The problem setup and a contour plot of the
+fundamental solution is illustrated in Figure
+(\ref{fig:normalized-problem-rho-0}). As in Chapter 2, we can scale,
+rotate, and scale again the problem, so that the boundaries of the
+computational domain have changed, but the fundamental solution to the
+problem is defined by an uncorrelated bivariate Gaussian distribution
+with variance $t$ in each direction. The transformed problem is shown
+in Figure (\ref{fig:transformed-problem-rho-0}).
 
 The topology under the transformed problem permits the fundamental
 solution to be translated and rotated without violating the governing
@@ -152,9 +155,9 @@ satisfies the PDE. In the $\rho=0$ case, the orthogonal angles between
 adjecent boundaries ensure that none of the images that result from
 repeated reflections fall within the computational domain. This
 further allows for subsequent images for fall further from the domain
-(scaling linearly in distance) so that we can solve the problem
-formally with an infinite number of reflections or semi-analytically
-with a finite system of images.
+(scaling linearly in distance) so that there exists a proper
+asymptotic solution with an infinite number of reflections or
+semi-analytic solution with a finite system of images.
 \begin{figure}
   \centering
   %%
@@ -163,55 +166,87 @@ with a finite system of images.
     \begin{minipage}{0.40\textwidth}
       \centering
       \includegraphics[width=1\linewidth]{illustration-rho-0-normalized.pdf}
-      \caption{}
+      \caption{The computational domain $\Omega$ for the normalized
+        problem (\ref{eq:standard-diffusion}) is the unit square
+        centered on $(0.5,0.5)$ shown here. Level sets of the
+        fundamental solution with $\rho = 0$ and $\tilde{\sigma} < 1$
+        are also shown at an initial condition in the upper-left
+        corner of $\Omega$.}
       \label{fig:normalized-problem-rho-0}
     \end{minipage}
     %%
     & \begin{minipage}{0.40\textwidth}
       \centering
       \includegraphics[width=1\linewidth]{illustration-rho-0-transformed.pdf}
-      \caption{}
+      \caption{The problem in Figure
+        (\ref{fig:normalized-problem-rho-0}) is scaled by
+        $1/\tilde{\sigma}$ in the $y-$direction, then rotated $\pi/4$
+        counter-clockwise, then scaled again in the principal axes
+        direction in order to eliminate the mixing term in the
+        resultant PDE problem. Since $\rho=0$ here, the final scaling
+        is the identity transformation and the boundaries remain
+        orthogonal. The fundamental solution is symmetric under
+        rotations centered on the IC under the new topology, as shown
+        here.}
       \label{fig:transformed-problem-rho-0}
     \end{minipage}
   \end{tabular}
 \end{figure}
 
-We can compose a finite system of images by reflecting about each of
-the boundaries a number of times and picking the greatest possible
+We can compose such a finite system of images by reflecting about each
+of the boundaries a number of times and picking the greatest possible
 time $t^{*}$ such that all boundaries are either numerically or
 analytically enforced. One candidate for such a set of reflections is
 shown in Figure (\ref{fig:illustration-1}), where the set of images is
 produced by the reflections (left, right, left, top, bottom, top). The
-green points and blue points are image positions differentiable with
-respect to all four boundary parameters, where the green points alone
-present a symmetric solution about the initial condition (red).
-
+solid colored points are image positions having non-zero derivatives
+with respect to all four boundary parameters. The green points bound a
+symmetric solution respect to a family of transformations centered the
+IC (red).
 \begin{figure}
   \begin{tabular}{cc}
     \begin{minipage}{0.40\textwidth}
       \centering
       \includegraphics[width=1\linewidth]{chapter-3-figure-illustration-1.pdf}
-      \caption{}
+      \caption{A finite system of images resultant from the sequence
+        of reflections (left, right, left, top, bottom, top), where
+        ``left'' refers to left boundary of $\Omega$ running along
+        $x=0$, ``right'' refers to the right boundary along $x=1$,
+        etc. The red point is the initial condition
+        $(x_0,y_0) = (0.1, 0.3)$ which centers the fundamental
+        solution. All points outside $\Omega$ are image position
+        resulting from the reflections, where the solid colored points
+        have positions dependent on $(x_0,y_0)$ \textit{as well as all
+          of the boundaries.} The green colored points are symmetric
+        about the IC with respect to horizontal and vertical
+        reflections centered on $(x_0, y_0)$. The blue points are also
+        dependent on all four boundaries, but they violate such
+        transformations centered on $(x_0, y_0)$.}
       \label{fig:illustration-1}
     \end{minipage}
     %%
     & \begin{minipage}{0.40\textwidth}
       \centering
       \includegraphics[width=1\linewidth]{chapter-3-figure-illustration-rel-error.pdf}
-      \caption{}
+      \caption{Relative error across $\Omega$ on a $30 \times 30$
+        regular grid based on solution (\ref{eq:small-time-sol}) for
+        the symmetric distribution of images in Figure
+        (\ref{fig:illustration-1}). The max admissible small time
+        $t^*$ is bounded above by $0.058$ and used here. The relative
+        error rate is on the order of $0.01\%$}
       \label{fig:illustration-rel-error}
     \end{minipage}
       \end{tabular}
 \end{figure}
 The resultant approximate \textit{small-time solution} to the PDE is
 the finite sum of the above images:
-\[
+\begin{equation}
   \bar{q}(x, y, t^{*}|\tilde{\sigma}) = \sum_{j=1}^J \mbox{sign}_j
   G(x,y|t^*, \tilde{\sigma}, \rho, x_0^{(j)}(a_x, b_x, a_y, b_y, \tilde{\sigma}),
-  y_0^{(j)}(a_x, b_x, a_y, b_y, \tilde{\sigma})),
-\]
+  y_0^{(j)}(a_x, b_x, a_y, b_y, \tilde{\sigma})), \label{eq:small-time-sol}
+\end{equation}
 where $G(\cdot)$ is a bivariate Gaussian density with location
-parameters $(x^{(j)}_0,y^{(j)}_0)$ dependent on the index $j$ and a
+parameters $(x^{(j)}_0,y^{(j)}_0)$ dependent on a set of reflections indexed by $j$ and a
 covariance matrix independent of $j$ and determined by
 $(\tilde{\sigma}, t^*, \rho = 0)$:
 \[
@@ -220,21 +255,23 @@ $(\tilde{\sigma}, t^*, \rho = 0)$:
                  \rho\tilde{\sigma} & \tilde{\sigma}^2
                \end{array} \right).
 \]
-We can control the relative error of our approximation by setting the
-minimum absolute value of $\bar{q}$ at the boundaries and solving for
+The parameters $(a_x,b_x,a_y,b_y)$ define $\Omega$ and are identically
+$a_x =0, b_x=1, a_y=0,b_y=1$ for the normalized problem here. We can
+control the relative error of the approximation by setting the minimum
+absolute value of $\bar{q}$ at the boundaries and solving for
 $t^{*}$. For a boundary error rate of at most $1 \cdot 10^{-12}$, the
-solution based on the distribution of images from Figure
-(\ref{fig:illustration-1}) produces palatable relative errors compared
-to the true closed-form solution, as shown in Figure
-(\ref{fig:illustration-rel-error}) where the maximum relative error on
-a $30 \times 30$ grid is $O(10^{-5})$. The max admissible small time
-$t^*$ is bounded below by $0.058$. Decreasing the error rate on the
-boundary to $1 \cdot 10^{-14}$ forces $t^* \approx 0.047$ and the max
-relative error on the same grid is $O(10^{-6})$.
+solution based on the distribution bound by the symmetric (green)
+images from Figure (\ref{fig:illustration-1}) produces palatable
+relative errors across $\Omega$ compared to the true closed-form
+solution, as shown in Figure (\ref{fig:illustration-rel-error}) where
+the maximum relative error on a $30 \times 30$ grid is $O(10^{-5})$.
+Decreasing the error rate on the boundary to $1 \cdot 10^{-14}$ forces
+$t^* \approx 0.047$ and the max relative error on the same grid is
+$O(10^{-6})$.
 
 Out of the $J=36$ images in the system considered, nine have location
 parameters that are dependent on all four boundary parameters (green
-and blue dots in Figure (\ref{fig:illustration-1})). Differentiating
+and blue points in Figure (\ref{fig:illustration-1})). Differentiating
 $\bar{q}$ with respect to all of the boundary parameters produces an
 approximate small-time solution for the full problem that is dependent
 upon that subset of the images:
@@ -245,14 +282,17 @@ upon that subset of the images:
                                             y_0^{(j^*)}(a_x, b_x, a_y, b_y, \tilde{\sigma}))} {\partial a_x \partial b_x
                                             \partial a_y \partial b_y}. \label{eq:analytic-solution-rho-0}
 \end{align}
-One approach to compute the solution in
+One approach to compute the derivatives in
 (\ref{eq:analytic-solution-rho-0}) is to numerically perturb the
-boundary parameters and use a finite difference approximation directly
-on the sum (\ref{eq:analytic-solution-rho-0}). However, since the
-small-time solution generally requires the use of a small time
-$t^* << 1$, numerical underflow makes direct application of finite
-difference hopeless. We can, however, leverage the very tractable
-analytic form of the Gaussian kernel $G(\cdot)$. Given
+boundary parameters $(a_x,b_x,a_y,b_y)$ and use a finite difference
+approximation directly on the sum
+(\ref{eq:analytic-solution-rho-0}). However, since the small-time
+solution generally requires the use of a small time $t^* << 1$,
+numerical underflow makes direct application of finite difference
+hopeless.
+
+We can, however, leverage the very tractable analytic form of the
+Gaussian kernel $G(\cdot)$. Given
 \begin{align}
   & G(x,y | t^{*}, \tilde{\sigma}, \rho, x_0^{(j^*)}(a_x, b_x, a_y, b_y, \tilde{\sigma}),
     y_0^{(j^*)}(a_x, b_x, a_y, b_y, \tilde{\sigma})) = &  \nonumber \\
@@ -533,6 +573,42 @@ images.
   parameters for $\Omega$.
 \end{proof}
 
+\section{Lack of Uniqueness and Symmetry Condition}
+From the above Lemma and the illustration so far, it is obvious that
+the set of images satisfying the IC/BV problem is not unique. Assuring
+uniqueness using the method of images is achieved by performing an
+infinite number of reflections, which is not always possible (see the
+counterexample above). A condition weaker than uniqueness which
+nonetheless restricts the solution space for the small-time solution
+is a type of symmetry condition.
+
+An obvious symmetry condition for this problem arises when
+$(x_0, y_0) = (0.5, 0.5)$. Reflecting about the $x-$ and $y-$axes
+centered on $0.5$ preserves the original PDE problem, as well as the
+IC/BVs. Under this transformation, any realized path of the process in
+the original problem has the same likelihood as the transformed path
+evaluated under the original setup. In terms of the method of images
+positions, they must be preserved under this transformation. The blue
+points in Figure (\ref{fig:illustration-1}) violate this condition,
+while the green points do not. This can be seen from the set of
+reflections which define the green points:
+$\{1,2,3,4 \},\{2,1,3,4 \},\{1,2,4,3 \},\{2,1,4,3 \}.$ When
+$(x_0, y_0) = (0.5, 0.5)$, the transfomation described maps the
+reflections as
+\begin{align*}
+  \{1,2,3,4 \} & \to \{2,1,4,3 \}, \\
+  \{2,1,3,4 \} &\to \{1,2,4,3 \}, \\
+  \{1,2,4,3 \} &\to \{2,1,3,4 \}, \\
+  \{2,1,4,3 \} &\to \{1,2,3,4 \}.
+\end{align*}
+Retaining the minimum number of images necessary to satisfy the
+symmetry condition forces us retain the four images defined by the
+reflections $\{1,2,3,4 \},\{2,1,3,4 \},\{1,2,4,3 \},\{2,1,4,3 \}$ and
+thereby define our small-time solution. The previous Lemma guarantees
+the existence of such a set of images satisfying the IC/BV problem for
+a sufficiently small $\tilde{\sigma}.$ 
+
+
 \section{Approximate Solution over $t$}
 % In this chapter we have established the existence of an approximate,
 % analytic solution for small values of $t$ whose applicability is
@@ -581,8 +657,8 @@ smallest mode $\beta_j/(\alpha_j+1)$ is closest to the mode of
 the approximating function. Even though the truncated solution is not
 applicable for all $t$, its mode still gives a reasonable
 approximation for the $t$ value which maximizes the true likelihood
-function. An empirical validation is shown in Figures
-(\ref{fig:modes-histogram}) - (\ref{fig:modes-scatterplot}), which
+function. An empirical validation is discussed below (see Figures
+(\ref{fig:modes-histogram}) - (\ref{fig:modes-scatterplot})), which
 provide views of the errors in approximating the true
 value $t$ maximizing the likelihood and the approximation derived from
 the truncated small-time solution:
@@ -602,12 +678,16 @@ problem (see equation (\ref{eq:standard-diffusion})), $t_{\max}$ was
 found numerically conditional on $(x_0, y_0, x_t, y_t)$ and
 $\tilde{\sigma}$, since we have the closed-form likelihood for the
 $\rho=0$ case. For the same input parameters, we generate four images
-as given by our algorithm above and then find
-$\min_{j} \{ \beta_j/(\alpha_j+1) \}$.
+as given by our method above and then find
+$\min_{j} \{ \beta_j/(\alpha_j+1) \}$. We compare how the
+Galerkin solution performs at this boundary of the computable region
+and beyond in the figures below.
 
 The histogram in Figure (\ref{fig:modes-histogram}) shows the
-distribution of signs and magnitudes of the errors in approximating
-the modes, which are correlated with small $\tilde{\sigma}$ (Figure
+distribution of signs and magnitudes of the error differences in
+approximating the modes
+$t_{\mbox{max}} - \min_{j} \{ \beta_j/(\alpha_j+1) \}$, which are
+correlated with small $\tilde{\sigma}$ (Figure
 (\ref{fig:modes-scatterplot})). Further, can see from the plot of true
 mode vs. error in Figure (\ref{fig:modes-scatterplot-2}) that largest
 errors occur for modes that are large on relative to the
@@ -615,14 +695,15 @@ $t-$scale. The distribution of true log-likelihood values at the
 approximate modes is given in Figure (\ref{fig:modes-histogram-2}). We
 can see that these function values are relatively large and should be
 resolvable by the finite element solver. This is finally confirmed in
-Figure (), which shows the relative error using the FE solver.
+Figure (\ref{fig:modes-histogram-3}), which shows the relative error
+using the FE solver.
 \begin{figure}
   \begin{tabular}{cc}
     \begin{minipage}{0.50\textwidth}
       \centering
       \includegraphics[width=1\linewidth]{chapter-3-figure-validation-modes-histogram.pdf}
       \caption{A histogram of differences
-        $\min_{j} \{ \beta_j/(\alpha_j+1) \} - t_{\max}$ between the
+        $t_{\max} - \min_{j} \{ \beta_j/(\alpha_j+1) \}$ between the
         approximate mode of the truncated small-time solution and the
         true mode of closed-form solution, when $\rho=0$. We see that
         the order magnitude of error in approximating the true point of
@@ -658,14 +739,22 @@ Figure (), which shows the relative error using the FE solver.
         are large and ought to be resolved by the finite element
         solver.}
       \label{fig:modes-histogram-2}
-    \end{minipage}                     
+    \end{minipage}
   \end{tabular}
 \end{figure}
 
-Since Give the solution of
-this form, the purposes of this analysis we take only the first-order
-term in (\ref{eq:fourth-deriv}) and consider its analytic form
-\begin{align*}
-\frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial b_y} G(x,y|t^{*}, \tilde{\sigma}, \rho, x_0^{(j^*)}, y_0^{(j^*)}) &\approx G \cdot \mathcal{C}^4 \cdot \left(\partial_{a_x}\partial_{b_x} \partial_{a_y}\partial_{b_y} \right)\mathcal{P}
-\end{align*}
+\begin{figure}
+  \begin{tabular}{c}
+    \begin{minipage}{0.90\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{chapter-3-figure-validation-modes-histogram-3.pdf}
+      \caption{Histogram of relative error of FEM solver at the
+        approximate modes.}
+      \label{fig:modes-histogram-3}
+    \end{minipage}
+  \end{tabular}
+\end{figure}
+
+ 
+
 \end{document}
