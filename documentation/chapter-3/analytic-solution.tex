@@ -242,8 +242,8 @@ The resultant approximate \textit{small-time solution} to the PDE is
 the finite sum of the above images:
 \begin{equation}
   \bar{q}(x, y, t^{*}|\tilde{\sigma}) = \sum_{j=1}^J \mbox{sign}_j
-  G(x,y|t^*, \tilde{\sigma}, \rho, x_0^{(j)}(a_x, b_x, a_y, b_y, \tilde{\sigma}),
-  y_0^{(j)}(a_x, b_x, a_y, b_y, \tilde{\sigma})), \label{eq:small-time-sol}
+  G(x,y|t^*, \tilde{\sigma}, \rho, x_0^{(j)}(a_x, b_x, a_y, b_y, \rho, \tilde{\sigma}),
+  y_0^{(j)}(a_x, b_x, a_y, b_y, \rho, \tilde{\sigma})), \label{eq:small-time-sol}
 \end{equation}
 where $G(\cdot)$ is a bivariate Gaussian density with location
 parameters $(x^{(j)}_0,y^{(j)}_0)$ dependent on a set of reflections indexed by $j$ and a
@@ -278,8 +278,8 @@ upon that subset of the images:
 \begin{align}
   \frac{\partial^4 \bar{q}(x, y, t^{*})}{\partial a_x
   \partial b_x \partial a_y \partial b_y} &= \sum_{j^*=1}^{J^*} \frac{\partial^4
-                                            G(x,y|t^{*}, \tilde{\sigma}, \rho, x_0^{(j^*)}(a_x, b_x, a_y, b_y, \tilde{\sigma}),
-                                            y_0^{(j^*)}(a_x, b_x, a_y, b_y, \tilde{\sigma}))} {\partial a_x \partial b_x
+                                            G(x,y|t^{*}, \tilde{\sigma}, \rho, x_0^{(j^*)}(a_x, b_x, a_y, b_y, \rho, \tilde{\sigma}),
+                                            y_0^{(j^*)}(a_x, b_x, a_y, b_y, \rho, \tilde{\sigma}))} {\partial a_x \partial b_x
                                             \partial a_y \partial b_y}. \label{eq:analytic-solution-rho-0}
 \end{align}
 One approach to compute the derivatives in
@@ -294,8 +294,8 @@ hopeless.
 We can, however, leverage the very tractable analytic form of the
 Gaussian kernel $G(\cdot)$. Given
 \begin{align}
-  & G(x,y | t^{*}, \tilde{\sigma}, \rho, x_0^{(j^*)}(a_x, b_x, a_y, b_y, \tilde{\sigma}),
-    y_0^{(j^*)}(a_x, b_x, a_y, b_y, \tilde{\sigma})) = &  \nonumber \\
+  & G(x,y | t^{*}, \tilde{\sigma}, \rho, x_0^{(j^*)}(a_x, b_x, a_y, b_y, \rho, \tilde{\sigma}),
+    y_0^{(j^*)}(a_x, b_x, a_y, b_y, \rho, \tilde{\sigma})) = &  \nonumber \\
   & \frac{1}{2\pi\,\, t^{*}\tilde{\sigma}\sqrt{1-\rho^2}} \exp\left( -\frac{1}{2\,\,t^*\, \tilde{\sigma}^2 (1-\rho^2)} \left[ \left(x-x_0^{(j)}\right)^2 \tilde{\sigma}^2 + \left(y-y_0^{(j)}\right)^2 - 2\rho(x-x_0^{(j)})(y-y_0^{(j)})\tilde{\sigma} \right]\right), & \label{eq:full-form-G}
 \end{align}
 we can define the following factors to more easily express the
@@ -306,11 +306,9 @@ higher-order derivatives applied to (\ref{eq:full-form-G})
 \end{align}
 The two key observations here are that $\mathcal{P}(\cdot)$ is
 independent of $t^{*}$, meaning $\mathcal{C}(\cdot)$ carries the
-$t^{*}$ dependency in differentiation. The second observations is the
-sole dependency of $\mathcal{P}$ on the position parameters
-$(x_0^{(j)}, y_0^{(j)})$ and therefore the boundary
-parameters. Without loss of generality, beginning with
-$\partial/\partial a_x$ we compute all derivatives:
+$t^{*}$ dependency in differentiation and that only $\mathcal{P}$ is
+dependent on the boundary parameters. Without loss of generality,
+beginning with $\partial/\partial a_x$ we compute all derivatives:
 \begin{align}
   \frac{\partial}{\partial a_x} G(x,y|t^{*}, \tilde{\sigma}, \rho, x_0^{(j^*)}, y_0^{(j^*)}) &= G \cdot \mathcal{C}\,\,\cdot \left( \frac{\partial \mathcal{P}}{\partial a_x} \right)\\
   \frac{\partial^2}{\partial a_x \partial b_x} G(x,y|t^{*}, \tilde{\sigma}, \rho, x_0^{(j^*)}, y_0^{(j^*)}) &= G \cdot \mathcal{C}^2 \left( \frac{\partial \mathcal{P}}{\partial b_x} \right) \left( \frac{\partial \mathcal{P}}{\partial a_x} \right) + G \cdot \mathcal{C} \cdot \left( \frac{\partial^2 \mathcal{P}}{\partial a_x \partial b_x} \right) \\
@@ -343,9 +341,11 @@ the $G\cdot \mathcal{C}^4$ order term in (\ref{eq:fourth-deriv})
 dominates the others for sufficiently small $\,\,t$. This truncation,
 when appropriate, is useful for reducing computational complexity
 \textit{and} it guarantees that the numerical implementation of the
-derivatives produces positive values for all $t$. Truncating at
-$\mathcal{C}^4$, the analytic likelihood approximation given by the
-sum of images is of the form:
+derivatives produces positive values for all $t$ as long as
+$\left(\partial_{a_x}\partial_{b_x} \partial_{a_y}\partial_{b_y}
+\right)\mathcal{P}$ is positive. Truncating at $\mathcal{C}^4$, the
+analytic likelihood approximation given by the sum of images is of the
+form:
 \begin{align}
   &\frac{\partial^4 \bar{q}(x, y, t)}{\partial a_x
   \partial b_x \partial a_y \partial b_y} \approx  & \nonumber \\
@@ -362,9 +362,9 @@ sum of images is of the form:
   %     \left(y-y_0^{(j)}\right)^2 -
   %     2\rho(x-x_0^{(j)})(y-y_0^{(j)})\tilde{\sigma} \right] \right)
 \end{align}
-The above approximate solution is close to the true existing solution
-for $t < t^*$. Extending beyond $t^*$ produces a positive function
-dominated by the exponential term $G$. Figure
+The above approximate solution is close to the true existing
+small-time solution for $t < t^*$. Extending beyond $t^*$ produces a
+positive function dominated by the exponential term $G$. Figure
 (\ref{fig:illustration-likelihood-profile}) shows a profile comparison
 of the log-likelihood with respect to $t$ for the example
 configuration used so far. The truncated approximate solution tracks
@@ -373,9 +373,8 @@ observation of (\ref{eq:truncated-approx}) reveal that each of the
 summands are proportional to an Inverse-Gamma distribution, since
 $\left(\partial_{a_x}\partial_{b_x} \partial_{a_y}\partial_{b_y}
 \right)\mathcal{P}$ is not dependent on $t$. This allows us to
-approximate the value for $t$ which maximizes the likelihood
-function (see Section ()) below.
-
+approximate the value for $t$ which maximizes the likelihood function
+(see Section (\ref{sec:modes}) below).
 \begin{figure}
   \begin{tabular}{c}
     \begin{minipage}{0.90\textwidth}
@@ -386,38 +385,39 @@ function (see Section ()) below.
         solid black line) and the true analytic solution (red
         points). The small time for which the approximation is valid
         is $\log(t^*) \approx -9$. We see that in this example the
-        truncated approximation deteriorates for $\mathcal{O}(t) = 1$.}
+        truncated approximation deteriorates for $\mathcal{O}(t) = 1$,
+        well after the technical bound set by $t^*$.}
       \label{fig:illustration-likelihood-profile}
     \end{minipage}
   \end{tabular}
 \end{figure}
-Applying a first-order finite difference
-approximation with a finite step $\Delta = 10^{-5}$ to compute the
-polynomial derivatives produces relative errors with a maximum of
-order $\mathcal{O}(10^{-4})$ on the same $30 \times 30$ grid used for
-Figure (\ref{fig:illustration-rel-error}), as shown in Figure
-(\ref{fig:illustration-rel-error-likelihood}). Given that
-$t^{*} = \mathcal{O}(10^{-2})$, the truncated small-time solution
-\[G \cdot \mathcal{C}^4 \cdot \left(\partial_{a_x}\partial_{b_x}
-    \partial_{a_y}\partial_{b_y} \right)\mathcal{P}\] produces similar
-quality results (see Figure
-(\ref{fig:illustration-rel-error-likelihood-truncated})).
+Applying a first-order finite difference approximation with a finite
+step $\Delta = 10^{-5}$ to compute the polynomial derivatives produces
+relative errors with a maximum of order $\mathcal{O}(10^{-4})$ on the
+same $30 \times 30$ grid used for Figure
+(\ref{fig:illustration-rel-error}), as shown in Figure
+(\ref{fig:illustration-rel-error-likelihood}).
 \begin{figure}
-  \begin{tabular}{cc}
-    \begin{minipage}{0.40\textwidth}
+  \centering
+  \begin{tabular}{c}
+    \begin{minipage}{0.50\textwidth}
       \centering
       \includegraphics[width=1\linewidth]{chapter-3-figure-illustration-rel-error-likelihood.pdf}
-      \caption{}
+      \caption{Relative error for the likelihood problem comparing the
+        true solution with the truncated small-time approximation in
+        (\ref{eq:truncated-approx}) on a $30 \times 30$ regular grid
+        over $\Omega$. }
       \label{fig:illustration-rel-error-likelihood}
     \end{minipage}
-    %%
-    & \begin{minipage}{0.40\textwidth}
-      \centering
-      \includegraphics[width=1\linewidth]{chapter-3-figure-illustration-rel-error-likelihood.pdf}
-      \caption{}
-      \label{fig:illustration-rel-error-likelihood-truncated}
-    \end{minipage}
-      \end{tabular}
+    \end{tabular}
+    % %%
+    % & \begin{minipage}{0.40\textwidth}
+    %   \centering
+    %   \includegraphics[width=1\linewidth]{chapter-3-figure-illustration-rel-error-likelihood.pdf}
+    %   \caption{}
+    %   \label{fig:illustration-rel-error-likelihood-truncated}
+    % \end{minipage}
+    %   \end{tabular}
 \end{figure}
 
 % \begin{figure}
@@ -437,48 +437,57 @@ quality results (see Figure
 
 \subsection{Counterexample with $\rho \neq 0$}
 For $\rho=0$, the above procedure is guaranteed to produce an
-admissible set of images regarless of the IC configuration and
+admissible set of images regardless of the IC configuration and
 $\tilde{\sigma}$ used. However, this is not the case for a general
 combination of $\rho$ and $\tilde{\sigma}$. Consider Figure
 (\ref{fig:counterexample-1}), which features the same configuration of
 parameters and reflections as above, except that $\rho=0.9$. We can
 see that applying the above procedure produces a system with images
-within the computational domain, violating the IC.
-
+within the computational domain, violating the IC.  However, below we
+prove that for any IC and $\rho$ combination, we can find a
+sufficiently small $\tilde{\sigma}$ such that a series of reflections
+used in the illustration will yield a valid system of images.
 \begin{figure}
   \begin{tabular}{cc}
     \begin{minipage}{0.50\textwidth}
       \centering
       \includegraphics[width=1\linewidth]{chapter-3-figure-counterexample-1.pdf}
-      \caption{}
+      \caption{When $\rho=0.9$, the system of images generated by the
+        set of reflections in Figure (\ref{fig:illustration-1}) now
+        violates the IC as at least one of the images falls within
+        $\Omega$. }
       \label{fig:counterexample-1}
     \end{minipage} &
     %%
     \begin{minipage}{0.50\textwidth}
       \centering
       \includegraphics[width=1\linewidth]{chapter-3-figure-proof-1.pdf}
-      \caption{big $\sigma$}
+      \caption{Geometry characteristic of the transformed problem when
+        $\rho>0$. The thick dashed line defines the axis along which
+        images resultant from reflecting about boundaries 2 and 4
+        fall. The blue point denotes the intersection of the axis and
+        the extension of boundary 3.}
       \label{fig:proof-1}
     \end{minipage} \\
     %%
     \begin{minipage}{0.50\textwidth}
       \centering
       \includegraphics[width=1\linewidth]{chapter-3-figure-proof-3.pdf}
-      \caption{}
+      \caption{Set of images in the original topology when
+        $\tilde{\sigma} = 0.1$. All images fall outside of $\Omega$
+        for $\rho = 0.9$.}
       \label{fig:proof-3}
     \end{minipage} &
         \begin{minipage}{0.50\textwidth}
       \centering
       \includegraphics[width=1\linewidth]{chapter-3-figure-proof-2.pdf}
-      \caption{}
+      \caption{Set of images in the transformed topology when
+        $\tilde{\sigma} = 0.1$. All images fall outside of $\Omega$
+        for $\rho = 0.9$.}
       \label{fig:proof-2}
     \end{minipage}
   \end{tabular}
 \end{figure}
-However, below we prove that for any IC and $\rho$ combination, we can
-find a sufficiently small $\tilde{\sigma}$ such that a series of
-reflections used in the illustration will yield a valid system of
-images.
 
 \section{Existence of valid systems of images}
 \begin{lemma}
@@ -515,8 +524,8 @@ images.
   black/red dots in Figure (\ref{fig:proof-1})). If the number of
   reflections is kept constant, $\tilde{\sigma}$ can be sufficiently
   small such that all thus placed images are in the interior region
-  formed by extending lines 1 and 3. This can be shown by considering
-  the following observations:
+  formed by extending lines 1 and 3. This is proved from the following
+  observations:
   \begin{enumerate}[i)]
   \item The slopes of both lines 2 and 4 are equal to
     $-\frac{\sqrt{1+\rho}}{\sqrt{1-\rho}}$ and are therefore
@@ -552,9 +561,9 @@ images.
     intersection and the IC grows. The symmetry of the problem (in
     terms of reflections $x \to -x$ and $y \to -y$) makes the argument
     applied to line 3 and the line of reflection applicable to the
-    extension of line 1 as well. Figure (\ref{fig:proof-2}) shows the
-    reflected images falling within the interior region with
-    $\tilde{\sigma} = 0.1$
+    extension of line 1 as well. Figures (\ref{fig:proof-2}) and
+    (\ref{fig:proof-3}) show the reflected images falling within the
+    interior region with $\tilde{\sigma} = 0.1$ in both geometries.
   \end{enumerate}
   Observations ii) and iii) imply that we can always find a
   sufficiently small $\tilde{\sigma}$ to cover the line segment
@@ -564,7 +573,7 @@ images.
   images outside of the computational region $\Omega$.
 
   For any such finite, admissible collection of images, we can make
-  $\tilde{t}$ sufficiently small such that the BVs are numerically
+  $t^*$ sufficiently small such that the BVs are numerically
   enforced on three out of the four boundaries (since with a finite
   set of reflections the BVs are analytically enforced at the last
   boundary of reflection). Therefore, we have a collection of images
@@ -575,7 +584,7 @@ images.
 
 \section{Lack of Uniqueness and Symmetry Condition}
 From the above Lemma and the illustration so far, it is obvious that
-the set of images satisfying the IC/BV problem is not unique. Assuring
+the finite set of images satisfying the IC/BV problem is not unique. Assuring
 uniqueness using the method of images is achieved by performing an
 infinite number of reflections, which is not always possible (see the
 counterexample above). A condition weaker than uniqueness which
@@ -609,7 +618,7 @@ the existence of such a set of images satisfying the IC/BV problem for
 a sufficiently small $\tilde{\sigma}.$ 
 
 
-\section{Approximate Solution over $t$}
+\section{Approximate Solution over $t$} \label{sec:modes}
 % In this chapter we have established the existence of an approximate,
 % analytic solution for small values of $t$ whose applicability is
 % well defined in terms of error rates at the boundaries (BCs) and the
