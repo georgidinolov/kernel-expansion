@@ -1,121 +1,5 @@
-\documentclass[10pt]{article}
+\label{ch:galerkin}
 
-\usepackage{amsthm}
-\usepackage[toc,page]{appendix}
-\usepackage{amssymb}
-\usepackage{bm}
-\usepackage{pslatex,palatino,avant,graphicx,color}
-\usepackage{colortbl}
-\usepackage{fullpage}
-\usepackage{mathtools}
-\usepackage{natbib}
-\usepackage{amsmath}
-\usepackage{caption}
-%\usepackage{subfigure}
-\usepackage{subcaption}
-\usepackage{bm}
-\usepackage{wrapfig}
-\usepackage{enumerate}
-\usepackage{rotating}
-\usepackage{multirow}
-\usepackage{tabularx}
-\usepackage{tikz}
-\usepackage{pgfplots}
-\usepackage{bbm}
-\usepackage[titles,subfigure]{tocloft} % Alter the style of the Table of Contents
-
-\newtheorem{lemma}{Lemma}
-%\pdfminorversion=4
-% NOTE: To produce blinded version, replace "0" with "1" below.
-\newcommand{\blind}{0}
-
-% DON'T change margins - should be 1 inch all around.
-\addtolength{\oddsidemargin}{0in}%
-\addtolength{\evensidemargin}{0in}%
-\addtolength{\textwidth}{0in}%
-\addtolength{\textheight}{0in}%
-\addtolength{\topmargin}{0in}%
-
-
-\renewcommand{\cftsecfont}{\rmfamily\mdseries\upshape}
-\renewcommand{\cftsecpagefont}{\rmfamily\mdseries\upshape} % No bold!
-
-\newcommand{\indicator}[1]{\mathbbm{1}\left( #1 \right) }
-\newcommand{\hb}{\hat{b}}
-\newcommand{\ha}{\hat{a}}
-\newcommand{\htheta}{\hat{\theta}}
-\newcommand{\halpha}{\hat{\alpha}}
-\newcommand{\hmu}{\hat{\mu}}
-\newcommand{\hsigma}{\hat{\sigma}}
-\newcommand{\hphi}{\hat{\phi}}
-\newcommand{\htau}{\hat{\tau}}
-\newcommand{\heta}{\hat{\eta}}
-\newcommand{\E}[1]{\mbox{E}\left[#1\right]}
-\newcommand{\Var}[1]{\mbox{Var}\left[#1\right]}
-\newcommand{\Indicator}[1]{\mathbbm{1}_{ \left( #1 \right) } }
-\newcommand{\dNormal}[3]{ N\left( #1 \left| #2, #3 \right. \right) }
-\newcommand{\Beta}[2]{\mbox{Beta}\left( #1, #2 \right)}
-\newcommand{\alphaphi}{\alpha_{\hphi}}
-\newcommand{\betaphi}{\beta_{\hphi}}
-\newcommand{\expo}[1]{ \exp\left\{ #1 \right\}}
-\newcommand{\tauSquareDelta}{\htau^2
-  \left(\frac{1-\expo{-2\htheta\Delta}}{2\htheta} \right)}
-\newcommand{\mumu}{\mu_{\hmu}}
-\newcommand{\sigmamu}{\sigma^2_{\hmu}}
-\newcommand{\sigmamuexpr}{\log\left( \frac{\VarX}{\EX^2} + 1 \right)}
-\newcommand{\mumuexpr}{\log(\EX) -  \log\left( \frac{\VarX}{\EX^2} + 1 \right) /2 }
-
-\newcommand{\EX}{\mbox{E}\left[ X \right] }
-\newcommand{\VarX}{\mbox{Var}\left[ X \right] }
-\newcommand{\mueta}{\mu_{\heta} }
-\newcommand{\sigmaeta}{\sigma^2_{\heta}}
-\newcommand{\sigmaetaexpr}{ \log\left( \frac{\VarX}{\EX^2} + 1 \right) }
-\newcommand{\muetaexpr}{ \log(\EX) -  \sigmaetaexpr /2 }
-
-\newcommand{\mualpha}{\mu_{\halpha} }
-\newcommand{\sigmaalpha}{\sigma^2_{\halpha}}
-\newcommand{\sigmaalphaexpr}{ \log\left( \frac{\VarX}{\EX^2} + 1 \right) }
-\newcommand{\mualphaexpr}{ \log(\EX) -  \sigmaalphaexpr /2 }
-
-\newcommand{\mutauexpr}{ \frac{2}{T} \EX }
-\newcommand{\sigmatauexpr}{ \frac{4}{T^2} \Var{X}}
-
-\newcommand{\alphatau}{\alpha_{\htau^2}}
-\newcommand{\betatau}{\beta_{\htau^2}}
-
-\newcommand{\Gam}[2]{\mbox{Gamma}\left( #1, #2 \right) }
-\newcommand{\InvGam}[2]{\mbox{Inv-Gamma}\left( #1, #2 \right) }
-
-%%% END Article customizations
-
-%%% The "real" document content comes below...
-
-% \newbox{\LegendeA}
-% \savebox{\LegendeA}{
-%    (\begin{pspicture}(0,0)(0.6,0)
-%    \psline[linewidth=0.04,linecolor=red](0,0.1)(0.6,0.1)
-%    \end{pspicture})}
-% \newbox{\LegendeB}
-%    \savebox{\LegendeB}{
-%    (\begin{pspicture}(0,0)(0.6,0)
-%    \psline[linestyle=dashed,dash=1pt 2pt,linewidth=0.04,linecolor=blue](0,0.1)(0.6,0.1)
-%    \end{pspicture})}
-
-\title{Solution to a Non-Seperable Diffusion Equation on a Regular Domain}
-\author{Georgi Dinolov, Abel Rodriguez, Hongyun Wang}
-\date{} % Activate to display a given date or no date (if empty),
-         % otherwise the current date is printed 
-
-\begin{document}
-\def\spacingset#1{\renewcommand{\baselinestretch}%
-{#1}\small\normalsize} \spacingset{1}
-
-\bigskip
-
-\vspace{1cm}
-\noindent
-
-\spacingset{1.00} % 
 \section{Introduction}
 
 We consider two-dimensional correlated Brownian motion with absorbing boundaries:
@@ -142,7 +26,7 @@ probability can be expressed as the integral
   \displaystyle \int_{a_x}^{x_t} \displaystyle \int_{a_y}^{y_t} q(x,y,t) dx\,dy,
 \]
 where $q(x,y,t)$ is the solution to the Fokker-Planck equation
-\citep{oksendal2013stochastic}:
+\cite{oksendal2013stochastic}:
 \begin{align}
   \displaystyle \frac{\partial}{\partial t'} q(x,y,t') &= -\mu_x \frac{\partial}{\partial x}q(x,y,t')
                                          - \mu_y \frac{\partial}{\partial y}q(x,y,t')
@@ -166,20 +50,20 @@ which we denote as $f(x,y,a_x,b_x,a_y,b_y)$:
 \end{align}
 Probability functions similar to (\ref{eq:CDF}) with less than all
 four boundaries have been used in computing first passage times
-\citep{kou2016first, sacerdote2016first}, with application to
+\cite{kou2016first, sacerdote2016first}, with application to
 structural models in credit risk and default correlations
-\citep{haworth2008modelling, ching2014correlated}. \cite{he1998double}
+\cite{haworth2008modelling, ching2014correlated}. \cite{he1998double}
 use variants of (\ref{eq:pdf}) with respect to some of the boundaries
 to price financial derivative instruments whose payoff depends on
-\textbf{some} of the observed maxima/minima. \cite{rodriguez2012} use
+\textit{some} of the observed maxima/minima. \cite{rodriguez2012} use
 a full likelihood-based (Bayesian) approach to estimate volatility in
 \textit{univariate} financial timeseries where open, closing, highest,
 and lowest prices are included. Their work fits into a body of
 literature and collection of techniques by practitioners where the
 observed range of prices is used to make similar estimates. In this
-paper we will provide the efficient numerical method necessary for
+chapter we will provide an efficient numerical method necessary for
 carrying out inferential procedures with correlated financial
-timeseries.
+timeseries in the bivariate setting.
 
 Closed-form solutions to (\ref{eq:1}) - (\ref{eq:2}) are available for
 some parameter regimes. When $\rho = 0$, the transition density of the
@@ -187,7 +71,7 @@ process is the solution to a well-understood Sturm-Liouville problem
 where the eigenfunctions of the differential operator are sine
 functions. When $a_x = -\infty$ and $b_x = \infty$, the method of
 images can be used to enforce the remaining boundaries. For either
-$a_x, a_y = -\infty$ or $b_x, b_y = \infty$, eigenfunction of the
+$a_x, a_y = -\infty$ or $b_x, b_y = \infty$, eigenfunctions of the
 Fokker-Plank equation can be found in radial coordinates. Both of
 these techniques are used and detailed by
 \cite{he1998double}. However, to the best of our knowledge, there is
@@ -205,7 +89,7 @@ numerical method to solve (\ref{eq:1}) - (\ref{eq:2}).
 For non-zero correlation, it is still possible to approach the general
 problem by proposing a biorthogonal expansion in time and space
 (\cite{risken1989fokker-planck}, sections 6.2), where the
-eigenfunctions for the differential operator are approximated by the
+eigenfunctions for the differential operator are approximated by the
 eigenvectors of a linear system obtained using a truncated expansion
 based on a set of separable basis function, each of which is a product
 of two sine functions (one in each dimension) satisfying the boundary
@@ -213,31 +97,34 @@ conditions. However, a drawback of this out-of-the-box solution is
 that the system matrix for the corresponding eigenvalue problem is
 dense. Additionally, for nonzero $\rho$, it is necessary to have a
 large number of basis elements for an accurate approximation. The
-denseness and size of the resultant system matrices makes the
+denseness and size of the resultant system makes the
 expansion a slow, if not unfeasible, solution. An alternative is to
 use a finite difference scheme to directly solve the evolution problem
 after suitable transformations. However, both of these methods need a
 high degree of numerical resolution to produce practically useful
 approximations of the transition density. We conjecture that for the
-trigonometric series expansion, inefficiencies arise from using
-a separable representation for a differential operator that is
+trigonometric series expansion, inefficiencies arise from using a
+separable representation for a differential operator that is
 intrinsically correlated in the two dimensions; for the finite
 difference approach, the problem is twofold as the method introduces
 numerical diffusion in the initial condition and it also uses a
 separable approximation for the differential operator.
 
-In this paper, we propose a robust and efficient solution to the
-problems (\ref{eq:1}) - (\ref{eq:2}) and (\ref{eq:pdf}). The solution
+In the following two chapters we propose robust and efficient
+solutions to the problems (\ref{eq:1}) - (\ref{eq:2}) and
+(\ref{eq:pdf}) in two distinct parameter regimes. The twofold solution
 is obtained by combining a small-time analytic solution with a
 Galerkin discretization based on basis functions that are
-correlated. Our method directly takes into account the correlation
-parameter present in the differential operator in order to efficiently
-represent the analytic small-time solution and propagate it forward in
-time. We apply our computational method to estimate equation
-parameters with a maximum likelihood approach in settings where the
-model assumptions of constant
-$(\mu_x, \mu_y, \sigma_x, \sigma_y, \rho)$ and Brownian motion driving
-stochastic evolution are appropriate. Section
+correlated.
+
+This chapter describes the Galkerin discretization, which directly
+takes into account the correlation parameter present in the
+differential operator in order to efficiently represent an analytic
+small-time solution and propagate it forward in time. We apply our
+computational method to estimate equation parameters with a maximum
+likelihood approach in settings where the model assumptions of
+constant $(\mu_x, \mu_y, \sigma_x, \sigma_y, \rho)$ and Brownian
+motion driving stochastic evolution are appropriate. Section
 \ref{sec:approximate-sols} outlines some methods we considered for
 this problem. Section \ref{sec:semidiscrete-galerkin} describes the
 Galerkin method we implemented. Section [] includes our numerical
@@ -246,11 +133,16 @@ experiments.
 
 \section{Approximate Numerical Solutions} \label{sec:approximate-sols}
 Before considering solutions to the full Fokker-Planck equation
-(\ref{eq:1}) - (\ref{eq:2}), we simplify the PDE by proposing a
-scaling transformation and an exponential decomposition of the
-solution, so that we can construct
+(\ref{eq:1}) - (\ref{eq:2}), we simplify the PDE by proposing a series
+of transformations to standardize the problem. The first transformation
 \begin{align}
-  p(x,y,t) &= \exp(\alpha x + \beta y + \gamma t) q\left( x(b_x - a_x) + a_x, \,\, y(b_y - a_y) + a_y, \,\, t \right), \label{eq:q-to-p}
+  T_{(1)} : q(x,y,t) &\to p(x,y,t)
+\end{align}
+scales and decomposes the solution while preserving the initial and
+boundary conditions while getting rid of the advection terms in the
+differential operator. $T_1$ is defined as
+\begin{align}
+  T_{(1)}: p(x,y,t) &= \exp(\alpha x + \beta y + \gamma t) q\left( x(b_x - a_x) + a_x, \,\, y(b_y - a_y) + a_y, \,\, t \right), \label{eq:q-to-p}
 \end{align}
 where
 
@@ -260,18 +152,18 @@ where
   \beta &= \left( -\frac{\mu_y}{\sigma_y^2} + \frac{\mu_x \rho}{\sigma_x \sigma_y} \right), \\
   \gamma &= \frac{1}{2}\left( \frac{\sigma_x}{(b_x-a_x)} \right)^2 \alpha^2 + \frac{1}{2}\left(\frac{\sigma_y}{(b_y-a_y)}\right)^2 \beta^2 + \alpha\beta.
 \end{align*}
-This new formula satisfies the \textit{normalized} diffusion equation:
+This new formula satisfies the \textit{pure diffusion} equation:
 \begin{equation}
-  \frac{\partial}{\partial t} p(x,y,t) = \mathcal{L}p(x,y,t),\quad (x,y) \in (0,1) \times (0,1) := \Omega \label{eq:qq}
+  \frac{\partial}{\partial t} p(x,y,t) = \mathcal{L}_1 p(x,y,t),\quad (x,y) \in (0,1) \times (0,1) := \Omega_1 \label{eq:qq}
 \end{equation}
 subject to the constraints
 \begin{align}
-  p(x,y,t) &=0, & \mbox{ for } & (x,y) \in \{ x | x = 0\} \cup \{ y | y = 0\}, \nonumber \\
+  p(x,y,t) &=0, & \mbox{ for } & (x,y) \in \{ x | x = 0\} \cup \{ y | y = 0\} \cup \{ x | x = 1\} \cup \{ y | y = 1\}, \nonumber \\
   p(x,y,0) &= \delta\left( x - \frac{x_0-a_x}{b_x - a_x} \right) \delta\left(y-\frac{y_0 - a_y}{b_y - a_y}\right), \nonumber
 \end{align}
-where the differential operator $\mathcal{L}$ takes the form
+where the differential operator $\mathcal{L}_1$ takes the form
 \[
-  \mathcal{L} = \frac{1}{2} \tau_x^2 \frac{\partial^2}{\partial x^2}
+  \mathcal{L}_1 = \frac{1}{2} \tau_x^2 \frac{\partial^2}{\partial x^2}
   + \rho\tau_x\tau_y \frac{\partial^2}{\partial x \partial y} + \frac{1}{2}\tau_y^2 \frac{\partial^2}{\partial y^2},
   % \left(  \right)^2
   %                                                   \frac{\partial^2}{\partial x^2}p(x,y,t) + \rho\left( \frac{\sigma_x}{(b_x-a_x)} \right)\left( \frac{\sigma_y}{(b_y-a_y)} \right)
@@ -281,9 +173,45 @@ where the differential operator $\mathcal{L}$ takes the form
 with $\tau_x = \frac{\sigma_x}{(b_x-a_x)}$,
 $\tau_y = \frac{\sigma_y}{(b_y-a_y)}$.  Note here that under this
 transformation $\rho$ remains the same as in the original
-problem. Without loss of generality, we will concentrate on the
-solution of the normalized problem (\ref{eq:qq}) in terms of the
-diffusion parameters $(\tau_x, \tau_y, \rho)$.
+problem.
+
+Next, we \textit{normalize} the diffusion equation (\ref{eq:qq}) with the transformation
+\begin{align}
+  T_{(2)}: p(x,y,t) &\to p(\tilde{x}, \tilde{y}, \tilde{t}),
+\end{align}
+defined with the coordinate transformation
+\begin{align}
+  \tilde{x} &= x\cdot \Indicator{ \max\left\{\tau_x^2, \tau_y^2 \right\} = \tau_x^2} + y\cdot \Indicator{ \max\left\{\tau_x^2, \tau_y^2 \right\} = \tau_y^2}, \\
+  \tilde{y} &= y\cdot \Indicator{ \max\left\{\tau_x^2, \tau_y^2 \right\} = \tau_x^2} + x\cdot \Indicator{ \max\left\{\tau_x^2, \tau_y^2 \right\} = \tau_y^2}, \\
+  \tilde{t} &= t\cdot \max\left\{\tau_x^2, \tau_y^2 \right\}.
+\end{align}
+The differential problem under $T_{(2)}$ now takes on the
+\textit{normalized form} (from hereon referred to as the
+\textit{normalized problem}):
+\begin{align}
+  \frac{\partial}{\partial \tilde{t}} p(\tilde{x},\tilde{y},\tilde{t}) &= \mathcal{L}_2 p(\tilde{x},\tilde{y},\tilde{y}), & (\tilde{x}, \tilde{y}) \in (0,1) \times (0,1) := \Omega_2 \label{eq:qqq} \\
+  \mathcal{L}_2 &= \frac{1}{2} \frac{\partial^2}{\partial \tilde{x}^2} + \rho \sigma_{\tilde{y}} \frac{\partial^2}{\partial \tilde{x} \partial \tilde{y}} + \frac{1}{2} \sigma^2_{\tilde{y}} \frac{\partial^2}{\partial \tilde{y}^2},
+\end{align}
+with
+$\sigma_{\tilde{y}} = \min\left\{ \tau_x/\tau_y, \tau_y/\tau_x
+\right\}$ subject to the IC/BCs:
+\begin{align}
+  p(\tilde{x},\tilde{y},\tilde{t}) &=0,  \mbox{ for }  (\tilde{x},\tilde{y}) \in \{ \tilde{x} | \tilde{x} = 0\} \cup \{ \tilde{y} | \tilde{y} = 0\} \cup \{ \tilde{x} | \tilde{x} = 1\} \cup \{ \tilde{y} | \tilde{y} = 1\}, \nonumber \\
+  p(\tilde{x},\tilde{y},0) &= \delta\left( \tilde{x} - \left\{\frac{x_0-a_x}{b_x - a_x}\cdot \Indicator{ \max\left\{\tau_x^2, \tau_y^2 \right\} = \tau_x^2} + \frac{y_0-a_y}{b_y - a_y}\cdot \Indicator{ \max\left\{\tau_x^2, \tau_y^2 \right\} = \tau_y^2} \right\} \right) \\
+  &\quad \times \delta\left( \tilde{y} - \left\{\frac{y_0-a_y}{b_y - a_y}\cdot \Indicator{ \max\left\{\tau_x^2, \tau_y^2 \right\} = \tau_x^2} + \frac{x_0-a_x}{b_x - a_x}\cdot \Indicator{ \max\left\{\tau_x^2, \tau_y^2 \right\} = \tau_y^2} \right\} \right). \nonumber
+\end{align}
+As seen above, the computational domain under $T_{(2)}$ remains the
+unit square. However, the diffusion coefficient in the principal
+$\tilde{x}$-direction is always unity, while
+$\sigma_{\tilde{y}} \leq 1$. The time for evaluating the final
+condition is scaled by either $\tau_x^2$ or $\tau_y^2$, while the
+correlation coefficient remains the same. The initial condition
+location parameters, $\sigma_{\tilde{y}}$, as well as the time of the
+final condition $\tilde{t}$ are all functions of the boundary
+parameters $(a_x, b_x, a_y, b_y)$. Without loss of generality, we will
+concentrate on the solution of the normalized problem (\ref{eq:qqq})
+in terms of the diffusion parameters
+$(\tilde{t}, \sigma_{\tilde{y}}, \rho)$.
 
 \subsection{Density Calculation} \label{sec:likelihood-calc}
 Recalling problem (\ref{eq:pdf}), to compute the density we are
@@ -724,45 +652,46 @@ is differentiable with respect to the normalized problem parameters.
 
 
 
-\subsection{Small-time Solution}
+\subsection{Small-time Solution} \label{sec:pde-small-t}
 Before solving the Galerkin equations
 (\ref{eq:orthogonality-conditions-mat-1}) -
 (\ref{eq:orthogonality-conditions-mat-2}), we develop a small-time
 analytic solution to the problem. The small-time solution is derived
-by considering the fundamental solution $G(x,y,t)$ for the unbounded
-problem in (\ref{eq:qq}), which is the bivariate Gaussian density with
+by considering the fundamental solution $G(\tilde{x},\tilde{y},\tilde{t})$ for the unbounded
+problem in (\ref{eq:qqq}), which is the bivariate Gaussian density with
 mean and covariance determined by the initial condition and the
-diffusion parameters \citep{stakgold2011green}. We can then find a
-small enough $t_\epsilon$ such that
-$G\left(x,y, t_\epsilon \left| \frac{x_0-a_x}{b_x - a_x},
-    \frac{y_0-a_y}{b_y - a_y} \right.\right)$ is numerically zero on
-the boundaries of $\Omega$. We select the largest largest among all
+diffusion parameters \cite{stakgold2011green}. We can then find a
+small enough $\tilde{t}_\epsilon$ such that
+$G\left(\tilde{x},\tilde{y}, \tilde{t}_\epsilon \left| \tilde{x}_0,
+    \tilde{y}_0 \right.\right)$ is numerically zero on
+the boundaries of $\tilde{\Omega}$. We select the largest largest among all
 time instances satisfying this condition. This is done in the
 following way.
-\begin{enumerate}[1.]
-\item Scale and rotate the coordinate axes by
-  \[
-    \left( \begin{array}{c}
+\begin{enumerate}
+\item Scale and rotate the coordinate axes by the transformation
+  $T_{(3)}$
+  \begin{align}
+    T_{(3)}: \left( \begin{array}{c}
              \xi \\
              \eta
            \end{array} \right) = \frac{1}{\sqrt{2}}
          \left( \begin{array}{cc}
-                  \frac{1}{\tau_x \sqrt{1-\rho}} & -\frac{1}{\tau_y\sqrt{1-\rho}}\\
-                  \frac{1}{\tau_x \sqrt{1+\rho}} & \frac{1}{\tau_y\sqrt{1+\rho}}
+                  \frac{1}{ \sqrt{1-\rho}} & -\frac{1}{\sigma_{\tilde{y}}\sqrt{1-\rho}}\\
+                  \frac{1}{ \sqrt{1+\rho}} & \frac{1}{\sigma_{\tilde{y}}\sqrt{1+\rho}}
                 \end{array} \right)
              \left( \begin{array}{cc}
-             x \\
-             y
-           \end{array} \right) 
-       \]
+             \tilde{x} \\
+                      \tilde{y}
+           \end{array} \right) \label{eq:T3}
+       \end{align}
        so that the problem obeys the standard diffusion equation
        \[
-         \frac{\partial }{\partial t}p(\xi,\eta,t) =
-         \frac{1}{2}\frac{\partial^2 }{\partial^2 \xi} p(\xi,\eta,t)+
-         \frac{1}{2}\frac{\partial^2 }{\partial^2 \eta} p(\xi,\eta,t)
+         \frac{\partial }{\partial \tilde{t}}p(\xi,\eta,\tilde{t}) =
+         \frac{1}{2}\frac{\partial^2 }{\partial^2 \xi} p(\xi,\eta,\tilde{t})+
+         \frac{1}{2}\frac{\partial^2 }{\partial^2 \eta} p(\xi,\eta,\tilde{t})
        \]
        on a computational domain now transformed to a parallelogram
-       $\tilde{\Omega}$ (see left panel of Figure
+       $\Omega_3$ (see left panel of Figure
        (\ref{fig:step-1-small-time})). The transformed initial
        condition will be denoted as $(\xi_0, \eta_0)$.
 
@@ -810,7 +739,15 @@ following way.
   \]
   satisfies all of the boundaries numerically and also satisfies the
   governing diffusion equation. Performing a change of variables
-  produces the small-time solution $p(x,y,t_\epsilon)$, as shown in
+  $T_{(3)}^{-1}: (\xi,\eta) \to (\tilde{x}, \tilde{y})$ produces the
+  small-time solution $p(\tilde{x},\tilde{y},\tilde{t}_\epsilon)$ in
+  the normalized diffusion problem frame
+  \begin{align}
+    p(\tilde{x}, \tilde{y}, \tilde{t}_\epsilon) =
+    \frac{1}{2\pi\,\, \tilde{t}_\epsilon\tilde{\sigma}\sqrt{1-\rho^2}} \exp\left( -\frac{1}{2\,\,\tilde{t}_\epsilon\, \tilde{\sigma}^2 (1-\rho^2)} \left[ \left(x-x_0\right)^2 \tilde{\sigma}^2 + \left(y-y_0\right)^2 - 2\rho(x-x_0)(y-y_0)\tilde{\sigma} \right]\right) & \\
+                                                                                                                                                                                                                                                                            - \frac{1}{2\pi\,\, \tilde{t}_\epsilon\tilde{\sigma}\sqrt{1-\rho^2}} \exp\left( -\frac{1}{2\,\,\tilde{t}_\epsilon\, \tilde{\sigma}^2 (1-\rho^2)} \left[ \left(x-x'_0\right)^2 \tilde{\sigma}^2 + \left(y-y'_0\right)^2 - 2\rho(x-x'_0)(y-y'_0)\tilde{\sigma} \right]\right) &
+  \end{align}
+  as shown in
   the right panel of Figure (\ref{fig:step-1-small-time}).
 \end{enumerate}
 
@@ -1596,7 +1533,3 @@ including the root-mean-square-errors of the two estimators.
     parameter.}
   \label{fig:mle-comparison}
 \end{figure}
-
-\bibliographystyle{plainnat}
-\bibliography{master-bibliography}
-\end{document}

@@ -1,163 +1,128 @@
-\documentclass[10pt]{article}
+\label{ch:small-time}
 
-\usepackage{amsthm}
-\usepackage[toc,page]{appendix}
-\usepackage{amssymb}
-\usepackage{bm}
-\usepackage{pslatex,palatino,avant,graphicx,color}
-\usepackage{colortbl}
-\usepackage{fullpage}
-\usepackage{mathtools}
-\usepackage{natbib}
-\usepackage{amsmath}
-\usepackage{caption}
-%\usepackage{subfigure}
-\usepackage{subcaption}
-\usepackage{bm}
-\usepackage{wrapfig}
-\usepackage{enumerate}
-\usepackage{rotating}
-\usepackage{multirow}
-\usepackage{tabularx}
-\usepackage{tikz}
-\usepackage{pgfplots}
-\usepackage{bbm}
-\usepackage[titles,subfigure]{tocloft} % Alter the style of the Table of Contents
-
-\newtheorem{lemma}{Lemma}
-%\pdfminorversion=4
-% NOTE: To produce blinded version, replace "0" with "1" below.
-\newcommand{\blind}{0}
-
-% DON'T change margins - should be 1 inch all around.
-\addtolength{\oddsidemargin}{0in}%
-\addtolength{\evensidemargin}{0in}%
-\addtolength{\textwidth}{0in}%
-\addtolength{\textheight}{0in}%
-\addtolength{\topmargin}{0in}%
+% In this chapter we have established the existence of an approximate,
+% analytic solution for small values of $t$ whose applicability is
+% well defined in terms of error rates at the boundaries (BCs) and the
+% locations of the images (ICs).
+Chapter \ref{ch:galerkin} introduced a semidiscrete (finite element)
+Galerkin method for solving the standardized diffusion problem
+(\ref{eq:qqq}). The Galerkin method is most appropriate for large
+times, since numerical errors are attenuated with increasing diffusion
+time $\tilde{t}$. The obvious limitation of the finite element solver
+is that there are problems with $(\sigma_{\tilde{y}}, \tilde{t})$ too
+small to be resolved with a reasonable finite number of basis
+elements. We will call such parameter combinations as belonging to the
+\textit{incomputable region} of the solver. For parameters in the
+incomputable region, a sufficient condition to flag them as such is if
+the numerical derivative of the finite element solution with respect
+to the boundary parameters produces a negative value. However, this is
+not a \textit{necessary} condition, and in practice this is an
+insidious problem: parameter combinations which should be attributed
+with a very small likelihoods may be given values orders of magnitude
+higher than they should and thus falsely bias any inferential
+procedure. Procedures sensitive to such silent numerical
+instabilities, such as particle filters, are especially at risk. In
+this chapter, we develop a solution applicable in precisely the cases
+where the finite element solver fails: small values for
+$\tilde{t}$. In addition to having its own well-defined criteria for
+appropriate use (namely an upper bound on $\tilde{t}$ as well as an
+upper bound on $\tilde{\sigma}$), the analytic form of the
+small-$\tilde{t}$ solution provides a way to bound from above the
+incomputable region for the finite element solver.
 
 
-\renewcommand{\cftsecfont}{\rmfamily\mdseries\upshape}
-\renewcommand{\cftsecpagefont}{\rmfamily\mdseries\upshape} % No bold!
+\section{A small-time solution, revisited}
+As part of the overall Galerkin method, Chapter \ref{ch:galerkin} in
+introduced a small-time approximation for the normalized diffusion
+problem \eqref{eq:qqq} via the method of images (see Section
+\ref{sec:pde-small-t}). By reflecting the fundamental solution
+(i.e. the solution to the governing PDE without the BCs) about the
+closest boundary and picking a sufficiently small
+$\tilde{t}_\epsilon$, this approximation satisfies the initial
+condition and enforces the boundary conditions. However, because the
+analytic dependence of this small-time approximation on the boundaries
+is only through the location parameters of the reflected image,
+differentiating with respect to all four boundaries yields a uniform
+zero value in computing the associated density.
 
-\newcommand{\indicator}[1]{\mathbbm{1}\left( #1 \right) }
-\newcommand{\hb}{\hat{b}}
-\newcommand{\ha}{\hat{a}}
-\newcommand{\htheta}{\hat{\theta}}
-\newcommand{\halpha}{\hat{\alpha}}
-\newcommand{\hmu}{\hat{\mu}}
-\newcommand{\hsigma}{\hat{\sigma}}
-\newcommand{\hphi}{\hat{\phi}}
-\newcommand{\htau}{\hat{\tau}}
-\newcommand{\heta}{\hat{\eta}}
-\newcommand{\E}[1]{\mbox{E}\left[#1\right]}
-\newcommand{\Var}[1]{\mbox{Var}\left[#1\right]}
-\newcommand{\Indicator}[1]{\mathbbm{1}_{ \left( #1 \right) } }
-\newcommand{\dNormal}[3]{ N\left( #1 \left| #2, #3 \right. \right) }
-\newcommand{\Beta}[2]{\mbox{Beta}\left( #1, #2 \right)}
-\newcommand{\alphaphi}{\alpha_{\hphi}}
-\newcommand{\betaphi}{\beta_{\hphi}}
-\newcommand{\expo}[1]{ \exp\left\{ #1 \right\}}
-\newcommand{\tauSquareDelta}{\htau^2
-  \left(\frac{1-\expo{-2\htheta\Delta}}{2\htheta} \right)}
-\newcommand{\mumu}{\mu_{\hmu}}
-\newcommand{\sigmamu}{\sigma^2_{\hmu}}
-\newcommand{\sigmamuexpr}{\log\left( \frac{\VarX}{\EX^2} + 1 \right)}
-\newcommand{\mumuexpr}{\log(\EX) -  \log\left( \frac{\VarX}{\EX^2} + 1 \right) /2 }
+\subsection{Uniqueness and Symmetry Condition}
+The insufficiency of the previous small-time solution suggests
+extending it by performing more than a single reflection about the
+boundaries in the construction of the system of images. If there
+exists at least one image whose location is the result of at least one
+reflection about each of the four boundaries, then it is guaranteed to
+have a non-trivial contribution to the density
+$\frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial
+  b_y} p(\tilde{x}, \tilde{y}, \tilde{t})$. An immediate problem of
+the extension, however, is the uniqueness of the resultant approximate
+density function.
 
-\newcommand{\EX}{\mbox{E}\left[ X \right] }
-\newcommand{\VarX}{\mbox{Var}\left[ X \right] }
-\newcommand{\mueta}{\mu_{\heta} }
-\newcommand{\sigmaeta}{\sigma^2_{\heta}}
-\newcommand{\sigmaetaexpr}{ \log\left( \frac{\VarX}{\EX^2} + 1 \right) }
-\newcommand{\muetaexpr}{ \log(\EX) -  \sigmaetaexpr /2 }
-
-\newcommand{\mualpha}{\mu_{\halpha} }
-\newcommand{\sigmaalpha}{\sigma^2_{\halpha}}
-\newcommand{\sigmaalphaexpr}{ \log\left( \frac{\VarX}{\EX^2} + 1 \right) }
-\newcommand{\mualphaexpr}{ \log(\EX) -  \sigmaalphaexpr /2 }
-
-\newcommand{\mutauexpr}{ \frac{2}{T} \EX }
-\newcommand{\sigmatauexpr}{ \frac{4}{T^2} \Var{X}}
-
-\newcommand{\alphatau}{\alpha_{\htau^2}}
-\newcommand{\betatau}{\beta_{\htau^2}}
-
-\newcommand{\Gam}[2]{\mbox{Gamma}\left( #1, #2 \right) }
-\newcommand{\InvGam}[2]{\mbox{Inv-Gamma}\left( #1, #2 \right) }
-
-%%% END Article customizations
-
-%%% The "real" document content comes below...
-
-% \newbox{\LegendeA}
-% \savebox{\LegendeA}{
-%    (\begin{pspicture}(0,0)(0.6,0)
-%    \psline[linewidth=0.04,linecolor=red](0,0.1)(0.6,0.1)
-%    \end{pspicture})}
-% \newbox{\LegendeB}
-%    \savebox{\LegendeB}{
-%    (\begin{pspicture}(0,0)(0.6,0)
-%    \psline[linestyle=dashed,dash=1pt 2pt,linewidth=0.04,linecolor=blue](0,0.1)(0.6,0.1)
-%    \end{pspicture})}
-
-\title{A Range-Based Bivariate Stochastic Volatility Model: Towards Closed-Form Solution}
-\author{Georgi Dinolov, Abel Rodriguez, Hongyun Wang}
-\date{} % Activate to display a given date or no date (if empty),
-         % otherwise the current date is printed
-
-\begin{document}
-\def\spacingset#1{\renewcommand{\baselinestretch}%
-{#1}\small\normalsize} \spacingset{1}
-
-\bigskip
-
-\vspace{1cm}
-
-In this chapter we develop an analytic solution to the normalized
-problem for small $t$ values. We illustrate our approach with the
-simple case where $\rho=0$, then develop a general approach for
-$\rho \neq 0$ cases.
-
-\section{A small-parameter analytic solution}
-In the previous chapter we introduced a finite element (Galerkin)
-solution that works for relatively benign parameter ranges. However,
-the numerical solution fails for small parameters of
-$(\tilde{\sigma}, \tilde{t})$. Here, we introduce an analytic solution
-that works for small $t$ ranges.
-
-\subsection{Illustration with $\rho=0$ and sufficiently small
-  $t^{*}$}
-Consider the normalized diffusion problem with $\rho=0$
-\begin{equation}
-  \frac{\partial q}{\partial t} = \frac{1}{2}\frac{\partial^2 q}{\partial x^2} + \rho\tilde{\sigma}\frac{\partial^2 q}{\partial x \partial y} + \frac{1}{2}\tilde{\sigma}^2 \frac{\partial^2 q}{\partial y^2}. \label{eq:standard-diffusion}
-\end{equation}
-and an initial condition $(x_0, y_0)$ with absorbing boundaries on the
-unit square. Let the unit square, and its subsequent transformation be
-labeled as $\Omega$ and referred to as the \textit{computational domain}.
-
-The fundamental solution to the problem is an uncorrelated bivariate
-Gaussian with variances $t$ and $t\tilde{\sigma}^2$ in the $x$ and $y$
+To illustrate the problem, consider again the normalized diffusion
+problem where $\rho=0$. The fundamental solution to the problem is an
+uncorrelated bivariate Gaussian with variances $\tilde{t}$ and
+$\tilde{t}\sigma_{\tilde{y}}^2$ in the $\tilde{x}$ and $\tilde{y}$
 directions, respectively. The problem setup and a contour plot of the
-fundamental solution is illustrated in Figure
-(\ref{fig:normalized-problem-rho-0}). As in Chapter 2, we can scale,
-rotate, and scale again the problem, so that the boundaries of the
-computational domain have changed, but the fundamental solution to the
-problem is defined by an uncorrelated bivariate Gaussian distribution
-with variance $t$ in each direction. The transformed problem is shown
-in Figure (\ref{fig:transformed-problem-rho-0}).
+fundamental solution is shown in Figure
+(\ref{fig:normalized-problem-rho-0}). We can construct two systems of
+images by carrying out the series of reflections
+\begin{align*}
+  & \left\{ 1,2,3,4 \right\}, & \left\{ 2,1,3,4 \right\}, &
+\end{align*}
+which are shown in Figures () and (). Both resultant solutions satisfy
+the PDE as well as the IC/BVs for a sufficiently small
+$\tilde{t}_\epsilon$. Although not unique, both solutions to the PDE
+problem have minimal relative differences, and they both depart from
+the true analytic solution minimally. From a numerical implementation
+standpoint, there is only near machine-$\varepsilon$ difference
+between them. However, the two solutions have a single image whose
+location is a function of all four boundaries, and this single image
+entirely defines the corresponding density function. Because the
+location parameters are different, the density functions of the two
+PDE solutions are consequently very different as well over
+$\Omega_2$. Assuring uniqueness using the method of images is achieved
+by performing an infinite number of reflections, which is not always
+possible (see Section \ref{sec:proof} below).
 
-The topology under the transformed problem permits the fundamental
-solution to be translated and rotated without violating the governing
-PDE. Hence, we may reflect about the boundaries to enforce the
-absorbing condition there while producing a system of images whose sum
-satisfies the PDE. In the $\rho=0$ case, the orthogonal angles between
-adjecent boundaries ensure that none of the images that result from
-repeated reflections fall within the computational domain. This
-further allows for subsequent images for fall further from the domain
-(scaling linearly in distance) so that there exists a proper
-asymptotic solution with an infinite number of reflections or
-semi-analytic solution with a finite system of images.
+A condition weaker than uniqueness which nonetheless restricts the
+solution space is the inherent symmetry of the problem. A sufficient
+symmetry condition arises when
+$(\tilde{x}_0, \tilde{y}_0) = (0.5, 0.5)$. Reflecting about the
+$\tilde{x}-$ and $\tilde{y}-$axes centered on $0.5$ preserves the
+governing PDE, as well as the IC/BVs. Under this transformation, any
+realized path of the original diffusion process has the same
+likelihood as its transformed version evaluated under the diffusion
+measure. In order for the sum of images solution to obey this symmetry
+condition, the proposed system of images must be preserved under this
+transformation. Further, if we require that the system of images
+contain the fewest possible elements, then the unique system is the
+union of the sets of reflections
+\begin{align*}
+  \left\{ 1,2,3,4 \right\} \cup \left\{ 2,1,3,4 \right\} \cup \left\{ 1,2,4,3 \right\} \cup \left\{ 2,1,4,3 \right\}.
+\end{align*}
+When $(\tilde{x}_0, \tilde{y}_0) = (1/2,1/2)$, the symmetry condition
+maps reflections as
+\begin{align*}
+  \{1,2,3,4 \} & \to \{2,1,4,3 \}, \\
+  \{2,1,3,4 \} &\to \{1,2,4,3 \}, \\
+  \{1,2,4,3 \} &\to \{2,1,3,4 \}, \\
+  \{2,1,4,3 \} &\to \{1,2,3,4 \}.
+\end{align*}
+
+% As in Chapter 2, we can scale,
+% rotate, and scale again the problem, so that the boundaries of the
+% computational domain have changed, but the fundamental solution to the
+% problem is defined by an uncorrelated bivariate Gaussian distribution
+% with variance $t$ in each direction. The transformed problem is shown
+% in Figure (\ref{fig:transformed-problem-rho-0}).
+% The topology under the transformed problem (under $T_{(3)}$ in
+% \eqref{eq:T3}) permits the repeated reflection of the fundamental
+% solution about the boundaries without any of the images falling within
+% the computational domain $\Omega_3$. This further allows for
+% subsequent images for fall further from the domain (scaling linearly
+% in distance) so that there exists an asymptotic series composed of an
+% infinite number of reflections which enforce the IC/BCs and satisfy
+% the governing PDE. 
+
 \begin{figure}
   \centering
   %%
@@ -165,13 +130,12 @@ semi-analytic solution with a finite system of images.
   \begin{tabular}{cc}
     \begin{minipage}{0.40\textwidth}
       \centering
-      \includegraphics[width=1\linewidth]{illustration-rho-0-normalized.pdf}
-      \caption{The computational domain $\Omega$ for the normalized
-        problem (\ref{eq:standard-diffusion}) is the unit square
-        centered on $(0.5,0.5)$ shown here. Level sets of the
-        fundamental solution with $\rho = 0$ and $\tilde{\sigma} < 1$
-        are also shown at an initial condition in the upper-left
-        corner of $\Omega$.}
+      \includegraphics[width=1\linewidth]{../chapter-3/illustration-rho-0-normalized.pdf}
+      \caption{The computational domain $\Omega_2$ for the normalized
+        problem (\ref{eq:qqq}) is the unit square centered on
+        $(0.5,0.5)$. Level sets of the fundamental solution
+        with $\rho = 0$ and $\sigma_{\tilde{y}} < 1$ are also shown at an
+        initial condition in the upper-left corner of $\Omega_2$.}
       \label{fig:normalized-problem-rho-0}
     \end{minipage}
     %%
@@ -207,7 +171,7 @@ IC (red).
   \begin{tabular}{cc}
     \begin{minipage}{0.40\textwidth}
       \centering
-      \includegraphics[width=1\linewidth]{chapter-3-figure-illustration-1.pdf}
+      \includegraphics[width=1\linewidth]{../chapter-3/chapter-3-figure-illustration-1.pdf}
       \caption{A finite system of images resultant from the sequence
         of reflections (left, right, left, top, bottom, top), where
         ``left'' refers to left boundary of $\Omega$ running along
@@ -489,7 +453,7 @@ used in the illustration will yield a valid system of images.
   \end{tabular}
 \end{figure}
 
-\section{Existence of valid systems of images}
+\section{Existence of valid systems of images} \label{sec:proof}
 \begin{lemma}
   Given $\rho > 0$, and $(x_0, y_0) \in \Omega$, there
   exists $0 < \tilde{\sigma} \leq 1$ such that
@@ -526,7 +490,7 @@ used in the illustration will yield a valid system of images.
   small such that all thus placed images are in the interior region
   formed by extending lines 1 and 3. This is proved from the following
   observations:
-  \begin{enumerate}[i)]
+  \begin{enumerate}
   \item The slopes of both lines 2 and 4 are equal to
     $-\frac{\sqrt{1+\rho}}{\sqrt{1-\rho}}$ and are therefore
     \textit{independent of the choice} of $\tilde{\sigma}$. Hence,
@@ -584,32 +548,9 @@ used in the illustration will yield a valid system of images.
 
 \section{Lack of Uniqueness and Symmetry Condition}
 From the above Lemma and the illustration so far, it is obvious that
-the finite set of images satisfying the IC/BV problem is not unique. Assuring
-uniqueness using the method of images is achieved by performing an
-infinite number of reflections, which is not always possible (see the
-counterexample above). A condition weaker than uniqueness which
-nonetheless restricts the solution space for the small-time solution
-is a type of symmetry condition.
+the finite set of images satisfying the IC/BV problem is not unique. 
 
-An obvious symmetry condition for this problem arises when
-$(x_0, y_0) = (0.5, 0.5)$. Reflecting about the $x-$ and $y-$axes
-centered on $0.5$ preserves the original PDE problem, as well as the
-IC/BVs. Under this transformation, any realized path of the process in
-the original problem has the same likelihood as the transformed path
-evaluated under the original setup. In terms of the method of images
-positions, they must be preserved under this transformation. The blue
-points in Figure (\ref{fig:illustration-1}) violate this condition,
-while the green points do not. This can be seen from the set of
-reflections which define the green points:
-$\{1,2,3,4 \},\{2,1,3,4 \},\{1,2,4,3 \},\{2,1,4,3 \}.$ When
-$(x_0, y_0) = (0.5, 0.5)$, the transfomation described maps the
-reflections as
-\begin{align*}
-  \{1,2,3,4 \} & \to \{2,1,4,3 \}, \\
-  \{2,1,3,4 \} &\to \{1,2,4,3 \}, \\
-  \{1,2,4,3 \} &\to \{2,1,3,4 \}, \\
-  \{2,1,4,3 \} &\to \{1,2,3,4 \}.
-\end{align*}
+
 Retaining the minimum number of images necessary to satisfy the
 symmetry condition forces us retain the four images defined by the
 reflections $\{1,2,3,4 \},\{2,1,3,4 \},\{1,2,4,3 \},\{2,1,4,3 \}$ and
@@ -763,7 +704,3 @@ using the FE solver.
     \end{minipage}
   \end{tabular}
 \end{figure}
-
- 
-
-\end{document}

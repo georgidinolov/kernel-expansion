@@ -1,0 +1,67 @@
+\input{macros}
+
+\begin{document}
+
+\title{A long and verbose title that sounds complicated but is really quite simple}
+\author{This Is You}
+\degreeyear{2015}
+\degreemonth{June}
+\degree{DOCTOR OF PHILOSOPHY}
+\chair{Professor 1}
+\committeememberone{Professor 2}
+\committeemembertwo{Professor 3}
+%\committeememberthree{Professor 4} % Uncomment if you have 4 committee members. Also change the next line to `\numberofmembers{4}`
+\numberofmembers{3}
+\deanlineone{Tyrus Miller}
+\deanlinetwo{Vice Provost and Dean of Graduate Studies}
+\deanlinethree{}
+\field{Computer Engineering}
+\campus{Santa Cruz}
+
+\begin{frontmatter}
+\maketitle
+
+\copyrightpage
+
+\tableofcontents
+
+\listoffigures
+
+\listoftables
+
+\begin{abstract}
+\input{abstract}
+\end{abstract}
+
+\begin{dedication}
+\vspace*{\fill}
+\begin{center}
+A loving dedication.
+\end{center}
+\vspace*{\fill}
+\end{dedication}
+
+\begin{acknowledgements}
+Proper acknowledgments of everyone else who helped you graduate.
+\end{acknowledgements}
+
+\end{frontmatter}
+
+\chapter{Galerkin Solution}
+\input{../chapter-2-thesis}
+
+\chapter{Small-time Solution}
+\input{../chapter-3/analytic-solution}
+
+\chapter{Conclusion}
+\input{conclusion}
+
+% \appendix % Uncomment if you have appendices. Add them below this exactly as you would a regular chapter.
+
+\nocite{*}
+\bibliographystyle{plain}
+\singlespacing
+\bibliography{../master-bibliography}
+\doublespacing
+
+\end{document}
