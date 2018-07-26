@@ -695,16 +695,16 @@ following way.
        (\ref{fig:step-1-small-time})). The transformed initial
        condition will be denoted as $(\xi_0, \eta_0)$.
 
-     \item The fundamental solution $G(\xi,\eta,t | \xi_0, \eta_0)$ in
-       this coordinate frame which does not take into account
-       boundaries follows the bivariate Gaussian probability density
-       function
+     \item The fundamental solution
+       $G(\xi,\eta,\tilde{t} | \xi_0, \eta_0)$ in this coordinate
+       frame which does not take into account boundaries follows the
+       bivariate Gaussian probability density function
   \[
-    G(\xi,\eta,t | \xi_0, \eta_0) = \frac{1}{2\pi t} \exp\left(-\frac{(\xi-\xi_0)^2 +
-        (\eta-\eta_0)^2}{2\,t} \right).
+    G(\xi,\eta,\tilde{t} | \xi_0, \eta_0) = \frac{1}{2\pi \tilde{t}} \exp\left(-\frac{(\xi-\xi_0)^2 +
+        (\eta-\eta_0)^2}{2\,\tilde{t}} \right).
   \]
   We define the \textbf{distance} between
-  $G(\xi,\eta,t | \xi_0, \eta_0)$ and any of the linear boundaries of
+  $G(\xi,\eta,\tilde{t} | \xi_0, \eta_0)$ and any of the linear boundaries of
   $\tilde{\Omega}$ as the shortest distance between $(\xi_0, \eta_0)$
   to each of the boundary segments (blue line segments in the left
   panel of Figure (\ref{fig:step-1-small-time})).  There are four such
@@ -715,40 +715,46 @@ following way.
   segment will be well-behaved since we only need to enforce the
   boundary condition over a single segment.
 
-  Setting $t_\epsilon = d_2/8$ ensures that the fundamental solution
-  $G(\xi,\eta,t_\epsilon | \xi_0, \eta_0)$ is \textit{at most}
-  $\approx 10^{-15}$ on the second-farthest boundary, as well as the
-  other two farthest boundaries. In this way,
-  $G(\xi,\eta,t_\epsilon | xi_0, \eta_0)$ satisfies the boundary
-  condition on the three farthest boundaries numerically.
+  Setting $\tilde{t}_\epsilon = d_2/8$ ensures that the fundamental
+  solution $G(\xi,\eta,\tilde{t}_\epsilon | \xi_0, \eta_0)$ is
+  \textit{at most} $\approx 10^{-15}$ on the second-farthest boundary,
+  as well as the other two farthest boundaries. In this way,
+  $G(\xi,\eta,\tilde{t}_\epsilon | xi_0, \eta_0)$ satisfies the
+  boundary condition on the three farthest boundaries numerically.
 
 \item Reflect the point $(\xi_0, \eta_0) \to (\xi_0', \eta_0')$ about
   the closest boundary. The image function
-  $G(\xi,\eta,t_\epsilon | \xi_0', \eta_0')$ satisfies the diffusion
-  equation and is equal to $G(\xi,\eta,t_\epsilon | \xi_0, \eta_0)$ on
-  the closest boundary. Further,
-  $G(\xi,\eta,t_\epsilon | \xi_0', \eta_0')$ takes on values less than
-  $10^{-15}$ on all other boundaries, because it is outside of
-  $\bar{\Omega}$. For this same reason, the system of images satisfies
-  the initial condition for the problem. 
+  $G(\xi,\eta,\tilde{t}_\epsilon | \xi_0', \eta_0')$ satisfies the
+  diffusion equation and is equal to
+  $G(\xi,\eta,t_\epsilon | \xi_0, \eta_0)$ on the closest
+  boundary. Further,
+  $G(\xi,\eta,\tilde{t}_\epsilon | \xi_0', \eta_0')$ takes on values
+  less than $10^{-15}$ on all other boundaries, because it is outside
+  of $\bar{\Omega}$. For this same reason, the system of images
+  satisfies the initial condition for the problem.
 
-  Considering the difference of the two images, the small-time solution 
+  The \textit{small-time} solution $p_\epsilon$ is the difference of the two images 
   \[
-    p(\xi,\eta,t_\epsilon) := G(\xi,\eta,t_\epsilon | \xi_0, \eta_0) -
-    G(\xi,\eta,t_\epsilon | \xi_0', \eta_0')
+    p_\epsilon(\xi,\eta,\tilde{t}) := G(\xi,\eta,\tilde{t} | \xi_0, \eta_0) -
+    G(\xi,\eta,\tilde{t} | \xi_0', \eta_0')
   \]
   satisfies all of the boundaries numerically and also satisfies the
-  governing diffusion equation. Performing a change of variables
-  $T_{(3)}^{-1}: (\xi,\eta) \to (\tilde{x}, \tilde{y})$ produces the
-  small-time solution $p(\tilde{x},\tilde{y},\tilde{t}_\epsilon)$ in
-  the normalized diffusion problem frame
+  governing diffusion equation for
+  $\tilde{t} \leq \tilde{t}_\epsilon$. Performing a change of
+  variables $T_{(3)}^{-1}: (\xi,\eta) \to (\tilde{x}, \tilde{y})$
+  produces the small-time solution
+  $p_\epsilon(\tilde{x},\tilde{y},\tilde{t})$ in the normalized
+  diffusion problem frame
   \begin{align}
-    p(\tilde{x}, \tilde{y}, \tilde{t}_\epsilon) =
-    \frac{1}{2\pi\,\, \tilde{t}_\epsilon\tilde{\sigma}\sqrt{1-\rho^2}} \exp\left( -\frac{1}{2\,\,\tilde{t}_\epsilon\, \tilde{\sigma}^2 (1-\rho^2)} \left[ \left(x-x_0\right)^2 \tilde{\sigma}^2 + \left(y-y_0\right)^2 - 2\rho(x-x_0)(y-y_0)\tilde{\sigma} \right]\right) & \\
-                                                                                                                                                                                                                                                                            - \frac{1}{2\pi\,\, \tilde{t}_\epsilon\tilde{\sigma}\sqrt{1-\rho^2}} \exp\left( -\frac{1}{2\,\,\tilde{t}_\epsilon\, \tilde{\sigma}^2 (1-\rho^2)} \left[ \left(x-x'_0\right)^2 \tilde{\sigma}^2 + \left(y-y'_0\right)^2 - 2\rho(x-x'_0)(y-y'_0)\tilde{\sigma} \right]\right) &
+    p_\epsilon(\tilde{x}, \tilde{y}, \tilde{t}) &= G(\tilde{x}, \tilde{y}, \tilde{t} | \tilde{x}_0, \tilde{y}_0) - G(\tilde{x}, \tilde{y}, \tilde{t} | \tilde{x}'_0, \tilde{y}'_0), \label{eq:p-epsilon}
   \end{align}
-  as shown in
-  the right panel of Figure (\ref{fig:step-1-small-time}).
+  where the function $G(\cdot)$ is the shifted fundamental solution
+  \begin{align}
+    G(\tilde{x}, \tilde{y}, \tilde{t} | \tilde{x}_0, \tilde{y}_0) &= \\ \nonumber
+    \MoveEqLeft[8] \frac{1}{2\pi\,\, \tilde{t}\sigma_{\tilde{y}}\sqrt{1-\rho^2}} \exp\left( -\frac{1}{2\,\,\tilde{t}\, \sigma_{\tilde{y}}^2 (1-\rho^2)} \left[ \left(\tilde{x}-\tilde{x}_0\right)^2 \sigma_{\tilde{y}}^2 + \left(\tilde{y}-\tilde{y}_0\right)^2 - 2\rho(\tilde{x}-\tilde{x}_0)(\tilde{y}-\tilde{y}_0)\sigma_{\tilde{y}} \right]\right) \label{eq:Gfundamental}
+    \end{align}
+    as illustrated in the right panel of Figure
+    (\ref{fig:step-1-small-time}).
 \end{enumerate}
 
 \begin{figure}
@@ -1157,41 +1163,42 @@ First, we prove the Lemma
   expression can be expressed as a linear combination of probabilities
   of perturbed sets $B(\cdot)$:
   \begin{align*}
-    \lim_{\epsilon \to 0}\quad \frac{1}{\epsilon^4} \sum_{i=1}^{16} c(i) \Pr(B(a_x + k_1(i)\epsilon, b_x + k_2(i)\epsilon, a_y + k_3(i)\epsilon, b_y + k_4(i)\epsilon) = \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial b_y} \Pr(B(a_x, b_x, a_y, b_y)),
+    \lim_{\epsilon \to 0}\quad \frac{1}{\epsilon^4} \sum_{i=1}^{16} c(i) \Pr(B(a_x + k_1(i)\epsilon, b_x + k_2(i)\epsilon, a_y + k_3(i)\epsilon, b_y + k_4(i)\epsilon) &= \\
+    \MoveEqLeft[8] \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial b_y} \Pr(B(a_x, b_x, a_y, b_y)),
   \end{align*}
   where $c$ and $k$ are functions from $i$ to the appropriate
   coefficients in the second-order finite difference approximation
   $c(i) \to \left\{-1, 1\right\}$, $k_j(i) \to \{-1,1\}$. Using Big-O
   notation, for a sufficiently small $\epsilon$
-  \begin{equation}
+  \begin{align}
     \sum_{i=1}^{16} c(i) \Pr(B(a_x + k_1(i)\epsilon, b_x +
-    k_2(i)\epsilon, a_y + k_3(i)\epsilon, b_y + k_4(i)\epsilon) =
-    \epsilon^4 \frac{\partial^4}{\partial a_x \partial b_x \partial
+    k_2(i)\epsilon, a_y + k_3(i)\epsilon, b_y + k_4(i)\epsilon) &= \nonumber \\
+    \MoveEqLeft[10] \epsilon^4 \frac{\partial^4}{\partial a_x \partial b_x \partial
       a_y \partial b_y} \Pr(B(a_x, b_x, a_y, b_y)) + O(\epsilon^6 ;
     a_x, b_x, a_y, b_y). \label{eq:fin-diff}
-  \end{equation}
-
+  \end{align}
   The convergence result in Section \ref{sec:error-bound} implies that
   \begin{align*}
     \Pr_k(B(a_x + k_1(i)\epsilon, b_x + k_2(i)\epsilon, a_y +
-    k_3(i)\epsilon, b_y + k_4(i)\epsilon) = \displaystyle \int_{a_x +
+    k_3(i)\epsilon, b_y + k_4(i)\epsilon) &= \\
+    \MoveEqLeft[10] \displaystyle \int_{a_x +
     k_1(i)\epsilon}^{b_x + k_2(i)\epsilon} \displaystyle \int_{a_y + k_3(i)\epsilon}^{b_y +
     k_4(i)\epsilon} q^{(k)}(x,y,a_x,b_x,a_y,b_y)\, dx\, dy \to \\
-    \displaystyle
-    \int_{a_x + k_1(i)\epsilon}^{b_x + k_2(i)\epsilon} \displaystyle \int_{a_y +
-    k_3(i)\epsilon}^{b_y + k_4(i)\epsilon} q(x,y,a_x,b_x,a_y,b_y)\, dx\, dy =
-    \Pr(B(a_x + k_1(i)\epsilon, b_x + k_2(i)\epsilon, a_y +
-    k_3(i)\epsilon, b_y + k_4(i)\epsilon) \\
-    \mbox{ as } k \to \infty \mbox{ in } L_2(\Omega).
+   \displaystyle
+     \int_{a_x + k_1(i)\epsilon}^{b_x + k_2(i)\epsilon} \displaystyle \int_{a_y +
+     k_3(i)\epsilon}^{b_y + k_4(i)\epsilon} q(x,y,a_x,b_x,a_y,b_y)\, dx\, dy &= \\
+    \MoveEqLeft[20] \Pr(B(a_x + k_1(i)\epsilon, b_x + k_2(i)\epsilon, a_y +
+    k_3(i)\epsilon, b_y + k_4(i)\epsilon) \mbox{ as } k \to \infty \mbox{ in } L_2(\Omega).
   \end{align*}
   Hence, for a sufficiently large $k$ dependent on the supremum over
   $i$, and given the error estimate in (\ref{eq:error-est}), we have
   the relation
   \begin{align*}
     \Pr_k(B(a_x + k_1(i)\epsilon, b_x + k_2(i)\epsilon, a_y +
-    k_3(i)\epsilon, b_y + k_4(i)\epsilon) &= \Pr(B(a_x + k_1(i)\epsilon, b_x + k_2(i)\epsilon, a_y +
-                                            k_3(i)\epsilon, b_y + k_4(i)\epsilon) \\
-    & + O(h(k)^2; a_x + k_1(i)\epsilon, b_x + k_2(i)\epsilon, a_y + k_3(i)\epsilon, b_y + k_4(i)\epsilon)
+    k_3(i)\epsilon, b_y + k_4(i)\epsilon) &= \\
+    \Pr(B(a_x + k_1(i)\epsilon, b_x + k_2(i)\epsilon, a_y +
+    k_3(i)\epsilon, b_y + k_4(i)\epsilon) &\\
+    + O(h(k)^2; a_x + k_1(i)\epsilon, b_x + k_2(i)\epsilon, a_y + k_3(i)\epsilon, b_y + k_4(i)\epsilon) &
   \end{align*}
   Note here that the dominating terms $O(h(k)^2; \cdot)$ are
   differentiable with respect to the boundary parameters
@@ -1200,15 +1207,16 @@ First, we prove the Lemma
   (\ref{eq:fin-diff}) with $\Pr_k(\cdot)$
   \begin{align*}
     \sum_{i=1}^{16} c(i) \Pr_k(B(a_x + k_1(i)\epsilon, b_x +
-    k_2(i)\epsilon, a_y + k_3(i)\epsilon, b_y + k_4(i)\epsilon) &= \sum_{i=1}^{16} c(i) \Pr(B(a_x + k_1(i)\epsilon, b_x +
-                                                                  k_2(i)\epsilon, a_y + k_3(i)\epsilon, b_y + k_4(i)\epsilon)  \\
-                                                                & + \sum_{i=1}^{16} c(i) O(h(k)^2; a_x + k_1(i)\epsilon, b_x +
-                                                                  k_2(i)\epsilon, a_y + k_3(i)\epsilon, b_y + k_4(i)\epsilon) \\
-    &=     \epsilon^4 \frac{\partial^4}{\partial a_x \partial b_x \partial
-      a_y \partial b_y} \Pr(B(a_x, b_x, a_y, b_y)) + O(\epsilon^6 ;
-      a_x, b_x, a_y, b_y) \\
-                                                                & + \sum_{i=1}^{16} c(i) O(h(k)^2; a_x + k_1(i)\epsilon, b_x +
-                                                                  k_2(i)\epsilon, a_y + k_3(i)\epsilon, b_y + k_4(i)\epsilon).
+    k_2(i)\epsilon, a_y + k_3(i)\epsilon, b_y + k_4(i)\epsilon) &= \\
+    \sum_{i=1}^{16} c(i) \Pr(B(a_x + k_1(i)\epsilon, b_x +
+    k_2(i)\epsilon, a_y + k_3(i)\epsilon, b_y + k_4(i)\epsilon) &  \\
+    + \sum_{i=1}^{16} c(i) O(h(k)^2; a_x + k_1(i)\epsilon, b_x +
+    k_2(i)\epsilon, a_y + k_3(i)\epsilon, b_y + k_4(i)\epsilon) &= \\
+    \epsilon^4 \frac{\partial^4}{\partial a_x \partial b_x \partial
+    a_y \partial b_y} \Pr(B(a_x, b_x, a_y, b_y)) + O(\epsilon^6 ;
+    a_x, b_x, a_y, b_y) & \\
+    + \sum_{i=1}^{16} c(i) O(h(k)^2; a_x + k_1(i)\epsilon, b_x +
+    k_2(i)\epsilon, a_y + k_3(i)\epsilon, b_y + k_4(i)\epsilon). &
   \end{align*}
   Dividing both sides by $\epsilon^4$ produces
   \begin{align*}
