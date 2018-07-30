@@ -214,7 +214,7 @@ EXAMPLE WITH $\rho = 0$.
     % %%
     \begin{minipage}{0.40\textwidth}
       \centering
-      \includegraphics[width=1\linewidth]{illustration-rho-0-transformed.pdf}
+      \includegraphics[width=1\linewidth]{../chapter-3/illustration-rho-0-transformed.pdf}
       \caption{The problem in Figure
         (\ref{fig:normalized-problem-rho-0}) is scaled by
         $1/\tilde{\sigma}$ in the $y-$direction, then rotated $\pi/4$
@@ -265,7 +265,7 @@ EXAMPLE WITH $\rho = 0$.
     %%
     & \begin{minipage}{0.40\textwidth}
       \centering
-      \includegraphics[width=1\linewidth]{chapter-3-figure-illustration-rel-error.pdf}
+      \includegraphics[width=1\linewidth]{../chapter-3/chapter-3-figure-illustration-rel-error.pdf}
       \caption{Relative error across $\Omega$ on a $30 \times 30$
         regular grid based on solution (\ref{eq:small-time-sol}) for
         the symmetric distribution of images in Figure
@@ -278,118 +278,100 @@ EXAMPLE WITH $\rho = 0$.
 \end{figure}
 
 
+\section{Density Calculation}
+Out of the $J^*$ images in \eqref{eq:small-time-sol}, exactly four
+have location parameters dependent on all of the boundary parameters
+$(a_x, b_x, a_y, b_y)$. Hence, the density calculation with the
+small-time solution becomes
+\begin{align}
+  \frac{\partial^4 p_\epsilon(\tilde{x}, \tilde{y}, \tilde{t})}{\partial a_x \partial b_x \partial a_y \partial b_y}  &= \sum_{j'=1}^{4}
+                                                                                                                        \frac{\partial^4G(\tilde{x},\tilde{y},\tilde{t}|\tilde{x}_{(j')},\tilde{y}_{(j')})}{\partial a_x \partial b_x \partial a_y \partial b_y}. \label{eq:derivs-1}
+\end{align}
+One approach to compute the derivatives in (\ref{eq:derivs-1}) is to
+numerically perturb the boundary parameters $(a_x,b_x,a_y,b_y)$ and
+use a finite difference approximation directly on the sum
+(\ref{eq:small-time-sol}). However, since the small-time solution
+generally requires the use of a small time
+$\tilde{t} \leq \tilde{t}_\epsilon << 1$, numerical underflow makes
+direct application of finite difference hopeless.  We can, however,
+leverage the very tractable analytic form of the Gaussian kernel
+$G(\cdot)$ in \eqref{eq:Gfundamental} by defining the following
+factors to more easily express the higher-order derivatives applied to
+(\ref{eq:derivs-1})
+\begin{align}
+  \mathcal{C}(\tilde{t}, \sigma_{\tilde{y}}, \rho) &:= -\frac{1}{2\,\,\tilde{t}\, \sigma_{\tilde{y}}^2 (1-\rho^2)}, \\
+  \mathcal{P}_j(\tilde{x},\tilde{y} | \tilde{x}_{(j)}, \tilde{y}_{(j)}) &:= \left(\tilde{x}- \tilde{x}_{(j)}\right)^2 \sigma_{\tilde{y}}^2 + \left(y-y_{(j)}\right)^2 - 2\rho(x-x_{(j)})(y-y_{(j)})\tilde{\sigma}.
+\end{align}
+The two key observations here are that $\mathcal{P}_j(\cdot)$ is
+independent of $\tilde{t}$, meaning $\mathcal{C}(\cdot)$ carries the
+$\tilde{t}$ dependency in differentiation and that only
+$\mathcal{P}_j$ is dependent on the boundary parameters through
+$\tilde{x}_{(j)}$ and $\tilde{y}_{(j)}$. Without loss of generality,
+we can compute the derivatives:
+\begin{align}
+  % \frac{\partial}{\partial a_x} G(x,y|t^{*}, \tilde{\sigma}, \rho, x_0^{(j^*)}, y_0^{(j^*)}) &= G \cdot \mathcal{C}\,\,\cdot \left( \frac{\partial \mathcal{P}}{\partial a_x} \right)\\
+  % \frac{\partial^2}{\partial a_x \partial b_x} G(x,y|t^{*}, \tilde{\sigma}, \rho, x_0^{(j^*)}, y_0^{(j^*)}) &= G \cdot \mathcal{C}^2 \left( \frac{\partial \mathcal{P}}{\partial b_x} \right) \left( \frac{\partial \mathcal{P}}{\partial a_x} \right) + G \cdot \mathcal{C} \cdot \left( \frac{\partial^2 \mathcal{P}}{\partial a_x \partial b_x} \right) \\
+  % %% %% %%
+  % \frac{\partial^3}{\partial a_x \partial b_x \partial a_y} G(x,y|t^{*}, \tilde{\sigma}, \rho, x_0^{(j^*)}, y_0^{(j^*)}) &= G \cdot \mathcal{C}^3 \left( \frac{\partial \mathcal{P}}{\partial b_x} \right) \left( \frac{\partial \mathcal{P}}{\partial a_x} \right) \left( \frac{\partial \mathcal{P}}{\partial a_y} \right) \nonumber \\
+  %                                                                                            &\,\, + G \cdot \mathcal{C}^2 \left[\left( \frac{\partial^2 \mathcal{P}}{\partial a_x \partial a_y} \right) \left( \frac{\partial \mathcal{P}}{\partial b_x} \right) + \left( \frac{\partial^2 \mathcal{P}}{\partial b_x \partial a_y} \right) \left( \frac{\partial \mathcal{P}}{\partial a_x} \right) + \left( \frac{\partial^2 \mathcal{P}}{\partial a_x \partial b_x} \right) \left( \frac{\partial \mathcal{P}}{\partial a_y} \right)\right] \nonumber \\
+  %                                                                                            &\,\, + G \cdot \mathcal{C} \left( \frac{\partial^3 \mathcal{P}}{\partial a_x \partial b_x \partial a_y} \right) \nonumber \\
+  %                                                                                            %% %% %%
+  \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial b_y} G(\tilde{x},\tilde{y},\tilde{t} |  \tilde{x}_{(j)}, \tilde{y}_{(j)}) &= \\
+  \MoveEqLeft[10] G \cdot \mathcal{C}^4 \cdot \left(\partial_{a_x}\partial_{b_x} \partial_{a_y}\partial_{b_y} \right)\mathcal{P}&  \nonumber \\
+  \MoveEqLeft[10] \,\, + G \cdot \mathcal{C}^3 \cdot \left( \partial^2_{a_x\, b_x} \partial_{a_y} \partial_{b_y} + \partial^2_{a_x\, a_y} \partial_{b_x} \partial_{b_y} + \partial^2_{a_x\, b_y} \partial_{b_x} \partial_{a_y} + \right. &\nonumber \\
+  \MoveEqLeft[10] \left. \qquad\qquad\qquad +\partial^2_{b_x\, a_y} \partial_{a_x} \partial_{b_y} + \partial^2_{b_x\, b_y} \partial_{a_x} \partial_{a_y} \partial^2_{a_y\, b_y} \partial_{a_x} \partial_{b_x} \right) \mathcal{P} &  \nonumber \\
+  \MoveEqLeft[10] \,\, + G \cdot \mathcal{C}^2 \cdot \left( \partial^3_{a_x\,b_x\,a_y} \partial_{b_y} + \partial^2_{a_x\,b_x}\partial^2_{a_y\,b_y} + \partial^3_{a_x\,b_x\,b_y}\partial_{a_y}  + \right.& \nonumber \\
+  \MoveEqLeft[10] \left. \qquad\qquad\qquad + \partial^3_{a_x\,a_y\,b_y} \partial_{b_x} + \partial^2_{a_x\,a_y} \partial^2_{b_y\,b_x} + \partial^3_{b_x\,a_y\,b_y}\partial_{a_x} + \partial^2_{b_x\,a_y}\partial_{a_x}\partial_{b_y} \right) \mathcal{P} & \nonumber \\
+  \MoveEqLeft[10] \,\, + G \cdot \mathcal{C} \cdot \partial^4_{a_x\,b_x\,a_y\,b_y} P,& \label{eq:fourth-deriv}
+\end{align}
+where $\partial_{x}G := \partial G/\partial x,$,
+$\partial^2_{x\,y}G := \partial^2 G/\partial x \partial y,$
+$\partial_{x}\partial_{y}G := \partial G/\partial x \cdot \partial
+G/\partial y,$ etc.  With (\ref{eq:fourth-deriv}), we can express each
+of the derivatives in (\ref{eq:derivs-1}) as the sum of derivatives of
+the polynomial $\mathcal{P}_j$ with respect to the boundary
+parameters. In particular, derivatives in (\ref{eq:fourth-deriv})
+avoid the previous numerical underflow problems and lend themselves to
+finite difference approximation even at high orders.
 
-Out of the $J=36$ images in the system considered, nine have location
-parameters that are dependent on all four boundary parameters (green
-and blue points in Figure (\ref{fig:illustration-1})). Differentiating
-$\bar{q}$ with respect to all of the boundary parameters produces an
-approximate small-time solution for the full problem that is dependent
-upon that subset of the images:
-\begin{align}
-  \frac{\partial^4 \bar{q}(x, y, t^{*})}{\partial a_x
-  \partial b_x \partial a_y \partial b_y} &= \sum_{j^*=1}^{J^*} \frac{\partial^4
-                                            G(x,y|t^{*}, \tilde{\sigma}, \rho, x_0^{(j^*)}(a_x, b_x, a_y, b_y, \rho, \tilde{\sigma}),
-                                            y_0^{(j^*)}(a_x, b_x, a_y, b_y, \rho, \tilde{\sigma}))} {\partial a_x \partial b_x
-                                            \partial a_y \partial b_y}. \label{eq:analytic-solution-rho-0}
-\end{align}
-One approach to compute the derivatives in
-(\ref{eq:analytic-solution-rho-0}) is to numerically perturb the
-boundary parameters $(a_x,b_x,a_y,b_y)$ and use a finite difference
-approximation directly on the sum
-(\ref{eq:analytic-solution-rho-0}). However, since the small-time
-solution generally requires the use of a small time $t^* << 1$,
-numerical underflow makes direct application of finite difference
-hopeless.
-
-We can, however, leverage the very tractable analytic form of the
-Gaussian kernel $G(\cdot)$. Given
-\begin{align}
-  & G(x,y | t^{*}, \tilde{\sigma}, \rho, x_0^{(j^*)}(a_x, b_x, a_y, b_y, \rho, \tilde{\sigma}),
-    y_0^{(j^*)}(a_x, b_x, a_y, b_y, \rho, \tilde{\sigma})) = &  \nonumber \\
-  & \frac{1}{2\pi\,\, t^{*}\tilde{\sigma}\sqrt{1-\rho^2}} \exp\left( -\frac{1}{2\,\,t^*\, \tilde{\sigma}^2 (1-\rho^2)} \left[ \left(x-x_0^{(j)}\right)^2 \tilde{\sigma}^2 + \left(y-y_0^{(j)}\right)^2 - 2\rho(x-x_0^{(j)})(y-y_0^{(j)})\tilde{\sigma} \right]\right), & \label{eq:full-form-G}
-\end{align}
-we can define the following factors to more easily express the
-higher-order derivatives applied to (\ref{eq:full-form-G})
-\begin{align}
-  \mathcal{C}(t^*, \tilde{\sigma}, \rho) &:= -\frac{1}{2\,\,t^*\, \tilde{\sigma}^2 (1-\rho^2)}, \\
-  \mathcal{P}_j(x,y | \tilde{\sigma}, \rho, a_x,b_x,a_y,b_y) &:= \left(x-x_0^{(j)}\right)^2 \tilde{\sigma}^2 + \left(y-y_0^{(j)}\right)^2 - 2\rho(x-x_0^{(j)})(y-y_0^{(j)})\tilde{\sigma}.
-\end{align}
-The two key observations here are that $\mathcal{P}(\cdot)$ is
-independent of $t^{*}$, meaning $\mathcal{C}(\cdot)$ carries the
-$t^{*}$ dependency in differentiation and that only $\mathcal{P}$ is
-dependent on the boundary parameters. Without loss of generality,
-beginning with $\partial/\partial a_x$ we compute all derivatives:
-\begin{align}
-  \frac{\partial}{\partial a_x} G(x,y|t^{*}, \tilde{\sigma}, \rho, x_0^{(j^*)}, y_0^{(j^*)}) &= G \cdot \mathcal{C}\,\,\cdot \left( \frac{\partial \mathcal{P}}{\partial a_x} \right)\\
-  \frac{\partial^2}{\partial a_x \partial b_x} G(x,y|t^{*}, \tilde{\sigma}, \rho, x_0^{(j^*)}, y_0^{(j^*)}) &= G \cdot \mathcal{C}^2 \left( \frac{\partial \mathcal{P}}{\partial b_x} \right) \left( \frac{\partial \mathcal{P}}{\partial a_x} \right) + G \cdot \mathcal{C} \cdot \left( \frac{\partial^2 \mathcal{P}}{\partial a_x \partial b_x} \right) \\
-  %% %% %%
-  \frac{\partial^3}{\partial a_x \partial b_x \partial a_y} G(x,y|t^{*}, \tilde{\sigma}, \rho, x_0^{(j^*)}, y_0^{(j^*)}) &= G \cdot \mathcal{C}^3 \left( \frac{\partial \mathcal{P}}{\partial b_x} \right) \left( \frac{\partial \mathcal{P}}{\partial a_x} \right) \left( \frac{\partial \mathcal{P}}{\partial a_y} \right) \nonumber \\
-                                                                                             &\,\, + G \cdot \mathcal{C}^2 \left[\left( \frac{\partial^2 \mathcal{P}}{\partial a_x \partial a_y} \right) \left( \frac{\partial \mathcal{P}}{\partial b_x} \right) + \left( \frac{\partial^2 \mathcal{P}}{\partial b_x \partial a_y} \right) \left( \frac{\partial \mathcal{P}}{\partial a_x} \right) + \left( \frac{\partial^2 \mathcal{P}}{\partial a_x \partial b_x} \right) \left( \frac{\partial \mathcal{P}}{\partial a_y} \right)\right] \nonumber \\
-                                                                                             &\,\, + G \cdot \mathcal{C} \left( \frac{\partial^3 \mathcal{P}}{\partial a_x \partial b_x \partial a_y} \right) \nonumber \\
-                                                                                             %% %% %%
-  \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial b_y} G(x,y|t^{*}, \tilde{\sigma}, \rho, x_0^{(j^*)}, y_0^{(j^*)}) &= G \cdot \mathcal{C}^4 \cdot \left(\partial_{a_x}\partial_{b_x} \partial_{a_y}\partial_{b_y} \right)\mathcal{P} \nonumber \\
-                                                                                             &\,\, + G \cdot \mathcal{C}^3 \cdot \left( \partial^2_{a_x\, b_x} \partial_{a_y} \partial_{b_y} + \partial^2_{a_x\, a_y} \partial_{b_x} \partial_{b_y} + \partial^2_{a_x\, b_y} \partial_{b_x} \partial_{a_y} + \right. \nonumber \\
-                                                                                             & \left. \qquad\qquad\qquad +\partial^2_{b_x\, a_y} \partial_{a_x} \partial_{b_y} + \partial^2_{b_x\, b_y} \partial_{a_x} \partial_{a_y} \partial^2_{a_y\, b_y} \partial_{a_x} \partial_{b_x} \right) \mathcal{P} \nonumber \\
-                                                                                             &\,\, + G \cdot \mathcal{C}^2 \cdot \left( \partial^3_{a_x\,b_x\,a_y} \partial_{b_y} + \partial^2_{a_x\,b_x}\partial^2_{a_y\,b_y} + \partial^3_{a_x\,b_x\,b_y}\partial_{a_y}  + \right. \nonumber \\
-                                                                                             & \left. \qquad\qquad\qquad + \partial^3_{a_x\,a_y\,b_y} \partial_{b_x} + \partial^2_{a_x\,a_y} \partial^2_{b_y\,b_x} + \partial^3_{b_x\,a_y\,b_y}\partial_{a_x} + \partial^2_{b_x\,a_y}\partial_{a_x}\partial_{b_y} \right) \mathcal{P} \nonumber \\
-                                                                                             &\,\, + G \cdot \mathcal{C} \cdot \partial^4_{a_x\,b_x\,a_y\,b_y} P. \label{eq:fourth-deriv}
-\end{align}
-With (\ref{eq:fourth-deriv}), we can express each of the derivatives
-in (\ref{eq:analytic-solution-rho-0}) as the sum of derivatives of the
-polynomial $\mathcal{P}$ with respect to the boundary parameters. In
-particular, derivatives in (\ref{eq:fourth-deriv}) avoid the previous
-numerical underflow problems and lend themselves to finite difference
-approximation even at high orders.
-
-Thinking of $t^{*}$ as variable allows us to further simplify
-(\ref{eq:fourth-deriv}). Since $\mathcal{C} = \mathcal{O}(1/t^{*})$,
-all three terms $G\cdot \mathcal{C}^3, G\cdot \mathcal{C}^2,$ and
-$G\cdot \mathcal{C}$ are
+Thinking of $\tilde{t}$ as variable allows us to further simplify
+(\ref{eq:fourth-deriv}). Since
+$\mathcal{C} = \mathcal{O}(1/\tilde{t})$, all three terms
+$G\cdot \mathcal{C}^3, G\cdot \mathcal{C}^2,$ and $G\cdot \mathcal{C}$
+are
 $o\left( G\cdot \mathcal{C}^4 \cdot \left(\partial_{a_x}\partial_{b_x}
     \partial_{a_y}\partial_{b_y} \right)\mathcal{P} \right)$, so that
 the $G\cdot \mathcal{C}^4$ order term in (\ref{eq:fourth-deriv})
-dominates the others for sufficiently small $\,\,t$. This truncation,
-when appropriate, is useful for reducing computational complexity
-\textit{and} it guarantees that the numerical implementation of the
-derivatives produces positive values for all $t$ as long as
+dominates the others for sufficiently small $\,\,\tilde{t}$. This
+truncation, when appropriate, is useful for reducing computational
+complexity \textit{and} it guarantees that the numerical
+implementation of the derivatives produces positive values for all
+$\tilde{t}$ as long as
 $\left(\partial_{a_x}\partial_{b_x} \partial_{a_y}\partial_{b_y}
 \right)\mathcal{P}$ is positive. Truncating at $\mathcal{C}^4$, the
 analytic likelihood approximation given by the sum of images is of the
 form:
 \begin{align}
-  &\frac{\partial^4 \bar{q}(x, y, t)}{\partial a_x
-  \partial b_x \partial a_y \partial b_y} \approx  & \nonumber \\
-  &\sum_{j} \left\{ \frac{1}{2\pi\,\, t\tilde{\sigma}\sqrt{1-\rho^2}} \exp\left(
-    -\frac{1}{2\,\,t^*\, \tilde{\sigma}^2 (1-\rho^2)} \left[
-      \left(x-x_0^{(j)}\right)^2 \tilde{\sigma}^2 +
-      \left(y-y_0^{(j)}\right)^2 -
-      2\rho(x-x_0^{(j)})(y-y_0^{(j)})\tilde{\sigma} \right]\right)
-    \cdot \right. & \nonumber \\
-  &\qquad \qquad \left. \left( -\frac{1}{2\,\,t^*\, \tilde{\sigma}^2 (1-\rho^2)} \right)^4 \cdot \left(\partial_{a_x}\partial_{b_x}
-    \partial_{a_y}\partial_{b_y} \right)\mathcal{P} \right\}. & \label{eq:truncated-approx}
-  % & \propto IG\left( t^* | \alpha = 4, \beta = -\frac{1}{2\, \tilde{\sigma}^2 (1-\rho^2)} \left[
+  \frac{\partial^4 p_\epsilon(\tilde{x}, \tilde{y}, \tilde{t})}{\partial a_x
+  \partial b_x \partial a_y \partial b_y} &\approx \sum_{j'=1}^{4} G(\tilde{x},\tilde{y},\tilde{t}|\tilde{x}_{(j')},\tilde{y}_{(j')}) \cdot \mathcal{C}^4 \cdot \left(\partial_{a_x}\partial_{b_x} \partial_{a_y}\partial_{b_y} \right)\mathcal{P}_{j'}. \label{eq:truncated-approx}
+  % &\sum_{j} \left\{ \frac{1}{2\pi\,\, t\tilde{\sigma}\sqrt{1-\rho^2}} \exp\left(
+  %   -\frac{1}{2\,\,t^*\, \tilde{\sigma}^2 (1-\rho^2)} \left[
   %     \left(x-x_0^{(j)}\right)^2 \tilde{\sigma}^2 +
   %     \left(y-y_0^{(j)}\right)^2 -
-  %     2\rho(x-x_0^{(j)})(y-y_0^{(j)})\tilde{\sigma} \right] \right)
+  %     2\rho(x-x_0^{(j)})(y-y_0^{(j)})\tilde{\sigma} \right]\right)
+  %   \cdot \right. & \nonumber \\
+  % &\qquad \qquad \left. \left( -\frac{1}{2\,\,t^*\, \tilde{\sigma}^2 (1-\rho^2)} \right)^4 \cdot \left(\partial_{a_x}\partial_{b_x}
+  %   \partial_{a_y}\partial_{b_y} \right)\mathcal{P} \right\}. & \nonumber
+  % % & \propto IG\left( t^* | \alpha = 4, \beta = -\frac{1}{2\, \tilde{\sigma}^2 (1-\rho^2)} \left[
+  % %     \left(x-x_0^{(j)}\right)^2 \tilde{\sigma}^2 +
+  % %     \left(y-y_0^{(j)}\right)^2 -
+  % %     2\rho(x-x_0^{(j)})(y-y_0^{(j)})\tilde{\sigma} \right] \right)
 \end{align}
-The above approximate solution is close to the true existing
-small-time solution for $t < t^*$. Extending beyond $t^*$ produces a
-positive function dominated by the exponential term $G$. Figure
-(\ref{fig:illustration-likelihood-profile}) shows a profile comparison
-of the log-likelihood with respect to $t$ for the example
-configuration used so far. The truncated approximate solution tracks
-well with the true solution up to $\mathcal{O}(t) = 1$. Closer
-observation of (\ref{eq:truncated-approx}) reveal that each of the
-summands are proportional to an Inverse-Gamma distribution, since
-$\left(\partial_{a_x}\partial_{b_x} \partial_{a_y}\partial_{b_y}
-\right)\mathcal{P}$ is not dependent on $t$. This allows us to
-approximate the value for $t$ which maximizes the likelihood function
-(see Section (\ref{sec:modes}) below).
 \begin{figure}
   \begin{tabular}{c}
     \begin{minipage}{0.90\textwidth}
       \centering
-      \includegraphics[width=1\linewidth]{chapter-3-figure-illustration-likelihood-profile.pdf}
+      \includegraphics[width=1\linewidth]{../chapter-3/chapter-3-figure-illustration-likelihood-profile.pdf}
       \caption{Log-likelihood profile comparison between small-time
         truncated solution (as given in (\ref{eq:truncated-approx}),
         solid black line) and the true analytic solution (red
@@ -401,18 +383,25 @@ approximate the value for $t$ which maximizes the likelihood function
     \end{minipage}
   \end{tabular}
 \end{figure}
-Applying a first-order finite difference approximation with a finite
-step $\Delta = 10^{-5}$ to compute the polynomial derivatives produces
-relative errors with a maximum of order $\mathcal{O}(10^{-4})$ on the
-same $30 \times 30$ grid used for Figure
-(\ref{fig:illustration-rel-error}), as shown in Figure
+The above approximate solution is close to the true existing
+small-time solution for $\tilde{t} \leq \tilde{t}_\epsilon$. Extending
+beyond $\tilde{t}_\epsilon$ produces a positive function dominated by
+the hyperbolic term $\mathcal{C}^4$. Figure
+(\ref{fig:illustration-likelihood-profile}) shows a profile comparison
+of the log-likelihood with respect to $\tilde{t}$ for the example
+configuration used so far. The truncated approximate solution tracks
+well with the true solution up to $\mathcal{O}(\tilde{t}) =
+1$. Applying a first-order finite difference approximation with a
+finite step $\Delta = 10^{-5}$ to compute the polynomial derivatives
+produces relative errors with a maximum of order
+$\mathcal{O}(10^{-4})$ on a $30 \times 30$ grid shown in Figure
 (\ref{fig:illustration-rel-error-likelihood}).
 \begin{figure}
   \centering
   \begin{tabular}{c}
-    \begin{minipage}{0.50\textwidth}
+    \begin{minipage}{0.90\textwidth}
       \centering
-      \includegraphics[width=1\linewidth]{chapter-3-figure-illustration-rel-error-likelihood.pdf}
+      \includegraphics[width=1\linewidth]{../chapter-3/chapter-3-figure-illustration-rel-error-likelihood.pdf}
       \caption{Relative error for the likelihood problem comparing the
         true solution with the truncated small-time approximation in
         (\ref{eq:truncated-approx}) on a $30 \times 30$ regular grid
@@ -430,6 +419,130 @@ same $30 \times 30$ grid used for Figure
     %   \end{tabular}
 \end{figure}
 
+Closer observation of (\ref{eq:truncated-approx}) reveal that each of
+the summands are proportional to an Inverse-gamma distribution, since
+$\left(\partial_{a_x}\partial_{b_x} \partial_{a_y}\partial_{b_y}
+\right)\mathcal{P}_j$ is not dependent on $\tilde{t}$:
+\begin{align*}
+  \frac{\partial^4 p_\epsilon(\tilde{x}, \tilde{y}, \tilde{t})}{\partial a_x
+  \partial b_x \partial a_y \partial b_y} &\approx \\
+   \MoveEqLeft[10] \approx \sum_{j' = 1}^{4} \frac{1}{\pi\sqrt{2}} \left(\frac{1}{2\,\,\tilde{t}\, \sigma_{\tilde{y}}^2 (1-\rho^2)} \right)^{4.5}
+                                            \exp\left( -\frac{1}{2\,\,\tilde{t}\, \sigma_{\tilde{y}}^2 (1-\rho^2)} \mathcal{P}_{j'}\right)
+  \left(\partial_{a_x}\partial_{b_x} \partial_{a_y}\partial_{b_y} \right)\mathcal{P}_{j'} \\
+  % \MoveEqLeft[10] = \sum_{j' = 1}^{4} A_{j'} \left( \frac{1}{\tilde{t}} \right)^{4.5} \exp\left( -\frac{\beta_{j'}}{\tilde{t}} \right) \\
+                                          &\propto \sum_{j' = 1}^{4} IG(\tilde{t} | 3.5, \beta_{j'}), \\ 
+ \beta_{j'} &= \frac{1}{2\,\, \sigma_{\tilde{y}}^2 (1-\rho^2)} \mathcal{P}_{j'}, \\
+  \alpha_{j'} &= 3.5,
+\end{align*}
+where we use the shape-scale parameterization for the Inverse-Gamma
+distribution. This allows us to approximate the value for $\tilde{t}$
+which maximizes the likelihood function. The summand with the smallest
+$\beta_{j'}$ contributes the most to the truncated small-time solution
+in the $\tilde{t} \leq \tilde{t}_\epsilon$ region, so that the
+smallest mode $\beta_j/(\alpha_j+1)$ is closest to the mode of the
+approximating function. Even though the truncated solution is not
+applicable for all $\tilde{t}$, its mode still gives a reasonable
+approximation for the $\tilde{t}$ value which maximizes the true
+likelihood function. An empirical validation is discussed below (see
+Figures (\ref{fig:modes-histogram}) - (\ref{fig:modes-histogram-3})),
+which provide views of the errors in approximating the true value $\tilde{t}$
+maximizing the likelihood and the approximation derived from the
+truncated small-time solution:
+\[ \min_{j'} \{ \beta_{j'}/(\alpha_{j'}+1) \} - \tilde{t}_{\max},
+\] where $\tilde{t}_{\max}$ is the $\tilde{t}$ value maximizing the
+true likelihood (for $\rho=0$) given some parameter combination
+$(\tilde{x}_0, \tilde{y}_0, \tilde{x}_{\tilde{t}},
+\tilde{y}_{\tilde{t}})$ and $\sigma_{\tilde{y}}$. Each data point in
+the histograms/scatterplots corresponding to such a combination is
+generated by sampling
+\begin{align*} \sigma_x &\sim \mbox{Lognormal}(2, 2), & \sigma_y &\sim
+  \mbox{Lognormal}(2, 2), & \rho &= 0,
+\end{align*} then simulating from a bivariate Brownian process using a
+forward Euler method and a small time step. Normalizing to the
+standard diffusion problem (see equation
+(\ref{eq:qqq})), $\tilde{t}_{\max}$ is found numerically
+conditional on $(\tilde{x}_0, \tilde{y}_0, \tilde{x}_{\tilde{t}},
+\tilde{y}_{\tilde{t}})$ and $\sigma_{\tilde{y}}$, since we
+have the closed-form likelihood for the $\rho=0$ case. For the same
+input parameters, we generate four images as given by our method above
+and then find $\min_{j'} \{ \beta_{j'}/(\alpha_{j'}+1) \}$. We compare how
+the Galerkin solution performs at this boundary of the computable
+region and beyond in the following figures.
+The histogram in Figure (\ref{fig:modes-histogram}) shows the
+distribution of signs and magnitudes of the error differences in
+approximating the modes
+$\tilde{t}_{\mbox{max}} - \min_{j'} \{ \beta_{j'}/(\alpha_{j'}+1) \}$,
+which are correlated with small $\sigma_{\tilde{y}}$ (Figure
+(\ref{fig:modes-scatterplot})). Further, can see from the plot of true
+mode vs. error in Figure (\ref{fig:modes-scatterplot-2}) that largest
+errors occur for modes that are large on relative to the
+$\tilde{t}-$scale. The distribution of true log-likelihood values at
+the approximate modes is given in Figure
+(\ref{fig:modes-histogram-2}). We can see that these function values
+are relatively large and should be resolvable by the finite element
+solver. This is confirmed in Figure
+(\ref{fig:modes-histogram-3}), which shows the relative error using
+the Galerkin solver.
+\begin{figure}
+  \begin{tabular}{cc}
+    \begin{minipage}{0.50\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-3/chapter-3-figure-validation-modes-histogram.pdf}
+      \caption{A histogram of differences
+        $t_{\max} - \min_{j'} \{ \beta_{j'}/(\alpha_{j'}+1) \}$ between the
+        approximate mode of the truncated small-time solution and the
+        true mode of closed-form solution, when $\rho=0$. We see that
+        the order magnitude of error in approximating the true point of
+        maximum for the likelihood function is 0.1, where the bias is
+        towards underestimating the mode.}
+      \label{fig:modes-histogram}
+    \end{minipage} &
+    \begin{minipage}{0.50\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-3/chapter-3-figure-validation-modes-scatterplot.pdf}
+      \caption{Scatterplot of $\tilde{\sigma}$ vs.
+        $\min_{j'} \{ \beta_{j'}/(\alpha_{j'}+1) \} -
+        t_{\max}$. Larger approximation errors in the mode point are
+        correlated with smaller $\sigma_{\tilde{y}}$.}
+      \label{fig:modes-scatterplot}
+    \end{minipage} 
+  \end{tabular}
+\end{figure}
+\begin{figure}
+  \begin{tabular}{cc}
+    \begin{minipage}{0.50\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-3/chapter-3-figure-validation-modes-scatterplot-2.pdf}
+      \caption{Scatterplot of true mode value vs.
+        $\min_{j'} \{ \beta_{j'}/(\alpha_{j'}+1) \} - \tilde{t}_{\max}$. Larger
+        approximation errors in the mode point are correlated with
+        higher mode locations.}
+      \label{fig:modes-scatterplot-2}
+    \end{minipage} &
+    \begin{minipage}{0.50\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-3/chapter-3-figure-validation-modes-histogram-2.pdf}
+      \caption{Histogram of log-likelihood values at approximate mode
+        locations.  We can see that, with respect to machine
+        $\epsilon$ the true function values at the approximate modes
+        are large and ought to be resolved by the finite element
+        solver.}
+      \label{fig:modes-histogram-2}
+    \end{minipage}
+  \end{tabular}
+\end{figure}
+%
+\begin{figure}
+  \begin{tabular}{c}
+    \begin{minipage}{0.90\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-3/chapter-3-figure-validation-modes-histogram-3.pdf}
+      \caption{Histogram of relative error of FEM solver at the
+        approximate modes.}
+      \label{fig:modes-histogram-3}
+    \end{minipage}
+  \end{tabular}
+\end{figure}
 % \begin{figure}
 %   \centering
 %   %%
@@ -445,23 +558,11 @@ same $30 \times 30$ grid used for Figure
 % \end{figure}
 
 
-\subsection{Counterexample with $\rho \neq 0$}
-For $\rho=0$, the above procedure is guaranteed to produce an
-admissible set of images regardless of the IC configuration and
-$\tilde{\sigma}$ used. However, this is not the case for a general
-combination of $\rho$ and $\tilde{\sigma}$. Consider Figure
-(\ref{fig:counterexample-1}), which features the same configuration of
-parameters and reflections as above, except that $\rho=0.9$. We can
-see that applying the above procedure produces a system with images
-within the computational domain, violating the IC.  However, below we
-prove that for any IC and $\rho$ combination, we can find a
-sufficiently small $\tilde{\sigma}$ such that a series of reflections
-used in the illustration will yield a valid system of images.
 \begin{figure}
   \begin{tabular}{cc}
     \begin{minipage}{0.50\textwidth}
       \centering
-      \includegraphics[width=1\linewidth]{chapter-3-figure-counterexample-1.pdf}
+      \includegraphics[width=1\linewidth]{../chapter-3/chapter-3-figure-counterexample-1.pdf}
       \caption{When $\rho=0.9$, the system of images generated by the
         set of reflections in Figure (\ref{fig:illustration-1}) now
         violates the IC as at least one of the images falls within
@@ -471,7 +572,7 @@ used in the illustration will yield a valid system of images.
     %%
     \begin{minipage}{0.50\textwidth}
       \centering
-      \includegraphics[width=1\linewidth]{chapter-3-figure-proof-1.pdf}
+      \includegraphics[width=1\linewidth]{../chapter-3/chapter-3-figure-proof-1.pdf}
       \caption{Geometry characteristic of the transformed problem when
         $\rho>0$. The thick dashed line defines the axis along which
         images resultant from reflecting about boundaries 2 and 4
@@ -482,15 +583,15 @@ used in the illustration will yield a valid system of images.
     %%
     \begin{minipage}{0.50\textwidth}
       \centering
-      \includegraphics[width=1\linewidth]{chapter-3-figure-proof-3.pdf}
+      \includegraphics[width=1\linewidth]{../chapter-3/chapter-3-figure-proof-3.pdf}
       \caption{Set of images in the original topology when
-        $\tilde{\sigma} = 0.1$. All images fall outside of $\Omega$
-        for $\rho = 0.9$.}
+        $\sigma_{\tilde{y}} = 0.1$. All images fall outside of
+        $\Omega$ for $\rho = 0.9$.}
       \label{fig:proof-3}
     \end{minipage} &
         \begin{minipage}{0.50\textwidth}
       \centering
-      \includegraphics[width=1\linewidth]{chapter-3-figure-proof-2.pdf}
+      \includegraphics[width=1\linewidth]{../chapter-3/chapter-3-figure-proof-2.pdf}
       \caption{Set of images in the transformed topology when
         $\tilde{\sigma} = 0.1$. All images fall outside of $\Omega$
         for $\rho = 0.9$.}
@@ -499,32 +600,43 @@ used in the illustration will yield a valid system of images.
   \end{tabular}
 \end{figure}
 
-\section{Existence of valid systems of images} \label{sec:proof}
+\section{Existence of valid systems of images} \label{sec:proof} For
+$\rho=0$, the above procedure is guaranteed to produce an admissible
+set of images regardless of the initial condition and
+$\sigma_{\tilde{y}}$ used. However, this is not the case for a general
+combination of $\rho$ and $\sigma_{\tilde{y}}$. Consider Figure
+(\ref{fig:counterexample-1}), which features the same configuration of
+parameters and reflections as above, except that $\rho=0.9$. We can
+see that applying the above procedure produces a system with images
+within the computational domain, violating the IC.  However, below we
+prove that for any IC and $\rho$ combination, we can find a
+sufficiently small $\sigma_{\tilde{y}}$ such that a series of
+reflections used for $p_\epsilon$ does not violate the problem.
 \begin{lemma}
-  Given $\rho > 0$, and $(x_0, y_0) \in \Omega$, there
-  exists $0 < \tilde{\sigma} \leq 1$ such that
-  $(x_0^{(j)}, y_0^{(j)}) \notin \Omega, \forall \, j\in
+  Given $\rho > 0$, and $(x_0, y_0) \in \tilde{\Omega}$, there exists
+  $0 < \sigma_{\tilde{y}} \leq 1$ such that
+  $(x_0^{(j)}, y_0^{(j)}) \notin \tilde{\Omega}, \forall \, j\in
   \left\{1, \ldots, J\right\}$, where the collection of image
   locations $\left\{1, \ldots, J\right\}$ is the result of a finite
-  set of reflections about the boundaries of $\Omega$.
+  set of reflections about the boundaries of $\tilde{\Omega}$.
 \end{lemma}
 
 \begin{proof}
-  Given that in the standard problem $\Omega$ is a unit square
-  whose lower-left corner is centered on the origin, applying the
-  transformation $T$ produces a characteristic geometry for the IC/BV
-  problem that is illustrated in Figure (\ref{fig:proof-1}). Corners
-  a) and c) are obtuse, while b) and d) are acute. Further, lines
-  $(1,3)$ and $(2, 4)$ are each parallel and of the same length, with
-  lines 2 and 4 being longer. This can be observed from the
-  coordinates of the four corners defining $\Omega$ in the transformed
-  topology:
+  Given that in the normalized problem $\tilde{\Omega}$ is a unit
+  square whose lower-left corner is centered on the origin, applying
+  the transformation $T_{(3)}$ in \eqref{eq:T3} produces a
+  characteristic geometry for the IC/BV problem that is illustrated in
+  Figure (\ref{fig:proof-1}). Corners a) and c) are obtuse, while b)
+  and d) are acute. Further, lines $(1,3)$ and $(2, 4)$ are each
+  parallel and of the same length, with lines 2 and 4 being
+  longer. This can be observed from the coordinates of the four
+  corners defining $\Omega$ in the transformed topology:
   \begin{align*}
     a &= (0,\quad 0),&
                        b &= \frac{\sqrt{2}}{2} \left( \frac{1}{\sqrt{1-\rho}},\quad \frac{1}{\sqrt{1+\rho}} \right), \\
-    c &= \frac{\sqrt{2}}{2} \left( \frac{1-1/\tilde{\sigma}}{\sqrt{1-\rho}},\quad \frac{1+1/\tilde{\sigma}}{\sqrt{1+\rho}} \right),&
-                                                                                                                                     d &= \frac{\sqrt{2}}{2} \left( \frac{-1/\tilde{\sigma}}{\sqrt{1-\rho}},\quad \frac{1/\tilde{\sigma}}{\sqrt{1+\rho}} \right), \\
-    IC &= \frac{\sqrt{2}}{2} \left( \frac{x_0 - y_0/\tilde{\sigma}}{\sqrt{1-\rho}},\quad \frac{x_0 + y_0/\tilde{\sigma}}{\sqrt{1-\rho}} \right)
+    c &= \frac{\sqrt{2}}{2} \left( \frac{1-1/\sigma_{\tilde{y}}}{\sqrt{1-\rho}},\quad \frac{1+1/\sigma_{\tilde{y}}}{\sqrt{1+\rho}} \right),&
+                                                                                                                                     d &= \frac{\sqrt{2}}{2} \left( \frac{-1/\sigma_{\tilde{y}}}{\sqrt{1-\rho}},\quad \frac{1/\sigma_{\tilde{y}}}{\sqrt{1+\rho}} \right), \\
+    IC &= \frac{\sqrt{2}}{2} \left( \frac{x_0 - y_0/\sigma_{\tilde{y}}}{\sqrt{1-\rho}},\quad \frac{x_0 + y_0/\sigma_{\tilde{y}}}{\sqrt{1-\rho}} \right)
   \end{align*}
 
   Now consider placing the images $j = 1, \ldots, J$ by performing a
@@ -532,51 +644,51 @@ used in the illustration will yield a valid system of images.
   places images along a finite segment of a line running through the
   IC position and orthogonal to lines 2 and 4 (dashed line and
   black/red dots in Figure (\ref{fig:proof-1})). If the number of
-  reflections is kept constant, $\tilde{\sigma}$ can be sufficiently
+  reflections is kept constant, $\sigma_{\tilde{y}}$ can be sufficiently
   small such that all thus placed images are in the interior region
   formed by extending lines 1 and 3. This is proved from the following
   observations:
   \begin{enumerate}
   \item The slopes of both lines 2 and 4 are equal to
     $-\frac{\sqrt{1+\rho}}{\sqrt{1-\rho}}$ and are therefore
-    \textit{independent of the choice} of $\tilde{\sigma}$. Hence,
-    shrinking $\tilde{\sigma}$ moves corners d) and c) along lines 4
+    \textit{independent of the choice} of $\sigma_{\tilde{y}}$. Hence,
+    shrinking $\sigma_{\tilde{y}}$ moves corners d) and c) along lines 4
     and 2, respectively, away from the origin and thereby increasing
     the interior region formed by extending lines 1 and 3.
   \item From observation i), the length of the chord covering the
     reflection line within $\Omega$ is a constant independent of
-    $\tilde{\sigma}$.  This implies that the length of the finite
+    $\sigma_{\tilde{y}}$.  This implies that the length of the finite
     segment covering the reflected images is also constant and
-    independent of $\tilde{\sigma}$.
+    independent of $\sigma_{\tilde{y}}$.
   \item The coordinate of the point of intersection between the
     reflection line and the extension of line 3 (blue point in Figure
     (\ref{fig:proof-1})) is
-    \[
+    \begin{align*}
       \frac{\sqrt{2}}{2} \left( \frac{-2 x_0\rho + 2
-          y_0/\tilde{\sigma} -
-          2/\tilde{\sigma}(1-\rho)}{-2\rho\sqrt{1-\rho}},
-        \frac{\sqrt{1-\rho}}{\sqrt{1+\rho}}\frac{-2 x_0\rho + 2
-          y_0/\tilde{\sigma} -
-          2/\tilde{\sigma}(1-\rho)}{-2\rho\sqrt{1-\rho}} +
-        \frac{1}{\sqrt{2}\tilde{\sigma}\sqrt{1+\rho}} \right).
-    \]
+      y_0/\sigma_{\tilde{y}} -
+      2/\sigma_{\tilde{y}}(1-\rho)}{-2\rho\sqrt{1-\rho}},
+      \frac{\sqrt{1-\rho}}{\sqrt{1+\rho}}\frac{-2 x_0\rho + 2
+      y_0/\sigma_{\tilde{y}} -
+      2/\sigma_{\tilde{y}}(1-\rho)}{-2\rho\sqrt{1-\rho}} +
+      \frac{1}{\sqrt{2}\sigma_{\tilde{y}}\sqrt{1+\rho}} \right).
+    \end{align*}
     The lengths of the $x-$ and $y-$segments of the chord connecting
     the IC and the point of intersection are
     \begin{align*}
-      \Delta x &= \frac{\sqrt{2}}{2}\left\{ \frac{1}{\tilde{\sigma}}\cdot\frac{\tilde{\sigma}x_0 - y_0/\rho + (1-\rho)/\rho + y_0}{\sqrt{1-\rho}} - \frac{x_0}{\sqrt{1-\rho}} \right\},\\
-      \Delta y &= \frac{\sqrt{2}}{2} \left\{ \frac{1}{\tilde{\sigma}}\cdot\frac{(\tilde{\sigma}x_0 - 2y_0/\rho + (1-\rho)/\rho + 1/\sqrt{2})\sqrt{1-\rho} - y_0\sqrt{1+\rho}}{\sqrt{1-\rho}\sqrt{1+\rho}}- \frac{x_0}{\sqrt{1-\rho}} \right\}.
+      \Delta x &= \frac{\sqrt{2}}{2}\left\{ \frac{1}{\sigma_{\tilde{y}}}\cdot\frac{\sigma_{\tilde{y}}x_0 - y_0/\rho + (1-\rho)/\rho + y_0}{\sqrt{1-\rho}} - \frac{x_0}{\sqrt{1-\rho}} \right\},\\
+      \Delta y &= \frac{\sqrt{2}}{2} \left\{ \frac{1}{\sigma_{\tilde{y}}}\cdot\frac{(\sigma_{\tilde{y}}x_0 - 2y_0/\rho + (1-\rho)/\rho + 1/\sqrt{2})\sqrt{1-\rho} - y_0\sqrt{1+\rho}}{\sqrt{1-\rho}\sqrt{1+\rho}}- \frac{x_0}{\sqrt{1-\rho}} \right\}.
     \end{align*}
-    Hence, as $\tilde{\sigma} \to 0$, both $\Delta x^2 \to \infty$ and
+    Hence, as $\sigma_{\tilde{y}} \to 0$, both $\Delta x^2 \to \infty$ and
     $\Delta y^2 \to \infty$, so that the distance between the point of
     intersection and the IC grows. The symmetry of the problem (in
     terms of reflections $x \to -x$ and $y \to -y$) makes the argument
     applied to line 3 and the line of reflection applicable to the
     extension of line 1 as well. Figures (\ref{fig:proof-2}) and
     (\ref{fig:proof-3}) show the reflected images falling within the
-    interior region with $\tilde{\sigma} = 0.1$ in both geometries.
+    interior region with $\sigma_{\tilde{y}} = 0.1$ in both geometries.
   \end{enumerate}
   Observations ii) and iii) imply that we can always find a
-  sufficiently small $\tilde{\sigma}$ to cover the line segment
+  sufficiently small $\sigma_{\tilde{y}}$ to cover the line segment
   containing the positions of images resulting from a finite number of
   reflections about boundaries 2 and 4.  Hence, any subsequent
   reflections about lines 1 and 3 are guaranteed to place reflected
@@ -592,161 +704,5 @@ used in the illustration will yield a valid system of images.
   parameters for $\Omega$.
 \end{proof}
 
-\section{Lack of Uniqueness and Symmetry Condition}
-From the above Lemma and the illustration so far, it is obvious that
-the finite set of images satisfying the IC/BV problem is not unique. 
 
 
-Retaining the minimum number of images necessary to satisfy the
-symmetry condition forces us retain the four images defined by the
-reflections $\{1,2,3,4 \},\{2,1,3,4 \},\{1,2,4,3 \},\{2,1,4,3 \}$ and
-thereby define our small-time solution. The previous Lemma guarantees
-the existence of such a set of images satisfying the IC/BV problem for
-a sufficiently small $\tilde{\sigma}.$ 
-
-
-\section{Approximate Solution over $t$} \label{sec:modes}
-% In this chapter we have established the existence of an approximate,
-% analytic solution for small values of $t$ whose applicability is
-% well defined in terms of error rates at the boundaries (BCs) and the
-% locations of the images (ICs).
-Chapter 2 introduced a semi-analytic (Galerkin) finite element method
-for solving the standardized diffusion problem
-(\ref{eq:standard-diffusion}). Unlike the small-time solution, the
-Galerkin method is most appropriate for ``large'' times, since it
-attenuates numerical errors with increasing $t$. The obvious
-limitation of the finite element solver is that there are problems
-with $(\tilde{\sigma}, t)$ too small to be resolved with a reasonable
-finite number of basis elements. We will call such parameter
-combinations as belonging to the \textit{incomputable region} of the
-solver. For parameters in the incomputable region, a sufficient
-condition to flag them as such is if the numerical derivative of the
-finite element solution with respect to the boundary parameters
-produces a negative value. However, this is not a \textit{necessary}
-condition, and in practice this is an insidious problem: parameter
-combinations which should be attributed with a very small likelihoods
-may be given values orders of magnitude higher than they should and
-thus falsely bias any inferential procedure. Procedures sensitive to
-such silent numerical instabilities, such as particle filters, are
-especially at risk.
-
-On the other hand, the approximate solution developed in this chapter
-is applicable in precisely the cases where the finite element solver
-fails: small values for $t$. In addition to having its own
-well-defined criteria for appropriate use (namely an upper bound on
-$t$ as well as an upper bound on $\tilde{\sigma}$ that produces images
-outside of $\Omega$), the analytic form of (\ref{eq:truncated-approx})
-provides a way to bound from above the incomputable region for the
-finite element solver. As mentioned earlier, each of the summands in
-(\ref{eq:truncated-approx}) are proportional to an Inverse-gamma
-distribution with the parameters
-\begin{align*}
-  \alpha_j &= 4,& \beta_j &= -\frac{1}{2\, \tilde{\sigma}^2 (1-\rho^2)} \left[
-                        \left(x-x_0^{(j)}\right)^2 \tilde{\sigma}^2 +
-                        \left(y-y_0^{(j)}\right)^2 -
-                        2\rho(x-x_0^{(j)})(y-y_0^{(j)})\tilde{\sigma} \right]
-\end{align*}
-The mode of each of the summands is, therefore,
-$\beta_j/(\alpha_j+1)$. The summand with the smallest $\beta_j$
-contributes the most to the truncated small-time solution, so that the
-smallest mode $\beta_j/(\alpha_j+1)$ is closest to the mode of
-the approximating function. Even though the truncated solution is not
-applicable for all $t$, its mode still gives a reasonable
-approximation for the $t$ value which maximizes the true likelihood
-function. An empirical validation is discussed below (see Figures
-(\ref{fig:modes-histogram}) - (\ref{fig:modes-scatterplot})), which
-provide views of the errors in approximating the true
-value $t$ maximizing the likelihood and the approximation derived from
-the truncated small-time solution:
-\[
-  \min_{j} \{ \beta_j/(\alpha_j+1) \} - t_{\max},
-\]
-where $t_{\max}$ is the $t$ value maximizing the true likelihood (for
-$\rho=0$) given some parameter combination $(x_0, y_0, x_t, y_t)$ and
-$\tilde{\sigma}$. Each data point in the histogram/scatterplot
-corresponding to such a combination was generated by sampling
-\begin{align*}
-  \sigma_x &\sim \mbox{Lognormal}(2, 2), & \sigma_y &\sim \mbox{Lognormal}(2, 2), & \rho &= 0,
-\end{align*}
-then simulating from a bivariate Brownian motion using a forward Euler
-method and a small time step. Normalizing to the standard diffusion
-problem (see equation (\ref{eq:standard-diffusion})), $t_{\max}$ was
-found numerically conditional on $(x_0, y_0, x_t, y_t)$ and
-$\tilde{\sigma}$, since we have the closed-form likelihood for the
-$\rho=0$ case. For the same input parameters, we generate four images
-as given by our method above and then find
-$\min_{j} \{ \beta_j/(\alpha_j+1) \}$. We compare how the
-Galerkin solution performs at this boundary of the computable region
-and beyond in the figures below.
-
-The histogram in Figure (\ref{fig:modes-histogram}) shows the
-distribution of signs and magnitudes of the error differences in
-approximating the modes
-$t_{\mbox{max}} - \min_{j} \{ \beta_j/(\alpha_j+1) \}$, which are
-correlated with small $\tilde{\sigma}$ (Figure
-(\ref{fig:modes-scatterplot})). Further, can see from the plot of true
-mode vs. error in Figure (\ref{fig:modes-scatterplot-2}) that largest
-errors occur for modes that are large on relative to the
-$t-$scale. The distribution of true log-likelihood values at the
-approximate modes is given in Figure (\ref{fig:modes-histogram-2}). We
-can see that these function values are relatively large and should be
-resolvable by the finite element solver. This is finally confirmed in
-Figure (\ref{fig:modes-histogram-3}), which shows the relative error
-using the FE solver.
-\begin{figure}
-  \begin{tabular}{cc}
-    \begin{minipage}{0.50\textwidth}
-      \centering
-      \includegraphics[width=1\linewidth]{chapter-3-figure-validation-modes-histogram.pdf}
-      \caption{A histogram of differences
-        $t_{\max} - \min_{j} \{ \beta_j/(\alpha_j+1) \}$ between the
-        approximate mode of the truncated small-time solution and the
-        true mode of closed-form solution, when $\rho=0$. We see that
-        the order magnitude of error in approximating the true point of
-        maximum for the likelihood function is 0.1, where the bias is
-        towards underestimating the mode.}
-      \label{fig:modes-histogram}
-    \end{minipage} &
-    \begin{minipage}{0.50\textwidth}
-      \centering
-      \includegraphics[width=1\linewidth]{chapter-3-figure-validation-modes-scatterplot.pdf}
-      \caption{Scatterplot of $\tilde{\sigma}$ vs.
-        $\min_{j} \{ \beta_j/(\alpha_j+1) \} -
-        t_{\max}$. Larger approximation errors in the
-        mode point are correlated with smaller
-        $\tilde{\sigma}$.}
-      \label{fig:modes-scatterplot}
-    \end{minipage}  \\
-    \begin{minipage}{0.50\textwidth}
-      \centering
-      \includegraphics[width=1\linewidth]{chapter-3-figure-validation-modes-scatterplot-2.pdf}
-      \caption{Scatterplot of true mode value vs.
-        $\min_{j} \{ \beta_j/(\alpha_j+1) \} - t_{\max}$. Larger
-        approximation errors in the mode point are correlated with
-        higher mode locations.}
-      \label{fig:modes-scatterplot-2}
-    \end{minipage} &
-    \begin{minipage}{0.50\textwidth}
-      \centering
-      \includegraphics[width=1\linewidth]{chapter-3-figure-validation-modes-histogram-2.pdf}
-      \caption{Histogram of log-likelihood values at approximate mode
-        locations.  We can see that, with respect to machine
-        $\epsilon$ the true function values at the approximate modes
-        are large and ought to be resolved by the finite element
-        solver.}
-      \label{fig:modes-histogram-2}
-    \end{minipage}
-  \end{tabular}
-\end{figure}
-
-\begin{figure}
-  \begin{tabular}{c}
-    \begin{minipage}{0.90\textwidth}
-      \centering
-      \includegraphics[width=1\linewidth]{chapter-3-figure-validation-modes-histogram-3.pdf}
-      \caption{Histogram of relative error of FEM solver at the
-        approximate modes.}
-      \label{fig:modes-histogram-3}
-    \end{minipage}
-  \end{tabular}
-\end{figure}
