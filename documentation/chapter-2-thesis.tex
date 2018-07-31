@@ -1102,11 +1102,15 @@ approximation $p^{(k)}(\tilde{x},\tilde{y},\tilde{t})$ to the governing Fokker-P
 distribution on $Z$ based on the approximate $p^{(k)}(\tilde{x},\tilde{y},\tilde{t})$ converges to
 the true distribution $F(\cdot | \theta)$. Define the probability densities
 \begin{align}
-  f(z) &= f(x,y,a_x,b_x,a_y,b_y) := \nonumber \\
-  \MoveEqLeft[5] \Pr\left(X(t) \in dx, Y(t) \in dy, m_x \in da_x,
-  M_x \in db_x, m_y \in da_y, M_y \in db_y \left| \theta \right.\right) \label{eq:stong-density} \\
-  f^{(k)}(z) &= f^{(k)}(x,y,a_x,b_x,a_y,b_y) := \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial
-               b_y} q^{(k)}(\tilde{x},\tilde{y},\tilde{t} | a_x, b_x, a_y, b_y). \label{eq:galerkin-density}
+  f(z) &= f(x,y,a_x,b_x,a_y,b_y) := \nonumber \\ 
+\MoveEqLeft[5] \Pr\left(X(t) \in dx, Y(t) \in dy,
+  m_x \in da_x, M_x \in db_x, m_y \in da_y, M_y \in
+  db_y \left| \theta \right.\right) \label{eq:stong-density} \\
+  f^{(k)}(z) &= \nonumber \\ \MoveEqLeft[5]
+  f^{(k)}(x,y,a_x,b_x,a_y,b_y) := \frac{\partial^4}{\partial
+  a_x \partial b_x \partial a_y \partial b_y}
+  q^{(k)}(\tilde{x},\tilde{y},\tilde{t} | a_x, b_x, a_y,
+  b_y). \label{eq:galerkin-density}
 \end{align}
 The function $f(z)$ is the probability density function corresponding
 to $q(\tilde{x},\tilde{y},\tilde{t})$, the strong solution to the governing Fokker-Planck
@@ -1144,11 +1148,11 @@ The existence of $f^{(k)}(z)$ as defined in
 \cite{singler2008differentiability}. The result states that weak
 solutions to parabolic problems are differentiable with respect to
 parameters as long as the weak (Galerkin-form) operator
-$\left< \mathcal{L} \psi_i(x,y), \psi_j(x,y) \right>$ is
+$\left< \tilde{\mathcal{L}} \psi_i(\tilde{x},\tilde{y}), \psi_j(\tilde{x},\tilde{y}) \right>$ is
 differentiable with respect to the parameters. The condition certainly
-holds for the normalized problem (\ref{eq:qq}) with our choice of
+holds for the normalized problem (\ref{eq:qqq}) with our choice of
 basis functions $S_k$, as they are infinitely differentiable with
-repsect to $x,y$, the boundaries, and the diffusion parameters. 
+repsect to $\tilde{x},\tilde{y}$, the boundaries, and the diffusion parameters. 
 
 At this point we will assume that for a sufficiently large $k$,
 $f^{(k)}(z)$ is positivie for all $z \in Z$ and is integrable over
@@ -1184,14 +1188,12 @@ First, we prove the Lemma
   \begin{align*}
     B(a_x, b_x, a_y, b_y) &= \left\{ \omega \in W | X_\omega(t) \in [a_x, b_x], Y_\omega(t) \in [a_y, b_y], m_x \in [a_x,b_x), M_x \in (a_x, b_x] \right\}
   \end{align*}
-
   Then
   \begin{align}
     \Pr(B(a_x, b_x, a_y, b_y)) &= \displaystyle \int_{B(a_x, b_x, a_y, b_y)} f(z)\, dz \nonumber \\ 
                                &= \displaystyle \int_{a_x}^{\infty} \displaystyle \int_{-\infty}^{b_x} \displaystyle \int_{a_y}^{\infty} \displaystyle \int_{-\infty}^{b_y} \displaystyle \int_{-\infty}^{b_x} \displaystyle \int_{-\infty}^{b_y} f(x', y', a'_x, b'_x, a'_y, b'_y) dx' dy' da_x' db_x' da_y' db_y' \label{eq:full-form} \\
                                &= \displaystyle \int_{a_x}^{b_x} \displaystyle \int_{a_y}^{b_y} q(x,y,a_x,b_x,a_y,b_y)\, dx\, dy, \nonumber
   \end{align}
-  
   where the last equality employs the interpretation of $q$ in
   (\ref{eq:CDF}) and we can freely change the order of integration as
   $f$ is bounded for all $z \in Z$. Similarly,
@@ -1482,8 +1484,9 @@ First, we prove the Lemma
 % % \end{proof}
 
 \begin{lemma}
-  The maximum likelihood estimator is consistent as $n \to \infty$ and $m \to \infty$:
-  \[ \hat{\theta}_{n,k} \to \theta \].
+  Assuming that $\theta$ is bounded, the maximum likelihood estimator
+  is consistent as $n \to \infty$ and
+  $m \to \infty$: \[ \hat{\theta}_{n,k} \to \theta \].
 \end{lemma}
 \begin{proof}
   By Lemma \ref{lem:conv-dist}
@@ -1496,17 +1499,18 @@ First, we prove the Lemma
     $Z_{k} \sim F_k(\theta)$,
     \[ \hat{\theta}_{n,k}(Z_k) \xrightarrow[]{p} \theta \mbox{ as } n
       \to \infty. \]
-
     Now we need to show that the same holds for data sampled from $F$
     as $k \to \infty$. To do this, we will use Chebyshev's inequality:
-  \[
+      \[
     \Pr_{Z}\left( \left| \hat{\theta}_{n,k}(Z) - \theta \right| \geq
       \epsilon \right) \leq \frac{ \mbox{E}_{Z}\left[
         (\hat{\theta}_{n,k}(Z) - \theta)^2 \right] }{ \epsilon^2 }.
   \]
-  By the Maximum theorem [REFERENCE], $\hat{\theta}_{n,k}(x)$ is a continuous
-  function with respect to $x$, and further because we have bounded
-  $\hat{\theta}$ from below and above,
+  Because the approximate likelihood function $f^{(k)}$ is continuous
+  with respect to the data parameter $x$, the estimator
+  $\hat{\theta}_{n,k}(x)$ is a continuous function with respect to $x$
+  as well. Further because we have bounded $\hat{\theta}$ from below
+  and above,
   \[
     \mbox{E}_{Z_k}\left[ (\hat{\theta}_{n,k}(Z_k) - \theta)^2 \right]
     \to \mbox{E}_{Z}\left[ (\hat{\theta}_{n,k}(Z) - \theta)^2 \right]
@@ -1517,10 +1521,10 @@ First, we prove the Lemma
     \mbox{E}_{Z_k}\left[ (\hat{\theta}_{n,k}(Z_k) - \theta)^2 \right]
     \to 0 \mbox{ as } n \to \infty, \label{eq:var-lim}
   \end{equation}
-  since the expected value of the estimator tends to $\theta$ and its
-  variance goes to 0 when $n \to \infty$. Therefore, given any
-  $\epsilon > 0$ and $\delta > 0$, we can find a sufficiently large
-  $n$ and $k$ such that
+  since the expected value of the MLE under $F(\cdot)$ tends to
+  $\theta$ and its variance goes to 0 when $n \to \infty$. Therefore,
+  given any $\epsilon > 0$ and $\delta > 0$, we can find a
+  sufficiently large $n$ and $k$ such that
   \[
     \Pr_{Z}\left( \left| \hat{\theta}_{n,k}(Z) - \theta \right| \geq
       \epsilon \right) \leq \frac{ \mbox{E}_{Z}\left[
