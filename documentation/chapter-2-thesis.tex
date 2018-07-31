@@ -1097,10 +1097,11 @@ converges in probability to the true parameter:
 
 \subsection{Consistency}
 In this section we prove that the MLE based on the Galerkin
-approximation $p^{(k)}(\tilde{x},\tilde{y},\tilde{t})$ to the governing Fokker-Planck equation
-(\ref{eq:1}) is consistent. To do so, we first show that the
-distribution on $Z$ based on the approximate $p^{(k)}(\tilde{x},\tilde{y},\tilde{t})$ converges to
-the true distribution $F(\cdot | \theta)$. Define the probability densities
+approximation $p^{(k)}(\tilde{x},\tilde{y},\tilde{t})$ is
+consistent. To do so, we first show that the distribution on $Z$ based
+on the approximate $p^{(k)}(\tilde{x},\tilde{y},\tilde{t})$ converges
+to the true distribution $F(\cdot | \theta)$. Define the probability
+densities
 \begin{align}
   f(z) &= f(x,y,a_x,b_x,a_y,b_y) := \nonumber \\ 
 \MoveEqLeft[5] \Pr\left(X(t) \in dx, Y(t) \in dy,
@@ -1122,12 +1123,12 @@ case for $f(z)$, consider the relation
 \begin{align*}
   &f(x,y,a_x,b_x,a_y,b_y) = \\
   &\Pr\left(X(t) \in dx, Y(t) \in dy, m_x \in da_x, M_x \in db_x, m_y
-  \in a_y, M_y \in db_y \left| \theta \right.\right) = \\
-  &\mathbb{P}_{W}\left( \underbrace{\left\{ \omega \in W \left| X_\omega(t) = x,
-  Y_\omega(t)=y, \inf_{t'\in [0,1]} X_\omega(t') = a_x,
-  \sup_{t'\in [0,1]} X_\omega(t') = b_x, \inf_{t'\in [0,1]}
-        Y_\omega(t') = a_y, \sup_{t'\in [0,1]} Y_\omega(t') = b_y
-      \right. \right\}}_{A(x,y,a_x,b_x,a_y,b_y) = A(z)}\right)
+    \in a_y, M_y \in db_y \left| \theta \right.\right) = \mathbb{P}_{W}\left( A(z) \right), \\
+   & A(z) = \left\{ \omega \in W \left| X_\omega(t) = x,
+     Y_\omega(t)=y, \inf_{t'\in [0,1]} X_\omega(t') = a_x, \right.  \right. \\
+   &\qquad \qquad \qquad \left. \sup_{t'\in [0,1]} X_\omega(t') = b_x, \inf_{t'\in [0,1]}
+         Y_\omega(t') = a_y, \sup_{t'\in [0,1]} Y_\omega(t') = b_y
+       \right\},
 \end{align*}
 where $\mathbb{P}_{W}$ is the Wiener measure on the sample space $W$
 of all realizations (paths) $(X_\omega(t), Y_\omega(t))$ from the
@@ -1160,7 +1161,7 @@ $Z$. As such, we may regard it as a proper probability density
 function with the cumulative probability density and probability
 measure over $Z$ being 
 \begin{align}
-  F^{(k)}(z | \theta) &= \displaystyle \int_{-\infty}^{a_x} \displaystyle \int_{-\infty}^{a_y} \displaystyle \int_{-\infty}^{b_x} \displaystyle \int_{-\infty}^{b_y} \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y \frac{\partial^4}{\partial a'_x \partial b'_x \partial a'_y \partial b'_y} q^{(k)}(x', y', t | a'_x, b'_x, a'_y, b'_y)\,\,\, dx'\, dy'\, da'_x\, db'_x\, da'_y\, db'_y, \label{eq:approx-measure} \\
+  F^{(k)}(z | \theta) &= \displaystyle \int_{-\infty}^{a_x} \displaystyle \int_{-\infty}^{a_y} \displaystyle \int_{-\infty}^{b_x} \displaystyle \int_{-\infty}^{b_y} \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y \frac{\partial^4}{\partial a'_x \partial b'_x \partial a'_y \partial b'_y} q^{(k)}(x', y', t | a'_x, b'_x, a'_y, b'_y)\,\,\, dz, \label{eq:approx-measure} \\
                           \Pr_{k}(A) &:= \displaystyle \int_{A} f^{(k)}(z)\, dz, \quad \mbox{ for any measurable } A \subset Z. \label{eq:approx-measure-2}
 \end{align}
 We will prove that for every $z \in Z$,
@@ -1184,14 +1185,15 @@ First, we prove the Lemma
         \times [a_y, b_y] \times [a_x, \infty) \times (-\infty, b_x]
                             \times [a_y, \infty) \times (-\infty, b_y] \right.\right\}.
   \end{align*}
-  Elements within $B(a_x, b_x, a_y, b_y)$ are equivalent to sample paths that stay within the region $[a_x, b_x] \times [a_y, b_y]$:
+  Elements within $B(a_x, b_x, a_y, b_y)$ are equivalent to sample
+  paths that stay within the region $[a_x, b_x] \times [a_y, b_y]$:
   \begin{align*}
     B(a_x, b_x, a_y, b_y) &= \left\{ \omega \in W | X_\omega(t) \in [a_x, b_x], Y_\omega(t) \in [a_y, b_y], m_x \in [a_x,b_x), M_x \in (a_x, b_x] \right\}
   \end{align*}
   Then
   \begin{align}
     \Pr(B(a_x, b_x, a_y, b_y)) &= \displaystyle \int_{B(a_x, b_x, a_y, b_y)} f(z)\, dz \nonumber \\ 
-                               &= \displaystyle \int_{a_x}^{\infty} \displaystyle \int_{-\infty}^{b_x} \displaystyle \int_{a_y}^{\infty} \displaystyle \int_{-\infty}^{b_y} \displaystyle \int_{-\infty}^{b_x} \displaystyle \int_{-\infty}^{b_y} f(x', y', a'_x, b'_x, a'_y, b'_y) dx' dy' da_x' db_x' da_y' db_y' \label{eq:full-form} \\
+                               &= \displaystyle \int_{a_y}^{\infty} \displaystyle \int_{-\infty}^{b_y} \displaystyle \int_{a_x}^{\infty} \displaystyle \int_{-\infty}^{b_x} \displaystyle \int_{-\infty}^{b_x} \displaystyle \int_{-\infty}^{b_y} f(x', y', a'_x, b'_x, a'_y, b'_y) dx' dy' da_x' db_x' da_y' db_y' \label{eq:full-form} \\
                                &= \displaystyle \int_{a_x}^{b_x} \displaystyle \int_{a_y}^{b_y} q(x,y,a_x,b_x,a_y,b_y)\, dx\, dy, \nonumber
   \end{align}
   where the last equality employs the interpretation of $q$ in
@@ -1267,11 +1269,12 @@ First, we prove the Lemma
   Dividing both sides by $\epsilon^4$ produces
   \begin{align*}
     \frac{1}{\epsilon^4} \sum_{i=1}^{16} c(i) \Pr_k(B(a_x + k_1(i)\epsilon, b_x +
-    k_2(i)\epsilon, a_y + k_3(i)\epsilon, b_y + k_4(i)\epsilon) &= \frac{\partial^4}{\partial a_x \partial b_x \partial
-                                                                  a_y \partial b_y} \Pr(B(a_x, b_x, a_y, b_y)) + O(\epsilon^2;
-                                                                  a_x, b_x, a_y, b_y) \\
-                                                                &+ \frac{1}{\epsilon^4}\sum_{i=1}^{16} c(i) O(h(k)^2; a_x + k_1(i)\epsilon, b_x +
-                                                                  k_2(i)\epsilon, a_y + k_3(i)\epsilon, b_y + k_4(i)\epsilon) \\
+    k_2(i)\epsilon, a_y + k_3(i)\epsilon, b_y + k_4(i)\epsilon) &= \\
+    \frac{\partial^4}{\partial a_x \partial b_x \partial
+    a_y \partial b_y} \Pr(B(a_x, b_x, a_y, b_y)) + O(\epsilon^2;
+    a_x, b_x, a_y, b_y) \\
+    + \frac{1}{\epsilon^4}\sum_{i=1}^{16} c(i) O(h(k)^2; a_x + k_1(i)\epsilon, b_x +
+    k_2(i)\epsilon, a_y + k_3(i)\epsilon, b_y + k_4(i)\epsilon).
     % = \frac{\partial^4}{\partial a_x \partial b_x \partial
     % a_y \partial b_y} \Pr(B(a_x, b_x, a_y, b_y)) + O(\epsilon;
     % a_x, b_x, a_y, b_y) + \frac{\partial^4}{\partial a_x \partial b_x \partial
@@ -1308,13 +1311,19 @@ First, we prove the Lemma
 
 \begin{proof}
   Let
-  $I^{(k)}(z) = \displaystyle \int_{a_x}^{x} \displaystyle
-  \int_{a_y}^{y} f^{(k)}(u,v,a_x,b_x,a_y,b_y)\, du\,dv$ and let
-  $I(z) = \displaystyle \int_{a_x}^{x} \displaystyle \int_{a_y}^{y}
-  f(u,v,a_x,b_x,a_y,b_y)\, du\,dv$. It is possible to show that
-  $\lim_{k\to \infty} I^{(k)}(z) = I(z)$ as a consequence of Lemma
-  \ref{lem:1} by considering some $\chi_k(z) \in S_k$ approximating
-  the indicator $1(u \leq x, v \leq y)$ as $k \to \infty$ and setting up a triangle
+  \[
+    I^{(k)}(z) = \displaystyle \int_{a_x}^{x} \displaystyle
+    \int_{a_y}^{y} f^{(k)}(u,v,a_x,b_x,a_y,b_y)\, du\,dv
+  \]
+  and let
+  \[
+    I(z) = \displaystyle \int_{a_x}^{x} \displaystyle \int_{a_y}^{y}
+    f(u,v,a_x,b_x,a_y,b_y)\, du\,dv.
+  \]
+  It is possible to show that $\lim_{k\to \infty} I^{(k)}(z) = I(z)$
+  as a consequence of Lemma \ref{lem:1} by considering some
+  $\chi_k(z) \in S_k$ approximating the indicator
+  $1(u \leq x, v \leq y)$ as $k \to \infty$ and setting up a triangle
   inequality. However, we will omit this technical detail here.
 
   Next, we know that $I(z)$ is integrable over $(a_x, b_x, a_y, b_y)$
@@ -1507,8 +1516,8 @@ First, we prove the Lemma
         (\hat{\theta}_{n,k}(Z) - \theta)^2 \right] }{ \epsilon^2 }.
   \]
   Because the approximate likelihood function $f^{(k)}$ is continuous
-  with respect to the data parameter $x$, the estimator
-  $\hat{\theta}_{n,k}(x)$ is a continuous function with respect to $x$
+  with respect to the data parameter $z$, the estimator
+  $\hat{\theta}_{n,k}(z)$ is a continuous function with respect to $z$
   as well. Further because we have bounded $\hat{\theta}$ from below
   and above,
   \[
