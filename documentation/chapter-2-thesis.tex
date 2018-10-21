@@ -1023,17 +1023,26 @@ approximation we use converges to the strong solution in
 $L_2(\tilde{\Omega})$, and it motivates the thrust of our numerical
 solution. First, we define the \textit{error} term
 \[
-  e^{(k)}(t) = p(\tilde{x},\tilde{y},\tilde{t}) - p^{(k)}(\tilde{x},\tilde{y},\tilde{t}),
+  e^{(k)}(t) = p(\tilde{x},\tilde{y},\tilde{t}) -
+  p^{(k)}(\tilde{x},\tilde{y},\tilde{t}),
 \]
 as well as the norm
 \[
   \| w \|_2 = \sum_{j=0}^\infty \lambda_j^2 \left<w, \phi_j\right>^2
 \]
 for the eigenpairs $(\lambda_j, \phi_j)$ of the operator
-$\mathcal{L}$. As referred to in \cite{bramble1977some}, functions
-$w \in L_2(\tilde{\Omega})$ with $\|w\|_2 < \infty$ are also in
-$W_2^2(\tilde{\Omega})$. Finally, if we have the condition (corresponding to
-equation 2.1 in \cite{bramble1977some})
+$\mathcal{L}$. The $\| \cdot \|_2$ norm used in \cite{bramble1977some}
+captures the variation in a given function: for any set of eigenpairs
+$\left\{(\lambda_j, \phi_j)\right\}$ over domain $\tilde{\Omega}$,
+increasing absolute value of $\lambda_j$ with $j$ corresponds to
+$\phi_j$ with increasing number of oscillations over
+$\tilde{\Omega}$. The $\|\cdot\|_2$ norm is distict from the usual $L-2$ norm 
+$L_2(\tilde{\Omega})$, which we denote as
+$\|\cdot \|_{L_2(\tilde{\Omega})}$. As referred to in
+\cite{bramble1977some}, functions $w \in L_2(\tilde{\Omega})$ with
+$\|w\|_2 < \infty$ are also in $W_2^2(\tilde{\Omega})$. Finally, if we
+have the condition (corresponding to equation 2.1 in
+\cite{bramble1977some})
 \begin{align}
   \| p(\tilde{x},\tilde{y},\tilde{t}_\epsilon) - p^{(k)}(\tilde{x},\tilde{y},\tilde{t}_\epsilon) \|_{L_2(\tilde{\Omega})} &\leq C\, h(k)^2 \| p(\tilde{x},\tilde{y},\tilde{t}_\epsilon) \|_2, \label{eq:ic-bound}
 \end{align}
@@ -1079,9 +1088,9 @@ solution and its Galerkin approximation under $L_2(\tilde{\Omega})$.
 \section{Estimation}
 Consider the problem of estimating the parameters
 $(\mu_x, \mu_y, \sigma_x, \sigma_y, \rho)$ from an i.i.d. set of
-samples $(Z_1, \ldots, Z_n)$ from random variable $Z(t)$ at a given
-value of $t$ in the process in (1)-(2). Specifically, $Z(t)$ is formed
-as
+samples $(Z_1, \ldots, Z_n)$ from random variable $Z(t)$, defined
+below, at a given value of $t$ in the process in
+(1)-(2). Specifically, $Z(t)$ is formed as
 $$ Z(t) =( X(t), Y(t), m_x(t), M_x(t), m_y(t), M_y(t)) $$
 where 
 $$m_x(t)= \min_{0 \le t' \le t} X(t), \;\; 
@@ -1109,11 +1118,11 @@ able to be easily integrated into inferential frameworks that require
 explicit estimates of probability.
 
 Since we do not have a closed-form solution for the likelihood, we
-will use an iterative derivative-free maximization algorithm (the
-Nelder-Mead method; see \cite{lagarias1998convergence} for review and
-convergence properties) which requires repeated evauluation of the
-likelihood. For moderate to large samples sizes this is feasible,
-because our numerical method is specifically designed for
+will use an iterative derivative-free numerical algorithm to maximize
+the likleihood which requires repeated evauluation of the likelihood
+(the Nelder-Mead method; see \cite{lagarias1998convergence} for review
+and convergence properties). For moderate to large samples sizes this
+is feasible, because our numerical method is specifically designed for
 computational efficiency for repeatedly evaluating the density
 function (\ref{eq:pdf}). The maximum likelihood estimator (MLE) for
 the true parameters based on $n$ samples, which we call
@@ -1140,20 +1149,21 @@ densities
   f(z) &= f(x,y,a_x,b_x,a_y,b_y) := \nonumber \\ 
 \MoveEqLeft[5] \Pr\left(X(t) \in dx, Y(t) \in dy,
   m_x \in da_x, M_x \in db_x, m_y \in da_y, M_y \in
-  db_y \left| \theta \right.\right) \label{eq:stong-density} \\
+  db_y \left| \theta \right.\right), \label{eq:stong-density} \\
   f^{(k)}(z) &= \nonumber \\ \MoveEqLeft[5]
   f^{(k)}(x,y,a_x,b_x,a_y,b_y) := \frac{\partial^4}{\partial
   a_x \partial b_x \partial a_y \partial b_y}
   q^{(k)}(\tilde{x},\tilde{y},\tilde{t} | a_x, b_x, a_y,
-  b_y). \label{eq:galerkin-density}
+  b_y), \label{eq:galerkin-density}
 \end{align}
-The function $f(z)$ is the probability density function corresponding
-to $q(\tilde{x},\tilde{y},\tilde{t})$, the strong solution to the governing Fokker-Planck
-equation; $f^{(k)}(z)$ corresponds to the approximate solution
-$q^{(k)}$ of the unnormalized equation obtained from the Galerkin
-approximation $p^{(k)}$ of the normalized equation. Before proceeding,
-we should note that both $f(z)$ and $f^{(k)}(z)$ exist. So see the
-case for $f(z)$, consider the relation
+where we use the shorhand $X(t) \in dx$ for $X(t) \in (x, x+dx)$. The
+function $f(z)$ is the probability density function corresponding to
+$q(\tilde{x},\tilde{y},\tilde{t})$, the strong solution to the
+governing Fokker-Planck equation; $f^{(k)}(z)$ corresponds to the
+approximate solution $q^{(k)}$ of the unnormalized equation obtained
+from the Galerkin approximation $p^{(k)}$ of the normalized
+equation. Before proceeding, we should note that both $f(z)$ and
+$f^{(k)}(z)$ exist. So see the case for $f(z)$, consider the relation
 \begin{align*}
   &f(x,y,a_x,b_x,a_y,b_y) = \\
   &\Pr\left(X(t) \in dx, Y(t) \in dy, m_x \in da_x, M_x \in db_x, m_y
@@ -1248,8 +1258,9 @@ First, we prove the Lemma
     \lim_{\epsilon \to 0}\quad \frac{1}{\epsilon^4} \sum_{i=1}^{16} c(i) \Pr(B(a_x + k_1(i)\epsilon, b_x + k_2(i)\epsilon, a_y + k_3(i)\epsilon, b_y + k_4(i)\epsilon) &= \\
     \MoveEqLeft[8] \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial b_y} \Pr(B(a_x, b_x, a_y, b_y)),
   \end{align*}
-  where $c$ and $k$ are functions from $i$ to the appropriate
-  coefficients in the second-order finite difference approximation
+where $c(i)$ and $k(i)$ are functions mapping index $i$ to the
+corresponding coefficient in the second-order finite difference
+approximation
   $c(i) \to \left\{-1, 1\right\}$, $k_j(i) \to \{-1,1\}$. Using Big-O
   notation, for a sufficiently small $\epsilon$
   \begin{align}
@@ -1273,7 +1284,7 @@ First, we prove the Lemma
     k_3(i)\epsilon, b_y + k_4(i)\epsilon) \mbox{ as } k \to \infty \mbox{ in } L_2(\Omega).
   \end{align*}
   Hence, for a sufficiently large $k$ dependent on the supremum over
-  $i$, and given the error estimate in (\ref{eq:error-est}), we have
+  $i$, and given the error estimate in (\ref{eq:error-est}), we obtain
   the relation
   \begin{align*}
     \Pr_k(B(a_x + k_1(i)\epsilon, b_x + k_2(i)\epsilon, a_y +
@@ -1529,7 +1540,7 @@ First, we prove the Lemma
 \begin{lemma}
   Assuming that $\theta$ is bounded, the maximum likelihood estimator
   is consistent as $n \to \infty$ and
-  $m \to \infty$: \[ \hat{\theta}_{n,k} \to \theta \].
+  $k \to \infty$: \[ \hat{\theta}_{n,k} \to \theta \].
 \end{lemma}
 \begin{proof}
   By Lemma \ref{lem:conv-dist}
