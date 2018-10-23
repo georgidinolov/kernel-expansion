@@ -2,91 +2,110 @@
 
 \section{Introduction}
 
-We consider two-dimensional correlated Brownian motion:
+We consider a two-dimensional correlated Brownian motion:
 \begin{align}
   X(t) &= x_0 + \mu_x t + \sigma_x W_x(t)  \label{eq:X} \\
   Y(t) &= y_0 + \mu_y t + \sigma_y W_y(t)  \label{eq:Y} 
 \end{align}
 where $W_i$ are standard Brownian motions with
-$\mbox{Cov}(W_1(t), W_2(t)) = \rho t$. We find the below probability
-for $(X(t), Y(t))$ and the random variables
-$M_X(t)=\max_{0\leq s\leq t}X(t),$ $m_X(t)=\min_{0\leq s\leq t}X(t),$
-$M_Y(t)=\max_{0\leq s\leq t}Y(t),$ $m_Y(t)=\min_{0\leq s\leq t}Y(t)$
+$\mbox{Cov}(W_1(t), W_2(t)) = \rho t$. Our interest is in finding the
+joint probability density function for the pair $(X(t), Y(t))$
+along with the random variables $M_X(t)=\max_{0\leq s\leq t}X(t),$
+$m_X(t)=\min_{0\leq s\leq t}X(t),$ $M_Y(t)=\max_{0\leq s\leq t}Y(t),$
+$m_Y(t)=\min_{0\leq s\leq t}Y(t)$
+\begin{multline}
+  \lim_{dy \to 0} \lim_{dx \to 0} \frac{1}{dx dy} \mbox{Pr}\left(x \leq X(t) < x+dx, y \leq Y(t) < y+dy, \right. \\
+  \left. M_x(t) \leq b_x, M_y(t) \leq b_y, m_x(t) \geq a_x, m_y(t) \geq a_y | X(t) = x_0, Y(0) = y_0,
+  \theta \right) \label{eq:CDF}
+\end{multline}
+% \begin{align}
+%   \mbox{Pr}\left( \left. \begin{array}{ll}
+%                            X(t) \leq x_t, & Y(t) \leq y_t, \\
+%                            M_X(t) \leq b_x, & M_Y(t) \leq b_y, \\
+%                            m_X(t) \geq a_x, & m_Y(t) \geq a_y,
+%                          \end{array} \right| X(0) = x_0, Y(0) = y_0, \theta \right) \label{eq:CDF}
+% \end{align}
+with $\theta := (\mu_x, \mu_y, \sigma_x, \sigma_y, \rho).$ % This
+% probability can be expressed as the integral
+% \[
+%   \displaystyle \int_{a_x}^{x_t} \displaystyle \int_{a_y}^{y_t} q(x,y,t) dx\,dy,
+% \]
+% where $q(x,y,t)$ is the solution to the Fokker-Planck equation
+For shorthand labeling \eqref{eq:CDF} as $q(x,y,t)$, the density
+satisfies the Fokker-Planck equation \cite{oksendal2013stochastic}:
+\begin{multline}
+  \displaystyle \frac{\partial}{\partial t'} q(x,y,t') = -\mu_x \frac{\partial}{\partial x}q(x,y,t')
+  - \mu_y \frac{\partial}{\partial y}q(x,y,t') + \\
+  \frac{1}{2}\sigma_x^2 \frac{\partial^2}{\partial x^2}q(x,y,t') + \rho\sigma_x\sigma_y \frac{\partial^2}{\partial x \partial y}q(x,y,t')
+  + \frac{1}{2}\sigma_y^2 \frac{\partial^2}{\partial y^2}q(x,y,t'). \label{eq:1}
+\end{multline}
+Given that we consider the subset of $(X(t), Y(t))$ that satisfies the constraints imposed by the boundary data, we impose the absorbing conditions on the Fokker-Planck equation
 \begin{align}
-  \mbox{Pr}\left( \left. \begin{array}{ll}
-                           X(t) \leq x_t, & Y(t) \leq y_t, \\
-                           M_X(t) \leq b_x, & M_Y(t) \leq b_y, \\
-                           m_X(t) \geq a_x, & m_Y(t) \geq a_y,
-                         \end{array} \right| X(0) = x_0, Y(0) = y_0, \theta \right)
-                                              \label{eq:CDF}
-\end{align}
-with $\theta := (\mu_x, \mu_y, \sigma_x, \sigma_y, \rho).$ This
-probability can be expressed as the integral
-\[
-  \displaystyle \int_{a_x}^{x_t} \displaystyle \int_{a_y}^{y_t} q(x,y,t) dx\,dy,
-\]
-where $q(x,y,t)$ is the solution to the Fokker-Planck equation
-\cite{oksendal2013stochastic}:
-\begin{align}
-  \displaystyle \frac{\partial}{\partial t'} q(x,y,t') = \nonumber \\
-  \MoveEqLeft[16] -\mu_x \frac{\partial}{\partial x}q(x,y,t')
-  - \mu_y \frac{\partial}{\partial y}q(x,y,t') + \frac{1}{2}\sigma_x^2 \frac{\partial^2}{\partial x^2}q(x,y,t')
-  + \rho\sigma_x\sigma_y \frac{\partial^2}{\partial x \partial y}q(x,y,t')
-  + \frac{1}{2}\sigma_y^2 \frac{\partial^2}{\partial y^2}q(x,y,t'),
-  \label{eq:1}
-\end{align}
-subject to the constraints
-\begin{align}
-  q(a_x, y,t') &= q(b_x,y,t') = q(x,a_y,t') = q(x,b_y,t') = 0, & 0 &< t' \leq t \label{eq:2}
+  q(a_x, y,t') &= q(b_x,y,t') = q(x,a_y,t') = q(x,b_y,t') = 0, & 0 &< t' \leq t. \label{eq:2}
 \end{align}
 Differentiating $q(x,y,t)$ with respect to the boundaries produces the
 transition density of a particle beginning and ending at the points
-$(X(0), Y(0))$ and $(X(t), Y(t))$, respectively, while
-attaining the minima $a_x/a_y$ and maxima $b_x/b_y$ in each coordinate
-direction. This transition density is equivalent to the joint density
-for $(X(t), Y(t), m_X(t), M_X(t), m_Y(t), M_Y(t))| X(0)=x_0, Y(0)=y_0$,
-which we denote as $f(x,y,a_x,b_x,a_y,b_y)$:
+$(X(0), Y(0))$ and $(X(t), Y(t))$, respectively, while attaining the
+minima $a_x/a_y$ and maxima $b_x/b_y$ in each coordinate, which we
+denote as $f(x,y,a_x,b_x,a_y,b_y)$,
 \begin{align}
   \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial b_y} q(x,y,t) = f(x,y,a_x,b_x,a_y,b_y).
   \label{eq:pdf}
 \end{align}
-Probability functions similar to (\ref{eq:CDF}) with less than all
-four boundaries have been used in computing first passage times
-\cite{kou2016first, sacerdote2016first}, with application to
-structural models in credit risk and default correlations
-\cite{haworth2008modelling, ching2014correlated}. \cite{he1998double}
-use variants of (\ref{eq:pdf}) with respect to some of the boundaries
-to price financial derivative instruments whose payoff depends on
-\textit{some} of the observed maxima/minima. The authors in
-\cite{rodriguez2012} use a full likelihood-based (Bayesian) approach
-to estimate volatility in \textit{univariate} financial timeseries
-where open, closing, highest, and lowest prices are included. Their
-work fits into a body of literature and collection of techniques by
-practitioners where the observed range of prices is used to make
-similar estimates. In this chapter we will provide an efficient
-numerical method necessary for carrying out inferential procedures
-with correlated financial timeseries in the bivariate setting.
+We should note that $f(x,y,a_x,b_x,a_y,b_y)$ exists. Consider the relation
+\begin{align*}
+  &f(x,y,a_x,b_x,a_y,b_y) = \\
+  &\Pr\left(X(t) \in dx, Y(t) \in dy, m_x \in da_x, M_x \in db_x, m_y
+    \in a_y, M_y \in db_y \left| \theta \right.\right) = \mathbb{P}_{W}\left( A(z) \right), \\
+   & A(z) = \left\{ \omega \in W \left| X_\omega(t) = x,
+     Y_\omega(t)=y, \inf_{t'\in [0,1]} X_\omega(t') = a_x, \right.  \right. \\
+   &\qquad \qquad \qquad \left. \sup_{t'\in [0,1]} X_\omega(t') = b_x, \inf_{t'\in [0,1]}
+         Y_\omega(t') = a_y, \sup_{t'\in [0,1]} Y_\omega(t') = b_y
+     \right\}, \\
+  &z := (x,y,a_x,b_x,a_y,b_y),
+\end{align*}
+where we use the shorthand $X(t) \in dx$ for $X(t) \in (x, x+dx)$, and
+$\mathbb{P}_{W}$ is the Wiener measure on the sample space $W$ of all
+realizations (paths) $(X_\omega(t), Y_\omega(t))$ from the stochastic
+process (\ref{eq:X}) - (\ref{eq:Y}) defined in the usal way using
+Kolmogorov's extension of measure over cylinder sets on
+$t \to \mathbb{R}^2$ (see \cite{freidlin1985functional}, Section
+1.2). Sets of the form $A(x,y,a_x,b_x,a_y,b_y)$ can be defined as a
+countable intersection/union of cyliner sets on $t \to \mathbb{R}^2$,
+hence they are measurable under $\mathbb{P}_{W}$; therefore $f(x,y,a_x,b_x,a_y,b_y)$
+exists and is bounded above by 1.
 
-Closed-form solutions to (\ref{eq:1}) - (\ref{eq:2}) are available for
-some parameter regimes. When $\rho = 0$, the transition density of the
-process is the solution to a well-understood Sturm-Liouville problem
-where the eigenfunctions of the differential operator are sine
-functions. When $a_x = -\infty$ and $b_x = \infty$, the method of
-images can be used to enforce the remaining boundaries. For either
+Marginals of (\ref{eq:CDF}) involving less than all four boundaries
+have been used in computing first passage times \cite{kou2016first,
+  sacerdote2016first}, with application to structural models in credit
+risk and default correlations \cite{haworth2008modelling,
+  ching2014correlated}, and to pricing financial derivate instruments
+whose payoff depends on some (but not all) of the observed boundaries
+\cite{he1998double}. One-dimensional analog of this problem was used
+in \cite{rodriguez2012} to derive a full likelihood-based (Bayesian)
+approach to estimate volatility in \textit{univariate} financial
+timeseries where open, closing, highest, and lowest prices are
+included. Their work fits into a body of literature and collection of
+techniques by practitioners where the observed range of prices is used
+to make similar estimates. In this chapter we will provide an
+efficient numerical method necessary for carrying out inferential
+procedures with correlated financial timeseries in the bivariate
+setting.
+
+Closed-form solutions to (\ref{eq:1}) - (\ref{eq:2}) are only
+available for some parameter regimes. When $\rho = 0$, the transition
+density of the process is the solution to a well-understood
+Sturm-Liouville problem where the eigenfunctions of the differential
+operator are sine functions. For $\rho \ne 0$, the solution when
+$a_x = -\infty$ and $b_x = \infty$, can be obtained using the method
+of images to enforce the remaining boundaries. Alternatively, if
 $a_x, a_y = -\infty$ or $b_x, b_y = \infty$, eigenfunctions of the
 Fokker-Plank equation can be found in radial coordinates. Both of
-these techniques are used and detailed by
-\cite{he1998double}. However, to the best of our knowledge, there is
-no closed-form solution to the general problem in (\ref{eq:1}) -
-(\ref{eq:2}). This also limits the available ways to compute
-(\ref{eq:pdf}), with the most straightforward approach being finite
-difference with respect to the boundary conditions. This, however,
-requires one to solve Fokker-Planck equation (\ref{eq:1}) - (\ref{eq:2})
-accurately for at least 16 slightly different sets of boundaries and
-combine the results with numerical differentiation to evaluate the
-density function for just a single observation (see Section
-\ref{sec:likelihood-calc}), motivating the need for an efficient
-numerical method to solve (\ref{eq:1}) - (\ref{eq:2}).
+these techniques are used and detailed by \cite{he1998double}. A
+further complication is that we are not directly interested in
+evaluating the solution of the differential equation,
+but we are interested instead in evaluating its fourth order mixed
+partial derivative (recall equation \eqref{eq:pdf}).
 
 For non-zero correlation, it is still possible to approach the general
 problem by proposing a biorthogonal expansion in time and space
@@ -98,48 +117,42 @@ basis functions, each of which is a product of two sine functions (one
 in each dimension) satisfying the boundary conditions. However, a
 drawback of this out-of-the-box solution is that the system matrix for
 the corresponding eigenvalue problem is dense. Additionally, for
-nonzero $\rho$, the convergence is slow; it is necessary to have a
-large number of basis elements for an accurate approximation. The
-denseness and size of the resultant system makes the expansion a slow,
-if not unfeasible, solution. An alternative is to use a finite
-difference scheme to directly solve the evolution problem after
-suitable transformations. However, both of these methods need a high
-degree of numerical resolution to produce practically useful
-approximations of the transition density. The trigonometric series
-expansion has exponential accuracy in the case $\rho=0$ while it loses
-accuracy catastrophically when $\rho\neq 0$. This fact suggests that
-for the trigonometric series expansion inefficiencies arise from using
-a separable representation for a differential operator that is
+moderately large values of $|\rho|$, a large number of basis elements
+is typically needed for an accurate approximation. The denseness and
+size of the resultant system makes the expansion a slow, if not
+unfeasible, solution. An alternative is to use a finite difference
+scheme to directly solve the evolution problem after suitable
+transformations. However, both of these methods need a high degree of
+numerical resolution to produce practically useful approximations of
+the transition density. The trigonometric series expansion has
+exponential accuracy in the case $\rho=0$, while it loses accuracy
+catastrophically when $\rho\neq 0$. This fact suggests that for the
+trigonometric series expansion inefficiencies arise from using a
+separable representation for a differential operator that is
 intrinsically correlated in the two dimensions; for the finite
 difference approach, the problem is twofold as the method introduces
 numerical diffusion in the initial condition and it also uses a
 separable approximation for the differential operator.
 
-In the following two chapters we propose robust and efficient
-solutions to the problems (\ref{eq:1}) - (\ref{eq:2}) and
-(\ref{eq:pdf}) in two distinct parameter regimes. The twofold solution
-is obtained by combining a small-time analytic solution with a
-Galerkin discretization based on basis functions that are
-correlated.
-
-This chapter describes the Galkerin discretization. The key strategy
-is to directly take into account the correlation parameter present in
-the differential operator in order to efficiently represent an
-analytic small-time solution and propagate it forward in time. We
-apply our computational method to estimate equation parameters with a
-maximum likelihood approach in settings where the model assumptions of
-constant $(\mu_x, \mu_y, \sigma_x, \sigma_y, \rho)$ and Brownian
-motion driving stochastic evolution are appropriate. Section
+In this chapter we propose a robust and efficient algorithm to
+numerically approximate the solution to (\ref{eq:1}) - (\ref{eq:2})
+and (\ref{eq:pdf}) in two distinct parameter regimes. We use a
+Galkerin discretization where the key strategy is to directly take
+into account the correlation parameter present in the differential
+operator in order to efficiently represent an analytic small-time
+solution and propagate it forward in time. We apply our computational
+method to estimate diffusion parameters with a maximum likelihood
+from an independent, identically distributed sample. Section
 \ref{sec:approximate-sols} outlines some methods we considered for
 this problem. Section \ref{sec:semidiscrete-galerkin} describes the
 Galerkin method we implemented. Section [] includes our numerical
 experiments.
 
 
-\section{Approximate Numerical Solutions} \label{sec:approximate-sols}
+\section{Preliminaries} \label{sec:approximate-sols}
 Before considering solutions to the full Fokker-Planck equation
 (\ref{eq:1}) - (\ref{eq:2}), we simplify the PDE by proposing a series
-of transformations to standardize the problem. The first transformation
+of transformations to standardize the problem. Firstly, transformation
 \begin{align}
   T_{(0)} : q(x,y,t) &\to p(x,y,t)
 \end{align}
@@ -154,7 +167,7 @@ where
 \begin{align*}
   \alpha &= -\frac{\mu_x}{\sigma_x^2} - \frac{\rho}{\sigma_x\sigma_y(1-\rho^2)}\left( -\frac{\mu_y}{\sigma_y^2} + \frac{\mu_x \rho}{\sigma_x \sigma_y} \right), \\
   \beta &= \left( -\frac{\mu_y}{\sigma_y^2} + \frac{\mu_x \rho}{\sigma_x \sigma_y} \right), \\
-  \gamma &= \frac{1}{2}\left( \frac{\sigma_x}{(b_x-a_x)} \right)^2 \alpha^2 + \frac{1}{2}\left(\frac{\sigma_y}{(b_y-a_y)}\right)^2 \beta^2 + \alpha\beta,
+  \gamma &= \frac{1}{2}\left( \frac{\sigma_x}{b_x-a_x} \right)^2 \alpha^2 + \frac{1}{2}\left(\frac{\sigma_y}{b_y-a_y}\right)^2 \beta^2 + \alpha\beta,
 \end{align*}
 This new functions satisfies the \textit{pure diffusion} equation:
 \begin{align}
@@ -166,19 +179,19 @@ subject to the constraints
   p(x,y,t) &=0,\mbox{ for } (x,y) \in \partial \Omega, \nonumber \\
   p(x,y,0) &= \delta\left( x - x_0 \right) \delta\left(y-y_0\right). \nonumber
 \end{align}
-The problem is then \textit{standardized} with the scaling transformation
+Secondly, the problem is then \textit{standardized} with the scaling transformation
 \begin{align}
   T_{(1)}: & \left\{ \begin{array}{ccc}
-                       p(x^{(1)}, y^{(1)}, t) &=& L_xL_y p(x,y,t), \\
-                       p(x^{(1)}, y^{(1)}, 0) &=& \delta(x^{(1)}-x_0^{(1)}) \delta(y^{(1)}-y_0^{(1)}), \\
+                       p_{(1)}(x^{(1)}, y^{(1)}, t) &=& L_xL_y p(x,y,t), \\
+                       p_{(1)}(x^{(1)}, y^{(1)}, 0) &=& \delta(x^{(1)}-x_0^{(1)}) \delta(y^{(1)}-y_0^{(1)}), \\
                        (x^{(1)}, y^{(1)}) &=& \left(\frac{x}{L_x}, \frac{y}{L_y} \right), \\
                        (L_x,L_y) &=& \left(b_y - a_y, b_x - a_x\right)
                      \end{array} \right.
 \end{align}
 which re-defines the differential equation and computational domain observed by
-$p(x^{(1)}, y^{(1)}, t)$
+$p_{(1)}(x^{(1)}, y^{(1)}, t)$
 \begin{align}
-  \frac{\partial}{\partial t}p(x^{(1)}, y^{(1)}, t) &= \mathcal{L}^{(1)}p(x^{(1)}, y^{(1)}, t),\quad (x^{(1)},y^{(1)}) \in \Omega^{(1)}, \label{eq:qq-2} \\
+  \frac{\partial}{\partial t}p_{(1)}(x^{(1)}, y^{(1)}, t) &= \mathcal{L}^{(1)}p_{(1)}(x^{(1)}, y^{(1)}, t),\quad (x^{(1)},y^{(1)}) \in \Omega^{(1)}, \label{eq:qq-2} \\
   \Omega &:= (0,1) \times (0,1). \nonumber 
 \end{align}
 The differential operator $\mathcal{L}^{(1)}$ takes the form
@@ -198,22 +211,20 @@ $\tau_y = \frac{\sigma_y}{L_y}$.  Two remarks are in order here:
 \begin{remark} \label{remark:const-L} We consider $L_x$ and $L_y$ as
   \textit{fixed} in differentiating $p(x,y,t)$. This amounts to
   perturbing the boundaries of $\Omega^{(1)}$ when differentiating
-  $p(x^{(1)}, y^{(1)}, t)$ with respect to $(a_x, b_x, a_y, b_y)$,
+  $p_{(1)}(x^{(1)}, y^{(1)}, t)$ with respect to $(a_x, b_x, a_y, b_y)$,
   while keeping the diffusion parameters $\tau_x, \tau_y$
   constant. In contrast, if we treat $L_x, L_y$ as functions of the
   boundary parameters, then upon differentiation $\tau_x, \tau_y$ will
   be perturbed while preserving $\Omega^{(1)}$.
 \end{remark}
-
-Next, we \textit{normalize} the diffusion equation (\ref{eq:qq-2}) with the transformation
+Thirdly, we \textit{normalize} the diffusion equation (\ref{eq:qq-2}) with the transformation
 \begin{align}
-  T_{(2)}: p(\tilde{x}, \tilde{y}, \tilde{t}) &= \left\{ \begin{array}{cc}
-                                                  p(x^{(1)}, y^{(1)}, \tilde{t}/\tau_x^2), &\mbox{if } \tau_x^2 \geq \tau_y^2 \\
-                                                 p(y^{(1)}, x^{(1)}, \tilde{t}/\tau_y^2), &\mbox{otherwise},
+  T_{(2)}: p_{(2)}(\tilde{x}, \tilde{y}, \tilde{t}) &= \left\{ \begin{array}{cc}
+                                                  p_{(1)}(x^{(1)}, y^{(1)}, \tilde{t}/\tau_x^2), &\mbox{if } \tau_x^2 \geq \tau_y^2 \\
+                                                 p_{(1)}(y^{(1)}, x^{(1)}, \tilde{t}/\tau_y^2), &\mbox{otherwise},
                                                   \end{array} \right., \label{eq:T2}
 \end{align}
-where the function $p(\cdot)$ in the left-hand side of \eqref{eq:T2}
-solves \eqref{eq:qq-2}, defined with the coordinate transformation
+defined with the coordinate transformation
 \begin{align}
   \tilde{x} &= x^{(1)}\cdot \Indicator{ \max\left\{\tau_x^2, \tau_y^2 \right\} = \tau_x^2} + y^{(1)}\cdot \Indicator{ \max\left\{\tau_x^2, \tau_y^2 \right\} = \tau_y^2}, \\
   \tilde{y} &= y^{(1)}\cdot \Indicator{ \max\left\{\tau_x^2, \tau_y^2 \right\} = \tau_x^2} + x^{(1)}\cdot \Indicator{ \max\left\{\tau_x^2, \tau_y^2 \right\} = \tau_y^2}, \\
@@ -223,15 +234,15 @@ The differential problem under $T_{(2)}$ now takes on the
 \textit{normalized form} (from hereon referred to as the
 \textit{normalized problem}):
 \begin{align}
-  \frac{\partial}{\partial \tilde{t}} p(\tilde{x},\tilde{y},\tilde{t}) &= \tilde{\mathcal{L}} p(\tilde{x},\tilde{y},\tilde{y}), & (\tilde{x}, \tilde{y}) \in \tilde{\Omega} \label{eq:qqq} \\
+  \frac{\partial}{\partial \tilde{t}} p_{(2)}(\tilde{x},\tilde{y},\tilde{t}) &= \tilde{\mathcal{L}} p_{(2)}(\tilde{x},\tilde{y},\tilde{y}), & (\tilde{x}, \tilde{y}) \in \tilde{\Omega} \label{eq:qqq} \\
   \tilde{\mathcal{L}} &= \frac{1}{2} \frac{\partial^2}{\partial \tilde{x}^2} + \rho \sigma_{\tilde{y}} \frac{\partial^2}{\partial \tilde{x} \partial \tilde{y}} + \frac{1}{2} \sigma^2_{\tilde{y}} \frac{\partial^2}{\partial \tilde{y}^2},& \tilde{\Omega} := (0,1) \times (0,1)
 \end{align}
 with
 $\sigma_{\tilde{y}} = \min\left\{ \tau_x/\tau_y, \tau_y/\tau_x
-\right\}$ subject to the IC/BCs:
+\right\}$ subject to the initial and boundary conditions
 \begin{align}
-  p(\tilde{x},\tilde{y},\tilde{t}) &=0,  \mbox{ for }  (\tilde{x},\tilde{y}) \in \partial\tilde{\Omega}, \nonumber \\
-  p(\tilde{x},\tilde{y},0) &= \delta\left( \tilde{x} - \tilde{x}_0 \right)\delta\left( \tilde{y} - \tilde{y}_0 \right). \label{eq:qqq-2}
+  p_{(2)}(\tilde{x},\tilde{y},\tilde{t}) &=0,  \mbox{ for }  (\tilde{x},\tilde{y}) \in \partial\tilde{\Omega}, \nonumber \\
+  p_{(2)}(\tilde{x},\tilde{y},0) &= \delta\left( \tilde{x} - \tilde{x}_0 \right)\delta\left( \tilde{y} - \tilde{y}_0 \right). \label{eq:qqq-2}
 \end{align}
 As seen above, the computational domain under $T_{(2)}$ remains the
 unit square. However, the diffusion coefficient in the principal
@@ -241,127 +252,28 @@ condition is scaled by either $\tau_x^2$ or $\tau_y^2$, while the
 correlation coefficient remains the same. Transforming back to the
 original coordinate frame is straight-forward 
 \[
-  p(x,y,t) = p(\tilde{x}, \tilde{y}, \tilde{t}) \cdot \frac{1}{L_xL_y},
+  p(x,y,t) = p_{(2)}(\tilde{x}, \tilde{y}, \tilde{t}) \cdot \frac{1}{L_xL_y}.
 \]
-such that the solution to the original problem \eqref{eq:1} -
+Hence, the solution to the original problem \eqref{eq:1} -
 \eqref{eq:2} can be expressed as the product
 \[
-  q(x,y,t) = \exp(-\alpha x - \beta y - \gamma t) \cdot p(\tilde{x}, \tilde{y}, \tilde{t}) \cdot \frac{1}{L_xL_y}.
+  q(x,y,t) = \exp(-\alpha x - \beta y - \gamma t) \cdot
+  p_{(2)}(\tilde{x}, \tilde{y}, \tilde{t}) \cdot \frac{1}{L_xL_y}.
 \]
-\begin{remark} \label{remark:diff}
-  As a consequence of Remark \ref{remark:const-L}, all of the
-  dependency of $q$ on $(a_x,b_x,a_y,b_y)$ is through the normalized
-  solution $p(\tilde{x},\tilde{y},\tilde{t})$. Thus, without loss of
-  generality, we will concentrate on the solution of the normalized
-  problem (\ref{eq:qqq}).
-\end{remark}
+As a consequence of Remark \ref{remark:const-L}, all of the dependency
+of $q$ on $(a_x,b_x,a_y,b_y)$ is through the normalized solution
+$p_{(2)}(\tilde{x},\tilde{y},\tilde{t})$. Thus, without loss of
+generality, we will concentrate on the solution of the normalized
+problem (\ref{eq:qqq}) and will drop the subscript $p_{(2)}$ from here
+on when discussing the solution to the normalized problem.
 
-\subsection{Density Calculation} \label{sec:likelihood-calc} Recalling
-problem (\ref{eq:pdf}) and Remark \ref{remark:diff}, to compute the
-joint density $f(x,y,a_x,b_x,a_y,b_y)$ defined in \eqref{eq:pdf}, we
-must take derivatives of the solution
-$p(\tilde{x},\tilde{y},\tilde{t})$ with respect to the boundary
-parameters $(a_x, b_x, a_y, b_y)$. Because the approximate solutions
-we will consider below are functions of the parameters without
-explicit analytic form,
-$\frac{\partial^4}{\partial a_x\partial b_x \partial a_y \partial
-  b_y}p(\tilde{x},\tilde{y},\tilde{t})$ must be computed numerically
-using a finite difference approximation. We must therefore find the
-solution for each of the sixteen perturbed problems
-\[
-  p(\tilde{x},\tilde{y},\tilde{t} | a_x \pm \epsilon, b_x \pm \epsilon, a_y \pm \epsilon, b_y
-  \pm \epsilon).
-\]
-The derivative of $p$ with respect to the 4 boundaries is approximated
-as
-\begin{eqnarray*}
-& & \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial b_y} p(\tilde{x},\tilde{y},\tilde{t}) 
-\nonumber \\
-& & \hspace*{0.5cm} \approx \frac{\displaystyle \sum_{k_1, k_2, k_3, k_4 = \pm 1}
-c_{\{ k_1, k_2, k_3, k_4 \} } p(\left. \tilde{x},\tilde{y},\tilde{t} \right| a_x+k_1 \varepsilon, b_x+k_2 \varepsilon, 
-a_y+k_3 \varepsilon, b_y+k_4 \varepsilon) }{(2 \varepsilon )^4} 
-\nonumber
-\end{eqnarray*}
-The finite difference approximation, however, introduces fundamental
-limitations for the type of approximation that can be used and the
-degree of accuracy admissible for this problem.
 
-Consider an approximate solution
-$p^{(k)}(\left. \tilde{x},\tilde{y},\tilde{t} \right| b)$ where we
-have included parameter $b $ explicitly as a simplified notation for
-$[a_x, b_x]$ and $[a_y, b_y]$ and we assume that the approximation
-approaches the true solution as the discretization resolution
-$k \to \infty$. In general, the truncation error can be represented as
-\begin{align}
-  p^{(k)}(\tilde{x},\tilde{y},\tilde{t} | b) - p(\tilde{x},\tilde{y},\tilde{t} | b) = \left( \frac{1}{k}
-  \right)^{\alpha} \mbox{F}_{reg}(b) + \left( \frac{1}{k}
-  \right)^{\beta}\mbox{F}_{irreg}(b) + \varepsilon_{mach}F_{round}(b), \label{eq:trunc-error}
-\end{align}
-for some $\alpha, \beta > 0$; $(1/k)^{\alpha} \mbox{F}_{reg}(b) $ is
-the regular part of the truncation error, which is a smooth function of $b$;
-$(1/k)^{\beta} \mbox{F}_{irreg}(b) $ is the irregular part of the
-truncation error, which is not smooth in $b$; and $\varepsilon_{mach} \mbox{F}_{round}(b) $ is the
-effect of round-off errors with $\varepsilon_{mach} \sim 10^{-16}$
-denoting the machine epsilon for IEEE double precision system.
 
-Note that when expressed using the chain rule, both
-$\displaystyle \frac{\partial}{\partial a_x}$ and
-$\displaystyle \frac{\partial}{\partial b_x}$ contain
-$\displaystyle \frac{\partial}{\partial b}$. As a result,
-$\displaystyle \frac{\partial^2 }{\partial a_x \partial b_x} $ leads
-to $\displaystyle \frac{\partial^2 }{\partial b^2} $. Although in the
-discussion below, for simplicity, we only illustrate the numerical
-differentiation on the first derivative, keep in mind that it is the
-second derivative that is more relevant in the calculation of
-$\displaystyle \frac{\partial^4}{\partial a_x \partial b_x \partial
-  a_y \partial b_y} p(\tilde{x},\tilde{y},\tilde{t}) $.
-
-The coefficient, $\mbox{F}_{reg}(b) $, of the regular part of
-truncation error is a smooth function of $b$ with derivative $= O(1)$.
-The coefficient, $\mbox{F}_{round}(b) $, in the effect of round-off
-errors, behaves virtually like a random variable, discontinuous in
-$b$.  For the irregular part of truncation error, the coefficient
-$\mbox{F}_{irreg}(b) $ can be thought of in general as continuous in
-$b$ but not smooth in $b$ where the derivative has
-discontinuities. Linear interpolation applied to accommodate starting
-position or ending position not falling on a grid point, for example,
-introduces this kind of irregular truncation error. Based on the
-expression we wrote out above for the finite difference solution,
-applying the numerical differentiation with step $\varepsilon$ yields:
-\begin{eqnarray}
-  & & \frac{p^{(k)}(\left. \tilde{x},\tilde{y},\tilde{t} \right| b+\varepsilon)-p^{(k)}(\left. \tilde{x},\tilde{y},\tilde{t} \right| b -\varepsilon)}{2 \varepsilon} \nonumber \\
-  & & \hspace*{1cm} =  \frac{\partial }{\partial b} p(\left. \tilde{x},\tilde{y},\tilde{t} \right| b) + O(\varepsilon^2)
-      + \left(\frac{1}{k}\right)^{\alpha} \frac{\mbox{F}_{reg}(b+\varepsilon)-\mbox{F}_{reg}(b-\varepsilon)}{2 \varepsilon}  \nonumber \\
-  & & \hspace*{1cm} + \left(\frac{1}{k}\right)^{\beta} \frac{\mbox{F}_{irreg}(b+\varepsilon)-\mbox{F}_{irreg}(b-\varepsilon)}{2 \varepsilon}
-      + \varepsilon_{mach} \frac{\mbox{F}_{round}(b+\varepsilon)-\mbox{F}_{round}(b-\varepsilon)}{2 \varepsilon}  \nonumber
-\end{eqnarray}
-In the equation above, as the step in the numerical differentiation is
-refined, the first line of the RHS is well behaved, converging to the
-true value $\frac{\partial }{\partial b} p(\left. \tilde{x},\tilde{y},\tilde{t} \right| b)$
-as $\varepsilon \rightarrow 0$.  The second line of RHS, however, is
-problematic. As $\varepsilon \rightarrow 0$, the contribution from
-round-off error blows up to infinity
-\[
-  \varepsilon_{mach}
-  \frac{\mbox{F}_{round}(b+\varepsilon)-\mbox{F}_{round}(b-\varepsilon)}{2
-    \varepsilon} = O\left(\frac{\varepsilon_{mach}}{\varepsilon}
-  \right) \longrightarrow \infty \;\;\;\; \mbox{as } \varepsilon
-  \rightarrow 0
-\]
-For a fourth-order derivative, the error contribution of finite
-machine precision becomes $O(\varepsilon_{mach}/\varepsilon^4)$ and a
-step size as big as $\varepsilon \sim 10^{-4}$ produces errors
-$O(1)$. This is catastrophic in instances where true values of the
-fourth order derivative (the joint density) are smaller than 1.
-
-The contribution from the irregular part of truncation error can also
-be problematic if the finite difference approximation of the
-derivative of $F_{irreg}(b)$ is $O(k^\beta/\varepsilon)$; we will show
-that this is the case for the finite difference method.  As a
-consequence of round-off errors and possible irregular truncation
-errors, we observe that there is a fundamental restriction on the size
-of finite difference steps $\varepsilon$ we can use in the numerical
-methods below.
+\section{A Review of Standard Approaches}
+Before describing our method for solving the normalized problem
+\eqref{eq:qqq} - \eqref{eq:qqq-2}, we discuss other candidate
+approaches and highlight their limitations in the context of the
+present problem.
 
 \subsection{Eigenfunction Expansion} \label{sec:eigenfunction}
 Following Section 6.2 of \cite{risken1989fokker-planck}, we may use
@@ -370,12 +282,12 @@ eigenfunctions and time-dependent coefficients determined by eigenvalues:
 \begin{equation}
   p(\tilde{x},\tilde{y},\tilde{t}) =  \sum_\nu h_\nu \phi_\nu (\tilde{x}, \tilde{y}) e^{-\lambda_\nu \tilde{t}}, \label{eq:biorthogonal}
 \end{equation}
-where $h_\nu$ is the coefficient of $\phi_\nu(\tilde{x}, \tilde{y})$ in the
-eigenfunction expansion of $p(\tilde{x},\tilde{y},0)$. Because the differential
-operator $\mathcal{L}$ is self-adjoint, the family of eigenfunctions
-is complete in the Hilbert space $L_2(\Omega)$. Moreover, the
-eigenvalues are bounded below by a positive constant $c$, so that the
-solution behaves as expected (see section 6.3 of
+where $h_\nu$ is the coefficient of the eigenfunction
+$\phi_\nu(\tilde{x}, \tilde{y})$. Because the differential operator
+$\mathcal{L}$ is self-adjoint, the family of eigenfunctions is
+complete in the Hilbert space $L_2(\Omega)$. Moreover, the eigenvalues
+are bounded below by a positive constant $c$, so that the solution
+behaves as expected (see section 6.3 of
 \cite{risken1989fokker-planck}).
 
 Since we require $\phi_\nu(\tilde{x},\tilde{y})$ to be zero on the boundaries, we
@@ -403,13 +315,13 @@ where $\mathcal{L}$ is the differential operator in the normalized
 Fokker-Planck equation. Applying $\mathcal{L}$ to the basis function
 expansion of $\phi_v $ and again approximating the result using the
 finite set of basis functions yields
-\[
+\begin{equation}
   \mathcal{L}\phi_\nu = \mathcal{L}(\Psi(\tilde{x},\tilde{y})^T c_\nu) =
-  \mathcal{L}(\Psi(\tilde{x},\tilde{y})^T) c_\nu = (A \Psi(\tilde{x},\tilde{y}))^T c_\nu,
-\] 
+  \mathcal{L}(\Psi(\tilde{x},\tilde{y})^T) c_\nu = (A \Psi(\tilde{x},\tilde{y}))^T c_\nu, \label{eq:system}
+\end{equation}
 where $A$ is a matrix analytic in $(\sigma_{\tilde{y}}, \rho)$. In the
 last part of the equation above, we have truncated the infinite sine
-series expansion of $L \psi_{l, m}(\tilde{x},\tilde{y})$. In the case where
+series expansion of $\mathcal{L} \psi_{l, m}(\tilde{x},\tilde{y})$. In the case where
 $\rho = 0$, $A$ is diagonal because $\left\{ \psi_{l,m}(\tilde{x},\tilde{y}) \right\}$
 are the eigenfunctions to $\mathcal{L}$. When $\rho \neq 0$, $A$ is no
 longer diagonal and is in fact dense. % The dense structure of matrix
@@ -431,24 +343,19 @@ of $\mathcal{L}\phi_\nu$ into the eigenvalue problem
 whose solution gives the family of orthonormal eigenfunctions. As
 mentioned already, the efficiency of this approach is dependent on the
 cost of solving the eigenvalue problem
-$A^T c_\nu = -\lambda_\nu c_\nu$.  With all of the eigenpairs
+$A^T c_\nu = -\lambda_\nu c_\nu$. With all of the eigenpairs
 $(c_\nu, \lambda_\nu)$, the approximate solution is then
 \[
-  p(\tilde{x},\tilde{y},\tilde{t}) \approx \Psi(\tilde{x},\tilde{y})^T \sum_{\nu} h_\nu c_\nu e^{-\lambda_\nu t}.
+  p(\tilde{x},\tilde{y},\tilde{t}) \approx \sum_{\nu} h_\nu
+  \left(\Psi(\tilde{x},\tilde{y})^Tc_\nu\right) e^{-\lambda_\nu t}.
 \]
-
-In terms of density calculations for
-$\frac{\partial^4 p(\tilde{x},\tilde{y},\tilde{t})}{\partial a_x
-  \partial b_x, \partial a_y \partial b_y}$, the eigenfunction
-expansion does not suffer from having irregular truncation errors,
-because $A$ is analytic in the diffusion parameters and the eigenpairs
-$(\lambda_\nu, c_\nu)$ inherit this property (see Theorems 7 and 8 of
-Chapter 9 in \cite{lax2007linear-algebra}). However, because a good
-working approximation of $p(\tilde{x},\tilde{y},\tilde{t})$ requires
-many terms in the expansion, and because each resultant system matrix
-is dense, repeated computation of the eigenproblem for the density
-calculation is unfeasible.
-
+Because a good working approximation of
+$p(\tilde{x},\tilde{y},\tilde{t})$ requires many terms in the
+expansion, and because the resultant system matrix is dense, repeated
+computation of the eigenproblem for the density calculation is
+unfeasible. This is especially important in the context of the main
+problem: computing derivatives of $p$ with respect to the boundary
+parameters.
 
 \subsection{Finite Difference} \label{sec:finite-difference} A finite
 difference method which approximates the spatial derivatives in
@@ -464,7 +371,8 @@ $\tilde{t}$, and the product $Bc(\tilde{t})$ approximates
 $\mathcal{L}p(\tilde{x},\tilde{y},\tilde{t})$. The system matrix $B$
 is dependent on the discretization scheme used to approximate
 $\mathcal{L}$. Using a central-in-space scheme over a \textbf{regular}
-grid on $\tilde{\Omega}$ with $\Delta \tilde{x} = \Delta \tilde{y} = h$,
+grid on $\tilde{\Omega}$ with
+$\Delta \tilde{x} = \Delta \tilde{y} = h$, we have
 \[ B = \frac{1}{2} \frac{1}{h^2}B_{\tilde{x},\tilde{x}} +
   \rho\sigma_{\tilde{y}} \frac{1}{4h^2}B_{\tilde{x},\tilde{y}} + \frac{1}{2}\sigma_{\tilde{y}}^2
   \frac{1}{h^2}B_{\tilde{y},\tilde{y}},
@@ -487,43 +395,48 @@ $\frac{\partial^2}{\partial \tilde{x}^2}, \frac{\partial^2}{\partial
 % where $A_{x,x}[k,]$ is the $k^{th}$ row of $A_{x,x}$. Similarly,
 % \begin{align*}
 %   \rho\tau_x\tau_y \frac{\partial^2}{\partial x \partial y} p(x_l,y_m,t) \approx \rho\tau_x\tau_y \left( \frac{c_{l+1,m+1}(t) - c_{l+1,m-1}(t) - c_{l-1,m+1}(t) + c_{l-1,m-1}(t)}{4h^2} \right) = \rho\tau_x\tau_y \frac{1}{4h^2}A_{x,y}[k,] c(t) 
-% \end{align*}
-It should be noted here that a regular grid approach with a constant
-$h$ independent of parameters is appealing, because it allows us to
-construct once and store the matrices $B_{\tilde{x},\tilde{x}}, B_{\tilde{x},\tilde{y}}, B_{\tilde{y},\tilde{y}}$,
-which saves valuable computational resources if we are to solve the
-finite difference eigenproblem (\ref{eq:eigenproblem-fd}) repeatedly
-for different parameter values $(\sigma_{\tilde{y}},\rho)$.
+    %   \end{align*}
+The use of a regular grid with a constant $h$ independent of the
+parameters is appealing here because, it allows us to construct once
+and store the matrices
+$B_{\tilde{x},\tilde{x}}, B_{\tilde{x},\tilde{y}},
+B_{\tilde{y},\tilde{y}}$, which saves valuable computational resources
+if we are to solve the finite difference eigenproblem
+(\ref{eq:eigenproblem-fd}) repeatedly for different parameter values
+$(\sigma_{\tilde{y}},\rho)$.
 
 Unlike the system matrix for the trigonometric expansion, the system
 matrix $B$ here is sparse: each row of
 $(B_{\tilde{x},\tilde{x}}, B_{\tilde{x},\tilde{y}},
 B_{\tilde{y},\tilde{y}})$ is composed of all zeros except for three or
 four entries. This structure does not change as $h \to 0$. The
-eigenvalue problem is therefore much cheaper to solve.
+eigenvalue problem is therefore much cheaper to solve. However, the
+solutions generated by this methods lead to quite inaccurate finite
+difference approximations to the derivatives of $p$ which, as the
+reader might recall, are the main object of interest in our problem.
 
-However, the fundamental limitation of using a finite difference
-method is that it introduces irregular truncation error, because of
-the linear interpolation necessary for function arguments not on grid
-points. Referring to the notation in (\ref{eq:trunc-error}), and
-setting $k := 1/h$, the interpolation error introduced by a finite
-difference scheme at position $b$ for the boundary parameters using
-step $h$ has the general form of
-$$\mbox{Interpolation error } = O(h^2) (1-\mbox{rem}(b/h,1)) \mbox{rem}(b/h,1)$$ 
-The coefficient part
-$\mbox{F}_{irreg}(b) = (1-\mbox{rem}(b/h,1)) \mbox{rem}(b/h,1) $ is
-continuous in $b$ but not differentiable. Its first derivative has the
-behavior of
-$$ \frac{\partial }{\partial b} \mbox{F}_{irreg}(b) =  \frac{1}{h} \left(1-2\mbox{rem}(b/h,1) \right).$$ The contribution from the irregular part of truncation error is 
-$$ h^2 \frac{\mbox{F}_{irreg}(b+\varepsilon)-\mbox{F}_{irreg}(b-\varepsilon)}{2 \varepsilon}  = 
-O\left(\frac{h^2}{\max(\varepsilon, h)} \right) $$ 
-In the second order numerical differentiation, however, the contribution from 
-the irregular part of truncation error behaves like 
-$$ h^2 \frac{\mbox{F}_{irreg}(b+\varepsilon)-2\mbox{F}_{irreg}(b)
-  +\mbox{F}_{irreg}(b-\varepsilon)}{\varepsilon^2 } =
-O\left(\frac{h^2}{\max(\varepsilon^2, h^2)} \right) $$ The interplay
-between $h$ and $\varepsilon$ limits the size $\varepsilon$ we can use
-to perform density calculations for a fixed step size $h$.
+% However, the fundamental limitation of using a finite difference
+% method is that it introduces irregular truncation error, because of
+% the linear interpolation necessary for function arguments not on grid
+% points. Referring to the notation in (\ref{eq:trunc-error}), and
+% setting $k := 1/h$, the interpolation error introduced by a finite
+% difference scheme at position $b$ for the boundary parameters using
+% step $h$ has the general form of
+% $$\mbox{Interpolation error } = O(h^2) (1-\mbox{rem}(b/h,1)) \mbox{rem}(b/h,1)$$ 
+% The coefficient part
+% $\mbox{F}_{irreg}(b) = (1-\mbox{rem}(b/h,1)) \mbox{rem}(b/h,1) $ is
+% continuous in $b$ but not differentiable. Its first derivative has the
+% behavior of
+% $$ \frac{\partial }{\partial b} \mbox{F}_{irreg}(b) =  \frac{1}{h} \left(1-2\mbox{rem}(b/h,1) \right).$$ The contribution from the irregular part of truncation error is 
+% $$ h^2 \frac{\mbox{F}_{irreg}(b+\varepsilon)-\mbox{F}_{irreg}(b-\varepsilon)}{2 \varepsilon}  = 
+% O\left(\frac{h^2}{\max(\varepsilon, h)} \right) $$ 
+% In the second order numerical differentiation, however, the contribution from 
+% the irregular part of truncation error behaves like 
+% $$ h^2 \frac{\mbox{F}_{irreg}(b+\varepsilon)-2\mbox{F}_{irreg}(b)
+%   +\mbox{F}_{irreg}(b-\varepsilon)}{\varepsilon^2 } =
+% O\left(\frac{h^2}{\max(\varepsilon^2, h^2)} \right) $$ The interplay
+% between $h$ and $\varepsilon$ limits the size $\varepsilon$ we can use
+% to perform density calculations for a fixed step size $h$.
 
 
 % differentiation with respect to boundaries is also done
@@ -599,7 +512,146 @@ to perform density calculations for a fixed step size $h$.
 % the irregular part of truncation error behaves like 
 % $$ h^2 \frac{\mbox{F}_{irreg}(b+\varepsilon)-2\mbox{F}_{irreg}(b)
 % +\mbox{F}_{irreg}(b-\varepsilon)}{\varepsilon^2 }  = 
-% O\left(\frac{h^2}{\max(\varepsilon^2, h^2)} \right) $$
+      %       O\left(\frac{h^2}{\max(\varepsilon^2, h^2)} \right) $$
+
+\subsection{Density Calculation} \label{sec:likelihood-calc} Following
+(\ref{eq:pdf}), to compute the joint density $f(x,y,a_x,b_x,a_y,b_y)$,
+we must take derivatives of the solution
+$p(\tilde{x},\tilde{y},\tilde{t})$ with respect to the boundary
+parameters $(a_x, b_x, a_y, b_y)$. Because the approximate solutions
+we will consider below are functions of the parameters without
+explicit analytic form,
+$\frac{\partial^4}{\partial a_x\partial b_x \partial a_y \partial
+  b_y}p(\tilde{x},\tilde{y},\tilde{t})$ must be computed numerically
+using a finite difference approximation. We must therefore find the
+solution for each of the sixteen perturbed problems
+\[
+  p(\tilde{x},\tilde{y},\tilde{t} \mid a_x \pm \epsilon, b_x \pm \epsilon, a_y \pm \epsilon, b_y
+  \pm \epsilon).
+\]
+The derivative of $p$ with respect to the 4 boundaries is approximated
+as
+\begin{eqnarray*}
+& & \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial b_y} p(\tilde{x},\tilde{y},\tilde{t}) 
+\nonumber \\
+& & \hspace*{0.5cm} \approx \frac{\displaystyle \sum_{k_1, k_2, k_3, k_4 = \pm 1}
+c_{\{ k_1, k_2, k_3, k_4 \} } p( \tilde{x},\tilde{y},\tilde{t} \mid a_x+k_1 \varepsilon, b_x+k_2 \varepsilon, 
+a_y+k_3 \varepsilon, b_y+k_4 \varepsilon) }{(2 \varepsilon )^4} 
+\nonumber
+\end{eqnarray*}
+The finite difference approximation, however, introduces fundamental
+limitations for the type of approximation that can be used and the
+degree of accuracy admissible for this problem.
+
+Consider an approximate solution
+$p^{(k)}( \tilde{x},\tilde{y},\tilde{t} \mid b)$ where we
+have included parameter $b $ explicitly as a simplified notation for
+$[a_x, b_x]$ and $[a_y, b_y]$ and we assume that the approximation
+approaches the true solution as the discretization resolution
+$k \to \infty$. In general, the truncation error can be represented as
+\begin{align}
+  p^{(k)}(\tilde{x},\tilde{y},\tilde{t} | b) - p(\tilde{x},\tilde{y},\tilde{t} | b) = \left( \frac{1}{k}
+  \right)^{\alpha} \mbox{F}_{reg}(b) + \left( \frac{1}{k}
+  \right)^{\beta}\mbox{F}_{irreg}(b) + \varepsilon_{mach}F_{round}(b), \label{eq:trunc-error}
+\end{align}
+for some $\alpha, \beta > 0$; $(1/k)^{\alpha} \mbox{F}_{reg}(b) $ is
+the regular part of the truncation error, which is a smooth function of $b$;
+$(1/k)^{\beta} \mbox{F}_{irreg}(b) $ is the irregular part of the
+truncation error, which is not smooth in $b$; and $\varepsilon_{mach} \mbox{F}_{round}(b) $ is the
+effect of round-off errors with $\varepsilon_{mach} \sim 10^{-16}$
+denoting the machine epsilon for IEEE double precision system.
+
+Note that when expressed using the chain rule, both
+$\displaystyle \frac{\partial}{\partial a_x}$ and
+$\displaystyle \frac{\partial}{\partial b_x}$ contain
+$\displaystyle \frac{\partial}{\partial b}$. As a result,
+$\displaystyle \frac{\partial^2 }{\partial a_x \partial b_x} $ leads
+to $\displaystyle \frac{\partial^2 }{\partial b^2} $. Although in the
+discussion below, for simplicity, we only illustrate the numerical
+differentiation on the first derivative, keep in mind that it is the
+second derivative that is more relevant in the calculation of
+$\displaystyle \frac{\partial^4}{\partial a_x \partial b_x \partial
+  a_y \partial b_y} p(\tilde{x},\tilde{y},\tilde{t}) $.
+
+The coefficient, $\mbox{F}_{reg}(b) $, of the regular part of
+truncation error is a smooth function of $b$ with derivative $= O(1)$.
+The coefficient, $\mbox{F}_{round}(b) $, in the effect of round-off
+errors, behaves virtually like a random variable, discontinuous in
+$b$.  For the irregular part of truncation error, the coefficient
+$\mbox{F}_{irreg}(b) $ can be thought of in general as continuous in
+$b$ but not smooth in $b$ where the derivative has
+discontinuities. Linear interpolation applied to accommodate starting
+position or ending position not falling on a grid point, for example,
+introduces this kind of irregular truncation error. Based on the
+expression we wrote out above for the finite difference solution,
+applying the numerical differentiation with step $\varepsilon$ yields:
+\begin{multline}
+   \frac{p^{(k)}(\left. \tilde{x},\tilde{y},\tilde{t} \right| b+\varepsilon)-p^{(k)}(\left. \tilde{x},\tilde{y},\tilde{t} \right| b -\varepsilon)}{2 \varepsilon} = \nonumber \\
+   \frac{\partial }{\partial b} p(\left. \tilde{x},\tilde{y},\tilde{t} \right| b) + O(\varepsilon^2)
+      + \left(\frac{1}{k}\right)^{\alpha} \frac{\mbox{F}_{reg}(b+\varepsilon)-\mbox{F}_{reg}(b-\varepsilon)}{2 \varepsilon}  \nonumber \\
+      + \left(\frac{1}{k}\right)^{\beta} \frac{\mbox{F}_{irreg}(b+\varepsilon)-\mbox{F}_{irreg}(b-\varepsilon)}{2 \varepsilon} \\
+      + \varepsilon_{mach} \frac{\mbox{F}_{round}(b+\varepsilon)-\mbox{F}_{round}(b-\varepsilon)}{2 \varepsilon}.  \nonumber
+\end{multline}
+In the equation above, as the step in the numerical differentiation is
+refined, the first line of the RHS is well behaved, converging to the
+true value $\frac{\partial }{\partial b} p( \tilde{x},\tilde{y},\tilde{t} \mid b)$
+as $\varepsilon \rightarrow 0$.  The second line of RHS, however, is
+problematic. As $\varepsilon \rightarrow 0$, the contribution from
+round-off error blows up to infinity
+\[
+  \varepsilon_{mach}
+  \frac{\mbox{F}_{round}(b+\varepsilon)-\mbox{F}_{round}(b-\varepsilon)}{2
+    \varepsilon} = O\left(\frac{\varepsilon_{mach}}{\varepsilon}
+  \right) \longrightarrow \infty \;\;\;\; \mbox{as } \varepsilon
+  \rightarrow 0
+\]
+For a fourth-order derivative, the error contribution of finite
+machine precision becomes $O(\varepsilon_{mach}/\varepsilon^4)$ and a
+step size as big as $\varepsilon \sim 10^{-4}$ produces errors
+$O(1)$. This is catastrophic in instances where true values of the
+fourth order derivative (the joint density) are smaller than 1.
+
+\subsubsection{Boundary derivatives with finite difference and irregular truncation errors} \nonumber
+The contribution from the irregular part of truncation error can also
+be problematic if the finite difference approximation of the
+derivative of $F_{irreg}(b)$ is $O(k^\beta/\varepsilon)$; this is the
+case for the finite difference method because of the linear
+interpolation necessary for function arguments not on grid
+points. Referring to the notation in (\ref{eq:trunc-error}), and
+setting $k := 1/h$, the interpolation error introduced by a finite
+difference scheme at position $b$ for the boundary parameters using
+step $h$ has the general form of
+$$\mbox{Interpolation error } = O(h^2) (1-\mbox{rem}(b/h,1)) \mbox{rem}(b/h,1)$$ 
+The coefficient part
+$\mbox{F}_{irreg}(b) = (1-\mbox{rem}(b/h,1)) \mbox{rem}(b/h,1) $ is
+continuous in $b$ but not differentiable. Its first derivative has the
+behavior of
+$$ \frac{\partial }{\partial b} \mbox{F}_{irreg}(b) =  \frac{1}{h} \left(1-2\mbox{rem}(b/h,1) \right).$$ The contribution from the irregular part of truncation error is 
+$$ h^2 \frac{\mbox{F}_{irreg}(b+\varepsilon)-\mbox{F}_{irreg}(b-\varepsilon)}{2 \varepsilon}  = 
+O\left(\frac{h^2}{\max(\varepsilon, h)} \right) $$ 
+In the second order numerical differentiation, however, the contribution from 
+the irregular part of truncation error behaves like 
+$$ h^2 \frac{\mbox{F}_{irreg}(b+\varepsilon)-2\mbox{F}_{irreg}(b)
+  +\mbox{F}_{irreg}(b-\varepsilon)}{\varepsilon^2 } =
+O\left(\frac{h^2}{\max(\varepsilon^2, h^2)} \right) $$ The interplay
+between $h$ and $\varepsilon$ limits the size $\varepsilon$ we can use
+to perform density calculations for a fixed step size $h$.
+
+In terms of density calculations, the eigenfunction expansion does not
+suffer from having irregular truncation errors, because the system
+matrix $A$ (see \eqref{eq:system}) is analytic in the diffusion
+parameters and the eigenpairs $(\lambda_\nu, c_\nu)$ inherit this
+property (see Theorems 7 and 8 of Chapter 9 in
+\cite{lax2007linear-algebra}). As mentioned previously, because a good
+working approximation of $p(\tilde{x},\tilde{y},\tilde{t})$ requires
+many terms in the expansion, and because each resultant system matrix
+is dense, repeated computation of the eigenproblem for the density
+calculation becomes unfeasible.
+
+As a consequence of round-off errors and possible irregular truncation
+errors, we observe that there is a fundamental restriction on the size
+of finite difference steps $\varepsilon$ we can use in the numerical
+methods below.
 
 \section{A Novel Semidiscrete Galerkin
   Method} \label{sec:semidiscrete-galerkin} We propose a semidiscrete
@@ -607,15 +659,15 @@ Galerkin (continuous in time, discrete in space) solution to the
 general diffusion problem (\ref{eq:qq}). The method relies on an
 analytic approximation for the solution
 $p(\tilde{x},\tilde{y},\tilde{t})$ for small time $\tilde{t}$ and a
-basic convergence estimate from approximation theory for semidiscrete
-Galerkin-type solutions to parabolic problems.
+basic convergence estimate from approximation theory for to parabolic
+problems.
 
-Our numerical method produces a functional representation for the
-approximate solution which $1)$ imposes a computational burden
+Our numerical method produces a functional representation of the
+approximate solution which $(1)$ imposes a computational burden
 comparable to or better than that of the finite difference method and
-$2)$ is infinitely differentiable with respect to the boundary
+$(2)$ is infinitely differentiable with respect to the boundary
 parameters, allowing us to perform the crucial numerical
-differentiation with respect to these parameters.
+differentiation needed to obtain the density of interest.
 
 As described in Section \ref{sec:eigenfunction}, the solution to the
 model problem \eqref{eq:qqq} - \eqref{eq:qqq-2} has the eigenfunction
@@ -673,17 +725,16 @@ $L_2(\tilde{\Omega})$. The orthogonality conditions
 where $M$ is the mass matrix, $S$ is the stiffness matrix, and each
 component of $\mathbf{p}(0)$ is the vector projection of
 $p(\tilde{x},\tilde{y},0)$ onto the corresponding vector set in
-$S_k$. Matrix $M$, matrix $S$, and vector $\bf{p}(0)$ are expressed in
-elements as:
+$S_k$. Matrix $M$, matrix $S$, and vector $\bf{p}(0)$ are constructed as:
 \begin{align*}
   [M]_{ij} &= \displaystyle \int_{\tilde{\Omega}} \psi_i \psi_j d\tilde{x}\,d\tilde{y}, \\
   [S]_{ij} &= -\frac{1}{2} \displaystyle \int_{\tilde{\Omega}} \left( \frac{\partial}{\partial \tilde{x}} \psi_i(\tilde{x},\tilde{y}) \right) \left( \frac{\partial}{\partial \tilde{x}} \psi_j(\tilde{x},\tilde{y}) \right) d\tilde{x}\,d\tilde{y} \\
            &\quad -\rho\sigma_{\tilde{y}} \displaystyle \int_{\tilde{\Omega}} \left( \frac{\partial}{\partial \tilde{x}} \psi_i(\tilde{x},\tilde{y}) \right) \left( \frac{\partial}{\partial \tilde{y}} \psi_j(\tilde{x},\tilde{y}) \right) d\tilde{x}\,d\tilde{y} \\
-           &\quad -\frac{1}{2}\sigma_{\tilde{y}}^2 \displaystyle \int_{\tilde{\Omega}} \left( \frac{\partial}{\partial \tilde{y}} \psi_i(\tilde{x},\tilde{y}) \right) \left( \frac{\partial}{\partial \tilde{y}} \psi_j(\tilde{x},\tilde{y}) \right) d\tilde{x}\,d\tilde{y} \\
+           &\quad -\frac{1}{2}\sigma_{\tilde{y}}^2 \displaystyle \int_{\tilde{\Omega}} \left( \frac{\partial}{\partial \tilde{y}} \psi_i(\tilde{x},\tilde{y}) \right) \left( \frac{\partial}{\partial \tilde{y}} \psi_j(\tilde{x},\tilde{y}) \right) d\tilde{x}\,d\tilde{y}, \\
   [\mathbf{p}(0)]_i &= \displaystyle \int_{\tilde{\Omega}} p(\tilde{x},\tilde{y},0) \psi_i(\tilde{x},\tilde{y}) d\tilde{x}\,d\tilde{y}.
 \end{align*}
 The entries of $S_{ij}$ are computed with integration by parts to
-enforce the boundary conditions. The semidiscrete Galerkin approximation
+enforce the boundary conditions. Then, the semidiscrete Galerkin approximation
 becomes
 \[
   p^{(k)}(\tilde{x},\tilde{y},\tilde{t}) = \boldsymbol{\psi}(\tilde{x},\tilde{y})^T \exp\left( M^{-1}S\, \tilde{t} \right) \mathbf{c}(0),
@@ -708,29 +759,40 @@ to the Gelerkin approximation $p^{(k)}(\tilde{x},\tilde{y},\tilde{t})$
 as long as the derivatives of the vectors
 $\boldsymbol{\psi}(\tilde{x},\tilde{y})^T$ and $\mathbf{c}(0)$
 exist. This is ensured as long as each $\psi_i(\tilde{x},\tilde{y})$
-is differentiable with respect to the boundary parameters.
+is differentiable with respect to the boundary parameters, and
+therefore the approximation of $f(x,y,a_x,b_x,a_y,b_y)$ based on
+$p^{(k)}$ exists.
 % Theorems 7 and 8 in
 % Chapter 9 of \cite{lax2007linear-algebra} apply, and both the
 % eigenvalues and eigenvectors of the sysmtem matrix are differentiable
 % with respect to the diffusion parameters.
 
 
-\subsection{Small-time Solution} \label{sec:pde-small-t} Before
-solving the Galerkin equations
-(\ref{eq:orthogonality-conditions-mat-1}) -
-(\ref{eq:orthogonality-conditions-mat-2}), we develop a small-time
-analytic solution to the problem. The small-time solution is derived
-by enforcing only one boundary condition, at the boundary that has the
-largest influence on the solution. We start with the fundamental
-solution $G_\rho(\tilde{x},\tilde{y},\tilde{t} | \tilde{x}_0, \tilde{y}_0)$ for the unbounded problem
-in (\ref{eq:qqq}), which is the bivariate Gaussian density with mean
-and covariance determined by the initial condition and the diffusion
-parameters \cite{stakgold2011green}. We can then find a small enough
-$\tilde{t}_\epsilon$ such that
-$G_\rho\left(\tilde{x},\tilde{y}, \tilde{t}_\epsilon \left| \tilde{x}_0,
-    \tilde{y}_0 \right.\right)$ is numerically zero on the boundaries
-of $\tilde{\Omega}$. We select the largest among all time instances
-satisfying this condition. This is done in the following way.
+\subsection{Small-time Solution} \label{sec:pde-small-t}
+
+The initial condition for our problem requires that the basis family
+used for the Galerkin method resolve very high-frequency terms
+necessary to approximate a $\delta-$like function. In order to avoid this
+and thereby reduce the computational load for our method, we develop
+an analytic, small-time solution to the problem. In addition to
+attenuating high-frequency terms by analytically evolving the process
+forward in time for a short period, we also reduce the overall error
+of our method, as will be demonstrated in Section
+\ref{sec:error-bound}.
+
+The small-time solution is derived by enforcing only one boundary
+condition, at the boundary that has the largest influence on the
+solution. We start with the fundamental solution
+$G_\rho(\tilde{x},\tilde{y},\tilde{t} | \tilde{x}_0, \tilde{y}_0)$ for
+the unbounded problem in (\ref{eq:qqq}), which is the bivariate
+Gaussian density with mean and covariance determined by the initial
+condition and the diffusion parameters \cite{stakgold2011green}. We
+can then find a small enough $\tilde{t}_\epsilon$ such that
+$G_\rho\left(\tilde{x},\tilde{y}, \tilde{t}_\epsilon \left|
+    \tilde{x}_0, \tilde{y}_0 \right.\right)$ is numerically zero on
+the rest of the boundaries of $\tilde{\Omega}$. We select the largest
+among all time instances satisfying this condition. This is done in
+the following way.
 \begin{enumerate}
 \item Scale and rotate the coordinate axes by the transformation
   $T_{(3)}$
@@ -799,15 +861,15 @@ satisfying this condition. This is done in the following way.
   boundary. Further,
   $G(\xi,\eta,\tilde{t}_\epsilon | \xi_0', \eta_0')$ takes on values
   less than $10^{-15}$ on all other boundaries, because it is outside
-  of $\Omega^{(3)}$. For this same reason, the system of images
+  of $\Omega^{(3)}$. For this same reason, the system of images numerically
   satisfies the initial condition for the problem.
 
   The \textit{small-time} solution $p_\epsilon$ is the difference of the two images 
   \[
     p_\epsilon(\xi,\eta,\tilde{t}) := G(\xi,\eta,\tilde{t} | \xi_0,
-    \eta_0) - G(\xi,\eta,\tilde{t} | \xi_0', \eta_0')
+    \eta_0) - G(\xi,\eta,\tilde{t} | \xi_0', \eta_0'),
   \]
-  satisfies all of the boundaries numerically and also satisfies the
+  satisfying all of the boundaries numerically and also satisfying the
   governing diffusion equation for
   $\tilde{t} \leq \tilde{t}_\epsilon$. Performing a change of
   variables $T_{(3)}^{-1}: (\xi,\eta) \to (\tilde{x}, \tilde{y})$
@@ -818,11 +880,10 @@ satisfying this condition. This is done in the following way.
     p_\epsilon(\tilde{x}, \tilde{y}, \tilde{t}) &= G_\rho(\tilde{x}, \tilde{y}, \tilde{t} | \tilde{x}_0, \tilde{y}_0) - G_\rho(\tilde{x}, \tilde{y}, \tilde{t} | \tilde{x}'_0, \tilde{y}'_0), \label{eq:p-epsilon}
   \end{align}
   where the function $G_\rho(\cdot)$ is the shifted fundamental solution
-  \begin{align}
-    G_\rho(\tilde{x}, \tilde{y}, \tilde{t} | \tilde{x}_0, \tilde{y}_0) &= \nonumber \\ 
-    \MoveEqLeft[8] \frac{1}{2\pi\,\, \tilde{t}\sigma_{\tilde{y}}\sqrt{1-\rho^2}} \exp\left( -\frac{\left[ \left(\tilde{x}-\tilde{x}_0\right)^2 \sigma_{\tilde{y}}^2 + \left(\tilde{y}-\tilde{y}_0\right)^2 - 2\rho(\tilde{x}-\tilde{x}_0)(\tilde{y}-\tilde{y}_0)\sigma_{\tilde{y}} \right]}{2\,\,\tilde{t}\, \sigma_{\tilde{y}}^2 (1-\rho^2)} \right) \label{eq:Gfundamental}
-    % \left[ \left(\tilde{x}-\tilde{x}_0\right)^2 \sigma_{\tilde{y}}^2 + \left(\tilde{y}-\tilde{y}_0\right)^2 - 2\rho(\tilde{x}-\tilde{x}_0)(\tilde{y}-\tilde{y}_0)\sigma_{\tilde{y}} \right]
-    \end{align}
+  \begin{multline}
+    G_\rho(\tilde{x}, \tilde{y}, \tilde{t} | \tilde{x}_0, \tilde{y}_0) = \nonumber \\ 
+    \frac{1}{2\pi\,\, \tilde{t}\sigma_{\tilde{y}}\sqrt{1-\rho^2}} \exp\left( -\frac{\left[ \left(\tilde{x}-\tilde{x}_0\right)^2 \sigma_{\tilde{y}}^2 + \left(\tilde{y}-\tilde{y}_0\right)^2 - 2\rho(\tilde{x}-\tilde{x}_0)(\tilde{y}-\tilde{y}_0)\sigma_{\tilde{y}} \right]}{2\,\,\tilde{t}\, \sigma_{\tilde{y}}^2 (1-\rho^2)} \right) \label{eq:Gfundamental}
+    \end{multline}
     as illustrated in the right panel of Figure
     (\ref{fig:step-1-small-time}).
 \end{enumerate}
@@ -1033,11 +1094,11 @@ as well as the norm
 for the eigenpairs $(\lambda_j, \phi_j)$ of the operator
 $\mathcal{L}$. The $\| \cdot \|_2$ norm used in \cite{bramble1977some}
 captures the variation in a given function: for any set of eigenpairs
-$\left\{(\lambda_j, \phi_j)\right\}$ over domain $\tilde{\Omega}$,
-increasing absolute value of $\lambda_j$ with $j$ corresponds to
-$\phi_j$ with increasing number of oscillations over
-$\tilde{\Omega}$. The $\|\cdot\|_2$ norm is distict from the usual $L-2$ norm 
-$L_2(\tilde{\Omega})$, which we denote as
+$\left\{(\lambda_j, \phi_j)\right\}$ over the domain $\tilde{\Omega}$,
+increasing the absolute value of $\lambda_j$ with $j$ corresponds to a
+function $\phi_j$ with increasing number of oscillations over
+$\tilde{\Omega}$. The $\|\cdot\|_2$ norm is distict from the usual
+$L_2(\tilde{\Omega})$ norm , which we denote as
 $\|\cdot \|_{L_2(\tilde{\Omega})}$. As referred to in
 \cite{bramble1977some}, functions $w \in L_2(\tilde{\Omega})$ with
 $\|w\|_2 < \infty$ are also in $W_2^2(\tilde{\Omega})$. Finally, if we
@@ -1086,43 +1147,62 @@ solution and its Galerkin approximation under $L_2(\tilde{\Omega})$.
 
 
 \section{Estimation}
-Consider the problem of estimating the parameters
-$(\mu_x, \mu_y, \sigma_x, \sigma_y, \rho)$ from an i.i.d. set of
-samples $(Z_1, \ldots, Z_n)$ from random variable $Z(t)$, defined
-below, at a given value of $t$ in the process in
-(1)-(2). Specifically, $Z(t)$ is formed as
-$$ Z(t) =( X(t), Y(t), m_x(t), M_x(t), m_y(t), M_y(t)) $$
-where 
-$$m_x(t)= \min_{0 \le t' \le t} X(t), \;\; 
-M_x(t)= \max_{0 \le t' \le t} X(t), \;\; m_y(t)= \min_{0 \le t' \le t}
-Y(t), \;\; M_y(t)= \max_{0 \le t' \le t} Y(t). $$ We say that $Z_i$ is
-sampled from the distribution corresponding to the probability density
-function (\ref{eq:pdf})
-\[
-  Z_i \sim F(\theta),
-\]
-where the cumulative distribution function $F$ has the usual interpretation
-\begin{align*}
-  F(z = (x, y, a_x, b_x, a_y, b_y) | \theta) &= \Pr\left(X(t) \leq x,
-    Y(t) \leq y, m_x \leq a_x, M_x \leq b_x, m_y \leq a_y, M_y \leq b_y\right).
-\end{align*}
-
-This estimation problem is of particular importance in quantitative
-finance where the model equations (\ref{eq:X}) - (\ref{eq:Y}) (with
-various bells and whistles attached) are widely used. However, to the
-best of our knowledge, all current \textit{likelihood} methods in the
-literature either ignore the observed maximum/minimum information or
-use only some of it. Likelihood-free approaches, like that of
+The estimation of asset price and volatility is an important problem
+in finance. It is common to assume that asset prices follow correlated
+geometric Brownian motions.  In that setting, estimates of volatility
+and correlation are usually based on daily log-returns, which depend
+only on the opening and closing prices.  However, typically more
+information is available.  For example, maximum and minimum trading
+prices over the days are readily available.  In univariate settings,
+it has been shown that incorporating this additional information can
+substantially improve estimates.  The pdf from \eqref{eq:pdf} provides
+the likelihood necessary for frequentist and Bayesian inference in
+bivariate settings.  Likelihood-free approaches, like that of
 \cite{rogers1991estimating}, on the other hand suffer from not being
 able to be easily integrated into inferential frameworks that require
-explicit estimates of probability.
+explicit estimates of probability, as well as being sub-optimal in the
+way they use the available information.
 
-Since we do not have a closed-form solution for the likelihood, we
-will use an iterative derivative-free numerical algorithm to maximize
-the likleihood which requires repeated evauluation of the likelihood
-(the Nelder-Mead method; see \cite{lagarias1998convergence} for review
-and convergence properties). For moderate to large samples sizes this
-is feasible, because our numerical method is specifically designed for
+To illustrate this, we consider maximum
+likelihood inference from an i.i.d. sample $Z_1, \ldots, Z_n$, where
+$Z_i = (X_i, Y_i, m_{x,i}, M_{x,i}, m_{y,i}, M_{y,i})$, where $X_i$
+and $Y_i$ corresponds to log returns of the two assets, $m_{x,i}$ and
+$m_{y,i}$ correspond to the minimum log-returns observed during the
+day, and $M_{x,i}$ and $M_{y,i}$ correspond to the maximum log
+returns.
+% Consider the problem of estimating the parameters
+% $(\mu_x, \mu_y, \sigma_x, \sigma_y, \rho)$ from an i.i.d. set of
+% samples $(Z_1, \ldots, Z_n)$ from random variable $Z(t)$, defined
+% below, at a given value of $t$ in the process in
+% (1)-(2). Specifically, $Z(t)$ is formed as
+% $$ Z(t) =( X(t), Y(t), m_x(t), M_x(t), m_y(t), M_y(t)) $$
+% where 
+% $$m_x(t)= \min_{0 \le t' \le t} X(t), \;\; 
+% M_x(t)= \max_{0 \le t' \le t} X(t), \;\; m_y(t)= \min_{0 \le t' \le t}
+% Y(t), \;\; M_y(t)= \max_{0 \le t' \le t} Y(t). $$ We say that $Z_i$ is
+% sampled from the distribution corresponding to the probability density
+% function (\ref{eq:pdf})
+% \[
+%   Z_i \sim F(\theta),
+% \]
+% where the cumulative distribution function $F$ has the usual interpretation
+% \begin{align*}
+%   F(z = (x, y, a_x, b_x, a_y, b_y) | \theta) &= \Pr\left(X(t) \leq x,
+%     Y(t) \leq y, m_x \leq a_x, M_x \leq b_x, m_y \leq a_y, M_y \leq b_y\right).
+% \end{align*}
+% This estimation problem is of particular importance in quantitative
+% finance where the model equations (\ref{eq:X}) - (\ref{eq:Y}) (with
+% various bells and whistles attached) are widely used. However, to the
+% best of our knowledge, all current \textit{likelihood} methods in the
+% literature either ignore the observed maximum/minimum information or
+% use only some of it. 
+Since we do not have a closed-form solution for the likelihood
+\eqref{eq:pdf}, we will use an iterative derivative-free numerical
+algorithm to maximize the likleihood which requires repeated
+evauluation of the likelihood (the Nelder-Mead method; see
+\cite{lagarias1998convergence} for review and convergence
+properties). This is feasible even for moderate to large sample sizes,
+because our numerical method is specifically designed for
 computational efficiency for repeatedly evaluating the density
 function (\ref{eq:pdf}). The maximum likelihood estimator (MLE) for
 the true parameters based on $n$ samples, which we call
@@ -1143,62 +1223,13 @@ In this section we prove that the MLE based on the Galerkin
 approximation $p^{(k)}(\tilde{x},\tilde{y},\tilde{t})$ is
 consistent. To do so, we first show that the distribution on $Z$ based
 on the approximate $p^{(k)}(\tilde{x},\tilde{y},\tilde{t})$ converges
-to the true distribution $F(\cdot | \theta)$. Define the probability
-densities
+to the true distribution $F(\cdot | \theta)$. Define the approximate probability
+density
 \begin{align}
-  f(z) &= f(x,y,a_x,b_x,a_y,b_y) := \nonumber \\ 
-\MoveEqLeft[5] \Pr\left(X(t) \in dx, Y(t) \in dy,
-  m_x \in da_x, M_x \in db_x, m_y \in da_y, M_y \in
-  db_y \left| \theta \right.\right), \label{eq:stong-density} \\
-  f^{(k)}(z) &= \nonumber \\ \MoveEqLeft[5]
   f^{(k)}(x,y,a_x,b_x,a_y,b_y) := \frac{\partial^4}{\partial
   a_x \partial b_x \partial a_y \partial b_y}
-  q^{(k)}(\tilde{x},\tilde{y},\tilde{t} | a_x, b_x, a_y,
-  b_y), \label{eq:galerkin-density}
+  q^{(k)}(\tilde{x},\tilde{y},\tilde{t}). \label{eq:galerkin-density}
 \end{align}
-where we use the shorhand $X(t) \in dx$ for $X(t) \in (x, x+dx)$. The
-function $f(z)$ is the probability density function corresponding to
-$q(\tilde{x},\tilde{y},\tilde{t})$, the strong solution to the
-governing Fokker-Planck equation; $f^{(k)}(z)$ corresponds to the
-approximate solution $q^{(k)}$ of the unnormalized equation obtained
-from the Galerkin approximation $p^{(k)}$ of the normalized
-equation. Before proceeding, we should note that both $f(z)$ and
-$f^{(k)}(z)$ exist. So see the case for $f(z)$, consider the relation
-\begin{align*}
-  &f(x,y,a_x,b_x,a_y,b_y) = \\
-  &\Pr\left(X(t) \in dx, Y(t) \in dy, m_x \in da_x, M_x \in db_x, m_y
-    \in a_y, M_y \in db_y \left| \theta \right.\right) = \mathbb{P}_{W}\left( A(z) \right), \\
-   & A(z) = \left\{ \omega \in W \left| X_\omega(t) = x,
-     Y_\omega(t)=y, \inf_{t'\in [0,1]} X_\omega(t') = a_x, \right.  \right. \\
-   &\qquad \qquad \qquad \left. \sup_{t'\in [0,1]} X_\omega(t') = b_x, \inf_{t'\in [0,1]}
-         Y_\omega(t') = a_y, \sup_{t'\in [0,1]} Y_\omega(t') = b_y
-       \right\},
-\end{align*}
-where $\mathbb{P}_{W}$ is the Wiener measure on the sample space $W$
-of all realizations (paths) $(X_\omega(t), Y_\omega(t))$ from the
-stochastic process (\ref{eq:X}) - (\ref{eq:Y}) defined in the usal way
-using Kolmogorov's extension of measure over cylinder sets on
-$t \to \mathbb{R}^2$ (see \cite{freidlin1985functional}, Section
-1.2). Sets of the form $A(x,y,a_x,b_x,a_y,b_y)$ can be defined as a
-countable intersection/union of cyliner sets on $t \to \mathbb{R}^2$,
-hence they are measurable under $\mathbb{P}_{W}$; therefore $f(z)$ exists and
-is bounded above by 1. Moreover, since $q(\tilde{x},\tilde{y},\tilde{t}|a_x,b_x,a_y,b_y)$ represents the
-integral of $f(z)$ with respect to the boundary variables, we have
-\[
-  f(x,y,a_x,b_x,a_y,b_y) = \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial
-         b_y} q(\tilde{x},\tilde{y},\tilde{t} | a_x, b_x, a_y, b_y).
-\]
-The existence of $f^{(k)}(z)$ as defined in
-(\ref{eq:galerkin-density}) is guaranteed by Theorem 4.1 in
-\cite{singler2008differentiability}. The result states that weak
-solutions to parabolic problems are differentiable with respect to
-parameters as long as the weak (Galerkin-form) operator
-$\left< \tilde{\mathcal{L}} \psi_i(\tilde{x},\tilde{y}), \psi_j(\tilde{x},\tilde{y}) \right>$ is
-differentiable with respect to the parameters. The condition certainly
-holds for the normalized problem (\ref{eq:qqq}) with our choice of
-basis functions $S_k$, as they are infinitely differentiable with
-repsect to $\tilde{x},\tilde{y}$, the boundaries, and the diffusion parameters. 
-
 At this point we will assume that for a sufficiently large $k$,
 $f^{(k)}(z)$ is positivie for all $z \in Z$ and is integrable over
 $Z$. As such, we may regard it as a proper probability density
