@@ -6,8 +6,8 @@ cd /soe/gdinolov/PDE-solvers
 
 bazel --output_user_root=/home/gdinolov-tmp build //src/brownian-motion:generate-OCHL-data-points-for-chapter-2
 
-rhos=(0.0 0.60 0.95)
-ns=(8 16)
+rhos=(0.95)
+ns=(128)
 number_data_sets_per_iteration=50
 
 for i in ${!rhos[@]}; 

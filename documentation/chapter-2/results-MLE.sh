@@ -5,21 +5,22 @@
 cd /soe/gdinolov/PDE-solvers
 
 echo $PWD
-rhos_basis=(0.70)
+rhos_basis=(0.80)
 sigmas_x_basis=(0.20)
 sigma_y_basis=0.20
+dx=300
+data_size=64
 
-# data_sets=($(ls ./src/kernel-expansion/documentation/chapter-2/data/mle-data-sets-rho-0.95-n-8))
-path_to_dir=/src/kernel-expansion/documentation/chapter-2/results/mle-results-rho-0.95-n-8/
+path_to_dir=/src/kernel-expansion/documentation/chapter-2/results/mle-results-rho-0.95-n-${data_size}/
 
 for rho_basis_current in ${rhos_basis[@]};
 do
     for sigma_x_basis in ${sigmas_x_basis[@]}; 
     do
-	echo $rho_basis_current $sigma_x_basis
-	results_files=($(ls .${path_to_dir}TEST-dx-analytic-deriv*rho_basis-${rho_basis_current}-sigma_x_basis-${sigma_x_basis}-sigma_y_basis-${sigma_y_basis}-mle*.csv))
+	echo $rho_basis_current $sigma_x_basis $data_size
+	results_files=($(ls .${path_to_dir}TEST-dx-${dx}-analytic-deriv*rho_basis-${rho_basis_current}-sigma_x_basis-${sigma_x_basis}-sigma_y_basis-${sigma_y_basis}-mle*.csv))
 	
-	output_name=${PWD}${path_to_dir}dx-analytic-deriv-rho_basis-${rho_basis_current}-sigma_x_basis-${sigma_x_basis}-sigma_y_basis-${sigma_y_basis}-mle-results-ALL.csv
+	output_name=${PWD}${path_to_dir}dx-${dx}-analytic-deriv-rho_basis-${rho_basis_current}-sigma_x_basis-${sigma_x_basis}-sigma_y_basis-${sigma_y_basis}-mle-results-ALL.csv
 
 	echo sigma_x,sigma_y,rho > ${output_name}
 
@@ -32,4 +33,4 @@ done
 
 Rscript ./src/kernel-expansion/documentation/chapter-2/results-rogers.R list_for_mle_tmp.txt
 
-Rscript ./src/kernel-expansion/documentation/chapter-2/plot-results.R /soe/gdinolov/PDE-solvers${path_to_dir}dx-analytic-deriv-rho_basis-0.70-sigma_x_basis-0.20-sigma_y_basis-0.20-mle-results-ALL.csv /soe/gdinolov/PDE-solvers${path_to_dir}rogers-results.csv /soe/gdinolov/PDE-solvers${path_to_dir}classic-results.csv /soe/gdinolov/PDE-solvers${path_to_dir}
+Rscript ./src/kernel-expansion/documentation/chapter-2/plot-results.R /soe/gdinolov/PDE-solvers${path_to_dir}dx-${dx}-analytic-deriv-rho_basis-${rhos_basis[0]}-sigma_x_basis-${sigmas_x_basis[0]}-sigma_y_basis-${sigma_y_basis}-mle-results-ALL.csv /soe/gdinolov/PDE-solvers${path_to_dir}rogers-results.csv /soe/gdinolov/PDE-solvers${path_to_dir}classic-results.csv /soe/gdinolov/PDE-solvers${path_to_dir}

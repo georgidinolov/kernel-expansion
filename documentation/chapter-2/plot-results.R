@@ -1,7 +1,7 @@
 args = commandArgs(trailingOnly = TRUE)
-library("data.table")
-library("ggplot2")
-library("gridExtra")
+library("data.table");
+library("ggplot2");
+library("gridExtra");
 
 mle.ochl = fread(args[1], header=TRUE)
 rogers = fread(args[2], header=TRUE)

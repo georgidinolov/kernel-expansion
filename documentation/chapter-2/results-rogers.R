@@ -7,10 +7,13 @@ load("/soe/gdinolov/PDE-solvers/src/kernel-expansion/documentation/chapter-2/rog
 
 files = fread(args[1], header=FALSE)
 
+data_size=64
+
 sigma_x = rep(NA, 50)
 sigma_y = rep(NA, 50)
 rho.rogers = rep(NA, 50)
 rho.classic = rep(NA, 50)
+
 
 for (file.index in seq(1,50)) {
     dat = fread(files[file.index, V1])
@@ -22,7 +25,7 @@ for (file.index in seq(1,50)) {
 }
 
 out = data.table(sigma_x=sigma_x, sigma_y=sigma_y, rho=rho.rogers)
-fwrite(x=out, file="/soe/gdinolov/PDE-solvers/src/kernel-expansion/documentation/chapter-2/results/mle-results-rho-0.95-n-8/rogers-results.csv")
+fwrite(x=out, file=paste0("/soe/gdinolov/PDE-solvers/src/kernel-expansion/documentation/chapter-2/results/mle-results-rho-0.95-n-", data_size, "/rogers-results.csv"))
 
 out = data.table(sigma_x=sigma_x, sigma_y=sigma_y, rho=rho.classic)
-fwrite(x=out, file="/soe/gdinolov/PDE-solvers/src/kernel-expansion/documentation/chapter-2/results/mle-results-rho-0.95-n-8/classic-results.csv")
+fwrite(x=out, file=paste0("/soe/gdinolov/PDE-solvers/src/kernel-expansion/documentation/chapter-2/results/mle-results-rho-0.95-n-", data_size, "/classic-results.csv"))
