@@ -1644,9 +1644,11 @@ compared to the repeated-sampling distribution of the MLE based on the
 usual bivariate normal likelihood which does not take into account the
 boundaries, as well as the best-in-class unbiased estimator that uses
 OCHL data (see \cite{rogers2008estimating}), which we term the Rogers
-estimator.  Results are shown in Figures (\ref{fig:mle-comparison-rho-0.95}) - (\ref{fig:mle-comparison-rho-0.0})
-where they clearly demonstrate the superior statistical power of our
-likelihood-based approach.
+estimator.  Results are shown in Figures
+(\ref{fig:mle-comparison-rho-0.95}) -
+(\ref{fig:mle-comparison-rho-0.0}) where they clearly demonstrate the
+superior statistical power of our likelihood-based approach from a
+least-mean-square error standpoint.
 
 In addition to exemplifying the consistency property with increasing
 sample size, these numerical simulations highlight a shortcoming of
@@ -1654,17 +1656,44 @@ the Galerkin method developed so far. For some parameter combinations
 away from those maximizing the likelihood, the finite difference
 approximation of the likelihood produces negative likelihood
 values. Given that these likelihood are in some sense small, and for
-the sake of completing the estimation, we replace them with a small,
-albeit arbitrary, constant: $1\cdot 10^{-16}$.
+the sake of completing the estimation procedure, we can replace
+inadmissible likelihood vlaues with a small, albeit arbitrary,
+constant: $1\cdot 10^{-16}$.  This very rough approximation may have a
+variety of effects on the estimation procedure, the most obvious of
+which being the diverting of the convergence path of the optimization
+procedure regardless of algorithm used. This is especially true in the
+early stages of the optimization scheme when the parameter space is
+being explored. This dynamic is shown in Figure
+(\ref{fig:neg-likes}). Therefore, it is quite possible for the
+procedure to converge to values far from the true optimal ones that
+would otherwise be produced in the case when the likelihood is fully
+resolved.
 
-This very rough approximation may have a variety of effects on the
-estimation procedure, the most obvious of which being the diverting of
-the convergence path of the optimization procedure regardless of
-algorithm used. This is especially true in the early stages of the
-optimization scheme when the parameter space is being
-explored. Therefore, if the initial parameters supplied are far away
-from the true MLEs, the procedure may not converge. For these reasons,
-we develop an analytic approximation that solves this problem.
+\begin{figure}
+  \centering
+  %%
+  %%
+  \begin{tabular}{ccc}
+    \begin{minipage}{0.3\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-2/estimates.pdf}
+    \end{minipage}
+    %% 
+    & \begin{minipage}{0.3\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-2/estimates.pdf}
+    \end{minipage}
+    & \begin{minipage}{0.3\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-2/estimates.pdf}
+    \end{minipage}
+  \end{tabular}
+  \caption{.}
+  \label{fig:neg-likes})
+\end{figure}
+
+For these reasons, we develop an analytic
+approximation that solves this problem.
 
 including the root-mean-square-errors of the two
 estimators.

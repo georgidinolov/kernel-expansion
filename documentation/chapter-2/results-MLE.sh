@@ -2,7 +2,7 @@
 ## for mencia
 ## THIS NEEDS TO BE RUN FROM /soe/gdinolov/PDE-solvers
 
-cd /soe/gdinolov/PDE-solvers
+cd ~/PDE-solvers
 
 echo $PWD
 rhos_basis=(0.80)

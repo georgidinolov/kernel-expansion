@@ -1,8 +1,8 @@
 args = commandArgs(trailingOnly = TRUE)
 library("data.table")
 
-source("/soe/gdinolov/PDE-solvers/src/kernel-expansion/documentation/chapter-2/rogers-estimator/rogers-estimator.R")
-load("/soe/gdinolov/PDE-solvers/src/kernel-expansion/documentation/chapter-2/rogers-estimator/phi-grid.Rdata")
+source("~/PDE-solvers/src/kernel-expansion/documentation/chapter-2/rogers-estimator/rogers-estimator.R")
+load("~/PDE-solvers/src/kernel-expansion/documentation/chapter-2/rogers-estimator/phi-grid.Rdata")
 
 
 files = fread(args[1], header=FALSE)
