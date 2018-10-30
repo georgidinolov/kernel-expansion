@@ -10,8 +10,8 @@ echo $PWD
 number_threads=32
 rhos_basis=(0.80)
 sigmas_basis=(0.20)
-dx=200
-data_sizes=(128)
+dx=250
+data_sizes=(128 64 32)
 
 
 for data_size in ${data_sizes[@]};

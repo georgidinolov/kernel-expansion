@@ -20,8 +20,10 @@ sigma.y.hist = ggplot(all.est, aes(y=..density.., x=sigma_y, fill=type)) + geom_
 
 all = grid.arrange(rho.hist, sigma.x.hist, sigma.y.hist, nrow=1)
 
-
-ggsave(filename=paste0(save.path, "estimates.pdf"), plot=all, width = 20, height=6, units = "in")
+ggsave(filename=paste0(save.path, "estimates-rho.pdf"), plot=rho.hist, width=6, height=6, units="in")
+ggsave(filename=paste0(save.path, "estimates-sigma-x.pdf"), plot=sigma.x.hist, width=6, height=6, units="in")
+ggsave(filename=paste0(save.path, "estimates-sigma-y.pdf"), plot=sigma.y.hist, width=6, height=6, units="in")
+ggsave(filename=paste0(save.path, "estimates-all.pdf"), plot=all, width = 20, height=6, units = "in")
 
 
 

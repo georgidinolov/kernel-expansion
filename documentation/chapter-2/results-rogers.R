@@ -7,7 +7,7 @@ load("/soe/gdinolov/PDE-solvers/src/kernel-expansion/documentation/chapter-2/rog
 
 files = fread(args[1], header=FALSE)
 
-data_size=64
+data_size=args[2]
 
 sigma_x = rep(NA, 50)
 sigma_y = rep(NA, 50)
