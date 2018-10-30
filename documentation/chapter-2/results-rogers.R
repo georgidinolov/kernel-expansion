@@ -1,21 +1,21 @@
 args = commandArgs(trailingOnly = TRUE)
-library("data.table")
 
+library("data.table")
 source("/soe/gdinolov/PDE-solvers/src/kernel-expansion/documentation/chapter-2/rogers-estimator/rogers-estimator.R")
 load("/soe/gdinolov/PDE-solvers/src/kernel-expansion/documentation/chapter-2/rogers-estimator/phi-grid.Rdata")
 
 
 files = fread(args[1], header=FALSE)
+data_size = as.double(args[2])
+nn = nrow(files)
 
-data_size=args[2]
-
-sigma_x = rep(NA, 50)
-sigma_y = rep(NA, 50)
-rho.rogers = rep(NA, 50)
-rho.classic = rep(NA, 50)
+sigma_x = rep(NA, nn)
+sigma_y = rep(NA, nn)
+rho.rogers = rep(NA, nn)
+rho.classic = rep(NA, nn)
 
 
-for (file.index in seq(1,50)) {
+for (file.index in seq(1,nn)) {
     dat = fread(files[file.index, V1])
     sigma_x[file.index] = dat[, mean( (x_T - mean(x_T))^2 )]
     sigma_y[file.index] = dat[, mean( (y_T - mean(y_T))^2 )]
