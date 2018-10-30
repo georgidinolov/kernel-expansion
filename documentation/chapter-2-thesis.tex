@@ -1158,10 +1158,11 @@ it has been shown that incorporating this additional information can
 substantially improve estimates.  The pdf from \eqref{eq:pdf} provides
 the likelihood necessary for frequentist and Bayesian inference in
 bivariate settings.  Likelihood-free approaches, like that of
-\cite{rogers1991estimating}, on the other hand suffer from not being
-able to be easily integrated into inferential frameworks that require
-explicit estimates of probability, as well as being sub-optimal in the
-way they use the available information.
+\cite{rogers1991estimating}, \cite{rogers2008estimating}, on the other
+hand suffer from not being able to be easily integrated into
+inferential frameworks that require explicit estimates of probability,
+as well as being sub-optimal as will be seen in the Simulation section
+below.
 
 To illustrate this, we consider maximum
 likelihood inference from an i.i.d. sample $Z_1, \ldots, Z_n$, where
@@ -1620,31 +1621,53 @@ approximation
 \subsection{Simulation Study}
 Next we present some numerical simulation results for the Galerkin
 method. The finite-difference step used to derive the likelihood
-function is of size $\Delta = 1/16$ with the $\mathcal{O}(\Delta^2)$
-order accuracy. If the inital/final condition is forced outside of the
-computation domain, the $\mathcal{O}(\Delta)$ finite difference
-approximation is used instead. The inner products that need to be
-computed to establish the system of equations for the method are
-computed using the trapezoidal rule on a regular $400 \times 400$
-grid.
+function is of size $\Delta = 1/64$ with $O(\Delta^2)$ order
+accuracy. The inner products that are needed to establish the system
+of equations for the method are computed using Simpson's rule on a
+regular $250 \times 250$ grid.
 
-Data is generated from the model with zero drift via forward
-Euler discretization where the obtained discrete-time extrema are
-recorded and used as the realized extrema of the process. We use 500
-data sets, each comprised of 128 simulations generated with the same
-parameters
+Data is generated from the model with zero drift via forward Euler
+discretization where the obtained discrete-time extrema are recorded
+and used as the realized extrema of the process. We use 50 data sets,
+each comprised of $n = 32, 64,$ and $128$ simulations generated with
+the same parameters
 \[
-  \mu_x = 0,\quad \mu_y  = 0,\quad \sigma_x = 1,\quad \sigma_y = 1,\quad \rho = 0.6.
+  \mu_x = 0,\quad \mu_y  = 0,\quad \sigma_x = 1,\quad \sigma_y = 1,\quad \rho = (0, 0.6, 0.95)
 \]
 The drift parameters are assumed known, so that the MLE is comprised
 of the diffusion and correlation parameters:
-$\hat{\theta} = (\hat{\sigma}_x, \hat{\sigma}_y, \hat{\rho}).$ For
-each dataset, the MLE found is a sample from the repeated-sampling
-distrubtion for $\hat{\theta}$. Results are compared to the
-repeated-sampling distribution of the MLE based on the usual bivariate
-normal likelihood which does not take into account the
-boundaries. Results are shown in Figure (\ref{fig:mle-comparison}),
-including the root-mean-square-errors of the two estimators.
+$\hat{\theta} = (\hat{\sigma}_x, \hat{\sigma}_y, \hat{\rho}).$ The
+sampling distributions of the MLEs are approximated by computing the
+MLE for each of the 50 datasets then constructing the resultant kernel
+density estimate of the repeated-sampling distribution. Results are
+compared to the repeated-sampling distribution of the MLE based on the
+usual bivariate normal likelihood which does not take into account the
+boundaries, as well as the best-in-class unbiased estimator that uses
+OCHL data (see \cite{rogers2008estimating}), which we term the Rogers
+estimator.  Results are shown in Figures (\ref{fig:mle-comparison-rho-0.95}) - (\ref{fig:mle-comparison-rho-0.0})
+where they clearly demonstrate the superior statistical power of our
+likelihood-based approach.
+
+In addition to exemplifying the consistency property with increasing
+sample size, these numerical simulations highlight a shortcoming of
+the Galerkin method developed so far. For some parameter combinations
+away from those maximizing the likelihood, the finite difference
+approximation of the likelihood produces negative likelihood
+values. Given that these likelihood are in some sense small, and for
+the sake of completing the estimation, we replace them with a small,
+albeit arbitrary, constant: $1\cdot 10^{-16}$.
+
+This very rough approximation may have a variety of effects on the
+estimation procedure, the most obvious of which being the diverting of
+the convergence path of the optimization procedure regardless of
+algorithm used. This is especially true in the early stages of the
+optimization scheme when the parameter space is being
+explored. Therefore, if the initial parameters supplied are far away
+from the true MLEs, the procedure may not converge. For these reasons,
+we develop an analytic approximation that solves this problem.
+
+including the root-mean-square-errors of the two
+estimators.
 
 \begin{figure}
   \centering
@@ -1653,24 +1676,114 @@ including the root-mean-square-errors of the two estimators.
   \begin{tabular}{ccc}
     \begin{minipage}{0.3\textwidth}
       \centering
-      %\includegraphics[width=1\linewidth]{../kernel-expansion/documentation/mle-comparison-sigma-x.pdf}
+      \includegraphics[width=1\linewidth]{../chapter-2/estimates.pdf}
     \end{minipage}
     %% 
     & \begin{minipage}{0.3\textwidth}
       \centering
-      %\includegraphics[width=1\linewidth]{../kernel-expansion/documentation/mle-comparison-sigma-y.pdf}
+      \includegraphics[width=1\linewidth]{../chapter-2/estimates.pdf}
     \end{minipage}
     & \begin{minipage}{0.3\textwidth}
       \centering
-      %\includegraphics[width=1\linewidth]{../kernel-expansion/documentation/mle-comparison-rho.pdf}
+      \includegraphics[width=1\linewidth]{../chapter-2/estimates.pdf}
+    \end{minipage} \\
+    \begin{minipage}{0.3\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-2/estimates.pdf}
+    \end{minipage}
+    %% 
+    & \begin{minipage}{0.3\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-2/estimates.pdf}
+    \end{minipage}
+    & \begin{minipage}{0.3\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-2/estimates.pdf}
+    \end{minipage} \\
+    \begin{minipage}{0.3\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-2/estimates.pdf}
+    \end{minipage}
+    %% 
+    & \begin{minipage}{0.3\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-2/estimates.pdf}
+    \end{minipage}
+    & \begin{minipage}{0.3\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-2/estimates.pdf}
     \end{minipage}
   \end{tabular}
-  \caption{Kernel-density plots of the MLE samples obtained from the
-    Galerkin likelihood (blue) and the classical likelihood
-    (green). The data-generating parameters are denoted with the
+  \caption{Data generated with $\rho=0.95$. Kernel-density
+    approximations of the repeated-sampling densities of the MLEs
+    samples obtained from the Galerkin likelihood (blue) and the
+    classical likelihood (green) and the Rogers estimator
+    (purple). The data-generating parameters are denoted with the
     vertical solid line. The root-mean-square errors for the pairs of
     estimators are included. As expected, the Galerkin-based
     likelihood outperforms the Gaussian likelihood for each
     parameter.}
-  \label{fig:mle-comparison}
+  \label{fig:mle-comparison-rho-0.95}
+\end{figure}
+
+\begin{figure}
+  \centering
+  %%
+  %%
+  \begin{tabular}{ccc}
+    \begin{minipage}{0.3\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-2/estimates.pdf}
+    \end{minipage}
+    %% 
+    & \begin{minipage}{0.3\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-2/estimates.pdf}
+    \end{minipage}
+    & \begin{minipage}{0.3\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-2/estimates.pdf}
+    \end{minipage}
+  \end{tabular}
+  \caption{Data generated with $\rho=0.95$. Kernel-density
+    approximations of the repeated-sampling densities of the MLEs
+    samples obtained from the Galerkin likelihood (blue) and the
+    classical likelihood (green) and the Rogers estimator
+    (purple). The data-generating parameters are denoted with the
+    vertical solid line. The root-mean-square errors for the pairs of
+    estimators are included. As expected, the Galerkin-based
+    likelihood outperforms the Gaussian likelihood for each
+    parameter.}
+  \label{fig:mle-comparison-rho-0.60}
+\end{figure}
+
+\begin{figure}
+  \centering
+  %%
+  %%
+  \begin{tabular}{ccc}
+    \begin{minipage}{0.3\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-2/estimates.pdf}
+    \end{minipage}
+    %% 
+    & \begin{minipage}{0.3\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-2/estimates.pdf}
+    \end{minipage}
+    & \begin{minipage}{0.3\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-2/estimates.pdf}
+    \end{minipage}
+  \end{tabular}
+  \caption{Data generated with $\rho=0.95$. Kernel-density
+    approximations of the repeated-sampling densities of the MLEs
+    samples obtained from the Galerkin likelihood (blue) and the
+    classical likelihood (green) and the Rogers estimator
+    (purple). The data-generating parameters are denoted with the
+    vertical solid line. The root-mean-square errors for the pairs of
+    estimators are included. As expected, the Galerkin-based
+    likelihood outperforms the Gaussian likelihood for each
+    parameter.}
+  \label{fig:mle-comparison-rho-0.0}
 \end{figure}
