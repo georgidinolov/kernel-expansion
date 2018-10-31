@@ -16,7 +16,7 @@ for i in ${!data_sets[@]};
 do
     if [ $i -eq 0 ]; then
 	echo ${PWD}/src/kernel-expansion/documentation/chapter-2/data/mle-data-sets-rho-0.95-n-${data_size}/${data_sets[$i]} > list_for_mle_results_tmp.txt
-    elif [ $i -lt 10 ]; then
+    elif [ $i -lt 50 ]; then
        	echo ${PWD}/src/kernel-expansion/documentation/chapter-2/data/mle-data-sets-rho-0.95-n-${data_size}/${data_sets[$i]} >> list_for_mle_results_tmp.txt
     fi
 done
@@ -42,6 +42,6 @@ done
 
 Rscript ./src/kernel-expansion/documentation/chapter-2/results-rogers.R list_for_mle_results_tmp.txt ${data_size}
 
-Rscript ./src/kernel-expansion/documentation/chapter-2/plot-results.R /soe/gdinolov/PDE-solvers${path_to_dir}dx-${dx}-analytic-deriv-rho_basis-${rhos_basis[0]}-sigma_x_basis-${sigmas_x_basis[0]}-sigma_y_basis-${sigma_y_basis}-mle-results-ALL.csv /soe/gdinolov/PDE-solvers${path_to_dir}rogers-results.csv /soe/gdinolov/PDE-solvers${path_to_dir}classic-results.csv /soe/gdinolov/PDE-solvers${path_to_dir}
+Rscript ./src/kernel-expansion/documentation/chapter-2/plot-results.R ~/PDE-solvers${path_to_dir}dx-${dx}-analytic-deriv-rho_basis-${rhos_basis[0]}-sigma_x_basis-${sigmas_x_basis[0]}-sigma_y_basis-${sigma_y_basis}-mle-results-ALL.csv ~/PDE-solvers${path_to_dir}rogers-results.csv ~/PDE-solvers${path_to_dir}classic-results.csv ~/PDE-solvers${path_to_dir}
 
 rm list_for_mle_results_tmp.txt
