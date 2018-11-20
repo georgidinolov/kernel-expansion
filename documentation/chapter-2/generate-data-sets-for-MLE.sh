@@ -6,8 +6,8 @@ cd /soe/gdinolov/PDE-solvers
 
 bazel --output_user_root=/home/gdinolov-tmp build //src/brownian-motion:generate-OCHL-data-points-for-chapter-2
 
-rhos=(0.95)
-ns=(128)
+rhos=(0.95 0.60 0.0)
+ns=(4 8 16)
 number_data_sets_per_iteration=50
 
 for i in ${!rhos[@]}; 
@@ -17,8 +17,13 @@ do
 
     	for k in `seq 0 $((${number_data_sets_per_iteration}-1))`; 
     	do
-	    echo $i, $j, $k, rho = ${rhos[$i]}, n = ${ns[$j]}, $(((((($i+$j))*$number_data_sets_per_iteration)) + $k))
-	    seed=$(((((($i+$j))*$number_data_sets_per_iteration)) + $k))
+	    echo $i, $j, $k, rho = ${rhos[$i]}, n = ${ns[$j]}
+
+	    length_1=$(( $number_data_sets_per_iteration * ${#ns[@]} * $i ))
+	    length_2=$(( $number_data_sets_per_iteration * $j ))
+	    seed=$(( $length_1 + $length_2 + $k ))
+
+	    ## seed=$(((((($i+$j))*$number_data_sets_per_iteration)) + $k))
 	    echo n = ${ns[$j]}, rho = ${rhos[$i]}, seed = $seed
 	    
 	    path_to_dir=./src/kernel-expansion/documentation/chapter-2/data/mle-data-sets-rho-${rhos[$i]}-n-${ns[$j]}
@@ -31,7 +36,7 @@ do
 		
 	    fi
 
-	    ./bazel-bin/src/brownian-motion/generate-OCHL-data-points-for-chapter-2 ${ns[$j]} ${rhos[$i]} $seed ${path_to_dir}/data-set-${k}.csv
+	    ./bazel-bin/src/brownian-motion/generate-OCHL-data-points-for-chapter-2 ${ns[$j]} ${rhos[$i]} $seed ${path_to_dir}/data-set-${k}.csv ${path_to_dir}/BM-data-set-${k}.csv
     	
     	done
     done
