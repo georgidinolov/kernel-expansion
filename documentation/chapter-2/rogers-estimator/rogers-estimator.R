@@ -66,20 +66,23 @@ phi.function.grid <- function(rho.lower.bound=-0.999,
 
 
 phi.function.inverse <- function(r, phi.grid) {
-     indeces = sort(abs(phi.grid$phis - r), index.return=TRUE)$ix[c(1,2)]
+    outs = rep(NA, length(r))
+    for (rr in r) {
+     indeces = sort(abs(phi.grid$phis - rr), index.return=TRUE)$ix[c(1,2)]
      slope = (phi.grid$phis[indeces[2]] - phi.grid$phis[indeces[1]])/
      (phi.grid$rhos[indeces[2]] - phi.grid$rhos[indeces[1]])
 
      intercept = phi.grid$phis[indeces[2]] - slope*phi.grid$rhos[indeces[2]]
 
-     inverse = (r - intercept)/slope
-     return (inverse)
+     inverse = (rr - intercept)/slope
+     outs[which(r==rr)] = inverse
+    }
+     return (outs)
 }
 
 rogers.est <- function(open.1, open.2, close.1, close.2, high.1, high.2, low.1, low.2) {
 	   b.const = 2*log(2) - 1
 	   out = 0.5*close.1*close.2 +
-	         0.5*1/(2*(1-2*b.const))*(high.1 + low.1 - close.1)*
-		 (high.2 + low.2 - close.2)
-	   return(mean(out))
+               0.5*(1-2*b.const)*(high.1 + low.1 - close.1)*(high.2 + low.2 - close.2)
+	   return(out)
 }

@@ -13,3 +13,8 @@
 *.RData*
 .#*
 *.png
+*.pdf
+*.csv
+*.csv~
+*.Rdata
+*.txt

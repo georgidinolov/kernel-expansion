@@ -5,7 +5,7 @@
 We consider a two-dimensional correlated Brownian motion:
 \begin{align}
   X(t) &= x_0 + \mu_x t + \sigma_x W_x(t)  \label{eq:X} \\
-  Y(t) &= y_0 + \mu_y t + \sigma_y W_y(t)  \label{eq:Y} 
+  Y(t) &= y_0 + \mu_y t + \sigma_y W_y(t)  \label{eq:Y}
 \end{align}
 where $W_i$ are standard Brownian motions with
 $\mbox{Cov}(W_1(t), W_2(t)) = \rho t$. Our interest is in finding the
@@ -192,7 +192,7 @@ which re-defines the differential equation and computational domain observed by
 $p_{(1)}(x^{(1)}, y^{(1)}, t)$
 \begin{align}
   \frac{\partial}{\partial t}p_{(1)}(x^{(1)}, y^{(1)}, t) &= \mathcal{L}^{(1)}p_{(1)}(x^{(1)}, y^{(1)}, t),\quad (x^{(1)},y^{(1)}) \in \Omega^{(1)}, \label{eq:qq-2} \\
-  \Omega &:= (0,1) \times (0,1). \nonumber 
+  \Omega &:= (0,1) \times (0,1). \nonumber
 \end{align}
 The differential operator $\mathcal{L}^{(1)}$ takes the form
 \[
@@ -228,7 +228,7 @@ defined with the coordinate transformation
 \begin{align}
   \tilde{x} &= x^{(1)}\cdot \Indicator{ \max\left\{\tau_x^2, \tau_y^2 \right\} = \tau_x^2} + y^{(1)}\cdot \Indicator{ \max\left\{\tau_x^2, \tau_y^2 \right\} = \tau_y^2}, \\
   \tilde{y} &= y^{(1)}\cdot \Indicator{ \max\left\{\tau_x^2, \tau_y^2 \right\} = \tau_x^2} + x^{(1)}\cdot \Indicator{ \max\left\{\tau_x^2, \tau_y^2 \right\} = \tau_y^2}, \\
-  \tilde{t} &= t\cdot \max\left\{\tau_x^2, \tau_y^2 \right\}. 
+  \tilde{t} &= t\cdot \max\left\{\tau_x^2, \tau_y^2 \right\}.
 \end{align}
 The differential problem under $T_{(2)}$ now takes on the
 \textit{normalized form} (from hereon referred to as the
@@ -250,7 +250,7 @@ $\tilde{x}$-direction is always unity, while
 $\sigma_{\tilde{y}} \leq 1$. The time for evaluating the final
 condition is scaled by either $\tau_x^2$ or $\tau_y^2$, while the
 correlation coefficient remains the same. Transforming back to the
-original coordinate frame is straight-forward 
+original coordinate frame is straight-forward
 \[
   p(x,y,t) = p_{(2)}(\tilde{x}, \tilde{y}, \tilde{t}) \cdot \frac{1}{L_xL_y}.
 \]
@@ -362,7 +362,7 @@ difference method which approximates the spatial derivatives in
 problem (\ref{eq:qqq}) - (\ref{eq:qqq-2}) requires the solution to a
 system of differential equations
 \begin{align}
-  \dot{c}(\tilde{t})= B c(\tilde{t}) &\Rightarrow& c(\tilde{t}) = \exp\left( B\tilde{t} \right)c(0) \label{eq:eigenproblem-fd}, 
+  \dot{c}(\tilde{t})= B c(\tilde{t}) &\Rightarrow& c(\tilde{t}) = \exp\left( B\tilde{t} \right)c(0) \label{eq:eigenproblem-fd},
 \end{align}
 which reduces to the eigenvalue decomposition of a matrix $B$. Here,
 $c(\tilde{t})$ is a vector consisting of values of the solution in
@@ -390,11 +390,11 @@ $\frac{\partial^2}{\partial \tilde{x}^2}, \frac{\partial^2}{\partial
 % $k= (l-1) M + m$, we can approximate the operator
 % $\frac{\partial^2 }{\partial x^2} $ as
 % \begin{align*}
-%   \frac{1}{2}\tau_x^2 \frac{\partial^2}{\partial x^2} p(x_l,y_m,t) \approx \frac{1}{2}\tau_x^2 \left( \frac{c_{l+1,m}(t) - 2c_{l,m}(t) + c_{l-1,m}(t)}{h^2} \right) = \frac{1}{2}\tau_x^2 \frac{1}{h^2}A_{x,x}[k,] c(t) 
+%   \frac{1}{2}\tau_x^2 \frac{\partial^2}{\partial x^2} p(x_l,y_m,t) \approx \frac{1}{2}\tau_x^2 \left( \frac{c_{l+1,m}(t) - 2c_{l,m}(t) + c_{l-1,m}(t)}{h^2} \right) = \frac{1}{2}\tau_x^2 \frac{1}{h^2}A_{x,x}[k,] c(t)
 % \end{align*}
 % where $A_{x,x}[k,]$ is the $k^{th}$ row of $A_{x,x}$. Similarly,
 % \begin{align*}
-%   \rho\tau_x\tau_y \frac{\partial^2}{\partial x \partial y} p(x_l,y_m,t) \approx \rho\tau_x\tau_y \left( \frac{c_{l+1,m+1}(t) - c_{l+1,m-1}(t) - c_{l-1,m+1}(t) + c_{l-1,m-1}(t)}{4h^2} \right) = \rho\tau_x\tau_y \frac{1}{4h^2}A_{x,y}[k,] c(t) 
+%   \rho\tau_x\tau_y \frac{\partial^2}{\partial x \partial y} p(x_l,y_m,t) \approx \rho\tau_x\tau_y \left( \frac{c_{l+1,m+1}(t) - c_{l+1,m-1}(t) - c_{l-1,m+1}(t) + c_{l-1,m-1}(t)}{4h^2} \right) = \rho\tau_x\tau_y \frac{1}{4h^2}A_{x,y}[k,] c(t)
     %   \end{align*}
 The use of a regular grid with a constant $h$ independent of the
 parameters is appealing here because, it allows us to construct once
@@ -422,16 +422,16 @@ reader might recall, are the main object of interest in our problem.
 % setting $k := 1/h$, the interpolation error introduced by a finite
 % difference scheme at position $b$ for the boundary parameters using
 % step $h$ has the general form of
-% $$\mbox{Interpolation error } = O(h^2) (1-\mbox{rem}(b/h,1)) \mbox{rem}(b/h,1)$$ 
+% $$\mbox{Interpolation error } = O(h^2) (1-\mbox{rem}(b/h,1)) \mbox{rem}(b/h,1)$$
 % The coefficient part
 % $\mbox{F}_{irreg}(b) = (1-\mbox{rem}(b/h,1)) \mbox{rem}(b/h,1) $ is
 % continuous in $b$ but not differentiable. Its first derivative has the
 % behavior of
-% $$ \frac{\partial }{\partial b} \mbox{F}_{irreg}(b) =  \frac{1}{h} \left(1-2\mbox{rem}(b/h,1) \right).$$ The contribution from the irregular part of truncation error is 
-% $$ h^2 \frac{\mbox{F}_{irreg}(b+\varepsilon)-\mbox{F}_{irreg}(b-\varepsilon)}{2 \varepsilon}  = 
-% O\left(\frac{h^2}{\max(\varepsilon, h)} \right) $$ 
-% In the second order numerical differentiation, however, the contribution from 
-% the irregular part of truncation error behaves like 
+% $$ \frac{\partial }{\partial b} \mbox{F}_{irreg}(b) =  \frac{1}{h} \left(1-2\mbox{rem}(b/h,1) \right).$$ The contribution from the irregular part of truncation error is
+% $$ h^2 \frac{\mbox{F}_{irreg}(b+\varepsilon)-\mbox{F}_{irreg}(b-\varepsilon)}{2 \varepsilon}  =
+% O\left(\frac{h^2}{\max(\varepsilon, h)} \right) $$
+% In the second order numerical differentiation, however, the contribution from
+% the irregular part of truncation error behaves like
 % $$ h^2 \frac{\mbox{F}_{irreg}(b+\varepsilon)-2\mbox{F}_{irreg}(b)
 %   +\mbox{F}_{irreg}(b-\varepsilon)}{\varepsilon^2 } =
 % O\left(\frac{h^2}{\max(\varepsilon^2, h^2)} \right) $$ The interplay
@@ -447,50 +447,50 @@ reader might recall, are the main object of interest in our problem.
 % stability of the finite difference approximation to $\mathcal{L}$, we
 % can write down the finite difference solution as
 % \[
-%   p_{FD}(\left. \tilde{x},\tilde{y},\tilde{t} \right| b) = p(\left. \tilde{x},\tilde{y},\tilde{t} \right| b) 
-% + h^2 \mbox{F}_{reg}(b) + h^2 \mbox{F}_{irreg}(b) + 
+%   p_{FD}(\left. \tilde{x},\tilde{y},\tilde{t} \right| b) = p(\left. \tilde{x},\tilde{y},\tilde{t} \right| b)
+% + h^2 \mbox{F}_{reg}(b) + h^2 \mbox{F}_{irreg}(b) +
 % \varepsilon_{mach} \mbox{F}_{round}(b),
 % \]
-% where we have included parameter $b $ explicitly as a simplified notation for 
+% where we have included parameter $b $ explicitly as a simplified notation for
 % $[a_x, b_x]$ and $[a_y, b_y]$ after shifting $a_x$ and$a_y$ to 0.
 
 
-% In the expression of finite difference solution above, 
-% $h^2 \mbox{F}_{reg}(b) $ is the regular part of 
-% the truncation error from discretizing the differential operator on the grid; 
-% $h^2 \mbox{F}_{irreg}(b) $ is the irregular part of the truncation error 
-% from the interpolations invoked by $\{x_0, y_0, x, y \}$ not being on grid points; 
+% In the expression of finite difference solution above,
+% $h^2 \mbox{F}_{reg}(b) $ is the regular part of
+% the truncation error from discretizing the differential operator on the grid;
+% $h^2 \mbox{F}_{irreg}(b) $ is the irregular part of the truncation error
+% from the interpolations invoked by $\{x_0, y_0, x, y \}$ not being on grid points;
 % and $\varepsilon_{mach} \mbox{F}_{round}(b) $ is the effect of round-off errors
-% with $\varepsilon_{mach} \sim 10^{-16}$ denoting the machine epsilon for 
-% IEEE double precision system. 
-% The coefficient, $\mbox{F}_{reg}(b) $, of the regular part of truncation error 
-% is a smooth function of $b$ with derivative $= O(1)$. 
-% The coefficient, $\mbox{F}_{round}(b) $, in the effect of round-off errors, 
-% behaves virtually like a random variable, discontinuous in $b$. 
-% For the irregular part of truncation error, the coefficient $\mbox{F}_{irreg}(b) $ 
-% in general is continuous in $b$ but not smooth in $b$ where the derivative has 
-% discontinuities of magnitude $O\left( \frac{1}{h} \right)$. 
-% For example, the error in 
-% a piece-wise linear interpolation of a smooth function at position $b$ using step $h$ 
-% has the general form of 
-% $$\mbox{Interpolation error } = O(h^2) (1-\mbox{rem}(b/h,1)) \mbox{rem}(b/h,1)$$ 
-% The coefficient part $\mbox{F}_{irreg}(b) = (1-\mbox{rem}(b/h,1)) \mbox{rem}(b/h,1) $ 
-% is continuous in $b$ but not differentiable. Its first derivative 
-% has the behavior of 
+% with $\varepsilon_{mach} \sim 10^{-16}$ denoting the machine epsilon for
+% IEEE double precision system.
+% The coefficient, $\mbox{F}_{reg}(b) $, of the regular part of truncation error
+% is a smooth function of $b$ with derivative $= O(1)$.
+% The coefficient, $\mbox{F}_{round}(b) $, in the effect of round-off errors,
+% behaves virtually like a random variable, discontinuous in $b$.
+% For the irregular part of truncation error, the coefficient $\mbox{F}_{irreg}(b) $
+% in general is continuous in $b$ but not smooth in $b$ where the derivative has
+% discontinuities of magnitude $O\left( \frac{1}{h} \right)$.
+% For example, the error in
+% a piece-wise linear interpolation of a smooth function at position $b$ using step $h$
+% has the general form of
+% $$\mbox{Interpolation error } = O(h^2) (1-\mbox{rem}(b/h,1)) \mbox{rem}(b/h,1)$$
+% The coefficient part $\mbox{F}_{irreg}(b) = (1-\mbox{rem}(b/h,1)) \mbox{rem}(b/h,1) $
+% is continuous in $b$ but not differentiable. Its first derivative
+% has the behavior of
 % $$ \frac{\partial }{\partial b} \mbox{F}_{irreg}(b) =  \frac{1}{h} \left(1-2\mbox{rem}(b/h,1) \right)$$
 
-% The contribution from the irregular part of truncation error is 
-% $$ h^2 \frac{\mbox{F}_{irreg}(b+\varepsilon)-\mbox{F}_{irreg}(b-\varepsilon)}{2 \varepsilon}  = 
-% O\left(\frac{h^2}{\max(\varepsilon, h)} \right) $$ 
-% In the second order numerical differentiation, however, the contribution from 
-% the irregular part of truncation error behaves like 
+% The contribution from the irregular part of truncation error is
+% $$ h^2 \frac{\mbox{F}_{irreg}(b+\varepsilon)-\mbox{F}_{irreg}(b-\varepsilon)}{2 \varepsilon}  =
+% O\left(\frac{h^2}{\max(\varepsilon, h)} \right) $$
+% In the second order numerical differentiation, however, the contribution from
+% the irregular part of truncation error behaves like
 % $$ h^2 \frac{\mbox{F}_{irreg}(b+\varepsilon)-2\mbox{F}_{irreg}(b)
-% +\mbox{F}_{irreg}(b-\varepsilon)}{\varepsilon^2 }  = 
+% +\mbox{F}_{irreg}(b-\varepsilon)}{\varepsilon^2 }  =
 % O\left(\frac{h^2}{\max(\varepsilon^2, h^2)} \right) $$
 
 
-% Based on the expression we wrote out above for the finite difference solution, 
-% applying the numerical differentiation on t with step $\varepsilon$ yields: 
+% Based on the expression we wrote out above for the finite difference solution,
+% applying the numerical differentiation on t with step $\varepsilon$ yields:
 % \begin{eqnarray}
 % & & \frac{p_{FD}(\left. \tilde{x},\tilde{y},\tilde{t} \right| b+\varepsilon)-p_{FD}(\left. \tilde{x},\tilde{y},\tilde{t} \right| b -\varepsilon)}{2 \varepsilon} \nonumber \\
 % & & \hspace*{1cm} =  \frac{\partial }{\partial b} p(\left. \tilde{x},\tilde{y},\tilde{t} \right| b) + O(\varepsilon^2)
@@ -498,20 +498,20 @@ reader might recall, are the main object of interest in our problem.
 % & & \hspace*{1cm} + h^2 \frac{\mbox{F}_{irreg}(b+\varepsilon)-\mbox{F}_{irreg}(b-\varepsilon)}{2 \varepsilon}
 %  + \varepsilon_{mach} \frac{\mbox{F}_{round}(b+\varepsilon)-\mbox{F}_{round}(b-\varepsilon)}{2 \varepsilon}  \nonumber
 % \end{eqnarray}
-% In the equation above, as the step in the numerical differentiation is refined, the first line 
-% of the RHS is well behaved, converging to the true value 
-% $\frac{\partial }{\partial b} p(\left. \tilde{x},\tilde{y},\tilde{t} \right| b)$ as $\varepsilon \rightarrow 0$. 
-% The second line of RHS, however, is problematic. As $\varepsilon \rightarrow 0$, 
+% In the equation above, as the step in the numerical differentiation is refined, the first line
+% of the RHS is well behaved, converging to the true value
+% $\frac{\partial }{\partial b} p(\left. \tilde{x},\tilde{y},\tilde{t} \right| b)$ as $\varepsilon \rightarrow 0$.
+% The second line of RHS, however, is problematic. As $\varepsilon \rightarrow 0$,
 % the contribution from round-off error blows up to infinity
-% $$ \varepsilon_{mach} \frac{\mbox{F}_{round}(b+\varepsilon)-\mbox{F}_{round}(b-\varepsilon)}{2 \varepsilon}  = O\left(\frac{\varepsilon_{mach}}{\varepsilon} \right) 
+% $$ \varepsilon_{mach} \frac{\mbox{F}_{round}(b+\varepsilon)-\mbox{F}_{round}(b-\varepsilon)}{2 \varepsilon}  = O\left(\frac{\varepsilon_{mach}}{\varepsilon} \right)
 % \longrightarrow \infty \;\;\;\; \mbox{as } \varepsilon \rightarrow 0 $$
-% The contribution from the irregular part of truncation error is 
-% $$ h^2 \frac{\mbox{F}_{irreg}(b+\varepsilon)-\mbox{F}_{irreg}(b-\varepsilon)}{2 \varepsilon}  = 
-% O\left(\frac{h^2}{\max(\varepsilon, h)} \right) $$ 
-% In the second order numerical differentiation, however, the contribution from 
-% the irregular part of truncation error behaves like 
+% The contribution from the irregular part of truncation error is
+% $$ h^2 \frac{\mbox{F}_{irreg}(b+\varepsilon)-\mbox{F}_{irreg}(b-\varepsilon)}{2 \varepsilon}  =
+% O\left(\frac{h^2}{\max(\varepsilon, h)} \right) $$
+% In the second order numerical differentiation, however, the contribution from
+% the irregular part of truncation error behaves like
 % $$ h^2 \frac{\mbox{F}_{irreg}(b+\varepsilon)-2\mbox{F}_{irreg}(b)
-% +\mbox{F}_{irreg}(b-\varepsilon)}{\varepsilon^2 }  = 
+% +\mbox{F}_{irreg}(b-\varepsilon)}{\varepsilon^2 }  =
       %       O\left(\frac{h^2}{\max(\varepsilon^2, h^2)} \right) $$
 
 \subsection{Density Calculation} \label{sec:likelihood-calc} Following
@@ -532,11 +532,11 @@ solution for each of the sixteen perturbed problems
 The derivative of $p$ with respect to the 4 boundaries is approximated
 as
 \begin{eqnarray*}
-& & \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial b_y} p(\tilde{x},\tilde{y},\tilde{t}) 
+& & \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial b_y} p(\tilde{x},\tilde{y},\tilde{t})
 \nonumber \\
 & & \hspace*{0.5cm} \approx \frac{\displaystyle \sum_{k_1, k_2, k_3, k_4 = \pm 1}
-c_{\{ k_1, k_2, k_3, k_4 \} } p( \tilde{x},\tilde{y},\tilde{t} \mid a_x+k_1 \varepsilon, b_x+k_2 \varepsilon, 
-a_y+k_3 \varepsilon, b_y+k_4 \varepsilon) }{(2 \varepsilon )^4} 
+c_{\{ k_1, k_2, k_3, k_4 \} } p( \tilde{x},\tilde{y},\tilde{t} \mid a_x+k_1 \varepsilon, b_x+k_2 \varepsilon,
+a_y+k_3 \varepsilon, b_y+k_4 \varepsilon) }{(2 \varepsilon )^4}
 \nonumber
 \end{eqnarray*}
 The finite difference approximation, however, introduces fundamental
@@ -621,16 +621,16 @@ points. Referring to the notation in (\ref{eq:trunc-error}), and
 setting $k := 1/h$, the interpolation error introduced by a finite
 difference scheme at position $b$ for the boundary parameters using
 step $h$ has the general form of
-$$\mbox{Interpolation error } = O(h^2) (1-\mbox{rem}(b/h,1)) \mbox{rem}(b/h,1)$$ 
+$$\mbox{Interpolation error } = O(h^2) (1-\mbox{rem}(b/h,1)) \mbox{rem}(b/h,1)$$
 The coefficient part
 $\mbox{F}_{irreg}(b) = (1-\mbox{rem}(b/h,1)) \mbox{rem}(b/h,1) $ is
 continuous in $b$ but not differentiable. Its first derivative has the
 behavior of
-$$ \frac{\partial }{\partial b} \mbox{F}_{irreg}(b) =  \frac{1}{h} \left(1-2\mbox{rem}(b/h,1) \right).$$ The contribution from the irregular part of truncation error is 
-$$ h^2 \frac{\mbox{F}_{irreg}(b+\varepsilon)-\mbox{F}_{irreg}(b-\varepsilon)}{2 \varepsilon}  = 
-O\left(\frac{h^2}{\max(\varepsilon, h)} \right) $$ 
-In the second order numerical differentiation, however, the contribution from 
-the irregular part of truncation error behaves like 
+$$ \frac{\partial }{\partial b} \mbox{F}_{irreg}(b) =  \frac{1}{h} \left(1-2\mbox{rem}(b/h,1) \right).$$ The contribution from the irregular part of truncation error is
+$$ h^2 \frac{\mbox{F}_{irreg}(b+\varepsilon)-\mbox{F}_{irreg}(b-\varepsilon)}{2 \varepsilon}  =
+O\left(\frac{h^2}{\max(\varepsilon, h)} \right) $$
+In the second order numerical differentiation, however, the contribution from
+the irregular part of truncation error behaves like
 $$ h^2 \frac{\mbox{F}_{irreg}(b+\varepsilon)-2\mbox{F}_{irreg}(b)
   +\mbox{F}_{irreg}(b-\varepsilon)}{\varepsilon^2 } =
 O\left(\frac{h^2}{\max(\varepsilon^2, h^2)} \right) $$ The interplay
@@ -864,7 +864,7 @@ the following way.
   of $\Omega^{(3)}$. For this same reason, the system of images numerically
   satisfies the initial condition for the problem.
 
-  The \textit{small-time} solution $p_\epsilon$ is the difference of the two images 
+  The \textit{small-time} solution $p_\epsilon$ is the difference of the two images
   \[
     p_\epsilon(\xi,\eta,\tilde{t}) := G(\xi,\eta,\tilde{t} | \xi_0,
     \eta_0) - G(\xi,\eta,\tilde{t} | \xi_0', \eta_0'),
@@ -881,7 +881,7 @@ the following way.
   \end{align}
   where the function $G_\rho(\cdot)$ is the shifted fundamental solution
   \begin{multline}
-    G_\rho(\tilde{x}, \tilde{y}, \tilde{t} | \tilde{x}_0, \tilde{y}_0) = \nonumber \\ 
+    G_\rho(\tilde{x}, \tilde{y}, \tilde{t} | \tilde{x}_0, \tilde{y}_0) = \nonumber \\
     \frac{1}{2\pi\,\, \tilde{t}\sigma_{\tilde{y}}\sqrt{1-\rho^2}} \exp\left( -\frac{\left[ \left(\tilde{x}-\tilde{x}_0\right)^2 \sigma_{\tilde{y}}^2 + \left(\tilde{y}-\tilde{y}_0\right)^2 - 2\rho(\tilde{x}-\tilde{x}_0)(\tilde{y}-\tilde{y}_0)\sigma_{\tilde{y}} \right]}{2\,\,\tilde{t}\, \sigma_{\tilde{y}}^2 (1-\rho^2)} \right) \label{eq:Gfundamental}
     \end{multline}
     as illustrated in the right panel of Figure
@@ -897,7 +897,7 @@ the following way.
       \centering
       \includegraphics[width=1\linewidth]{../small-time-solution.png}
     \end{minipage}p
-    %% 
+    %%
     & \begin{minipage}{0.5\textwidth}
       \centering
       \includegraphics[width=1\linewidth]{../small-time-solution-contour.png}
@@ -944,7 +944,7 @@ these two opposing forces in reducing errors.
 % \]
 
 
-\subsection{Basis Family}
+\subsection{Basis Family} \label{sec:basis-family}
 % An upper bound of the rate at which the Galerkin approximation
 % converges to $p(\tilde{x},\tilde{y},\tilde{t})$ is given by condition (\ref{eq:ic-bound}),
 % namely by how well the initial condition may be approximated via a
@@ -988,7 +988,7 @@ $[0, 1] \times [0, 1]$ (see left panel of Figure (\ref{fig:grids})).
       \centering
       \includegraphics[width=1\linewidth]{../nodes-1.pdf}
     \end{minipage}
-    %% 
+    %%
     & \begin{minipage}{0.4\textwidth}
       \centering
       \includegraphics[width=1\linewidth]{../nodes-2.pdf}
@@ -1016,7 +1016,7 @@ $[0, 1] \times [0, 1]$ (see left panel of Figure (\ref{fig:grids})).
 %        \left( \begin{array}{cc}
 %                 1/\sqrt{2} & 1/\sqrt{2} \\
 %                 -1/\sqrt{2} & 1/\sqrt{2}
-%               \end{array} \right) 
+%               \end{array} \right)
 %             \left( \begin{array}{c}
 %                      \tilde{x}'_j - 1/2\\
 %                      \tilde{y}'_j -1/2
@@ -1177,8 +1177,8 @@ returns.
 % below, at a given value of $t$ in the process in
 % (1)-(2). Specifically, $Z(t)$ is formed as
 % $$ Z(t) =( X(t), Y(t), m_x(t), M_x(t), m_y(t), M_y(t)) $$
-% where 
-% $$m_x(t)= \min_{0 \le t' \le t} X(t), \;\; 
+% where
+% $$m_x(t)= \min_{0 \le t' \le t} X(t), \;\;
 % M_x(t)= \max_{0 \le t' \le t} X(t), \;\; m_y(t)= \min_{0 \le t' \le t}
 % Y(t), \;\; M_y(t)= \max_{0 \le t' \le t} Y(t). $$ We say that $Z_i$ is
 % sampled from the distribution corresponding to the probability density
@@ -1196,7 +1196,7 @@ returns.
 % various bells and whistles attached) are widely used. However, to the
 % best of our knowledge, all current \textit{likelihood} methods in the
 % literature either ignore the observed maximum/minimum information or
-% use only some of it. 
+% use only some of it.
 Since we do not have a closed-form solution for the likelihood
 \eqref{eq:pdf}, we will use an iterative derivative-free numerical
 algorithm to maximize the likleihood which requires repeated
@@ -1235,7 +1235,7 @@ At this point we will assume that for a sufficiently large $k$,
 $f^{(k)}(z)$ is positivie for all $z \in Z$ and is integrable over
 $Z$. As such, we may regard it as a proper probability density
 function with the cumulative probability density and probability
-measure over $Z$ being 
+measure over $Z$ being
 \begin{align}
   F^{(k)}(z | \theta) &= \displaystyle \int_{-\infty}^{a_x} \displaystyle \int_{-\infty}^{a_y} \displaystyle \int_{-\infty}^{b_x} \displaystyle \int_{-\infty}^{b_y} \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y \frac{\partial^4}{\partial a'_x \partial b'_x \partial a'_y \partial b'_y} q^{(k)}(x', y', t | a'_x, b'_x, a'_y, b'_y)\,\,\, dz, \label{eq:approx-measure} \\
                           \Pr_{k}(A) &:= \displaystyle \int_{A} f^{(k)}(z)\, dz, \quad \mbox{ for any measurable } A \subset Z. \label{eq:approx-measure-2}
@@ -1268,7 +1268,7 @@ First, we prove the Lemma
   \end{align*}
   Then
   \begin{align}
-    \Pr(B(a_x, b_x, a_y, b_y)) &= \displaystyle \int_{B(a_x, b_x, a_y, b_y)} f(z)\, dz \nonumber \\ 
+    \Pr(B(a_x, b_x, a_y, b_y)) &= \displaystyle \int_{B(a_x, b_x, a_y, b_y)} f(z)\, dz \nonumber \\
                                &= \displaystyle \int_{a_y}^{\infty} \displaystyle \int_{-\infty}^{b_y} \displaystyle \int_{a_x}^{\infty} \displaystyle \int_{-\infty}^{b_x} \displaystyle \int_{-\infty}^{b_x} \displaystyle \int_{-\infty}^{b_y} f(x', y', a'_x, b'_x, a'_y, b'_y) dx' dy' da_x' db_x' da_y' db_y' \label{eq:full-form} \\
                                &= \displaystyle \int_{a_x}^{b_x} \displaystyle \int_{a_y}^{b_y} q(x,y,a_x,b_x,a_y,b_y)\, dx\, dy, \nonumber
   \end{align}
@@ -1419,7 +1419,7 @@ approximation
 % \end{align*}
 % Our strategy will be to define a family of sets $\left\{ \tilde{A}_m(z) \right\}_{m=0}^\infty$ for any $z=(x,y,a_x,b_x,a_y,b_y)$ such that
 % \begin{align*}
-%   \lim_{m \to \infty} \Pr_W \left(  \tilde{A}_m(z) \right) = 
+%   \lim_{m \to \infty} \Pr_W \left(  \tilde{A}_m(z) \right) =
 %   \Pr \left( X(t) \leq x,
 %   Y(t) \leq y, \min_{t' \leq t} X(t') \leq a_x, \max_{t' \leq t}
 %   X(t') \leq b_x, \min_{t' \leq t} Y(t') \leq a_y, \max_{t' \leq t}
@@ -1427,7 +1427,7 @@ approximation
 % \end{align*}
 
 % \begin{lemma}
-%   For $z = (x,y,a_x,b_x,a_y,b_y)$, 
+%   For $z = (x,y,a_x,b_x,a_y,b_y)$,
 %   \[\lim_{m \to \infty} \displaystyle \int_{-\infty}^x \displaystyle
 %     \int_{-\infty}^y q(x',y',t, a_x-m, b_x, a_y-m, b_y)\,\, dx'\,dy' -
 %     \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y
@@ -1614,90 +1614,146 @@ approximation
   \[
     \Pr_{Z}\left( \left| \hat{\theta}_{n,k}(Z) - \theta \right| \geq
       \epsilon \right) \leq \frac{ \mbox{E}_{Z}\left[
-        (\hat{\theta}_{n,k}(Z) - \theta)^2 \right] }{ \epsilon^2 } < \delta    
+        (\hat{\theta}_{n,k}(Z) - \theta)^2 \right] }{ \epsilon^2 } < \delta
   \]
 \end{proof}
 
 \subsection{Simulation Study}
-Next we present some numerical simulation results for the Galerkin
-method. The finite-difference step used to derive the likelihood
-function is of size $\Delta = 1/64$ with $O(\Delta^2)$ order
-accuracy. The inner products that are needed to establish the system
-of equations for the method are computed using Simpson's rule on a
-regular $250 \times 250$ grid.
+As described in Section \ref{sec:basis-family}, the semidiscrete
+Galerkin method that we use to compute the likelihood function
+requires a choice for the kernel parameters
+$(\tilde{\rho}, \tilde{\sigma}, l)$. Given finite restrictions on
+memory and compute time, $\tilde{\sigma}$ cannot be made arbitrarily
+small nor can $\tilde{\rho}$ be made arbitrarily close to $-1$ or $1$
+in order to accommodate all possible data. In particular, if the
+geometry of the problem is such that the small-time approximation does
+not sufficiently depart from the $\delta$-function form of the initial
+condition, then there is no finite $(\tilde{\rho}, \tilde{\sigma}, l)$
+combination to produce an accurate likelihood solution for arbitrarily
+small $\tilde{t}$ in the normalized $T_{(2)}$ frame. We illustrate
+this numerical limitation in Figures
+(\ref{fig:limitations-rho-0.95-1}) -
+(\ref{fig:limitations-rho-0.95-3}) by simulating $13$ data points with
+$\sigma_x = 1, \sigma_y = 1, \rho = 0.95$, transforming the problem to
+the normalized coordinate frame, and varying $\tilde{t}$ while keeping
+the other parameters fixed at their data-generating values. Keeping
+$l=1$ fixed, we also vary the basis-generating parameters $\tilde{\sigma}$
+and $\tilde{\rho}$ to test what $\tilde{t}$ regimes can be
+accommodated.
 
-Data is generated from the model with zero drift via forward Euler
-discretization where the obtained discrete-time extrema are recorded
-and used as the realized extrema of the process. We use 50 data sets,
-each comprised of $n = 32, 64,$ and $128$ simulations generated with
-the same parameters
-\[
-  \mu_x = 0,\quad \mu_y  = 0,\quad \sigma_x = 1,\quad \sigma_y = 1,\quad \rho = (0, 0.6, 0.95)
-\]
-The drift parameters are assumed known, so that the MLE is comprised
-of the diffusion and correlation parameters:
-$\hat{\theta} = (\hat{\sigma}_x, \hat{\sigma}_y, \hat{\rho}).$ The
-sampling distributions of the MLEs are approximated by computing the
-MLE for each of the 50 datasets then constructing the resultant kernel
-density estimate of the repeated-sampling distribution. Results are
-compared to the repeated-sampling distribution of the MLE based on the
-usual bivariate normal likelihood which does not take into account the
-boundaries, as well as the best-in-class unbiased estimator that uses
-OCHL data (see \cite{rogers2008estimating}), which we term the Rogers
-estimator.  Results are shown in Figures
-(\ref{fig:mle-comparison-rho-0.95}) -
-(\ref{fig:mle-comparison-rho-0.0}) where they clearly demonstrate the
-superior statistical power of our likelihood-based approach from a
-least-mean-square error standpoint.
-
-In addition to exemplifying the consistency property with increasing
-sample size, these numerical simulations highlight a shortcoming of
-the Galerkin method developed so far. For some parameter combinations
-away from those maximizing the likelihood, the finite difference
-approximation of the likelihood produces negative likelihood
-values. Given that these likelihood are in some sense small, and for
-the sake of completing the estimation procedure, we can replace
-inadmissible likelihood vlaues with a small, albeit arbitrary,
-constant: $1\cdot 10^{-16}$.  This very rough approximation may have a
-variety of effects on the estimation procedure, the most obvious of
-which being the diverting of the convergence path of the optimization
-procedure regardless of algorithm used. This is especially true in the
-early stages of the optimization scheme when the parameter space is
-being explored. This dynamic is shown in Figure
-(\ref{fig:neg-likes}). Therefore, it is quite possible for the
-procedure to converge to values far from the true optimal ones that
-would otherwise be produced in the case when the likelihood is fully
-resolved.
+The data point in Figure (\ref{fig:limitations-rho-0.95-1}) is
+somewhat typical of the other ones featured in Figures
+(\ref{fig:limitations-rho-0.95-2}) -
+(\ref{fig:limitations-rho-0.95-3}): there are no valid solutions for
+very small $\tilde{t}$ irrespective of basis parameter choice (usually
+in this regime the likelihood produced by Galerkin solution is
+negative and thus identified as inadmissible) and solutions converge
+for $\tilde{t} > 1$. The transient region between these regimes is the
+most problematic, particularly when the solution produces large
+postivie values in what should be relatively low-likelihood regions;
+an example is the low-resolution parameter combination
+$(\tilde{\rho} = 0.4, \tilde{\sigma} = 0.16)$. Moreover, there is no
+clear sign of convergence of the solution for $\tilde{t} < 3/4$,
+although the combinations
+$(\tilde{\rho}=0.5, \tilde{\sigma}=0.08), (\tilde{\rho}=0.6,
+\tilde{\sigma}=0.08),$ and $(\tilde{\rho}=0.6, \tilde{\sigma}=0.12)$
+give similar results. A feasible compromise that operationalizes the
+Galerkin solution in the context of this simulation study is to use a
+relatively high-resolution basis expansion, such as the one
+corresponding to $(\tilde{\rho}=0.6, \tilde{\sigma}=0.08, l=1)$ and
+replace inadmissible likelihood values generated for small $\tilde{t}$
+with $1\cdot 10^{-16}$. Further, this constant is also applied for
+likelihoods with $\tilde{t} < 0.25$, since the data points considered
+here clearly show that the numerical solution deteriorates in this
+region regardless of parameter choice and the likelihood values
+produced therein, even if positive, should not be used.  This
+very rough approximation may have a variety of effects on the
+estimation procedure, the most obvious of which being the diverting of
+the convergence path of the optimization procedure regardless of
+algorithm used. This may be especially true in the early stages of the
+optimization scheme when the parameter space is being explored.  The
+finite-difference step used to derive the likelihood function is of
+size $\Delta = 1/32$ with $O(\Delta^2)$ order accuracy. The inner
+products that are needed to establish the system of equations for the
+method are computed using Simpson's rule on a regular $250 \times 250$
+grid.
 
 \begin{figure}
   \centering
-  %%
-  %%
-  \begin{tabular}{ccc}
-    \begin{minipage}{0.3\textwidth}
-      \centering
-      \includegraphics[width=1\linewidth]{../chapter-2/estimates.pdf}
-    \end{minipage}
-    %% 
-    & \begin{minipage}{0.3\textwidth}
-      \centering
-      \includegraphics[width=1\linewidth]{../chapter-2/estimates.pdf}
-    \end{minipage}
-    & \begin{minipage}{0.3\textwidth}
-      \centering
-      \includegraphics[width=1\linewidth]{../chapter-2/estimates.pdf}
-    \end{minipage}
-  \end{tabular}
-  \caption{.}
-  \label{fig:neg-likes})
+  \includegraphics[width=1\linewidth]{../chapter-2/figures/{limitations-rho-0.95-data-point-4}.pdf}
+  \caption{Log-likelihood as a function of $\tilde{t}$ for one of the
+    13 data points, computed with different
+    $(\tilde{\rho}, \tilde{\sigma})$ combinations. The quality of the
+    solution deteriorates for $\tilde{t} < 1/2$. For sufficiently
+    small $\tilde{t}$, there are no valid solution values produced.}
+  \label{fig:limitations-rho-0.95-1}
 \end{figure}
 
-For these reasons, we develop an analytic
-approximation that solves this problem.
+\begin{figure}
+  \centering
+  \begin{tabular}{cc}
+    \begin{minipage}{0.45\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-2/figures/{limitations-rho-0.95-data-point-2}.pdf}
+    \end{minipage}
+    & \begin{minipage}{0.45\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-2/figures/{limitations-rho-0.95-data-point-3}.pdf}
+    \end{minipage} \\
+        \begin{minipage}{0.45\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-2/figures/{limitations-rho-0.95-data-point-1}.pdf}
+    \end{minipage}
+    & \begin{minipage}{0.45\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-2/figures/{limitations-rho-0.95-data-point-5}.pdf}
+    \end{minipage} \\
+    \begin{minipage}{0.45\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-2/figures/{limitations-rho-0.95-data-point-6}.pdf}
+    \end{minipage}
+    & \begin{minipage}{0.45\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-2/figures/{limitations-rho-0.95-data-point-7}.pdf}
+    \end{minipage}
+  \end{tabular}
+  \caption{Data points 2 through 7 used to test various parameter values for basis generation.}
+  \label{fig:limitations-rho-0.95-2}
+\end{figure}
 
-including the root-mean-square-errors of the two
-estimators.
+\begin{figure}
+  \centering
+  \begin{tabular}{cc}
+    \begin{minipage}{0.45\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-2/figures/{limitations-rho-0.95-data-point-8}.pdf}
+    \end{minipage}
+    & \begin{minipage}{0.45\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-2/figures/{limitations-rho-0.95-data-point-9}.pdf}
+    \end{minipage} \\
+        \begin{minipage}{0.45\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-2/figures/{limitations-rho-0.95-data-point-10}.pdf}
+    \end{minipage}
+    & \begin{minipage}{0.45\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-2/figures/{limitations-rho-0.95-data-point-11}.pdf}
+    \end{minipage} \\
+    \begin{minipage}{0.45\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-2/figures/{limitations-rho-0.95-data-point-12}.pdf}
+    \end{minipage}
+    & \begin{minipage}{0.45\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-2/figures/{limitations-rho-0.95-data-point-13}.pdf}
+    \end{minipage}
+  \end{tabular}
+    \caption{Data points 8 through 13 used to test various parameter values for basis generation.}
+  \label{fig:limitations-rho-0.95-3}
+\end{figure}
 
+\subsection{Data generation and results}
 \begin{figure}
   \centering
   %%
@@ -1705,86 +1761,143 @@ estimators.
   \begin{tabular}{ccc}
     \begin{minipage}{0.3\textwidth}
       \centering
-      \includegraphics[width=1\linewidth]{../chapter-2/estimates.pdf}
-    \end{minipage}
-    %% 
-    & \begin{minipage}{0.3\textwidth}
-      \centering
-      \includegraphics[width=1\linewidth]{../chapter-2/estimates.pdf}
+      \includegraphics[width=1\linewidth]{../chapter-2/results/mle-results-rho-0.95-n-4/estimates-rho.pdf}
     \end{minipage}
     & \begin{minipage}{0.3\textwidth}
       \centering
-      \includegraphics[width=1\linewidth]{../chapter-2/estimates.pdf}
+      \includegraphics[width=1\linewidth]{../chapter-2/results/mle-results-rho-0.95-n-4/estimates-sigma-x.pdf}
+    \end{minipage}
+    & \begin{minipage}{0.3\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-2/results/mle-results-rho-0.95-n-4/estimates-sigma-y.pdf}
     \end{minipage} \\
+    %%
     \begin{minipage}{0.3\textwidth}
       \centering
-      \includegraphics[width=1\linewidth]{../chapter-2/estimates.pdf}
-    \end{minipage}
-    %% 
-    & \begin{minipage}{0.3\textwidth}
-      \centering
-      \includegraphics[width=1\linewidth]{../chapter-2/estimates.pdf}
+      \includegraphics[width=1\linewidth]{../chapter-2/results/mle-results-rho-0.95-n-8/estimates-rho.pdf}
     \end{minipage}
     & \begin{minipage}{0.3\textwidth}
       \centering
-      \includegraphics[width=1\linewidth]{../chapter-2/estimates.pdf}
+      \includegraphics[width=1\linewidth]{../chapter-2/results/mle-results-rho-0.95-n-8/estimates-sigma-x.pdf}
+    \end{minipage}
+    & \begin{minipage}{0.3\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-2/results/mle-results-rho-0.95-n-8/estimates-sigma-y.pdf}
     \end{minipage} \\
+    %%
     \begin{minipage}{0.3\textwidth}
       \centering
-      \includegraphics[width=1\linewidth]{../chapter-2/estimates.pdf}
-    \end{minipage}
-    %% 
-    & \begin{minipage}{0.3\textwidth}
-      \centering
-      \includegraphics[width=1\linewidth]{../chapter-2/estimates.pdf}
+      \includegraphics[width=1\linewidth]{../chapter-2/results/mle-results-rho-0.95-n-16/estimates-rho.pdf}
     \end{minipage}
     & \begin{minipage}{0.3\textwidth}
       \centering
-      \includegraphics[width=1\linewidth]{../chapter-2/estimates.pdf}
+      \includegraphics[width=1\linewidth]{../chapter-2/results/mle-results-rho-0.95-n-16/estimates-sigma-x.pdf}
+    \end{minipage}
+    & \begin{minipage}{0.3\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-2/results/mle-results-rho-0.95-n-16/estimates-sigma-y.pdf}
     \end{minipage}
   \end{tabular}
   \caption{Data generated with $\rho=0.95$. Kernel-density
     approximations of the repeated-sampling densities of the MLEs
-    samples obtained from the Galerkin likelihood (blue) and the
-    classical likelihood (green) and the Rogers estimator
-    (purple). The data-generating parameters are denoted with the
-    vertical solid line. The root-mean-square errors for the pairs of
-    estimators are included. As expected, the Galerkin-based
-    likelihood outperforms the Gaussian likelihood for each
-    parameter.}
+    samples obtained from the Galerkin likelihood (green) and the
+    classical likelihood (red) and the Rogers estimator
+    (blue). The data-generating parameters are denoted with the
+    vertical solid line.}
   \label{fig:mle-comparison-rho-0.95}
 \end{figure}
 
-\begin{figure}
+Data is generated with zero drift via forward Euler discretization
+where the obtained discrete-time extrema are recorded and used as the
+realized extrema of the process. Simulations are generated with the same
+parameters
+\[
+  \mu_x = 0,\quad \mu_y  = 0,\quad \sigma_x = 1,\quad \sigma_y = 1,\quad \rho = (0, 0.6, 0.95)
+\]
+Without loss of generality, the drift parameters are assumed known, so
+that the MLE is comprised of the diffusion and correlation parameters:
+$\hat{\theta} = (\hat{\sigma}_x, \hat{\sigma}_y, \hat{\rho}).$ The
+repeated-sampling distributions of the MLEs are approximated by
+computing the MLE for each of $n=50$ simulated path realizations,
+where each realization is divided into $m=16$ equal intervals with
+their respective OCHL data. If we think of each path as a 6.5 hour
+trading day, this procedure is equivalent to estimating daily
+volatility and correlation for two assets using $\sim 12$ min intervals
+throughout the trading day.  Given the finite number of realizations
+$n$, we construct a kernel density estimate of the repeated-sampling
+distribution. Results are compared to the repeated-sampling
+distribution of the MLE based on the usual bivariate normal likelihood
+which does not take into account the boundaries, as well as the
+best-in-class unbiased estimator that uses OCHL data (see
+\cite{rogers2008estimating}), which we term the \textit{Rogers
+  estimator}.
+
+
+\begin{table}
   \centering
-  %%
-  %%
-  \begin{tabular}{ccc}
-    \begin{minipage}{0.3\textwidth}
-      \centering
-      \includegraphics[width=1\linewidth]{../chapter-2/estimates.pdf}
-    \end{minipage}
-    %% 
-    & \begin{minipage}{0.3\textwidth}
-      \centering
-      \includegraphics[width=1\linewidth]{../chapter-2/estimates.pdf}
-    \end{minipage}
-    & \begin{minipage}{0.3\textwidth}
-      \centering
-      \includegraphics[width=1\linewidth]{../chapter-2/estimates.pdf}
-    \end{minipage}
+  \begin{tabular}{cccc|ccc|ccc}
+    &  \multicolumn{3}{c}{$\rho=0.95$} & \multicolumn{3}{c}{$\rho=0.60$} &  \multicolumn{3}{c}{$\rho=0.0$}\\
+    & $m=4$ & $m=8$ & $m=16$ & $m=4$ & $m=8$ & $m=16$ & $m=4$ & $m=8$ & $m=16$ \\
+    \hline
+    $\hat{\sigma}_x$ & 0.475 & 1.238 & 1.304 & 0.203 & 0.127 & 0.232 & 0.137 & 0.243 & 0.167 \\
+    \hline
+    $\hat{\sigma}_y$ & 0.593 & 1.040 & 1.088 &  0.111 & 0.120 & 0.260 & 0.189 & 0.171 & 0.107 \\
+    \hline
+    $\hat{\rho}$ & 0.287 & 0.910 & 0.445 & 0.315 & 0.283 & 0.463 & 0.517 & 0.365 & 0.194
   \end{tabular}
-  \caption{Data generated with $\rho=0.95$. Kernel-density
-    approximations of the repeated-sampling densities of the MLEs
-    samples obtained from the Galerkin likelihood (blue) and the
-    classical likelihood (green) and the Rogers estimator
-    (purple). The data-generating parameters are denoted with the
-    vertical solid line. The root-mean-square errors for the pairs of
-    estimators are included. As expected, the Galerkin-based
-    likelihood outperforms the Gaussian likelihood for each
-    parameter.}
-  \label{fig:mle-comparison-rho-0.60}
-\end{figure}
+  \caption{Ratios of Galerkin to Gaussian MSEs for the three simulation cases.}
+  \label{tab:MSE-ratios}
+\end{table}
+
+Figure (\ref{fig:mle-comparison-rho-0.95}) shows the kernel density
+approximations of the repeated-sampling distribution for the MLE in
+the case of $\rho=0.95$. The MSE ratios for the estimators are shown
+Table (\ref{tab:MSE-ratios}). The approximate Galerkin likelihood
+produces more accurate estimates for $\rho$ across all $m$ ranges but
+fails to do so for the variance parameters $\sigma_x$ and
+$\sigma_y$. However, in those cases the MSE of the Galerkin likelihood
+is biased by a small number of outlier estimates which are easily
+observed in the kernel density plots of Figure
+(\ref{fig:mle-comparison-rho-0.95}). Such outliers are due to the high
+degree of resolution in the solver necessary for the $\rho=0.95$ case
+and the approximation made by replacing negative likelihood values or
+likelihoods computed in regions with $\tilde{t} < 0.25$ by a small
+numerical constant. In some cases, this can skew the optimization
+algorithm to regions which are not global maxima, especially in the
+early stages of optimization where low-likelihood regions are
+explored. The degree of this problem is not as great in the more mild
+$\rho =0$ and $\rho = 0.60$ scenarios, as judged by the MSE ratios in
+Table (\ref{tab:MSE-ratios}). Yet there seem to be some cases of
+outliers in the estimates for the Galerkin method for these cases, as
+shown in Figures (\ref{fig:mle-comparison-rho-0.60}) and
+(\ref{fig:mle-comparison-rho-0.0}). This is more difficult to judge
+given the inherently greater degree of repeated sampling variability
+of the estimators in these scenarios. However, the combined evidence
+from the approximate repeated-sampling distributions, the non-uniform
+MSE ratios, and the break in monotonicity with respect to increasing
+$m$ in the MSE of the Galerkin method (see Table (\ref{tab:MSEs})) all
+show that, despite providing a more powerful statistical estimator as
+a whole, the OCHL likelihood stands to be improved with respect to
+resolving likelihoods in the small-$\tilde{t}$ regions, as well as the
+transient region $\tilde{t} < 0.25$ described above. The analytic
+result and asymptotic matching solution to address this need is
+developed in the following chapter.
+
+\begin{table}
+  \centering
+  \begin{tabular}{cccc|ccc|ccc}
+    &  \multicolumn{3}{c}{$\rho=0.95$} & \multicolumn{3}{c}{$\rho=0.60$} &  \multicolumn{3}{c}{$\rho=0.0$}\\
+    & $m=4$ & $m=8$ & $m=16$ & $m=4$ & $m=8$ & $m=16$ & $m=4$ & $m=8$ & $m=16$ \\
+    \hline
+    $\hat{\sigma}_x$ & 0.0458 & 0.0825 & 0.0315 &  0.0175  & 0.00933 & 0.00807  & 0.0202 & 0.009564 & 0.00411 \\
+    \hline
+    $\hat{\sigma}_y$ & 0.0608 & 0.0772 & 0.0262  & 0.0124  & 0.00952 & 0.00747  & 0.0197 & 0.00911  & 0.00383 \\
+    \hline
+    $\hat{\rho}$ & 0.00120 & 0.000802 & 0.000391 & 0.0494  & 0.0164 & 0.0148 & 0.114 & 0.0540 & 0.0168
+  \end{tabular}
+  \caption{MSEs for the Galerkin likelihood solution for the three simulation cases.}
+  \label{tab:MSEs}
+\end{table}
 
 \begin{figure}
   \centering
@@ -1793,26 +1906,102 @@ estimators.
   \begin{tabular}{ccc}
     \begin{minipage}{0.3\textwidth}
       \centering
-      \includegraphics[width=1\linewidth]{../chapter-2/estimates.pdf}
-    \end{minipage}
-    %% 
-    & \begin{minipage}{0.3\textwidth}
-      \centering
-      \includegraphics[width=1\linewidth]{../chapter-2/estimates.pdf}
+      \includegraphics[width=1\linewidth]{../chapter-2/results/mle-results-rho-0.60-n-4/estimates-rho.pdf}
     \end{minipage}
     & \begin{minipage}{0.3\textwidth}
       \centering
-      \includegraphics[width=1\linewidth]{../chapter-2/estimates.pdf}
+      \includegraphics[width=1\linewidth]{../chapter-2/results/mle-results-rho-0.60-n-4/estimates-sigma-x.pdf}
+    \end{minipage}
+    & \begin{minipage}{0.3\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-2/results/mle-results-rho-0.60-n-4/estimates-sigma-y.pdf}
+    \end{minipage} \\
+    %%
+    \begin{minipage}{0.3\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-2/results/mle-results-rho-0.60-n-8/estimates-rho.pdf}
+    \end{minipage}
+    & \begin{minipage}{0.3\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-2/results/mle-results-rho-0.60-n-8/estimates-sigma-x.pdf}
+    \end{minipage}
+    & \begin{minipage}{0.3\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-2/results/mle-results-rho-0.60-n-8/estimates-sigma-y.pdf}
+    \end{minipage} \\
+    %%
+    \begin{minipage}{0.3\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-2/results/mle-results-rho-0.60-n-16/estimates-rho.pdf}
+    \end{minipage}
+    & \begin{minipage}{0.3\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-2/results/mle-results-rho-0.60-n-16/estimates-sigma-x.pdf}
+    \end{minipage}
+    & \begin{minipage}{0.3\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-2/results/mle-results-rho-0.60-n-16/estimates-sigma-y.pdf}
     \end{minipage}
   \end{tabular}
-  \caption{Data generated with $\rho=0.95$. Kernel-density
+  \caption{Data generated with $\rho=0.60$. Kernel-density
     approximations of the repeated-sampling densities of the MLEs
-    samples obtained from the Galerkin likelihood (blue) and the
-    classical likelihood (green) and the Rogers estimator
-    (purple). The data-generating parameters are denoted with the
-    vertical solid line. The root-mean-square errors for the pairs of
-    estimators are included. As expected, the Galerkin-based
-    likelihood outperforms the Gaussian likelihood for each
-    parameter.}
+    samples obtained from the Galerkin likelihood (green) and the
+    classical likelihood (red) and the Rogers estimator
+    (blue). The data-generating parameters are denoted with the
+    vertical solid line.}
+  \label{fig:mle-comparison-rho-0.60}
+\end{figure}
+
+
+\begin{figure}
+  \centering
+  %%
+  %%
+  \begin{tabular}{ccc}
+    \begin{minipage}{0.3\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-2/results/mle-results-rho-0.0-n-4/estimates-rho.pdf}
+    \end{minipage}
+    & \begin{minipage}{0.3\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-2/results/mle-results-rho-0.0-n-4/estimates-sigma-x.pdf}
+    \end{minipage}
+    & \begin{minipage}{0.3\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-2/results/mle-results-rho-0.0-n-4/estimates-sigma-y.pdf}
+    \end{minipage} \\
+    %%
+    \begin{minipage}{0.3\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-2/results/mle-results-rho-0.0-n-8/estimates-rho.pdf}
+    \end{minipage}
+    & \begin{minipage}{0.3\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-2/results/mle-results-rho-0.0-n-8/estimates-sigma-x.pdf}
+    \end{minipage}
+    & \begin{minipage}{0.3\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-2/results/mle-results-rho-0.0-n-8/estimates-sigma-y.pdf}
+    \end{minipage} \\
+    %%
+    \begin{minipage}{0.3\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-2/results/mle-results-rho-0.0-n-16/estimates-rho.pdf}
+    \end{minipage}
+    & \begin{minipage}{0.3\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-2/results/mle-results-rho-0.0-n-16/estimates-sigma-x.pdf}
+    \end{minipage}
+    & \begin{minipage}{0.3\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-2/results/mle-results-rho-0.0-n-16/estimates-sigma-y.pdf}
+    \end{minipage}
+  \end{tabular}
+  \caption{Data generated with $\rho=0.0$. Kernel-density
+    approximations of the repeated-sampling densities of the MLEs
+    samples obtained from the Galerkin likelihood (green) and the
+    classical likelihood (red) and the Rogers estimator
+    (blue). The data-generating parameters are denoted with the
+    vertical solid line.}
   \label{fig:mle-comparison-rho-0.0}
 \end{figure}

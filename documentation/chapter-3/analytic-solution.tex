@@ -6,27 +6,28 @@
 % locations of the images (ICs).
 Chapter \ref{ch:galerkin} introduced a semidiscrete (finite element)
 Galerkin method for solving the standardized diffusion problem
-(\ref{eq:qqq}). The Galerkin method is most appropriate for large
-times, since numerical errors are attenuated with increasing diffusion
-time $\tilde{t}$. The obvious limitation of the finite element solver
-is that there are problems with $(\sigma_{\tilde{y}}, \tilde{t})$ too
-small to be resolved with a reasonable finite number of basis
-elements. We will call such parameter combinations as belonging to the
-\textit{incomputable region} of the solver. For parameters in the
-incomputable region, a sufficient condition to flag them as such is if
-the numerical derivative of the finite element solution with respect
-to the boundary parameters produces a negative value. However, this is
+(\ref{eq:qqq}). The Galerkin method is most appropriate for moderate
+to large times, since numerical errors are attenuated with increasing
+diffusion time $\tilde{t}$. Further, numerical simulations
+demonstrated the need to resolve the likelihood function for small
+$\tilde{t}$ in order to fully use the information present in OCHL
+data. We will call this parameter rage the \textit{incomputable
+  region} of the Galerkin solver. For parameters in the incomputable
+region, a sufficient condition to flag them as such is if the
+numerical derivative of the finite element solution with respect to
+the boundary parameters produces a negative value. However, this is
 not a \textit{necessary} condition, and in practice this is an
 insidious problem: parameter combinations which should be attributed
 with a very small likelihoods may be given values orders of magnitude
 higher than they should and thus falsely bias any inferential
-procedure. Procedures sensitive to such silent numerical
-instabilities, such as particle filters, are especially at risk. In
-this chapter, we develop a solution applicable in precisely the cases
-where the finite element solver fails: small values for
-$\tilde{t}$. In addition to having its own well-defined criteria for
-appropriate use (namely an upper bound on $\tilde{t}$ as well as an
-upper bound on $\tilde{\sigma}$), the analytic form of the
+procedure (see Figure (\ref{fig:limitations-rho-0.95-1} in Chapter
+\ref{ch:galerkin}) for an illustration). Procedures sensitive to such
+silent numerical instabilities, such as particle filters, are
+especially at risk. In this chapter, we develop a solution applicable
+in precisely the cases where the finite element solver fails: small
+values for $\tilde{t}$. In addition to having its own well-defined
+criteria for appropriate use (namely an upper bound on $\tilde{t}$ as
+well as an upper bound on $\tilde{\sigma}$), the analytic form of the
 small-$\tilde{t}$ solution provides a way to bound from above the
 incomputable region for the finite element solver.
 
@@ -42,8 +43,8 @@ $\tilde{t}_\epsilon$, the sum of images function \eqref{eq:p-epsilon}
 \begin{align*}
   p_\epsilon(\tilde{x}, \tilde{y}, \tilde{t}) &= G(\tilde{x}, \tilde{y}, \tilde{t} | \tilde{x}_0, \tilde{y}_0) - G(\tilde{x}, \tilde{y}, \tilde{t} | \tilde{x}'_0, \tilde{y}'_0)
 \end{align*}
-satisfies the initial condition, the governing PDE, and enforced the
-boundary conditions. However, because the analytic dependence of this
+satisfies the initial condition, the governing PDE, and the boundary
+conditions. However, because the analytic dependence of this
 small-time approximation on the boundaries is only through the
 location parameters $(\tilde{x}'_0, \tilde{y}'_0)$ of the single
 reflected image, differentiating with respect to all four boundaries
@@ -115,7 +116,7 @@ $p_\epsilon$ analytically satisfies the boundary condition at $r_l$
 (since it is the last reflection), and it also satisfies the PDE. Once
 again we can choose a sufficiently small $\tilde{t}_\epsilon$ such
 that the BCs at $r_i, r_j,$ and $r_k$ hold numerically as
-well. Although identical, both solutions to the PDE problem have
+well. Although not identical, both solutions to the PDE problem have
 minimal relative differences, and they depart from the true
 analytic solution minimally. From a numerical implementation
 standpoint, there is only near machine-$\varepsilon$ difference
@@ -129,26 +130,26 @@ location is a function of all four boundaries, and this single image
 entirely defines the corresponding density function
 $\frac{\partial^4 p_\epsilon}{\partial a_x \partial b_x \partial a_y
   \partial b_y}$. Because the location parameters of these images are
-different, the density functions of the two PDE solutions are
-consequently very different as well. Uniqueness of the solution using the
-method of images is achieved by performing an infinite number of
-reflections, which is not always possible (see Section \ref{sec:proof}
-below).
+different, the joint density of $(x_0, y_0, x, y, a_x, b_x, a_y, b_y)$
+derived from the two PDE solutions are consequently very different as
+well. Uniqueness of the solution using the method of images is
+achieved by performing an infinite number of reflections, which is not
+always possible (see Section \ref{sec:proof} below).
 
 A condition weaker than uniqueness which nonetheless restricts the
-solution space is the symmetry obeyed by the problem. A sufficient
-symmetry condition arises when
-$(\tilde{x}_0, \tilde{y}_0) = (1/2, 1/2)$. Reflecting
-about the $\tilde{x}-$ and $\tilde{y}-$axes centered on $1/2$
-preserves the governing PDE, as well as the IC/BVs. Under this
-transformation, any realized path of the original diffusion process
-has the same likelihood as its transformed version evaluated under the
-diffusion measure. In order for the sum of images solution to obey
-this symmetry condition, the proposed system of images must be
-preserved under the corresponding coordinate transformation. Further,
-if we require that the system of images contain the fewest possible
-elements, then the unique system of images is the union of the sets of
-reflections
+solution space is the symmetry obeyed by the problem. We consider the transformation
+\begin{align*}
+  x^{new} &= (a_x + b_x) - 2x^{old}, \\
+  y^{new} &= (a_y + b_y) - 2y^{old}.            
+\end{align*}
+The PDF solution to the initial-boundary problem of the diffusion
+equation and joint density of $(x_0,y_0,x,y,a_x,b_x,a_y,b_y)$ are
+invariant with respect to this transformation. In order for the sum of
+images solution to obey this symmetry condition, the proposed system
+of images must be preserved under the corresponding coordinate
+transformation. Further, if we require that the system of images
+contain the fewest possible elements, then the unique system of images
+is the union of the sets of reflections
 \begin{align}
   \left\{ 1,2,3,4 \right\} \cup \left\{ 2,3,4,1 \right\} \cup \left\{ 3,4,1,2 \right\} \cup \left\{ 4,1,2,3 \right\}. \label{eq:union}
 \end{align}
@@ -161,7 +162,7 @@ desired:
   \{3,4,1,2 \} &\to \{1,2,3,4 \}, \\
   \{4,1,2,3 \} &\to \{2,3,4,1 \}.
 \end{align*}
-Removing non-unique member images of \eqref{eq:union} and summing over
+Removing duplicate member images of \eqref{eq:union} and summing over
 the remaining $J^* \leq 64$, we define the new small-time solution
 \begin{equation}
   p_\epsilon(\tilde{x}, \tilde{y}, \tilde{t}) = \sum_{j=1}^{J^*} (-1)^{n(j)}
@@ -169,8 +170,7 @@ the remaining $J^* \leq 64$, we define the new small-time solution
 \end{equation}
 We can control the relative error of the approximation by setting the
 minimum absolute value of $p_\epsilon$ at the boundaries and solving
-for $\tilde{t}_\epsilon$. ILLUSTRATION FOR VARYING TOLERANCE FOR ONE
-EXAMPLE WITH $\rho = 0$.
+for $\tilde{t}_\epsilon$.
 % For a boundary error rate of at most $1 \cdot 10^{-12}$, the
 % solution based on the distribution bound by the symmetric (green)
 % images from Figure (\ref{fig:illustration-1}) produces palatable
@@ -206,9 +206,10 @@ EXAMPLE WITH $\rho = 0$.
       \includegraphics[width=1\linewidth]{../chapter-3/illustration-rho-0-normalized.pdf}
       \caption{The computational domain $\Omega_2$ for the normalized
         problem (\ref{eq:qqq}) is the unit square centered on
-        $(0.5,0.5)$. Level sets of the fundamental solution
-        with $\rho = 0$ and $\sigma_{\tilde{y}} < 1$ are also shown at an
-        initial condition in the upper-left corner of $\Omega_2$.}
+        $(0.5,0.5)$, shown in the figure as a square box. Level sets
+        of the fundamental solution with $\rho = 0$ and
+        $\sigma_{\tilde{y}} < 1$ are also shown at an initial
+        condition in the upper-left corner of $\Omega_2$.}
       \label{fig:normalized-problem-rho-0}
     \end{minipage} &
     %%
@@ -268,7 +269,7 @@ EXAMPLE WITH $\rho = 0$.
       \includegraphics[width=1\linewidth]{../chapter-3/chapter-3-figure-illustration-rel-error.pdf}
       \caption{Relative error across $\Omega$ on a $30 \times 30$
         regular grid based on solution (\ref{eq:small-time-sol}) for
-        the symmetric distribution of images in Figure
+        the symmetric distribution (green set) of images in Figure
         (\ref{fig:illustration-1}). The max admissible small time
         $t^*$ is bounded above by $0.058$ and used here. The relative
         error rate is on the order of $0.01\%$}
@@ -278,7 +279,7 @@ EXAMPLE WITH $\rho = 0$.
 \end{figure}
 
 
-\section{Density Calculation}
+\section{Calculation of Joint Density}
 Out of the $J^*$ images in \eqref{eq:small-time-sol}, exactly four
 have location parameters dependent on all of the boundary parameters
 $(a_x, b_x, a_y, b_y)$. Hence, the density calculation with the
@@ -383,14 +384,16 @@ form:
     \end{minipage}
   \end{tabular}
 \end{figure}
-The above approximate solution is close to the true existing
-small-time solution for $\tilde{t} \leq \tilde{t}_\epsilon$. Extending
-beyond $\tilde{t}_\epsilon$ produces a positive function dominated by
-the hyperbolic term $\mathcal{C}^4$. Figure
+The above approximate solution is close to the untruncated
+($\mathcal{C}^4, \mathcal{C}^3, \mathcal{C}^2,$ and $\mathcal{C}^1$
+term solution) small-time solution for
+$\tilde{t} \leq \tilde{t}_\epsilon$. Extending beyond
+$\tilde{t}_\epsilon$ produces a positive function dominated by the
+hyperbolic term $\mathcal{C}^4$. Figure
 (\ref{fig:illustration-likelihood-profile}) shows a profile comparison
-of the log-likelihood with respect to $\tilde{t}$ for the example
-configuration used so far. The truncated approximate solution tracks
-well with the true solution up to $\mathcal{O}(\tilde{t}) =
+of the log-likelihood with respect to $\tilde{t}$ for a representative sample
+configuration. The truncated approximate solution tracks
+well with the untruncated solution up to $\mathcal{O}(\tilde{t}) =
 1$. Applying a first-order finite difference approximation with a
 finite step $\Delta = 10^{-5}$ to compute the polynomial derivatives
 produces relative errors with a maximum of order
@@ -403,7 +406,7 @@ $\mathcal{O}(10^{-4})$ on a $30 \times 30$ grid shown in Figure
       \centering
       \includegraphics[width=1\linewidth]{../chapter-3/chapter-3-figure-illustration-rel-error-likelihood.pdf}
       \caption{Relative error for the likelihood problem comparing the
-        true solution with the truncated small-time approximation in
+        untruncated solution to the truncated small-time approximation in
         (\ref{eq:truncated-approx}) on a $30 \times 30$ regular grid
         over $\Omega$. }
       \label{fig:illustration-rel-error-likelihood}
@@ -419,70 +422,48 @@ $\mathcal{O}(10^{-4})$ on a $30 \times 30$ grid shown in Figure
     %   \end{tabular}
 \end{figure}
 
-Closer observation of (\ref{eq:truncated-approx}) reveal that each of
-the summands are proportional to an Inverse-gamma distribution, since
-$\left(\partial_{a_x}\partial_{b_x} \partial_{a_y}\partial_{b_y}
-\right)\mathcal{P}_j$ is not dependent on $\tilde{t}$:
-\begin{align*}
-  \frac{\partial^4 p_\epsilon(\tilde{x}, \tilde{y}, \tilde{t})}{\partial a_x
-  \partial b_x \partial a_y \partial b_y} &\approx \\
-   \MoveEqLeft[10] \approx \sum_{j' = 1}^{4} \frac{1}{\pi\sqrt{2}} \left(\frac{1}{2\,\,\tilde{t}\, \sigma_{\tilde{y}}^2 (1-\rho^2)} \right)^{4.5}
-                                            \exp\left( -\frac{1}{2\,\,\tilde{t}\, \sigma_{\tilde{y}}^2 (1-\rho^2)} \mathcal{P}_{j'}\right)
-  \left(\partial_{a_x}\partial_{b_x} \partial_{a_y}\partial_{b_y} \right)\mathcal{P}_{j'} \\
-  % \MoveEqLeft[10] = \sum_{j' = 1}^{4} A_{j'} \left( \frac{1}{\tilde{t}} \right)^{4.5} \exp\left( -\frac{\beta_{j'}}{\tilde{t}} \right) \\
-                                          &\propto \sum_{j' = 1}^{4} IG(\tilde{t} | 3.5, \beta_{j'}), \\ 
- \beta_{j'} &= \frac{1}{2\,\, \sigma_{\tilde{y}}^2 (1-\rho^2)} \mathcal{P}_{j'}, \\
-  \alpha_{j'} &= 3.5,
-\end{align*}
-where we use the shape-scale parameterization for the Inverse-Gamma
-distribution. This allows us to approximate the value for $\tilde{t}$
-which maximizes the likelihood function. The summand with the smallest
-$\beta_{j'}$ contributes the most to the truncated small-time solution
-in the $\tilde{t} \leq \tilde{t}_\epsilon$ region, so that the
-smallest mode $\beta_j/(\alpha_j+1)$ is closest to the mode of the
-approximating function. Even though the truncated solution is not
-applicable for all $\tilde{t}$, its mode still gives a reasonable
-approximation for the $\tilde{t}$ value which maximizes the true
-likelihood function. An empirical validation is discussed below (see
-Figures (\ref{fig:modes-histogram}) - (\ref{fig:modes-histogram-3})),
-which provide views of the errors in approximating the true value $\tilde{t}$
-maximizing the likelihood and the approximation derived from the
-truncated small-time solution:
-\[ \min_{j'} \{ \beta_{j'}/(\alpha_{j'}+1) \} - \tilde{t}_{\max},
-\] where $\tilde{t}_{\max}$ is the $\tilde{t}$ value maximizing the
-true likelihood (for $\rho=0$) given some parameter combination
-$(\tilde{x}_0, \tilde{y}_0, \tilde{x}_{\tilde{t}},
-\tilde{y}_{\tilde{t}})$ and $\sigma_{\tilde{y}}$. Each data point in
-the histograms/scatterplots corresponding to such a combination is
-generated by sampling
-\begin{align*} \sigma_x &\sim \mbox{Lognormal}(2, 2), & \sigma_y &\sim
-  \mbox{Lognormal}(2, 2), & \rho &= 0,
-\end{align*} then simulating from a bivariate Brownian process using a
-forward Euler method and a small time step. Normalizing to the
-standard diffusion problem (see equation
-(\ref{eq:qqq})), $\tilde{t}_{\max}$ is found numerically
-conditional on $(\tilde{x}_0, \tilde{y}_0, \tilde{x}_{\tilde{t}},
-\tilde{y}_{\tilde{t}})$ and $\sigma_{\tilde{y}}$, since we
-have the closed-form likelihood for the $\rho=0$ case. For the same
-input parameters, we generate four images as given by our method above
-and then find $\min_{j'} \{ \beta_{j'}/(\alpha_{j'}+1) \}$. We compare how
-the Galerkin solution performs at this boundary of the computable
-region and beyond in the following figures.
-The histogram in Figure (\ref{fig:modes-histogram}) shows the
-distribution of signs and magnitudes of the error differences in
-approximating the modes
-$\tilde{t}_{\mbox{max}} - \min_{j'} \{ \beta_{j'}/(\alpha_{j'}+1) \}$,
-which are correlated with small $\sigma_{\tilde{y}}$ (Figure
-(\ref{fig:modes-scatterplot})). Further, can see from the plot of true
-mode vs. error in Figure (\ref{fig:modes-scatterplot-2}) that largest
-errors occur for modes that are large on relative to the
-$\tilde{t}-$scale. The distribution of true log-likelihood values at
-the approximate modes is given in Figure
-(\ref{fig:modes-histogram-2}). We can see that these function values
-are relatively large and should be resolvable by the finite element
-solver. This is confirmed in Figure
-(\ref{fig:modes-histogram-3}), which shows the relative error using
-the Galerkin solver.
+
+
+% An empirical
+% validation is discussed below (see Figures (\ref{fig:modes-histogram})
+% - (\ref{fig:modes-histogram-3})), which provide views of the errors in
+% approximating the true value $\tilde{t}$ maximizing the likelihood and
+% the approximation derived from the truncated small-time solution:
+% \[ \min_{j'} \{ \beta_{j'}/(\alpha_{j'}+1) \} - \tilde{t}_{\max},
+% \] where $\tilde{t}_{\max}$ is the $\tilde{t}$ value maximizing the
+% true likelihood (for $\rho=0$) given some parameter combination
+% $(\tilde{x}_0, \tilde{y}_0, \tilde{x}_{\tilde{t}},
+% \tilde{y}_{\tilde{t}})$ and $\sigma_{\tilde{y}}$. Each data point in
+% the histograms/scatterplots corresponding to such a combination is
+% generated by sampling
+% \begin{align*} \sigma_x &\sim \mbox{Lognormal}(2, 2), & \sigma_y &\sim
+%   \mbox{Lognormal}(2, 2), & \rho &= 0,
+% \end{align*} then simulating from a bivariate Brownian process using a
+% forward Euler method and a small time step. Normalizing to the
+% standard diffusion problem (see equation
+% (\ref{eq:qqq})), $\tilde{t}_{\max}$ is found numerically
+% conditional on $(\tilde{x}_0, \tilde{y}_0, \tilde{x}_{\tilde{t}},
+% \tilde{y}_{\tilde{t}})$ and $\sigma_{\tilde{y}}$, since we
+% have the closed-form likelihood for the $\rho=0$ case. For the same
+% input parameters, we generate four images as given by our method above
+% and then find $\min_{j'} \{ \beta_{j'}/(\alpha_{j'}+1) \}$. We compare how
+% the Galerkin solution performs at this boundary of the computable
+% region and beyond in the following figures.
+% The histogram in Figure (\ref{fig:modes-histogram}) shows the
+% distribution of signs and magnitudes of the error differences in
+% approximating the modes
+% $\tilde{t}_{\mbox{max}} - \min_{j'} \{ \beta_{j'}/(\alpha_{j'}+1) \}$,
+% which are correlated with small $\sigma_{\tilde{y}}$ (Figure
+% (\ref{fig:modes-scatterplot})). Further, can see from the plot of true
+% mode vs. error in Figure (\ref{fig:modes-scatterplot-2}) that largest
+% errors occur for modes that are large on relative to the
+% $\tilde{t}-$scale. The distribution of true log-likelihood values at
+% the approximate modes is given in Figure
+% (\ref{fig:modes-histogram-2}). We can see that these function values
+% are relatively large and should be resolvable by the finite element
+% solver. This is confirmed in Figure
+% (\ref{fig:modes-histogram-3}), which shows the relative error using
+% the Galerkin solver.
 \begin{figure}
   \begin{tabular}{cc}
     \begin{minipage}{0.50\textwidth}
@@ -543,6 +524,7 @@ the Galerkin solver.
     \end{minipage}
   \end{tabular}
 \end{figure}
+
 % \begin{figure}
 %   \centering
 %   %%
@@ -577,7 +559,9 @@ the Galerkin solver.
         $\rho>0$. The thick dashed line defines the axis along which
         images resultant from reflecting about boundaries 2 and 4
         fall. The blue point denotes the intersection of the axis and
-        the extension of boundary 3.}
+        the extension of boundary 3. When reflect with respect to
+        boundary 1, for example, some of the images shown will fall
+        into region $\Omega$.}
       \label{fig:proof-1}
     \end{minipage} \\
     %%
@@ -644,7 +628,7 @@ reflections used for $p_\epsilon$ does not violate the problem.
   places images along a finite segment of a line running through the
   IC position and orthogonal to lines 2 and 4 (dashed line and
   black/red dots in Figure (\ref{fig:proof-1})). If the number of
-  reflections is kept constant, $\sigma_{\tilde{y}}$ can be sufficiently
+  reflections is kept constant and $\sigma_{\tilde{y}}$ is sufficiently
   small such that all thus placed images are in the interior region
   formed by extending lines 1 and 3. This is proved from the following
   observations:
@@ -662,12 +646,12 @@ reflections used for $p_\epsilon$ does not violate the problem.
     independent of $\sigma_{\tilde{y}}$.
   \item The coordinate of the point of intersection between the
     reflection line and the extension of line 3 (blue point in Figure
-    (\ref{fig:proof-1})) is
+    (\ref{fig:proof-1})) is $(x,y)$ where
     \begin{align*}
-      \frac{\sqrt{2}}{2} \left( \frac{-2 x_0\rho + 2
+      x &= \frac{\sqrt{2}}{2} \left( \frac{-2 x_0\rho + 2
       y_0/\sigma_{\tilde{y}} -
-      2/\sigma_{\tilde{y}}(1-\rho)}{-2\rho\sqrt{1-\rho}},
-      \frac{\sqrt{1-\rho}}{\sqrt{1+\rho}}\frac{-2 x_0\rho + 2
+      2/\sigma_{\tilde{y}}(1-\rho)}{-2\rho\sqrt{1-\rho}}\right), \\
+      y &= \frac{\sqrt{2}}{2} \left( \frac{\sqrt{1-\rho}}{\sqrt{1+\rho}}\frac{-2 x_0\rho + 2
       y_0/\sigma_{\tilde{y}} -
       2/\sigma_{\tilde{y}}(1-\rho)}{-2\rho\sqrt{1-\rho}} +
       \frac{1}{\sqrt{2}\sigma_{\tilde{y}}\sqrt{1+\rho}} \right).
@@ -704,5 +688,69 @@ reflections used for $p_\epsilon$ does not violate the problem.
   parameters for $\Omega$.
 \end{proof}
 
+\section{Matching the Small-time Likelihood with the Galerkin Solution}
+So far we have developed an analytic likelihood solution valid for
+certain small $\tilde{t}_\epsilon$ determined by the geometry of the
+initial-boundary value problem. The Galerkin likelihood solution from
+Chapter \ref{ch:galerkin}, on the other hand, applies for relatively
+larger $\tilde{t}$.  The results of the simulation studies in Chapter
+\ref{ch:galerkin} showed the need to resolve the likelihood in the
+\textit{transient} region $\tilde{t}$ between where the small-time
+likelihood is applicable and where the Galerkin likelihood is
+applicable.
 
 
+This is achieved by asymptotically matching the small-time likelihood
+solution to the Galerkin solution. Closer observation of
+(\ref{eq:truncated-approx}) reveal that each of the summands of the
+truncated small-time solution share a common polynomial factor:
+\begin{align*}
+  \frac{\partial^4 p_\epsilon(\tilde{x}, \tilde{y}, \tilde{t})}{\partial a_x
+  \partial b_x \partial a_y \partial b_y} &\approx \\
+  \MoveEqLeft[10] \approx \sum_{j' = 1}^{4} \frac{1}{\pi\sqrt{2}} \left(\frac{1}{2\,\,\tilde{t}\, \sigma_{\tilde{y}}^2 (1-\rho^2)} \right)^{4.5}
+  \exp\left( -\frac{1}{2\,\,\tilde{t}\, \sigma_{\tilde{y}}^2 (1-\rho^2)} \mathcal{P}_{j'}\right)
+  \left(\partial_{a_x}\partial_{b_x} \partial_{a_y}\partial_{b_y} \right)\mathcal{P}_{j'} \\
+                                          &= K \left(\frac{1}{\tilde{t}} \right)^{4.5} \sum_{j'=1}^4 c_j' \exp\left( -\frac{\beta_{j'}}{\tilde{t}} \right), \\
+  K &= \frac{1}{\pi\sqrt{2}} \left(\frac{1}{2\,\, \sigma_{\tilde{y}}^2 (1-\rho^2)} \right)^{4.5}, \\
+  \beta_{j'} &= \frac{1}{2\,\, \sigma_{\tilde{y}}^2 (1-\rho^2)} \mathcal{P}_{j'}, \\
+  c_{j'} &= \left(\partial_{a_x}\partial_{b_x} \partial_{a_y}\partial_{b_y} \right)\mathcal{P}_{j'}
+\end{align*}
+The summand with the smallest $\beta_{j'}$ contributes the most to the
+truncated small-time solution in the $\tilde{t} \leq 1$ region where
+the matched solution will applied. Indexing $j'$ such that
+$\beta_1 \leq \beta_2 \leq \beta_3 \leq \beta_4$, the small-time
+log-likelihood is
+\begin{align}
+  \log\left( \frac{\partial^4 p_\epsilon(\tilde{x}, \tilde{y}, \tilde{t})}{\partial a_x
+  \partial b_x \partial a_y \partial b_y} \right) &\approx \log(K) - 4.5\log(\tilde{t}) + \log(c_1) - \frac{\beta_1}{\tilde{t}} \nonumber \\
+  &\quad + \log\left(1 + \sum_{j \neq 1} \frac{c_j}{c_1}\exp\left( -\frac{(\beta_j-\beta_1)}{\tilde{t}} \right) \right) \nonumber \\
+  &\approx \log(K) - 4.5\log(\tilde{t}) + \log(c_1) - \frac{\beta_1}{\tilde{t}} + \log\left(1 + \epsilon(\tilde{t}) \right), \label{eq:small-time-log-like}
+\end{align}
+where we are assuming that the non-dominant exponential terms are
+small relative to the $\beta_1$ term. When
+constructing the matched solution, we ignore $\epsilon(\tilde{t})$
+since the likelihood function is dominated by the $\log(\tilde{t})$
+term away from zero.  The likelihood computed with the Galerkin solution as a
+function of $\tilde{t}$ is of the form
+\begin{align*}
+  \frac{\partial^4 p_{\mbox{Galerkin}}(\tilde{x}, \tilde{y}, \tilde{t})}{\partial a_x
+  \partial b_x \partial a_y \partial b_y} = \sum_{k=1}^{K} e^{-\lambda_k\tilde{t}} p_k^{(4)}(\tilde{t}),
+\end{align*}
+where $p_i^{(4)}(\tilde{t})$ is a fourth-order polynomial. This is due
+to the fact that the only dependency of the Galerkin solution on
+$\tilde{t}$ is through the exponential term. The log-likelihood in
+this case is
+\begin{multline}
+  \log\left(\frac{\partial^4 p_{\mbox{Galerkin}}(\tilde{x}, \tilde{y}, \tilde{t})}{\partial a_x
+      \partial b_x \partial a_y \partial b_y}\right) = -\lambda_1\tilde{t} + \log(p_1^{(4)}(\tilde{t})) + \log\left( 1 + \sum_{k=2}^K e^{-(\lambda_k-\lambda_1)\tilde{t}}\frac{p_k^{(4)}(\tilde{t})}{p_1^{(4)}(\tilde{t})} \right) \\
+  \approx -\lambda_1\tilde{t} + \log(p_1^{(4)}(\tilde{t})) + \log\left( 1 + \epsilon \right).
+\end{multline}
+As in the small-time likelihood, we ignore the effects of higher order
+eigenvalues and is appropriate to do so as long as
+$e^{-(\lambda_k-\lambda_1)\tilde{t}}$ is small relative to 1.
+
+To construct the matched solution, we posit that the log-likelihood in
+the transient region has the form
+\begin{align}
+  f_{\mbox{transient}}(\tilde{t}) = C - \alpha\log(\tilde{t}) - \frac{\beta_1}{\tilde{t}}
+\end{align}
