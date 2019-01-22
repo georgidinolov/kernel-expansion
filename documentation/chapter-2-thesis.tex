@@ -44,36 +44,40 @@ Given that we consider the subset of $(X(t), Y(t))$ that satisfies the constrain
   q(a_x, y,t') &= q(b_x,y,t') = q(x,a_y,t') = q(x,b_y,t') = 0, & 0 &< t' \leq t. \label{eq:2}
 \end{align}
 Differentiating $q(x,y,t)$ with respect to the boundaries produces the
-transition density of a particle beginning and ending at the points
-$(X(0), Y(0))$ and $(X(t), Y(t))$, respectively, while attaining the
-minima $a_x/a_y$ and maxima $b_x/b_y$ in each coordinate, which we
-denote as $f(x,y,a_x,b_x,a_y,b_y)$,
+transition density of a particle beginning at $(X(0), Y(0))$ and
+ending at $(X(t), Y(t))$, while attaining the minimum levels $a_x$ and
+$a_y$ in the $x-$ and $y-$directions and the maximum levels $b_x$ and
+$b_y$. We denote denote this transition density as
+$f(x,y,a_x,b_x,a_y,b_y)$ and note that it is  the fourth-order partial derivative of the unconstrained process $q$ with respect to the four boundaries:
 \begin{align}
   \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial b_y} q(x,y,t) = f(x,y,a_x,b_x,a_y,b_y).
   \label{eq:pdf}
 \end{align}
 We should note that $f(x,y,a_x,b_x,a_y,b_y)$ exists. Consider the relation
-\begin{align*}
-  &f(x,y,a_x,b_x,a_y,b_y) = \\
-  &\Pr\left(X(t) \in dx, Y(t) \in dy, m_x \in da_x, M_x \in db_x, m_y
-    \in a_y, M_y \in db_y \left| \theta \right.\right) = \mathbb{P}_{W}\left( A(z) \right), \\
-   & A(z) = \left\{ \omega \in W \left| X_\omega(t) = x,
+\begin{multline*}
+  f(x,y,a_x,b_x,a_y,b_y) = \\
+  \Pr\left(X(t) \in dx, Y(t) \in dy, m_x \in da_x, M_x \in db_x, m_y
+    \in a_y, M_y \in db_y \left| \theta \right.\right) = \\
+  \mathbb{P}_{W}\left( A(x,y,a_x,b_x,a_y,b_y) \right),
+  \end{multline*}
+  where
+  \begin{multline*}
+    A(x,y,a_x,b_x,a_y,b_y) = \left\{ \omega \in W \left| X_\omega(t) = x,
      Y_\omega(t)=y, \inf_{t'\in [0,1]} X_\omega(t') = a_x, \right.  \right. \\
-   &\qquad \qquad \qquad \left. \sup_{t'\in [0,1]} X_\omega(t') = b_x, \inf_{t'\in [0,1]}
+   \qquad \qquad \qquad \left. \sup_{t'\in [0,1]} X_\omega(t') = b_x, \inf_{t'\in [0,1]}
          Y_\omega(t') = a_y, \sup_{t'\in [0,1]} Y_\omega(t') = b_y
-     \right\}, \\
-  &z := (x,y,a_x,b_x,a_y,b_y),
-\end{align*}
-where we use the shorthand $X(t) \in dx$ for $X(t) \in (x, x+dx)$, and
-$\mathbb{P}_{W}$ is the Wiener measure on the sample space $W$ of all
-realizations (paths) $(X_\omega(t), Y_\omega(t))$ from the stochastic
-process (\ref{eq:X}) - (\ref{eq:Y}) defined in the usal way using
-Kolmogorov's extension of measure over cylinder sets on
-$t \to \mathbb{R}^2$ (see \cite{freidlin1985functional}, Section
-1.2). Sets of the form $A(x,y,a_x,b_x,a_y,b_y)$ can be defined as a
-countable intersection/union of cyliner sets on $t \to \mathbb{R}^2$,
-hence they are measurable under $\mathbb{P}_{W}$; therefore $f(x,y,a_x,b_x,a_y,b_y)$
-exists and is bounded above by 1.
+     \right\}. \\
+   \end{multline*}
+   We use the shorthand $X(t) \in dx$ for $X(t) \in (x, x+dx)$, and
+   $\mathbb{P}_{W}$ is the Wiener measure on the sample space $W$ of
+   all realizations (paths) $(X_\omega(t), Y_\omega(t))$ from the
+   stochastic process (\ref{eq:X}) - (\ref{eq:Y}). The process is defined in the usal
+   way using Kolmogorov's extension of measure over cylinder sets on
+   $t \to \mathbb{R}^2$ (see \cite{freidlin1985functional}, Section
+   1.2). Sets of the form $A(x,y,a_x,b_x,a_y,b_y)$ can be defined as a
+   countable intersection/union of cyliner sets on
+   $t \to \mathbb{R}^2$, hence they are measurable under
+   $\mathbb{P}_{W}$; therefore $f(x,y,a_x,b_x,a_y,b_y)$ exists.
 
 Marginals of (\ref{eq:CDF}) involving less than all four boundaries
 have been used in computing first passage times \cite{kou2016first,
@@ -112,24 +116,26 @@ problem by proposing a biorthogonal expansion in time and space
 (\cite{risken1989fokker-planck}, sections 6.2), where the
 eigenfunctions for the differential operator are approximated by the
 eigenvectors of a linear system obtained using a truncated expansion
-based on eigen-functions for the case $\rho=0$, a set of separable
+based on eigenfunctions for the case $\rho=0$, a set of separable
 basis functions, each of which is a product of two sine functions (one
 in each dimension) satisfying the boundary conditions. However, a
 drawback of this out-of-the-box solution is that the system matrix for
 the corresponding eigenvalue problem is dense. Additionally, for
 moderately large values of $|\rho|$, a large number of basis elements
 is typically needed for an accurate approximation. The denseness and
-size of the resultant system makes the expansion a slow, if not
-unfeasible, solution. An alternative is to use a finite difference
-scheme to directly solve the evolution problem after suitable
+size of the resultant system makes the expansion a slow solution. This
+becomes unfeasible in cases where we need to solve the equation many
+times such as in the case of doing statistical likelihood-based
+inference. An alternative is to use a finite difference scheme to
+directly solve the evolution problem after suitable
 transformations. However, both of these methods need a high degree of
 numerical resolution to produce practically useful approximations of
 the transition density. The trigonometric series expansion has
 exponential accuracy in the case $\rho=0$, while it loses accuracy
-catastrophically when $\rho\neq 0$. This fact suggests that for the
-trigonometric series expansion inefficiencies arise from using a
+catastrophically when $\rho\neq 0$. We hypothesize that the
+inefficiencies in the trigonometric expansion arise from using a
 separable representation for a differential operator that is
-intrinsically correlated in the two dimensions; for the finite
+intrinsically correlated in the two dimensions. For the finite
 difference approach, the problem is twofold as the method introduces
 numerical diffusion in the initial condition and it also uses a
 separable approximation for the differential operator.
@@ -137,15 +143,15 @@ separable approximation for the differential operator.
 In this chapter we propose a robust and efficient algorithm to
 numerically approximate the solution to (\ref{eq:1}) - (\ref{eq:2})
 and (\ref{eq:pdf}) in two distinct parameter regimes. We use a
-Galkerin discretization where the key strategy is to directly take
-into account the correlation parameter present in the differential
-operator in order to efficiently represent an analytic small-time
-solution and propagate it forward in time. We apply our computational
-method to estimate diffusion parameters with a maximum likelihood
-from an independent, identically distributed sample. Section
-\ref{sec:approximate-sols} outlines some methods we considered for
-this problem. Section \ref{sec:semidiscrete-galerkin} describes the
-Galerkin method we implemented. Section [] includes our numerical
+Galkerin discretization that directly takes into account the
+correlation parameter present in the differential operator in order to
+efficiently represent an analytic small-time solution and propagate it
+forward in time. We apply our computational method to estimate
+diffusion parameters with a maximum likelihood from an independent,
+identically distributed sample. Section \ref{sec:approximate-sols}
+outlines some methods we considered for this problem. Section
+\ref{sec:semidiscrete-galerkin} describes the Galerkin method we
+implemented. Section \ref{sec:simulation-study} includes our numerical
 experiments.
 
 
@@ -205,18 +211,18 @@ The differential operator $\mathcal{L}^{(1)}$ takes the form
 \]
 with $\tau_x = \frac{\sigma_x}{L_x}$,
 $\tau_y = \frac{\sigma_y}{L_y}$.  Two remarks are in order here:
-\begin{remark}
-  The transformation $T_{(1)}$ preserves $\rho$ from the original problem.
-\end{remark}
-\begin{remark} \label{remark:const-L} We consider $L_x$ and $L_y$ as
-  \textit{fixed} in differentiating $p(x,y,t)$. This amounts to
-  perturbing the boundaries of $\Omega^{(1)}$ when differentiating
-  $p_{(1)}(x^{(1)}, y^{(1)}, t)$ with respect to $(a_x, b_x, a_y, b_y)$,
-  while keeping the diffusion parameters $\tau_x, \tau_y$
-  constant. In contrast, if we treat $L_x, L_y$ as functions of the
-  boundary parameters, then upon differentiation $\tau_x, \tau_y$ will
-  be perturbed while preserving $\Omega^{(1)}$.
-\end{remark}
+\begin{enumerate}
+\item The transformation $T_{(1)}$ preserves $\rho$ from the original
+  problem.
+\item We consider $L_x$ and $L_y$ as \textit{fixed} in differentiating
+  $p(x,y,t)$. This amounts to perturbing the boundaries of
+  $\Omega^{(1)}$ when differentiating $p_{(1)}(x^{(1)}, y^{(1)}, t)$
+  with respect to $(a_x, b_x, a_y, b_y)$, while keeping the diffusion
+  parameters $\tau_x, \tau_y$ constant. In contrast, if we treat
+  $L_x, L_y$ as functions of the boundary parameters, then upon
+  differentiation $\tau_x, \tau_y$ will be perturbed while preserving
+  $\Omega^{(1)}$.
+\end{enumerate}
 Thirdly, we \textit{normalize} the diffusion equation (\ref{eq:qq-2}) with the transformation
 \begin{align}
   T_{(2)}: p_{(2)}(\tilde{x}, \tilde{y}, \tilde{t}) &= \left\{ \begin{array}{cc}
@@ -252,15 +258,15 @@ condition is scaled by either $\tau_x^2$ or $\tau_y^2$, while the
 correlation coefficient remains the same. Transforming back to the
 original coordinate frame is straight-forward
 \[
-  p(x,y,t) = p_{(2)}(\tilde{x}, \tilde{y}, \tilde{t}) \cdot \frac{1}{L_xL_y}.
+  p(x,y,t) = p_{(2)}(\tilde{x}(x,y; \sigma_x,\sigma_y,\rho), \tilde{y}(x,y; \sigma_x,\sigma_y,\rho), \tilde{t}(t; \sigma_x,\sigma_y,\rho)) \cdot \frac{1}{L_xL_y}.
 \]
 Hence, the solution to the original problem \eqref{eq:1} -
 \eqref{eq:2} can be expressed as the product
-\[
-  q(x,y,t) = \exp(-\alpha x - \beta y - \gamma t) \cdot
-  p_{(2)}(\tilde{x}, \tilde{y}, \tilde{t}) \cdot \frac{1}{L_xL_y}.
-\]
-As a consequence of Remark \ref{remark:const-L}, all of the dependency
+\begin{multline*}
+  q(x,y,t) = \exp(-\alpha x - \beta y - \gamma t) \cdot \\
+  p_{(2)}(\tilde{x}(x,y; \sigma_x,\sigma_y,\rho), \tilde{y}(x,y; \sigma_x,\sigma_y,\rho), \tilde{t}(t; \sigma_x,\sigma_y,\rho)) \cdot \frac{1}{L_xL_y}.
+\end{multline*}
+As a consequence of the second remark above, all of the dependency
 of $q$ on $(a_x,b_x,a_y,b_y)$ is through the normalized solution
 $p_{(2)}(\tilde{x},\tilde{y},\tilde{t})$. Thus, without loss of
 generality, we will concentrate on the solution of the normalized
@@ -287,7 +293,7 @@ $\phi_\nu(\tilde{x}, \tilde{y})$. Because the differential operator
 $\mathcal{L}$ is self-adjoint, the family of eigenfunctions is
 complete in the Hilbert space $L_2(\Omega)$. Moreover, the eigenvalues
 are bounded below by a positive constant $c$, so that the solution
-behaves as expected (see section 6.3 of
+decays to zero as $\tilde{t}$ goes to infinity (see section 6.3 of
 \cite{risken1989fokker-planck}).
 
 Since we require $\phi_\nu(\tilde{x},\tilde{y})$ to be zero on the boundaries, we
@@ -357,7 +363,7 @@ unfeasible. This is especially important in the context of the main
 problem: computing derivatives of $p$ with respect to the boundary
 parameters.
 
-\subsection{Finite Difference} \label{sec:finite-difference} A finite
+\subsection{Finite Difference Methods} \label{sec:finite-difference} A finite
 difference method which approximates the spatial derivatives in
 problem (\ref{eq:qqq}) - (\ref{eq:qqq-2}) requires the solution to a
 system of differential equations
@@ -611,22 +617,22 @@ step size as big as $\varepsilon \sim 10^{-4}$ produces errors
 $O(1)$. This is catastrophic in instances where true values of the
 fourth order derivative (the joint density) are smaller than 1.
 
-\subsubsection{Boundary derivatives with finite difference and irregular truncation errors} \nonumber
+\subsection{Boundary derivatives with finite difference and irregular truncation errors}
 The contribution from the irregular part of truncation error can also
 be problematic if the finite difference approximation of the
-derivative of $F_{irreg}(b)$ is $O(k^\beta/\varepsilon)$; this is the
-case for the finite difference method because of the linear
+derivative of $F_{irreg}(b)$ is $O(k^\beta/\varepsilon)$. Indeed, this
+is a property of the finite difference method because of the linear
 interpolation necessary for function arguments not on grid
 points. Referring to the notation in (\ref{eq:trunc-error}), and
 setting $k := 1/h$, the interpolation error introduced by a finite
 difference scheme at position $b$ for the boundary parameters using
 step $h$ has the general form of
-$$\mbox{Interpolation error } = O(h^2) (1-\mbox{rem}(b/h,1)) \mbox{rem}(b/h,1)$$
+$$\mbox{Interpolation error } = O(h^2) (1-\mbox{remainer}(b/h,1)) \mbox{remainer}(b/h,1)$$
 The coefficient part
-$\mbox{F}_{irreg}(b) = (1-\mbox{rem}(b/h,1)) \mbox{rem}(b/h,1) $ is
+$\mbox{F}_{irreg}(b) = (1-\mbox{remainer}(b/h,1)) \mbox{remainer}(b/h,1) $ is
 continuous in $b$ but not differentiable. Its first derivative has the
 behavior of
-$$ \frac{\partial }{\partial b} \mbox{F}_{irreg}(b) =  \frac{1}{h} \left(1-2\mbox{rem}(b/h,1) \right).$$ The contribution from the irregular part of truncation error is
+$$ \frac{\partial }{\partial b} \mbox{F}_{irreg}(b) =  \frac{1}{h} \left(1-2\mbox{remainer}(b/h,1) \right).$$ The contribution from the irregular part of truncation error is
 $$ h^2 \frac{\mbox{F}_{irreg}(b+\varepsilon)-\mbox{F}_{irreg}(b-\varepsilon)}{2 \varepsilon}  =
 O\left(\frac{h^2}{\max(\varepsilon, h)} \right) $$
 In the second order numerical differentiation, however, the contribution from
@@ -637,21 +643,28 @@ O\left(\frac{h^2}{\max(\varepsilon^2, h^2)} \right) $$ The interplay
 between $h$ and $\varepsilon$ limits the size $\varepsilon$ we can use
 to perform density calculations for a fixed step size $h$.
 
-In terms of density calculations, the eigenfunction expansion does not
-suffer from having irregular truncation errors, because the system
-matrix $A$ (see \eqref{eq:system}) is analytic in the diffusion
-parameters and the eigenpairs $(\lambda_\nu, c_\nu)$ inherit this
-property (see Theorems 7 and 8 of Chapter 9 in
-\cite{lax2007linear-algebra}). As mentioned previously, because a good
-working approximation of $p(\tilde{x},\tilde{y},\tilde{t})$ requires
-many terms in the expansion, and because each resultant system matrix
-is dense, repeated computation of the eigenproblem for the density
-calculation becomes unfeasible.
+Hence, while finite difference approximations lead to sparse systems
+that can be solved relatively fast, they impose a natural limit on the
+quality of the derivative. On the other hand, eigenvalue expansions do
+not suffer from having irregular truncation errors (leading to more
+accurate derivatives), but the system matrix is dense and therefore
+the problems are slow to solve.
 
-As a consequence of round-off errors and possible irregular truncation
-errors, we observe that there is a fundamental restriction on the size
-of finite difference steps $\varepsilon$ we can use in the numerical
-methods below.
+% In terms of density calculations, the eigenfunction expansion does not
+% suffer from having irregular truncation errors, because the system
+% matrix $A$ (see \eqref{eq:system}) is analytic in the diffusion
+% parameters and the eigenpairs $(\lambda_\nu, c_\nu)$ inherit this
+% property (see Theorems 7 and 8 of Chapter 9 in
+% \cite{lax2007linear-algebra}). As mentioned previously, because a good
+% working approximation of $p(\tilde{x},\tilde{y},\tilde{t})$ requires
+% many terms in the expansion, and because each resultant system matrix
+% is dense, repeated computation of the eigenproblem for the density
+% calculation becomes unfeasible.
+
+% As a consequence of round-off errors and possible irregular truncation
+% errors, we observe that there is a fundamental restriction on the size
+% of finite difference steps $\varepsilon$ we can use in the numerical
+% methods below.
 
 \section{A Novel Semidiscrete Galerkin
   Method} \label{sec:semidiscrete-galerkin} We propose a semidiscrete
@@ -719,13 +732,13 @@ where $<\cdot, \cdot>$ is the usual inner product in
 $L_2(\tilde{\Omega})$. The orthogonality conditions
 (\ref{eq:orthogonality-conditions}) lead to the system of equations
 \begin{align}
-  M \mathbf{\dot{c}}(\tilde{t}) &= S \mathbf{c}(\tilde{t}), \label{eq:orthogonality-conditions-mat-1}\\
+  M \mathbf{\dot{c}}(\tilde{t}) &= S \mathbf{c}(\tilde{t}), \label{eq:orthogonality-conditions-mat-1} \\
   M \mathbf{c}(0) &= \mathbf{p}(0), \label{eq:orthogonality-conditions-mat-2}
 \end{align}
 where $M$ is the mass matrix, $S$ is the stiffness matrix, and each
 component of $\mathbf{p}(0)$ is the vector projection of
 $p(\tilde{x},\tilde{y},0)$ onto the corresponding vector set in
-$S_k$. Matrix $M$, matrix $S$, and vector $\bf{p}(0)$ are constructed as:
+$S_k$. The matrices $M$ and $S$, and the vector $\bf{p}(0)$ are constructed as:
 \begin{align*}
   [M]_{ij} &= \displaystyle \int_{\tilde{\Omega}} \psi_i \psi_j d\tilde{x}\,d\tilde{y}, \\
   [S]_{ij} &= -\frac{1}{2} \displaystyle \int_{\tilde{\Omega}} \left( \frac{\partial}{\partial \tilde{x}} \psi_i(\tilde{x},\tilde{y}) \right) \left( \frac{\partial}{\partial \tilde{x}} \psi_j(\tilde{x},\tilde{y}) \right) d\tilde{x}\,d\tilde{y} \\
@@ -762,197 +775,35 @@ exist. This is ensured as long as each $\psi_i(\tilde{x},\tilde{y})$
 is differentiable with respect to the boundary parameters, and
 therefore the approximation of $f(x,y,a_x,b_x,a_y,b_y)$ based on
 $p^{(k)}$ exists.
+
+In general, both $M$ and $S$ are dense. Thus, the computational
+complexity of the method is determined by the number of eigenfunctions
+needed to represent the solution and, in general, need not be more
+efficient than a finite difference method. However, unlike the
+trigonometric expansion approach in Section \ref{sec:eigenfunction},
+the Galerkin method presented here admits a much more general family
+of basis functions which need not be separable. As a result, if chosen
+to accommodate the correlation $\rho$ in the differential operator,
+the basis family can yield systems that are small enough to outperform
+the finite difference approach yet still accurate enough to be useful.
+Below, we describe our choice of basis functions which satisfy this
+criteria.
+
 % Theorems 7 and 8 in
 % Chapter 9 of \cite{lax2007linear-algebra} apply, and both the
 % eigenvalues and eigenvectors of the sysmtem matrix are differentiable
 % with respect to the diffusion parameters.
-
-
-\subsection{Small-time Solution} \label{sec:pde-small-t}
-
-The initial condition for our problem requires that the basis family
-used for the Galerkin method resolve very high-frequency terms
-necessary to approximate a $\delta-$like function. In order to avoid this
-and thereby reduce the computational load for our method, we develop
-an analytic, small-time solution to the problem. In addition to
-attenuating high-frequency terms by analytically evolving the process
-forward in time for a short period, we also reduce the overall error
-of our method, as will be demonstrated in Section
-\ref{sec:error-bound}.
-
-The small-time solution is derived by enforcing only one boundary
-condition, at the boundary that has the largest influence on the
-solution. We start with the fundamental solution
-$G_\rho(\tilde{x},\tilde{y},\tilde{t} | \tilde{x}_0, \tilde{y}_0)$ for
-the unbounded problem in (\ref{eq:qqq}), which is the bivariate
-Gaussian density with mean and covariance determined by the initial
-condition and the diffusion parameters \cite{stakgold2011green}. We
-can then find a small enough $\tilde{t}_\epsilon$ such that
-$G_\rho\left(\tilde{x},\tilde{y}, \tilde{t}_\epsilon \left|
-    \tilde{x}_0, \tilde{y}_0 \right.\right)$ is numerically zero on
-the rest of the boundaries of $\tilde{\Omega}$. We select the largest
-among all time instances satisfying this condition. This is done in
-the following way.
-\begin{enumerate}
-\item Scale and rotate the coordinate axes by the transformation
-  $T_{(3)}$
-  \begin{align}
-    T_{(3)}: \left( \begin{array}{c}
-             \xi \\
-             \eta
-           \end{array} \right) &= \frac{1}{\sqrt{2}}
-         \left( \begin{array}{cc}
-                  \frac{1}{ \sqrt{1-\rho}} & -\frac{1}{\sigma_{\tilde{y}}\sqrt{1-\rho}}\\
-                  \frac{1}{ \sqrt{1+\rho}} & \frac{1}{\sigma_{\tilde{y}}\sqrt{1+\rho}}
-                \end{array} \right)
-             \left( \begin{array}{cc}
-             \tilde{x} \\
-                      \tilde{y}
-                    \end{array} \right), \label{eq:T3} \\
-    p(\xi,\eta,\tilde{t}) &= \sigma_{\tilde{y}}\sqrt{1-\rho^2} \cdot p(\tilde{x},\tilde{y},\tilde{t}), \nonumber
-       \end{align}
-       so that the problem obeys the standard diffusion equation
-       \[
-         \frac{\partial }{\partial \tilde{t}}p(\xi,\eta,\tilde{t}) =
-         \frac{1}{2}\frac{\partial^2 }{\partial^2 \xi} p(\xi,\eta,\tilde{t})+
-         \frac{1}{2}\frac{\partial^2 }{\partial^2 \eta} p(\xi,\eta,\tilde{t})
-       \]
-       on a computational domain now transformed to a parallelogram
-       $\Omega^{(3)}$ (see left panel of Figure
-       (\ref{fig:step-1-small-time})). The transformed initial
-       condition will be denoted as $(\xi_0, \eta_0)$.
-
-     \item The fundamental solution
-       $G(\xi,\eta,\tilde{t} | \xi_0, \eta_0)$ in this coordinate
-       frame which does not take into account boundaries follows the
-       zero-correlation bivariate Gaussian probability density
-       function
-  \[
-    G(\xi,\eta,\tilde{t} | \xi_0, \eta_0) = \frac{1}{2\pi \tilde{t}} \exp\left(-\frac{(\xi-\xi_0)^2 +
-        (\eta-\eta_0)^2}{2\,\tilde{t}} \right).
-  \]
-  We define the \textbf{distance} between
-  $G(\xi,\eta,\tilde{t} | \xi_0, \eta_0)$ and any of the linear
-  boundaries of $\Omega^{(3)}$ as the shortest distance between
-  $(\xi_0, \eta_0)$ to each of the boundary segments (blue line
-  segments in the left panel of Figure (\ref{fig:step-1-small-time})).
-  There are four such distances $d_1, d_2, d_3, d_4$; and assume that
-  they are listed in increasing magnitude. Note that the perpendicular
-  intersections may not fall within the line segment when the four
-  line segments form a very skewed diamond. At the line
-  segment where we enforce the boundary condition, the perpendicular
-  intersection from $(\xi_0, \eta_0)$ onto the boundary is always
-  contained in the line segment. This boundary is nearest to
-  $(\xi_0, \eta_0)$, corresponds to the shortest one of four
-  distances.
-
-  Setting $\tilde{t}_\epsilon = d_2/8$ ensures that the fundamental
-  solution $G(\xi,\eta,\tilde{t}_\epsilon | \xi_0, \eta_0)$ is
-  \textit{at most} $\approx 10^{-15}$ on the second-nearest boundary,
-  as well as the other two other boundaries further away. In this way,
-  $G(\xi,\eta,\tilde{t}_\epsilon | \xi_0, \eta_0)$ satisfies the
-  boundary condition on the three farthest boundaries numerically.
-
-\item Reflect the point $(\xi_0, \eta_0) \to (\xi_0', \eta_0')$ about
-  the closest boundary. The image function
-  $G(\xi,\eta,\tilde{t}_\epsilon | \xi_0', \eta_0')$ satisfies the
-  diffusion equation and is equal to
-  $G(\xi,\eta,\tilde{t}_\epsilon | \xi_0, \eta_0)$ on the closest
-  boundary. Further,
-  $G(\xi,\eta,\tilde{t}_\epsilon | \xi_0', \eta_0')$ takes on values
-  less than $10^{-15}$ on all other boundaries, because it is outside
-  of $\Omega^{(3)}$. For this same reason, the system of images numerically
-  satisfies the initial condition for the problem.
-
-  The \textit{small-time} solution $p_\epsilon$ is the difference of the two images
-  \[
-    p_\epsilon(\xi,\eta,\tilde{t}) := G(\xi,\eta,\tilde{t} | \xi_0,
-    \eta_0) - G(\xi,\eta,\tilde{t} | \xi_0', \eta_0'),
-  \]
-  satisfying all of the boundaries numerically and also satisfying the
-  governing diffusion equation for
-  $\tilde{t} \leq \tilde{t}_\epsilon$. Performing a change of
-  variables $T_{(3)}^{-1}: (\xi,\eta) \to (\tilde{x}, \tilde{y})$
-  produces the small-time solution
-  $p_\epsilon(\tilde{x},\tilde{y},\tilde{t})$ in the normalized
-  diffusion problem frame
-  \begin{align}
-    p_\epsilon(\tilde{x}, \tilde{y}, \tilde{t}) &= G_\rho(\tilde{x}, \tilde{y}, \tilde{t} | \tilde{x}_0, \tilde{y}_0) - G_\rho(\tilde{x}, \tilde{y}, \tilde{t} | \tilde{x}'_0, \tilde{y}'_0), \label{eq:p-epsilon}
-  \end{align}
-  where the function $G_\rho(\cdot)$ is the shifted fundamental solution
-  \begin{multline}
-    G_\rho(\tilde{x}, \tilde{y}, \tilde{t} | \tilde{x}_0, \tilde{y}_0) = \nonumber \\
-    \frac{1}{2\pi\,\, \tilde{t}\sigma_{\tilde{y}}\sqrt{1-\rho^2}} \exp\left( -\frac{\left[ \left(\tilde{x}-\tilde{x}_0\right)^2 \sigma_{\tilde{y}}^2 + \left(\tilde{y}-\tilde{y}_0\right)^2 - 2\rho(\tilde{x}-\tilde{x}_0)(\tilde{y}-\tilde{y}_0)\sigma_{\tilde{y}} \right]}{2\,\,\tilde{t}\, \sigma_{\tilde{y}}^2 (1-\rho^2)} \right) \label{eq:Gfundamental}
-    \end{multline}
-    as illustrated in the right panel of Figure
-    (\ref{fig:step-1-small-time}).
-\end{enumerate}
-
-\begin{figure}
-  \centering
-  %%
-  %%
-  \begin{tabular}{cc}
-    \begin{minipage}{0.5\textwidth}
-      \centering
-      \includegraphics[width=1\linewidth]{../small-time-solution.png}
-    \end{minipage}p
-    %%
-    & \begin{minipage}{0.5\textwidth}
-      \centering
-      \includegraphics[width=1\linewidth]{../small-time-solution-contour.png}
-    \end{minipage}
-  \end{tabular}
-  %%
-  %%
-  \caption{An example of the small-time solution
-    $p(\xi,\eta,t_\epsilon)$ on the transformed domain
-    $\tilde{\Omega}$ with $\tau_x = \tau_y = 1$ and $\rho=0.6$. Right:
-    The shaded red region is a heatmap of the small-time solution in
-    the transformed coordinate frame, while the blue line segments
-    represent the distance between the boundaries and the initial
-    condition coordinate. The green point outside of the computational
-    domain is the center of the reflected image $(\xi_0', \eta_0')$
-    about the closest boundary. Left: The small-time solution
-    transformed back to the original coordinate system. Here, the
-    contours denote the level-sets for the function. They very closely
-    approximate the level sets for the fundamental solution of the
-    unbounded problem (\ref{eq:qq})}
-  \label{fig:step-1-small-time}
-\end{figure}
-Using Theorem 5.E of \cite{zeidler1995applied}, we can solve for
-$p(\tilde{x},\tilde{y},\tilde{t})$ by considering the smooth
-$p(\tilde{x},\tilde{y},\tilde{t}_\epsilon)$ as an initial condition
-and evolving it forward in time by $\tilde{t} -
-\tilde{t}_\epsilon$. This replaces initial condition in
-(\ref{eq:orthogonality-conditions-mat-2}) with
-\begin{align}
-  M \mathbf{c}(\tilde{t}_\epsilon) &= \mathbf{p}(\tilde{t}_\epsilon), \\
-  [\mathbf{p}(\tilde{t}_\epsilon)]_i &= \displaystyle \int_{\tilde{\Omega}} p(\tilde{x},\tilde{y},\tilde{t}_\epsilon) \psi_i(\tilde{x},\tilde{y}) d\tilde{x}\,d\tilde{y}. \nonumber
-\end{align}
-Intuitively, the bigger $\tilde{t}_\epsilon$, the smaller both
-$R_e(k)$ and $R_0(k)$ will be in approximating the solution for the
-initial value $p(\tilde{x},\tilde{y},\tilde{t}_\epsilon)$. On the
-other hand, for large $\tilde{t}_\epsilon$, the error in the
-small-time approximate solution will be significant. The selection of
-$\tilde{t}_\epsilon = d_2/8$ is a good compromise for accommodating
-these two opposing forces in reducing errors.
-% less eigenmodes present in $p(\tilde{x},\tilde{y},\tilde{t}_\epsilon)$, and the more accurate
-% our weak solution according to the error estimate
-% \[
-%   \| e(t) \|_{L_2(\Omega)} \leq C h(k)^2 \| p(\tilde{x},\tilde{y},\tilde{t}_\epsilon) \|_{2}.
-% \]
-
 
 \subsection{Basis Family} \label{sec:basis-family}
 % An upper bound of the rate at which the Galerkin approximation
 % converges to $p(\tilde{x},\tilde{y},\tilde{t})$ is given by condition (\ref{eq:ic-bound}),
 % namely by how well the initial condition may be approximated via a
 % projection onto $S_k$.
-We motivate the construction of the basis functions by
-once again considering the fundamental solution for the unbounded
-problem (\ref{eq:qqq}). We choose the family of basis functions
-$S_k = \left\{\psi_i(\tilde{x},\tilde{y}), \,\, 0 \leq i \leq k \right\}$
+We motivate the construction of the basis functions by considering the
+fundamental solution for the unbounded problem (\ref{eq:qqq}). We
+choose the family of basis functions
+$S_k = \left\{\psi_i(\tilde{x},\tilde{y}), \,\, 0 \leq i \leq k
+\right\}$
 \begin{align}
   \psi_i(\tilde{x},\tilde{y}) &= \frac{1}{2\pi \tilde{\sigma}^2\sqrt{1-\tilde{\rho}^2} } \\
                               &\quad \times \exp\left\{ -\frac{\left( (\tilde{x} - \tilde{x}_i)^2 - 2\tilde{\rho} (\tilde{x}-\tilde{x}_i)(\tilde{y}-\tilde{y}_i) + (\tilde{y} - \tilde{y}_i)^2 \right)}{2(1-\tilde{\rho}^2)\tilde{\sigma}^2}  \right\} \nonumber \\
@@ -975,7 +826,7 @@ $l\tilde{\sigma}(1+\tilde{\rho})$ and the grid size in the
 $y$-direction is $l\tilde{\sigma}(1-\tilde{\rho})$. The square region
 is selected to ensure that after a $\pi/4$ rotation around
 $(1/2, 1/2)$, the rotated grid should cover the square
-$[0, 1] \times [0, 1]$ (see left panel of Figure (\ref{fig:grids})).
+$[0, 1] \times [0, 1]$ (see left panel of Figure \ref{fig:grids}).
 
 %%
 %%
@@ -1029,7 +880,7 @@ The grid is comprised of all nodes within $\tilde{\Omega}$:
 \[\left\{(\tilde{x}_i, \tilde{y}_i)\right\}_{i=0}^k = \left\{
     (\tilde{x}_j, \tilde{y}_j) | (\tilde{x}_j, \tilde{y}_j) \in
     \tilde{\Omega}, j = 0, \ldots, k' \right\}, \] (see right panel of
-Figure (\ref{fig:grids})). It should be noted that the level sets of
+Figure \ref{fig:grids}). It should be noted that the level sets of
 the heat kernel for the basis functions are ellipses with major and
 minor axes aligned with the node points. Further, there is more
 resolution (ie. the node layout is denser) along the direction
@@ -1051,7 +902,7 @@ yields reasonable results. It is important, however, that
 $\mbox{sign}(\tilde{\rho}) = \mbox{sign}(\rho)$ so that the
 problematic, narrow component of the small-time solution (which can be
 seen in the minor axis of the contours of the small-time solution in
-the right panel of Figure (\ref{fig:step-1-small-time})) can be
+the right panel of Figure \ref{fig:step-1-small-time}) can be
 resolved.
 %
 %
@@ -1074,7 +925,188 @@ resolved.
 %   \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial
 %     b_y} \left\{ \exp\left( M^{-1}S\, t \right) \mathbf{c}(0) \right\},
 % \]
-% which is well-defined given the discussion above.
+    %     which is well-defined given the discussion above.
+
+
+\subsection{Small-time Solution} \label{sec:pde-small-t}
+
+The initial condition for our problem requires that the basis family
+used for the Galerkin method resolve very high-frequency terms
+necessary to approximate a $\delta-$like function. In order to avoid this
+and thereby reduce the computational load for our method, we develop
+an analytic, small-time solution to the problem. In addition to
+attenuating high-frequency terms by analytically evolving the process
+forward in time for a short period, we also reduce the overall error
+of our method, as will be demonstrated in Section
+\ref{sec:error-bound}.
+
+The small-time solution is derived by enforcing only one boundary
+condition, at the boundary that has the largest influence on the
+solution. We start with the fundamental solution
+$G_\rho(\tilde{x},\tilde{y},\tilde{t} | \tilde{x}_0, \tilde{y}_0)$ for
+the unbounded problem in (\ref{eq:qqq}), which is the bivariate
+Gaussian density with mean and covariance determined by the initial
+condition and the diffusion parameters \cite{stakgold2011green}. We
+can then find a small enough $\tilde{t}_\epsilon$ such that
+$G_\rho\left(\tilde{x},\tilde{y}, \tilde{t}_\epsilon \left|
+    \tilde{x}_0, \tilde{y}_0 \right.\right)$ is numerically zero on
+the rest of the boundaries of $\tilde{\Omega}$. We select the largest
+among all time instances satisfying this condition. This is done in
+the following way.
+\begin{enumerate}
+\item Scale and rotate the coordinate axes by the transformation
+  $T_{(3)}$
+  \begin{align}
+    T_{(3)}: \left( \begin{array}{c}
+             \xi \\
+             \eta
+           \end{array} \right) &= \frac{1}{\sqrt{2}}
+         \left( \begin{array}{cc}
+                  \frac{1}{ \sqrt{1-\rho}} & -\frac{1}{\sigma_{\tilde{y}}\sqrt{1-\rho}}\\
+                  \frac{1}{ \sqrt{1+\rho}} & \frac{1}{\sigma_{\tilde{y}}\sqrt{1+\rho}}
+                \end{array} \right)
+             \left( \begin{array}{cc}
+             \tilde{x} \\
+                      \tilde{y}
+                    \end{array} \right), \label{eq:T3} \\
+    p(\xi,\eta,\tilde{t}) &= \sigma_{\tilde{y}}\sqrt{1-\rho^2} \cdot p(\tilde{x},\tilde{y},\tilde{t}), \nonumber
+       \end{align}
+       so that the problem obeys the standard diffusion equation
+       \[
+         \frac{\partial }{\partial \tilde{t}}p(\xi,\eta,\tilde{t}) =
+         \frac{1}{2}\frac{\partial^2 }{\partial^2 \xi} p(\xi,\eta,\tilde{t})+
+         \frac{1}{2}\frac{\partial^2 }{\partial^2 \eta} p(\xi,\eta,\tilde{t})
+       \]
+       on a computational domain now transformed to a parallelogram
+       $\Omega^{(3)}$ (see left panel of Figure
+       \ref{fig:step-1-small-time}). The transformed initial
+       condition will be denoted as $(\xi_0, \eta_0)$.
+
+     \item The fundamental solution
+       $G(\xi,\eta,\tilde{t} | \xi_0, \eta_0)$ in this coordinate
+       frame which does not take into account boundaries follows the
+       zero-correlation bivariate Gaussian probability density
+       function
+  \[
+    G(\xi,\eta,\tilde{t} | \xi_0, \eta_0) = \frac{1}{2\pi \tilde{t}} \exp\left(-\frac{(\xi-\xi_0)^2 +
+        (\eta-\eta_0)^2}{2\,\tilde{t}} \right).
+  \]
+  We define the \textbf{distance} between
+  $G(\xi,\eta,\tilde{t} | \xi_0, \eta_0)$ and any of the linear
+  boundaries of $\Omega^{(3)}$ as the shortest distance between
+  $(\xi_0, \eta_0)$ to each of the boundary segments (blue line
+  segments in the left panel of Figure \ref{fig:step-1-small-time}).
+  There are four such distances $d_1, d_2, d_3, d_4$; and assume that
+  they are listed in increasing magnitude. Note that the perpendicular
+  intersections may not fall within the line segment when the four
+  line segments form a very skewed diamond. At the line
+  segment where we enforce the boundary condition, the perpendicular
+  intersection from $(\xi_0, \eta_0)$ onto the boundary is always
+  contained in the line segment. This boundary is nearest to
+  $(\xi_0, \eta_0)$, corresponds to the shortest one of four
+  distances.
+
+  Setting $\tilde{t}_\epsilon = d_2/8$ ensures that the fundamental
+  solution $G(\xi,\eta,\tilde{t}_\epsilon | \xi_0, \eta_0)$ is
+  \textit{at most} $\approx 10^{-15}$ on the second-nearest boundary,
+  as well as the other two other boundaries further away. In this way,
+  $G(\xi,\eta,\tilde{t}_\epsilon | \xi_0, \eta_0)$ numerically satisfies the
+  boundary condition on the three farthest boundaries.
+
+\item Reflect the point $(\xi_0, \eta_0) \to (\xi_0', \eta_0')$ about
+  the closest boundary. The image function
+  $G(\xi,\eta,\tilde{t}_\epsilon | \xi_0', \eta_0')$ satisfies the
+  diffusion equation and is equal to
+  $G(\xi,\eta,\tilde{t}_\epsilon | \xi_0, \eta_0)$ on the closest
+  boundary. Further,
+  $G(\xi,\eta,\tilde{t}_\epsilon | \xi_0', \eta_0')$ takes on values
+  less than $10^{-15}$ on all other boundaries, because it is outside
+  of $\Omega^{(3)}$. For this same reason, the system of images numerically
+  satisfies the initial condition for the problem.
+
+  The \textit{small-time} solution $p_\epsilon$ is the difference of the two images
+  \[
+    p_\epsilon(\xi,\eta,\tilde{t}) := G(\xi,\eta,\tilde{t} | \xi_0,
+    \eta_0) - G(\xi,\eta,\tilde{t} | \xi_0', \eta_0'),
+  \]
+  satisfying all of the boundaries numerically and also satisfying the
+  governing diffusion equation for
+  $\tilde{t} \leq \tilde{t}_\epsilon$, as illustrated in the left
+  panel of Figure \ref{fig:step-1-small-time}. Performing a change of
+  variables $T_{(3)}^{-1}: (\xi,\eta) \to (\tilde{x}, \tilde{y})$
+  produces the small-time solution
+  $p_\epsilon(\tilde{x},\tilde{y},\tilde{t})$ in the normalized
+  diffusion problem frame
+  \begin{align}
+    p_\epsilon(\tilde{x}, \tilde{y}, \tilde{t}) &= G_\rho(\tilde{x}, \tilde{y}, \tilde{t} | \tilde{x}_0, \tilde{y}_0) - G_\rho(\tilde{x}, \tilde{y}, \tilde{t} | \tilde{x}'_0, \tilde{y}'_0), \label{eq:p-epsilon}
+  \end{align}
+  where the function $G_\rho(\cdot)$ is the shifted fundamental solution
+  \begin{multline}
+    G_\rho(\tilde{x}, \tilde{y}, \tilde{t} | \tilde{x}_0, \tilde{y}_0) = \nonumber \\
+    \frac{1}{2\pi\,\, \tilde{t}\sigma_{\tilde{y}}\sqrt{1-\rho^2}} \exp\left( -\frac{\left[ \left(\tilde{x}-\tilde{x}_0\right)^2 \sigma_{\tilde{y}}^2 + \left(\tilde{y}-\tilde{y}_0\right)^2 - 2\rho(\tilde{x}-\tilde{x}_0)(\tilde{y}-\tilde{y}_0)\sigma_{\tilde{y}} \right]}{2\,\,\tilde{t}\, \sigma_{\tilde{y}}^2 (1-\rho^2)} \right) \label{eq:Gfundamental}
+    \end{multline}
+    as illustrated in the right panel of Figure
+    \ref{fig:step-1-small-time}.
+\end{enumerate}
+
+\begin{figure}
+  \centering
+  %%
+  %%
+  \begin{tabular}{cc}
+    \begin{minipage}{0.5\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../small-time-solution.png}
+    \end{minipage}p
+    %%
+    & \begin{minipage}{0.5\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../small-time-solution-contour.png}
+    \end{minipage}
+  \end{tabular}
+  %%
+  %%
+  \caption{An example of the small-time solution
+    $p(\xi,\eta,t_\epsilon)$ on the transformed domain
+    $\tilde{\Omega}$ with $\tau_x = \tau_y = 1$ and
+    $\rho=0.6$. \textbf{Left}: The shaded red region is a heatmap of
+    the small-time solution in the transformed coordinate frame, while
+    the blue line segments represent the distance between the
+    boundaries and the initial condition coordinate. The green point
+    outside of the computational domain is the center of the reflected
+    image $(\xi_0', \eta_0')$ about the closest
+    boundary. \textbf{Right}: The small-time solution transformed back
+    to the original coordinate system. Here, the contours denote the
+    level-sets for the function. They very closely approximate the
+    level sets for the fundamental solution of the unbounded problem
+    (\ref{eq:qq})}
+  \label{fig:step-1-small-time}
+\end{figure}
+Using Theorem 5.E of \cite{zeidler1995applied}, we can solve for
+$p(\tilde{x},\tilde{y},\tilde{t})$ by considering the smooth
+$p(\tilde{x},\tilde{y},\tilde{t}_\epsilon)$ as an initial condition
+and evolving it forward in time by $\tilde{t} -
+\tilde{t}_\epsilon$. This replaces initial condition in
+(\ref{eq:orthogonality-conditions-mat-2}) with
+\begin{align}
+  M \mathbf{c}(\tilde{t}_\epsilon) &= \mathbf{p}(\tilde{t}_\epsilon), \\
+  [\mathbf{p}(\tilde{t}_\epsilon)]_i &= \displaystyle \int_{\tilde{\Omega}} p(\tilde{x},\tilde{y},\tilde{t}_\epsilon) \psi_i(\tilde{x},\tilde{y}) d\tilde{x}\,d\tilde{y}. \nonumber
+\end{align}
+Intuitively, the bigger $\tilde{t}_\epsilon$, the smaller both
+$R_e(k)$ and $R_0(k)$ will be in approximating the solution for the
+initial value $p(\tilde{x},\tilde{y},\tilde{t}_\epsilon)$. On the
+other hand, for large $\tilde{t}_\epsilon$, the error in the
+small-time approximate solution will be significant. The selection of
+$\tilde{t}_\epsilon = d_2/8$ is a good compromise for accommodating
+these two opposing forces in reducing errors.
+% less eigenmodes present in $p(\tilde{x},\tilde{y},\tilde{t}_\epsilon)$, and the more accurate
+% our weak solution according to the error estimate
+% \[
+%   \| e(t) \|_{L_2(\Omega)} \leq C h(k)^2 \| p(\tilde{x},\tilde{y},\tilde{t}_\epsilon) \|_{2}.
+% \]
+
+
+
 
 \subsection{Error Bound} \label{sec:error-bound}
 A bound on the closeness of the approximate solution $p^{(k)}(\tilde{x},\tilde{y},\tilde{t})$
@@ -1147,25 +1179,25 @@ solution and its Galerkin approximation under $L_2(\tilde{\Omega})$.
 
 
 \section{Estimation}
-The estimation of asset price and volatility is an important problem
-in finance. It is common to assume that asset prices follow correlated
-geometric Brownian motions.  In that setting, estimates of volatility
-and correlation are usually based on daily log-returns, which depend
-only on the opening and closing prices.  However, typically more
-information is available.  For example, maximum and minimum trading
-prices over the days are readily available.  In univariate settings,
-it has been shown that incorporating this additional information can
-substantially improve estimates.  The pdf from \eqref{eq:pdf} provides
-the likelihood necessary for frequentist and Bayesian inference in
-bivariate settings.  Likelihood-free approaches, like that of
+In the estimation of asset price volatility, it is common to assume
+that asset prices follow correlated geometric Brownian motions.  In
+that setting, estimates of volatility and correlation are usually
+based on daily log-returns, which depend only on the opening and
+closing prices.  However, typically more information is available.
+For example, maximum and minimum trading prices over the days are
+readily available.  In univariate settings, it has been shown that
+incorporating this additional information can substantially improve
+estimates.  The pdf from \eqref{eq:pdf} provides the likelihood
+necessary for frequentist and Bayesian inference in bivariate
+settings.  Likelihood-free approaches, like that of
 \cite{rogers1991estimating}, \cite{rogers2008estimating}, on the other
-hand suffer from not being able to be easily integrated into
-inferential frameworks that require explicit estimates of probability,
-as well as being sub-optimal as will be seen in the Simulation section
-below.
+hand suffer from not being suboptimal when data are independent and
+identically distributed (i.i.d.) and cannot be easily extended to the
+non-i.i.d. case.
 
-To illustrate this, we consider maximum
-likelihood inference from an i.i.d. sample $Z_1, \ldots, Z_n$, where
+To illustrate the suboptimality of likelihood-free estimators for the
+i.i.d. case, we consider maximum likelihood inference from an
+i.i.d. sample $Z_1, \ldots, Z_n$, where
 $Z_i = (X_i, Y_i, m_{x,i}, M_{x,i}, m_{y,i}, M_{y,i})$, where $X_i$
 and $Y_i$ corresponds to log returns of the two assets, $m_{x,i}$ and
 $m_{y,i}$ correspond to the minimum log-returns observed during the
@@ -1197,27 +1229,27 @@ returns.
 % best of our knowledge, all current \textit{likelihood} methods in the
 % literature either ignore the observed maximum/minimum information or
 % use only some of it.
-Since we do not have a closed-form solution for the likelihood
-\eqref{eq:pdf}, we will use an iterative derivative-free numerical
-algorithm to maximize the likleihood which requires repeated
-evauluation of the likelihood (the Nelder-Mead method; see
-\cite{lagarias1998convergence} for review and convergence
-properties). This is feasible even for moderate to large sample sizes,
-because our numerical method is specifically designed for
-computational efficiency for repeatedly evaluating the density
-function (\ref{eq:pdf}). The maximum likelihood estimator (MLE) for
-the true parameters based on $n$ samples, which we call
-$\hat{\theta}_n := (\hat{\mu}_x, \hat{\mu}_y, \hat{\sigma}_x,
-\hat{\sigma}_y, \hat{\rho})$, is especially useful in practical
-settings when it exhibits \textit{consistency}, \textit{i.e.}: the MLE
-gets closer to the true parameter vector $\theta$ as more data is
-collected and included in the likelihood (assuming the model and its
-parameters remain constant during the data collection). More
-precisely, the estimator $\hat{\theta}_n$ is consistent if it
-converges in probability to the true parameter:
-\[
-  \Pr( | \hat{\theta}_n - \theta | ) \to 0 \qquad \mbox{as} \qquad n \to \infty.
-\]
+Computation of the maximum likelihood estimation (MLE) is based on an
+iterative derivative-free numerical algorithm to maximize the
+likelihood (the Nelder-Mead method; see \cite{lagarias1998convergence}
+for review and convergence properties). This is feasible even for
+moderate to large sample sizes, because our numerical method is
+specifically designed for computational efficiency for repeatedly
+evaluating the density function (\ref{eq:pdf}).
+% The maximum likelihood
+% estimator (MLE) for the true parameters based on $n$ samples, which we
+% call
+% $\hat{\theta}_n := (\hat{\mu}_x, \hat{\mu}_y, \hat{\sigma}_x,
+% \hat{\sigma}_y, \hat{\rho})$, is especially useful in practical
+% settings when it exhibits \textit{consistency}, \textit{i.e.}: the MLE
+% gets closer to the true parameter vector $\theta$ as more data is
+% collected and included in the likelihood (assuming the model and its
+% parameters remain constant during the data collection). More
+% precisely, the estimator $\hat{\theta}_n$ is consistent if it
+% converges in probability to the true parameter:
+% \[
+%   \Pr( | \hat{\theta}_n - \theta | ) \to 0 \qquad \mbox{as} \qquad n \to \infty.
+% \]
 
 \subsection{Consistency}
 In this section we prove that the MLE based on the Galerkin
@@ -1256,22 +1288,24 @@ First, we prove the Lemma
 \end{lemma}
 \begin{proof}
   Define the sets of form, for $z = (x,y,a_x,b_x,a_y,b_y)$,
-  \begin{align*}
-    B(a_x, b_x, a_y, b_y) &= \left\{ z' \in Z \left| z' \in [a_x, b_x]
+  \begin{multline*}
+    B(a_x, b_x, a_y, b_y) = \\
+    \left\{ z' \in Z \left| z' \in [a_x, b_x]
         \times [a_y, b_y] \times [a_x, \infty) \times (-\infty, b_x]
                             \times [a_y, \infty) \times (-\infty, b_y] \right.\right\}.
-  \end{align*}
+  \end{multline*}
   Elements within $B(a_x, b_x, a_y, b_y)$ are equivalent to sample
   paths that stay within the region $[a_x, b_x] \times [a_y, b_y]$:
-  \begin{align*}
-    B(a_x, b_x, a_y, b_y) &= \left\{ \omega \in W | X_\omega(t) \in [a_x, b_x], Y_\omega(t) \in [a_y, b_y], m_x \in [a_x,b_x), M_x \in (a_x, b_x] \right\}
-  \end{align*}
+  \begin{multline*}
+    B(a_x, b_x, a_y, b_y) = \\
+    \left\{ \omega \in W | X_\omega(t) \in [a_x, b_x], Y_\omega(t) \in [a_y, b_y], m_x \in [a_x,b_x), M_x \in (a_x, b_x] \right\}.
+  \end{multline*}
   Then
-  \begin{align}
-    \Pr(B(a_x, b_x, a_y, b_y)) &= \displaystyle \int_{B(a_x, b_x, a_y, b_y)} f(z)\, dz \nonumber \\
-                               &= \displaystyle \int_{a_y}^{\infty} \displaystyle \int_{-\infty}^{b_y} \displaystyle \int_{a_x}^{\infty} \displaystyle \int_{-\infty}^{b_x} \displaystyle \int_{-\infty}^{b_x} \displaystyle \int_{-\infty}^{b_y} f(x', y', a'_x, b'_x, a'_y, b'_y) dx' dy' da_x' db_x' da_y' db_y' \label{eq:full-form} \\
-                               &= \displaystyle \int_{a_x}^{b_x} \displaystyle \int_{a_y}^{b_y} q(x,y,a_x,b_x,a_y,b_y)\, dx\, dy, \nonumber
-  \end{align}
+  \begin{multline}
+    \Pr(B(a_x, b_x, a_y, b_y)) = \displaystyle \int_{B(a_x, b_x, a_y, b_y)} f(z)\, dz  \\
+    = \displaystyle \int_{a_y}^{\infty} \displaystyle \int_{-\infty}^{b_y} \displaystyle \int_{a_x}^{\infty} \displaystyle \int_{-\infty}^{b_x} \displaystyle \int_{a_y}^{b_x} \displaystyle \int_{a_x}^{b_x} f(x', y', a'_x, b'_x, a'_y, b'_y) dx'\, dy'\, da_x'\, db_x'\, da_y'\, db_y'   \\
+    = \displaystyle \int_{a_x}^{b_x} \displaystyle \int_{a_y}^{b_y} q(x,y,a_x,b_x,a_y,b_y)\, dx\, dy, \label{eq:full-form}
+  \end{multline}
   where the last equality employs the interpretation of $q$ in
   (\ref{eq:CDF}) and we can freely change the order of integration as
   $f$ is bounded for all $z \in Z$. Similarly,
@@ -1283,25 +1317,25 @@ First, we prove the Lemma
   \begin{align*}
     \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial b_y} \Pr(B(a_x, b_x, a_y, b_y)) &= \displaystyle \int_{a_x}^{b_x} \displaystyle \int_{a_y}^{b_y} f(x,y,a_x,b_x,a_y,b_y)\, dx\, dy.
   \end{align*}
-  The second-order \textbf{finite difference} approximation the above
+  The second-order finite difference approximation the above
   expression can be expressed as a linear combination of probabilities
   of perturbed sets $B(\cdot)$:
-  \begin{align*}
-    \lim_{\epsilon \to 0}\quad \frac{1}{\epsilon^4} \sum_{i=1}^{16} c(i) \Pr(B(a_x + k_1(i)\epsilon, b_x + k_2(i)\epsilon, a_y + k_3(i)\epsilon, b_y + k_4(i)\epsilon) &= \\
-    \MoveEqLeft[8] \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial b_y} \Pr(B(a_x, b_x, a_y, b_y)),
-  \end{align*}
+  \begin{multline*}
+    \lim_{\epsilon \to 0}\quad \frac{1}{\epsilon^4} \sum_{i=1}^{16} c(i) \Pr(B(a_x + k_1(i)\epsilon, b_x + k_2(i)\epsilon, a_y + k_3(i)\epsilon, b_y + k_4(i)\epsilon) = \\
+    \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial b_y} \Pr(B(a_x, b_x, a_y, b_y)),
+  \end{multline*}
 where $c(i)$ and $k(i)$ are functions mapping index $i$ to the
 corresponding coefficient in the second-order finite difference
 approximation
   $c(i) \to \left\{-1, 1\right\}$, $k_j(i) \to \{-1,1\}$. Using Big-O
   notation, for a sufficiently small $\epsilon$
-  \begin{align}
+  \begin{multline}
     \sum_{i=1}^{16} c(i) \Pr(B(a_x + k_1(i)\epsilon, b_x +
-    k_2(i)\epsilon, a_y + k_3(i)\epsilon, b_y + k_4(i)\epsilon) &= \nonumber \\
-    \MoveEqLeft[10] \epsilon^4 \frac{\partial^4}{\partial a_x \partial b_x \partial
+    k_2(i)\epsilon, a_y + k_3(i)\epsilon, b_y + k_4(i)\epsilon) = \\
+    \epsilon^4 \frac{\partial^4}{\partial a_x \partial b_x \partial
       a_y \partial b_y} \Pr(B(a_x, b_x, a_y, b_y)) + O(\epsilon^6 ;
     a_x, b_x, a_y, b_y). \label{eq:fin-diff}
-  \end{align}
+  \end{multline}
   The convergence result in Section \ref{sec:error-bound} implies that
   \begin{align*}
     \Pr_k(B(a_x + k_1(i)\epsilon, b_x + k_2(i)\epsilon, a_y +
@@ -1318,13 +1352,13 @@ approximation
   Hence, for a sufficiently large $k$ dependent on the supremum over
   $i$, and given the error estimate in (\ref{eq:error-est}), we obtain
   the relation
-  \begin{align*}
+  \begin{multline*}
     \Pr_k(B(a_x + k_1(i)\epsilon, b_x + k_2(i)\epsilon, a_y +
-    k_3(i)\epsilon, b_y + k_4(i)\epsilon) &= \\
+    k_3(i)\epsilon, b_y + k_4(i)\epsilon) = \\
     \Pr(B(a_x + k_1(i)\epsilon, b_x + k_2(i)\epsilon, a_y +
-    k_3(i)\epsilon, b_y + k_4(i)\epsilon) &\\
-    + O(h(k)^2; a_x + k_1(i)\epsilon, b_x + k_2(i)\epsilon, a_y + k_3(i)\epsilon, b_y + k_4(i)\epsilon) &
-  \end{align*}
+    k_3(i)\epsilon, b_y + k_4(i)\epsilon) \\
+    + O(h(k)^2; a_x + k_1(i)\epsilon, b_x + k_2(i)\epsilon, a_y + k_3(i)\epsilon, b_y + k_4(i)\epsilon) 
+  \end{multline*}
   Note here that the dominating terms $O(h(k)^2; \cdot)$ are
   differentiable with respect to the boundary parameters
   $(a_x, b_x, a_y, b_y)$ since $q$ and $q^{(k)}$ have this
@@ -1572,7 +1606,7 @@ approximation
 \begin{lemma}
   Assuming that $\theta$ is bounded, the maximum likelihood estimator
   is consistent as $n \to \infty$ and
-  $k \to \infty$: \[ \hat{\theta}_{n,k} \to \theta \].
+  $k \to \infty$: \[ \hat{\theta}_{n,k} \to \theta. \]
 \end{lemma}
 \begin{proof}
   By Lemma \ref{lem:conv-dist}
@@ -1618,10 +1652,13 @@ approximation
   \]
 \end{proof}
 
-\subsection{Simulation Study}
-As described in Section \ref{sec:basis-family}, the semidiscrete
-Galerkin method that we use to compute the likelihood function
-requires a choice for the kernel parameters
+\subsection{Exploring the feasibility range for the Galerkin
+  solution} \label{sec:feasibility-range} In this section we explore
+the numerical limitations of the Galerkin solution in terms of its
+finite basis expansion and what ranges for $\tilde{t}$ can be
+accommodated. As described in Section \ref{sec:basis-family}, the
+semidiscrete Galerkin method that we use to compute the likelihood
+function requires a choice for the kernel parameters
 $(\tilde{\rho}, \tilde{\sigma}, l)$. Given finite restrictions on
 memory and compute time, $\tilde{\sigma}$ cannot be made arbitrarily
 small nor can $\tilde{\rho}$ be made arbitrarily close to $-1$ or $1$
@@ -1631,52 +1668,50 @@ not sufficiently depart from the $\delta$-function form of the initial
 condition, then there is no finite $(\tilde{\rho}, \tilde{\sigma}, l)$
 combination to produce an accurate likelihood solution for arbitrarily
 small $\tilde{t}$ in the normalized $T_{(2)}$ frame. We illustrate
-this numerical limitation in Figures
-(\ref{fig:limitations-rho-0.95-1}) -
-(\ref{fig:limitations-rho-0.95-3}) by simulating $13$ data points with
+this numerical limitation in Figures \ref{fig:limitations-rho-0.95-1}
+- \ref{fig:limitations-rho-0.95-3} by simulating $13$ data points with
 $\sigma_x = 1, \sigma_y = 1, \rho = 0.95$, transforming the problem to
 the normalized coordinate frame, and varying $\tilde{t}$ while keeping
 the other parameters fixed at their data-generating values. Keeping
-$l=1$ fixed, we also vary the basis-generating parameters $\tilde{\sigma}$
-and $\tilde{\rho}$ to test what $\tilde{t}$ regimes can be
-accommodated.
+$l=1$ fixed, we also vary the basis-generating parameters
+$\tilde{\sigma}$ and $\tilde{\rho}$ to test what $\tilde{t}$ regimes
+can be accommodated. The finite-difference step used to derive the
+likelihood function is of size $\Delta = 1/32$ with $O(\Delta^2)$
+order accuracy. The inner products that are needed to establish the
+system of equations for the method are computed using Simpson's rule
+on a regular $250 \times 250$ grid.
 
-The data point in Figure (\ref{fig:limitations-rho-0.95-1}) is
-somewhat typical of the other ones featured in Figures
-(\ref{fig:limitations-rho-0.95-2}) -
-(\ref{fig:limitations-rho-0.95-3}): there are no valid solutions for
-very small $\tilde{t}$ irrespective of basis parameter choice (usually
-in this regime the likelihood produced by Galerkin solution is
-negative and thus identified as inadmissible) and solutions converge
-for $\tilde{t} > 1$. The transient region between these regimes is the
-most problematic, particularly when the solution produces large
-postivie values in what should be relatively low-likelihood regions;
-an example is the low-resolution parameter combination
+The data point in Figure \ref{fig:limitations-rho-0.95-1} is somewhat
+typical of the other ones featured in Figures
+\ref{fig:limitations-rho-0.95-2} - \ref{fig:limitations-rho-0.95-3}:
+there are no valid solutions for very small $\tilde{t}$ irrespective
+of basis parameter choice (usually in this regime the likelihood
+produced by Galerkin solution is negative and thus identified as
+inadmissible) and solutions converge for $\tilde{t} > 1$. The
+transient region between these regimes is the most problematic,
+particularly when the solution produces large postivie values in what
+should be relatively low-likelihood regions; an example is the
+low-resolution parameter combination
 $(\tilde{\rho} = 0.4, \tilde{\sigma} = 0.16)$. Moreover, there is no
 clear sign of convergence of the solution for $\tilde{t} < 3/4$,
 although the combinations
 $(\tilde{\rho}=0.5, \tilde{\sigma}=0.08), (\tilde{\rho}=0.6,
 \tilde{\sigma}=0.08),$ and $(\tilde{\rho}=0.6, \tilde{\sigma}=0.12)$
-give similar results. A feasible compromise that operationalizes the
-Galerkin solution in the context of this simulation study is to use a
-relatively high-resolution basis expansion, such as the one
-corresponding to $(\tilde{\rho}=0.6, \tilde{\sigma}=0.08, l=1)$ and
-replace inadmissible likelihood values generated for small $\tilde{t}$
-with $1\cdot 10^{-16}$. Further, this constant is also applied for
-likelihoods with $\tilde{t} < 0.25$, since the data points considered
-here clearly show that the numerical solution deteriorates in this
-region regardless of parameter choice and the likelihood values
-produced therein, even if positive, should not be used.  This
+give similar results. A feasible compromise that may operationalize
+the Galerkin solution in the context of maximum likelihood estimation
+is to use a relatively high-resolution basis expansion, such as the
+one corresponding to $(\tilde{\rho}=0.6, \tilde{\sigma}=0.08, l=1)$
+and replace inadmissible likelihood values generated for small
+$\tilde{t}$ with $1\cdot 10^{-16}$. Further, this constant is also
+applied for likelihoods with $\tilde{t} < 0.25$, since the data points
+considered here clearly show that the numerical solution deteriorates
+in this region regardless of parameter choice and the likelihood
+values produced therein, even if positive, should not be used.  This
 very rough approximation may have a variety of effects on the
 estimation procedure, the most obvious of which being the diverting of
 the convergence path of the optimization procedure regardless of
 algorithm used. This may be especially true in the early stages of the
-optimization scheme when the parameter space is being explored.  The
-finite-difference step used to derive the likelihood function is of
-size $\Delta = 1/32$ with $O(\Delta^2)$ order accuracy. The inner
-products that are needed to establish the system of equations for the
-method are computed using Simpson's rule on a regular $250 \times 250$
-grid.
+optimization scheme when the parameter space is being explored.  
 
 \begin{figure}
   \centering
@@ -1753,7 +1788,7 @@ grid.
   \label{fig:limitations-rho-0.95-3}
 \end{figure}
 
-\subsection{Data generation and results}
+\subsection{Simulation Study} \label{sec:simulation-study}
 \begin{figure}
   \centering
   %%
@@ -1807,10 +1842,12 @@ grid.
   \label{fig:mle-comparison-rho-0.95}
 \end{figure}
 
-Data is generated with zero drift via forward Euler discretization
-where the obtained discrete-time extrema are recorded and used as the
-realized extrema of the process. Simulations are generated with the same
-parameters
+In this section we study the maximum likelihood estimates based on the
+Galerkin solution with the above estimated $\tilde{t}$ cutoffs on via
+a simulation study. Data is generated with zero drift via forward
+Euler discretization where the obtained discrete-time extremes are
+recorded and used as the realized extremes of the process. Simulations
+are generated with the same parameters
 \[
   \mu_x = 0,\quad \mu_y  = 0,\quad \sigma_x = 1,\quad \sigma_y = 1,\quad \rho = (0, 0.6, 0.95)
 \]
@@ -1819,16 +1856,16 @@ that the MLE is comprised of the diffusion and correlation parameters:
 $\hat{\theta} = (\hat{\sigma}_x, \hat{\sigma}_y, \hat{\rho}).$ The
 repeated-sampling distributions of the MLEs are approximated by
 computing the MLE for each of $n=50$ simulated path realizations,
-where each realization is divided into $m=16$ equal intervals with
+where each realization is divided into $m=4,8,16$ equal intervals with
 their respective OCHL data. If we think of each path as a 6.5 hour
 trading day, this procedure is equivalent to estimating daily
-volatility and correlation for two assets using $\sim 12$ min intervals
-throughout the trading day.  Given the finite number of realizations
-$n$, we construct a kernel density estimate of the repeated-sampling
-distribution. Results are compared to the repeated-sampling
-distribution of the MLE based on the usual bivariate normal likelihood
-which does not take into account the boundaries, as well as the
-best-in-class unbiased estimator that uses OCHL data (see
+volatility and correlation for two assets using $\sim 90, 45$, and
+$12$ min intervals throughout the trading day.  Given the finite
+number of realizations $n$, we construct a kernel density estimate of
+the repeated-sampling distribution. Results are compared to the
+repeated-sampling distribution of the MLE based on the usual bivariate
+normal likelihood which does not take into account the boundaries, as
+well as the best-in-class unbiased estimator that uses OCHL data (see
 \cite{rogers2008estimating}), which we term the \textit{Rogers
   estimator}.
 
@@ -1849,51 +1886,55 @@ best-in-class unbiased estimator that uses OCHL data (see
   \label{tab:MSE-ratios}
 \end{table}
 
-Figure (\ref{fig:mle-comparison-rho-0.95}) shows the kernel density
+\section{Results and Discussion}
+Figure \ref{fig:mle-comparison-rho-0.95} shows the kernel density
 approximations of the repeated-sampling distribution for the MLE in
 the case of $\rho=0.95$. The MSE ratios for the estimators are shown
 Table (\ref{tab:MSE-ratios}). The approximate Galerkin likelihood
-produces more accurate estimates for $\rho$ across all $m$ ranges but
-fails to do so for the variance parameters $\sigma_x$ and
+produces estimates with smaller MSE for $\rho$ across all $m$ ranges
+but fails to do so for the variance parameters $\sigma_x$ and
 $\sigma_y$. However, in those cases the MSE of the Galerkin likelihood
 is biased by a small number of outlier estimates which are easily
 observed in the kernel density plots of Figure
-(\ref{fig:mle-comparison-rho-0.95}). Such outliers are due to the high
-degree of resolution in the solver necessary for the $\rho=0.95$ case
-and the approximation made by replacing negative likelihood values or
-likelihoods computed in regions with $\tilde{t} < 0.25$ by a small
-numerical constant. In some cases, this can skew the optimization
-algorithm to regions which are not global maxima, especially in the
-early stages of optimization where low-likelihood regions are
-explored. The degree of this problem is not as great in the more mild
-$\rho =0$ and $\rho = 0.60$ scenarios, as judged by the MSE ratios in
-Table (\ref{tab:MSE-ratios}). Yet there seem to be some cases of
-outliers in the estimates for the Galerkin method for these cases, as
-shown in Figures (\ref{fig:mle-comparison-rho-0.60}) and
-(\ref{fig:mle-comparison-rho-0.0}). This is more difficult to judge
+\ref{fig:mle-comparison-rho-0.95}. We hypothesize that such outliers
+are due to the high degree of resolution in the solver necessary for
+the $\rho=0.95$ case and the approximation made by replacing negative
+likelihood values or likelihoods computed in regions with
+$\tilde{t} < 0.25$ by a small numerical constant. In some cases, this
+can skew the optimization algorithm to regions which are not global
+maxima, especially in the early stages of optimization where
+low-likelihood regions are explored. The degree of this problem is not
+as great in the more mild $\rho =0$ and $\rho = 0.60$ scenarios, as
+judged by the MSE ratios in Table (\ref{tab:MSE-ratios}). Yet there
+seem to be some cases of outliers in the estimates for the Galerkin
+method for these cases, as shown in Figures
+\ref{fig:mle-comparison-rho-0.60} and
+\ref{fig:mle-comparison-rho-0.0}. This is more difficult to judge
 given the inherently greater degree of repeated sampling variability
 of the estimators in these scenarios. However, the combined evidence
 from the approximate repeated-sampling distributions, the non-uniform
 MSE ratios, and the break in monotonicity with respect to increasing
 $m$ in the MSE of the Galerkin method (see Table (\ref{tab:MSEs})) all
 show that, despite providing a more powerful statistical estimator as
-a whole, the OCHL likelihood stands to be improved with respect to
-resolving likelihoods in the small-$\tilde{t}$ regions, as well as the
-transient region $\tilde{t} < 0.25$ described above. The analytic
-result and asymptotic matching solution to address this need is
-developed in the following chapter.
+a whole, the Galerkin likelihood developed here stands to be improved
+with respect to resolving likelihoods in the small-$\tilde{t}$
+regions, as well as the transient region $\tilde{t}$ described
+above. The analytic result and asymptotic matching solution to address
+this need is developed in the following chapter.
 
 \begin{table}
   \centering
-  \begin{tabular}{cccc|ccc|ccc}
-    &  \multicolumn{3}{c}{$\rho=0.95$} & \multicolumn{3}{c}{$\rho=0.60$} &  \multicolumn{3}{c}{$\rho=0.0$}\\
-    & $m=4$ & $m=8$ & $m=16$ & $m=4$ & $m=8$ & $m=16$ & $m=4$ & $m=8$ & $m=16$ \\
-    \hline
-    $\hat{\sigma}_x$ & 0.0458 & 0.0825 & 0.0315 &  0.0175  & 0.00933 & 0.00807  & 0.0202 & 0.009564 & 0.00411 \\
-    \hline
-    $\hat{\sigma}_y$ & 0.0608 & 0.0772 & 0.0262  & 0.0124  & 0.00952 & 0.00747  & 0.0197 & 0.00911  & 0.00383 \\
-    \hline
-    $\hat{\rho}$ & 0.00120 & 0.000802 & 0.000391 & 0.0494  & 0.0164 & 0.0148 & 0.114 & 0.0540 & 0.0168
+  \begin{tabular}{cccc|ccc|}
+    &  \multicolumn{3}{c}{$\rho=0.95$} & \multicolumn{3}{c}{$\rho=0.60$} \\
+    & $m=4$ & $m=8$ & $m=16$ & $m=4$ & $m=8$ & $m=16$  \\
+    $\hat{\sigma}_x$ & 0.0458 & 0.0825 & $\mathbf{0.0315}$ &  0.0175  & 0.00933 & $\mathbf{0.00807}$ \\
+    $\hat{\sigma}_y$ & 0.0608 & 0.0772 & $\mathbf{0.0262}$  & 0.0124  & 0.00952 & $\mathbf{0.00747}$ \\
+    $\hat{\rho}$ & 0.00120 & 0.000802 & $\mathbf{0.000391}$ & 0.0494  & 0.0164 & $\mathbf{0.0148}$  \\
+    &  \multicolumn{3}{c}{$\rho=0.0$}\\
+    & $m=4$ & $m=8$ & $m=16$ \\
+    $\hat{\sigma}_x$ & 0.0458 & 0.0825 & $\mathbf{0.0315}$ \\
+    $\hat{\sigma}_y$ & 0.0608 & 0.0772 & $\mathbf{0.0262}$  \\
+    $\hat{\rho}$ & 0.00120 & 0.000802 & $\mathbf{0.000391}$ 
   \end{tabular}
   \caption{MSEs for the Galerkin likelihood solution for the three simulation cases.}
   \label{tab:MSEs}

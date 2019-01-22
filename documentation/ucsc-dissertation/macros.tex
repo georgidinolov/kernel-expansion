@@ -8,7 +8,8 @@
 \usepackage{url}
 \usepackage{amsmath, amsthm, amssymb}
 \usepackage{mathtools}
-\usepackage{color}
+\usepackage{multirow}
+\usepackage{colortbl}
 \usepackage{xspace}
 \usepackage{verbatim}
 \usepackage{graphicx}
@@ -44,7 +45,8 @@
 \addtolength{\textheight}{0in}%
 \addtolength{\topmargin}{0in}%
 
-
+\newcommand{\Exp}[1]{\mbox{Exp}\left(#1\right)}
+\newcommand{\Pois}[1]{\mbox{Pois}\left(#1\right)}
 
 \newcommand{\hb}{\hat{b}}
 \newcommand{\ha}{\hat{a}}
@@ -90,6 +92,42 @@
 
 \newcommand{\Gam}[2]{\mbox{Gamma}\left( #1, #2 \right) }
 \newcommand{\InvGam}[2]{\mbox{Inv-Gamma}\left( #1, #2 \right) }
+
+\newbox{\legendLineOne}
+\savebox{\legendLineOne}{
+	(\mbox{\protect\includegraphics[scale=1]{/home/gdinolov/PDE-solvers/src/SV-with-leverage/paper-revisions-7-11-2016/legend-line-1.pdf}})
+}
+
+\newbox{\legendLineTwo}
+\savebox{\legendLineTwo}{
+	(\mbox{\protect\includegraphics[scale=1]{/home/gdinolov/PDE-solvers/src/SV-with-leverage/paper-revisions-7-11-2016/legend-line-2.pdf}})
+}
+
+\newbox{\legendLineThree}
+\savebox{\legendLineThree}{
+	(\mbox{\protect\includegraphics[scale=1]{/home/gdinolov/PDE-solvers/src/SV-with-leverage/paper-revisions-7-11-2016/legend-line-3.pdf}})
+}
+
+\newbox{\legendLineFour}
+\savebox{\legendLineFour}{
+	(\mbox{\protect\includegraphics[scale=1]{/home/gdinolov/PDE-solvers/src/SV-with-leverage/paper-revisions-7-11-2016/legend-line-4.pdf}})
+}
+
+\newbox{\legendLineFive}
+\savebox{\legendLineFive}{
+	(\mbox{\protect\includegraphics[scale=1]{/home/gdinolov/PDE-solvers/src/SV-with-leverage/paper-revisions-7-11-2016/legend-line-5.pdf}})
+}
+
+\newbox{\legendBlueTriangle}
+\savebox{\legendBlueTriangle}{
+	(\mbox{\protect\includegraphics[scale=1]{/home/gdinolov/PDE-solvers/src/SV-with-leverage/paper-revisions-7-11-2016/legend-line-blue-triangle.pdf}})
+}
+
+\newbox{\legendBlackRectangle}
+\savebox{\legendBlackRectangle}{
+	(\mbox{\protect\includegraphics[scale=1]{/home/gdinolov/PDE-solvers/src/SV-with-leverage/paper-revisions-7-11-2016/legend-line-black-rectangle.pdf}})
+}
+
 
 \makeatletter % Hack to get setspace working properly
 \let\@currsize\normalsize
