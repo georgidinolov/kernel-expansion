@@ -120,8 +120,7 @@ as well.
 Referring back to the example reflection sets in
 \eqref{eq:reflection-sets}, although not identical, the two solutions
 to the PDE problem corresponding to $R_1$ and $R_2$ have minimal
-relative differences, and they depart from the true analytic solution
-minimally. From a numerical implementation standpoint, there is only
+relative differences. From a numerical implementation standpoint, there is only
 near machine-$\varepsilon$ difference between them. However, the two
 solutions have a single image,
 $(\tilde{x}_{1,2,3,4}, \tilde{y}_{1,2,3,4})$ and
@@ -139,31 +138,35 @@ always possible (see Section \ref{sec:proof} below).
 A condition weaker than uniqueness which nonetheless restricts the
 solution space is the symmetry obeyed by the problem. We consider the transformation
 \begin{align}
-  x^{new} = (a_x + b_x) - 2x^{old}, \\
-  y^{new} = (a_y + b_y) - 2y^{old}.
+  \label{eq:symmetry-condition}
+  \begin{split}
+    x^{new} = (a_x + b_x) - x^{old}, \\
+    y^{new} = (a_y + b_y) - y^{old}.
+  \end{split}
 \end{align}
 The PDF solution to the initial-boundary problem of the diffusion
 equation and joint density of $(x_0,y_0,x,y,a_x,b_x,a_y,b_y)$ are
-invariant with respect to this transformation. In order for the sum of
-images solution to obey this symmetry condition, the proposed system
-of images must be preserved under the corresponding coordinate
-transformation. Further, if we require that the system of images
-contain the fewest possible elements, then the unique system of images
-is the union of the sets of reflections
+invariant with respect to this transformation. Under the normalized
+problem, when $(\tilde{x}_0, \tilde{y}_0) = (1/2,\,1/2)$ and $\rho=0$,
+the proposed system of images must map to itself under the
+corresponding coordinate transformation. Further, if we require that
+the system of images contain the fewest possible elements, then the
+unique system of images is the union of the sets of reflections
 \begin{align}
-  \left\{ 1,2,3,4 \right\} \cup \left\{ 2,3,4,1 \right\} \cup \left\{ 3,4,1,2 \right\} \cup \left\{ 4,1,2,3 \right\}. \label{eq:union}
+  \left\{ 2,4,1,3 \right\} \cup \left\{ 2,4,3,1 \right\} \cup \left\{ 4,2,1,3 \right\} \cup \left\{ 4,2,3,1 \right\}. \label{eq:union}
 \end{align}
-When $(\tilde{x}_0, \tilde{y}_0) = (1/2,1/2)$, the set of
+When $(\tilde{x}_0, \tilde{y}_0) = (1/2,1/2)$ and $\rho=0$, the set of
 images from \eqref{eq:union} is closed under the transformation as
 desired:
 \begin{align*}
-  \{1,2,3,4 \} & \to \{3,4,1,2 \}, \\
-  \{2,3,4,1 \} &\to \{4,1,2,3 \}, \\
-  \{3,4,1,2 \} &\to \{1,2,3,4 \}, \\
-  \{4,1,2,3 \} &\to \{2,3,4,1 \}.
+  \{2,4,1,3 \} &\to \{4,2,3,1 \}, \\
+  \{2,4,3,1 \} &\to \{4,2,1,3 \}, \\
+  \{4,2,1,3 \} &\to \{2,4,3,1 \}, \\
+  \{4,2,3,1 \} &\to \{2,4,1,3 \}.
 \end{align*}
-Removing duplicate member images of \eqref{eq:union} and summing over
-the remaining $J^* \leq 64$, we define the new small-time solution
+This is illustrated in Figure \ref{fig:illustration-1}. Removing
+duplicate member images of \eqref{eq:union} and summing over the
+remaining $J^* \leq 64$, we define the new small-time solution
 \begin{equation}
   p_\epsilon(\tilde{x}, \tilde{y}, \tilde{t}) = \sum_{j=1}^{J^*} (-1)^{n(j)}
   G(\tilde{x},\tilde{y},\tilde{t}|\tilde{x}_{(j)},\tilde{y}_{(j)}). \label{eq:small-time-sol}
@@ -196,40 +199,33 @@ for $\tilde{t}_\epsilon$.
 % infinite number of reflections which enforce the IC/BCs and satisfy
 % the governing PDE.
 
-\begin{figure}
-  \centering
-  %%
-  %%
-  \begin{tabular}{cc}
-    \begin{minipage}{0.40\textwidth}
-      \centering
-      \includegraphics[width=1\linewidth]{../chapter-3/illustration-rho-0-normalized.pdf}
-      \caption{The computational domain $\Omega_2$ for the normalized
-        problem (\ref{eq:qqq}) is the unit square centered on
-        $(0.5,0.5)$, shown in the figure as a square box. Level sets
-        of the fundamental solution with $\rho = 0$ and
-        $\sigma_{\tilde{y}} < 1$ are also shown at an initial
-        condition in the upper-left corner of $\Omega_2$.}
-      \label{fig:normalized-problem-rho-0}
-    \end{minipage} &
-    %%
-    \begin{minipage}{0.40\textwidth}
-      \centering
-      \includegraphics[width=1\linewidth]{../chapter-3/illustration-rho-0-transformed.pdf}
-      \caption{The problem in Figure
-        \ref{fig:normalized-problem-rho-0} is scaled by
-        $1/\tilde{\sigma}$ in the $y-$direction, then rotated $\pi/4$
-        counter-clockwise, then scaled again in the principal axes
-        direction in order to eliminate the mixing term in the
-        resultant PDE problem. Since $\rho=0$ here, the final scaling
-        is the identity transformation and the boundaries remain
-        orthogonal. The fundamental solution is symmetric under
-        rotations centered on the IC under the new topology, as shown
-        here.}
-      \label{fig:transformed-problem-rho-0}
-    \end{minipage}
-  \end{tabular}
-\end{figure}
+% \begin{figure}
+%   \centering
+%   \includegraphics[width=1\linewidth]{../chapter-3/illustration-rho-0-normalized.pdf}
+%   \caption{The computational domain $\Omega_2$ for the normalized
+%     problem (\ref{eq:qqq}) is the unit square centered on
+%     $(0.5,0.5)$, shown in the figure as a square box. Level sets
+%     of the fundamental solution with $\rho = 0$ and
+%     $\sigma_{\tilde{y}} < 1$ are also shown at an initial
+%     condition in the upper-left corner of $\Omega_2$.}
+%   \label{fig:normalized-problem-rho-0}
+% \end{figure}
+
+% \begin{figure}
+%   \centering
+%   \includegraphics[width=1\linewidth]{../chapter-3/illustration-rho-0-transformed.pdf}
+%   \caption{The problem in Figure
+%     \ref{fig:normalized-problem-rho-0} is scaled by
+%     $1/\tilde{\sigma}$ in the $y-$direction, then rotated $\pi/4$
+%     counter-clockwise, then scaled again in the principal axes
+%     direction in order to eliminate the mixing term in the
+%     resultant PDE problem. Since $\rho=0$ here, the final scaling
+%     is the identity transformation and the boundaries remain
+%     orthogonal. The fundamental solution is symmetric under
+%     rotations centered on the initial condition under the new topology, as shown
+%     here.}
+%   \label{fig:transformed-problem-rho-0}
+% \end{figure}
 
 % We can compose such a finite system of images by reflecting about each
 % of the boundaries a number of times and picking the greatest possible
@@ -243,43 +239,88 @@ for $\tilde{t}_\epsilon$.
 % IC (red).
 
 \begin{figure}
-  \begin{tabular}{cc}
-    \begin{minipage}{0.40\textwidth}
+  \begin{tabular}{c}
+    \begin{minipage}{0.99\textwidth}
       \centering
-      \includegraphics[width=1\linewidth]{../chapter-3/chapter-3-figure-illustration-1.pdf}
-      \caption{A finite system of images resultant from the sequence
-        of reflections (left, right, left, top, bottom, top), where
-        ``left'' refers to left boundary of $\Omega$ running along
-        $x=0$, ``right'' refers to the right boundary along $x=1$,
-        etc. The red point is the initial condition
-        $(x_0,y_0) = (0.1, 0.3)$ which centers the fundamental
-        solution. All points outside $\Omega$ are image position
-        resulting from the reflections, where the solid colored points
-        have positions dependent on $(x_0,y_0)$ \textit{as well as all
-          of the boundaries.} The green colored points are symmetric
-        about the IC with respect to horizontal and vertical
-        reflections centered on $(x_0, y_0)$. The blue points are also
-        dependent on all four boundaries, but they violate such
-        transformations centered on $(x_0, y_0)$.}
+      \includegraphics[width=1\linewidth]{../chapter-3/figures/chapter-3-figure-illustration-1.pdf}
+      \caption{The finite system of images resultant from the sequence
+        of reflections in the set \eqref{eq:union}, for
+        $(\tilde{x}_0,\tilde{y}_0) = (1/2, 1/2)$ and $\rho=0$. All
+        points outside $\tilde{\Omega}$ are image position resulting
+        from the reflections, where the solid green points have
+        positions dependent on $(\tilde{x}_0,\tilde{y}_0)$ \textit{as
+          well as all of the boundaries}, and only they contribute to
+        the likelihood solution as given in \eqref{eq:derivs-1}. The
+        green colored points are symmetric about the initial condition
+        with respect to horizontal and vertical reflections centered
+        on $(\tilde{x}_0, \tilde{y}_0)$ and hence are closed under the
+        transformation \eqref{eq:symmetry-condition}. Moreover, this
+        configuration is unique under the symmetry and minimal number
+        of images conditions.}
       \label{fig:illustration-1}
     \end{minipage}
-    %%
-    & \begin{minipage}{0.40\textwidth}
-      \centering
-      \includegraphics[width=1\linewidth]{../chapter-3/chapter-3-figure-illustration-rel-error.pdf}
-      \caption{Relative error across $\Omega$ on a $30 \times 30$
-        regular grid based on solution (\ref{eq:small-time-sol}) for
-        the symmetric distribution (green set) of images in Figure
-        \ref{fig:illustration-1}. The max admissible small time
-        $t^*$ is bounded above by $0.058$ and used here. The relative
-        error rate is on the order of $0.01\%$}
-      \label{fig:illustration-rel-error}
-    \end{minipage}
-      \end{tabular}
+  \end{tabular}
 \end{figure}
+%%
+% \begin{figure}
+%   \begin{tabular}{c}
+%     \begin{minipage}{0.99\textwidth}
+%       \centering
+%       \includegraphics[width=1\linewidth]{../chapter-3/chapter-3-figure-illustration-rel-error.pdf}
+%       \caption{Relative error across $\Omega$ on a $30 \times 30$
+%         regular grid based on solution (\ref{eq:small-time-sol}) for
+%         the symmetric distribution (green set) of images in Figure
+%         \ref{fig:illustration-1}. The max admissible small time
+%         $t^*$ is bounded above by $0.058$ and used here. The relative
+%         error rate is on the order of $0.01\%$}
+%       \label{fig:illustration-rel-error}
+%     \end{minipage}
+%   \end{tabular}
+% \end{figure}
 
 
 \section{Calculation of the Joint Density}
+\begin{figure}
+  \begin{tabular}{c}
+    \begin{minipage}{1.00\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-3/figures/chapter-3-figure-illustration-likelihood-profile.pdf}
+      \caption{Log-likelihood profile comparison between small-time
+        truncated solution (as given in (\ref{eq:truncated-approx}))
+        and the true analytic solution for $\rho=0$. The time up to
+        which the untruncated small-time solution is valid is shown
+        with the solid, vertical red line. We see that in this example
+        the truncated approximation deteriorates for
+        $\mathcal{O}(t) = 1$, well after the technical bound set by
+        $t^*$.}
+      \label{fig:illustration-likelihood-profile}
+    \end{minipage}
+  \end{tabular}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \begin{tabular}{c}
+    \begin{minipage}{0.90\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-3/chapter-3-figure-illustration-rel-error-likelihood.pdf}
+      \caption{Relative error for the likelihood problem comparing the
+        untruncated solution to the truncated small-time approximation in
+        (\ref{eq:truncated-approx}) on a $30 \times 30$ regular grid
+        over $\Omega$. }
+      \label{fig:illustration-rel-error-likelihood}
+    \end{minipage}
+  \end{tabular}
+  % %% 
+  % & \begin{minipage}{0.40\textwidth}
+  %   \centering
+  %   \includegraphics[width=1\linewidth]{chapter-3-figure-illustration-rel-error-likelihood.pdf}
+  %   \caption{}
+  %   \label{fig:illustration-rel-error-likelihood-truncated}
+  % \end{minipage}
+  % \end{tabular}
+\end{figure}
+  
 Out of the $J^*$ images in \eqref{eq:small-time-sol}, exactly four
 have location parameters dependent on all of the boundary parameters
 $(a_x, b_x, a_y, b_y)$. Hence, the density calculation with the
@@ -368,22 +409,7 @@ form:
   % %     \left(y-y_0^{(j)}\right)^2 -
   % %     2\rho(x-x_0^{(j)})(y-y_0^{(j)})\tilde{\sigma} \right] \right)
 \end{align}
-\begin{figure}
-  \begin{tabular}{c}
-    \begin{minipage}{0.90\textwidth}
-      \centering
-      \includegraphics[width=1\linewidth]{../chapter-3/chapter-3-figure-illustration-likelihood-profile.pdf}
-      \caption{Log-likelihood profile comparison between small-time
-        truncated solution (as given in (\ref{eq:truncated-approx}),
-        solid black line) and the true analytic solution (red
-        points). The small time for which the approximation is valid
-        is $\log(t^*) \approx -9$. We see that in this example the
-        truncated approximation deteriorates for $\mathcal{O}(t) = 1$,
-        well after the technical bound set by $t^*$.}
-      \label{fig:illustration-likelihood-profile}
-    \end{minipage}
-  \end{tabular}
-\end{figure}
+
 The above approximate solution is close to the untruncated (i.e. the
 one that includes all the term
 $\mathcal{C}^4, \mathcal{C}^3, \mathcal{C}^2,$ and $\mathcal{C}^1$
@@ -393,35 +419,15 @@ $\tilde{t}_\epsilon$ produces a positive function dominated by the
 hyperbolic term $\mathcal{C}^4$. Figure
 \ref{fig:illustration-likelihood-profile} shows a profile comparison
 of the log-likelihood with respect to $\tilde{t}$ for a representative
-sample configuration. The truncated approximate solution tracks well
-with the untruncated solution up to $\mathcal{O}(\tilde{t}) =
-1$. Applying a first-order finite difference approximation with a
-finite step $\Delta = 10^{-5}$ to compute the polynomial derivatives
-produces relative errors with a maximum of order
-$\mathcal{O}(10^{-4})$ on a $30 \times 30$ grid shown in Figure
+sample configuration and $\rho=0$. The truncated approximate solution
+tracks well with the true analtyic solution up to
+$\mathcal{O}(\tilde{t}) = 1$. Applying a first-order finite difference
+approximation with a finite step $\Delta = 10^{-5}$ to compute the
+polynomial derivatives produces relative errors with a maximum of
+order $\mathcal{O}(10^{-4})$ on a $30 \times 30$ grid shown in Figure
 \ref{fig:illustration-rel-error-likelihood}.
-\begin{figure}
-  \centering
-  \begin{tabular}{c}
-    \begin{minipage}{0.90\textwidth}
-      \centering
-      \includegraphics[width=1\linewidth]{../chapter-3/chapter-3-figure-illustration-rel-error-likelihood.pdf}
-      \caption{Relative error for the likelihood problem comparing the
-        untruncated solution to the truncated small-time approximation in
-        (\ref{eq:truncated-approx}) on a $30 \times 30$ regular grid
-        over $\Omega$. }
-      \label{fig:illustration-rel-error-likelihood}
-    \end{minipage}
-    \end{tabular}
-    % %%
-    % & \begin{minipage}{0.40\textwidth}
-    %   \centering
-    %   \includegraphics[width=1\linewidth]{chapter-3-figure-illustration-rel-error-likelihood.pdf}
-    %   \caption{}
-    %   \label{fig:illustration-rel-error-likelihood-truncated}
-    % \end{minipage}
-    %   \end{tabular}
-\end{figure}
+
+
 
 
 
@@ -465,66 +471,66 @@ $\mathcal{O}(10^{-4})$ on a $30 \times 30$ grid shown in Figure
 % solver. This is confirmed in Figure
 % (\ref{fig:modes-histogram-3}), which shows the relative error using
 % the Galerkin solver.
-\begin{figure}
-  \begin{tabular}{cc}
-    \begin{minipage}{0.50\textwidth}
-      \centering
-      \includegraphics[width=1\linewidth]{../chapter-3/chapter-3-figure-validation-modes-histogram.pdf}
-      \caption{A histogram of differences
-        $t_{\max} - \min_{j'} \{ \beta_{j'}/(\alpha_{j'}+1) \}$ between the
-        approximate mode of the truncated small-time solution and the
-        true mode of closed-form solution, when $\rho=0$. We see that
-        the order magnitude of error in approximating the true point of
-        maximum for the likelihood function is 0.1, where the bias is
-        towards underestimating the mode.}
-      \label{fig:modes-histogram}
-    \end{minipage} &
-    \begin{minipage}{0.50\textwidth}
-      \centering
-      \includegraphics[width=1\linewidth]{../chapter-3/chapter-3-figure-validation-modes-scatterplot.pdf}
-      \caption{Scatterplot of $\tilde{\sigma}$ vs.
-        $\min_{j'} \{ \beta_{j'}/(\alpha_{j'}+1) \} -
-        t_{\max}$. Larger approximation errors in the mode point are
-        correlated with smaller $\sigma_{\tilde{y}}$.}
-      \label{fig:modes-scatterplot}
-    \end{minipage}
-  \end{tabular}
-\end{figure}
-\begin{figure}
-  \begin{tabular}{cc}
-    \begin{minipage}{0.50\textwidth}
-      \centering
-      \includegraphics[width=1\linewidth]{../chapter-3/chapter-3-figure-validation-modes-scatterplot-2.pdf}
-      \caption{Scatterplot of true mode value vs.
-        $\min_{j'} \{ \beta_{j'}/(\alpha_{j'}+1) \} - \tilde{t}_{\max}$. Larger
-        approximation errors in the mode point are correlated with
-        higher mode locations.}
-      \label{fig:modes-scatterplot-2}
-    \end{minipage} &
-    \begin{minipage}{0.50\textwidth}
-      \centering
-      \includegraphics[width=1\linewidth]{../chapter-3/chapter-3-figure-validation-modes-histogram-2.pdf}
-      \caption{Histogram of log-likelihood values at approximate mode
-        locations.  We can see that, with respect to machine
-        $\epsilon$ the true function values at the approximate modes
-        are large and ought to be resolved by the finite element
-        solver.}
-      \label{fig:modes-histogram-2}
-    \end{minipage}
-  \end{tabular}
-\end{figure}
-%
-\begin{figure}
-  \begin{tabular}{c}
-    \begin{minipage}{0.90\textwidth}
-      \centering
-      \includegraphics[width=1\linewidth]{../chapter-3/chapter-3-figure-validation-modes-histogram-3.pdf}
-      \caption{Histogram of relative error of FEM solver at the
-        approximate modes.}
-      \label{fig:modes-histogram-3}
-    \end{minipage}
-  \end{tabular}
-\end{figure}
+% \begin{figure}
+%   \begin{tabular}{cc}
+%     \begin{minipage}{0.50\textwidth}
+%       \centering
+%       \includegraphics[width=1\linewidth]{../chapter-3/chapter-3-figure-validation-modes-histogram.pdf}
+%       \caption{A histogram of differences
+%         $t_{\max} - \min_{j'} \{ \beta_{j'}/(\alpha_{j'}+1) \}$ between the
+%         approximate mode of the truncated small-time solution and the
+%         true mode of closed-form solution, when $\rho=0$. We see that
+%         the order magnitude of error in approximating the true point of
+%         maximum for the likelihood function is 0.1, where the bias is
+%         towards underestimating the mode.}
+%       \label{fig:modes-histogram}
+%     \end{minipage} &
+%     \begin{minipage}{0.50\textwidth}
+%       \centering
+%       \includegraphics[width=1\linewidth]{../chapter-3/chapter-3-figure-validation-modes-scatterplot.pdf}
+%       \caption{Scatterplot of $\tilde{\sigma}$ vs.
+%         $\min_{j'} \{ \beta_{j'}/(\alpha_{j'}+1) \} -
+%         t_{\max}$. Larger approximation errors in the mode point are
+%         correlated with smaller $\sigma_{\tilde{y}}$.}
+%       \label{fig:modes-scatterplot}
+%     \end{minipage}
+%   \end{tabular}
+% \end{figure}
+% \begin{figure}
+%   \begin{tabular}{cc}
+%     \begin{minipage}{0.50\textwidth}
+%       \centering
+%       \includegraphics[width=1\linewidth]{../chapter-3/chapter-3-figure-validation-modes-scatterplot-2.pdf}
+%       \caption{Scatterplot of true mode value vs.
+%         $\min_{j'} \{ \beta_{j'}/(\alpha_{j'}+1) \} - \tilde{t}_{\max}$. Larger
+%         approximation errors in the mode point are correlated with
+%         higher mode locations.}
+%       \label{fig:modes-scatterplot-2}
+%     \end{minipage} &
+%     \begin{minipage}{0.50\textwidth}
+%       \centering
+%       \includegraphics[width=1\linewidth]{../chapter-3/chapter-3-figure-validation-modes-histogram-2.pdf}
+%       \caption{Histogram of log-likelihood values at approximate mode
+%         locations.  We can see that, with respect to machine
+%         $\epsilon$ the true function values at the approximate modes
+%         are large and ought to be resolved by the finite element
+%         solver.}
+%       \label{fig:modes-histogram-2}
+%     \end{minipage}
+%   \end{tabular}
+% \end{figure}
+% %
+% \begin{figure}
+%   \begin{tabular}{c}
+%     \begin{minipage}{0.90\textwidth}
+%       \centering
+%       \includegraphics[width=1\linewidth]{../chapter-3/chapter-3-figure-validation-modes-histogram-3.pdf}
+%       \caption{Histogram of relative error of FEM solver at the
+%         approximate modes.}
+%       \label{fig:modes-histogram-3}
+%     \end{minipage}
+%   \end{tabular}
+% \end{figure}
 
 % \begin{figure}
 %   \centering
@@ -541,19 +547,42 @@ $\mathcal{O}(10^{-4})$ on a $30 \times 30$ grid shown in Figure
 % \end{figure}
 
 
-\begin{figure}
-  \begin{tabular}{cc}
-    \begin{minipage}{0.50\textwidth}
+
+
+
+\section{Existence of valid systems of images} \label{sec:proof}
+\begin{figure}[h!]
+  \begin{tabular}{c}
+    \begin{minipage}{0.99\textwidth}
       \centering
       \includegraphics[width=1\linewidth]{../chapter-3/chapter-3-figure-counterexample-1.pdf}
       \caption{When $\rho=0.9$, the system of images generated by the
-        set of reflections in Figure (\ref{fig:illustration-1}) now
-        violates the IC as at least one of the images falls within
-        $\Omega$. }
+        set of reflections in \eqref{eq:union} and
+        $(\tilde{x}_0, \tilde{y}_0) = (0.1, 0.3)$ now violates the
+        initial condition as at least one of the images falls within
+        $\tilde{\Omega}$. }
       \label{fig:counterexample-1}
-    \end{minipage} &
-    %%
-    \begin{minipage}{0.50\textwidth}
+    \end{minipage}
+  \end{tabular}
+\end{figure}
+
+For $\rho=0$, the above procedure is guaranteed to produce an
+admissible set of images regardless of the initial condition and
+$\sigma_{\tilde{y}}$ used. However, this is not the case for a general
+combination of $\rho$ and $\sigma_{\tilde{y}}$. Consider Figure
+\ref{fig:counterexample-1}, which features an initial condition
+$(\tilde{x}_0, \tilde{y}_0)=(0.1,0.3)$ with $\rho=0.9$. We can see
+that applying the above procedure produces a system with images within
+the computational domain, violating the initial condition.  However,
+below we prove that for any $(\tilde{x}_0, \tilde{y}_0)$ and $\rho$
+combination, we can find a sufficiently small $\sigma_{\tilde{y}}$
+such that a series of reflections used for $p_\epsilon$ does not
+violate the problem.
+
+%%
+\begin{figure}
+  \begin{tabular}{c}
+    \begin{minipage}{0.99\textwidth}
       \centering
       \includegraphics[width=1\linewidth]{../chapter-3/chapter-3-figure-proof-1.pdf}
       \caption{Geometry characteristic of the transformed problem when
@@ -564,58 +593,30 @@ $\mathcal{O}(10^{-4})$ on a $30 \times 30$ grid shown in Figure
         boundary 1, for example, some of the images shown will fall
         into region $\Omega$.}
       \label{fig:proof-1}
-    \end{minipage} \\
-    %%
-    \begin{minipage}{0.50\textwidth}
-      \centering
-      \includegraphics[width=1\linewidth]{../chapter-3/chapter-3-figure-proof-3.pdf}
-      \caption{Set of images in the original topology when
-        $\sigma_{\tilde{y}} = 0.1$. All images fall outside of
-        $\Omega$ for $\rho = 0.9$.}
-      \label{fig:proof-3}
-    \end{minipage} &
-        \begin{minipage}{0.50\textwidth}
-      \centering
-      \includegraphics[width=1\linewidth]{../chapter-3/chapter-3-figure-proof-2.pdf}
-      \caption{Set of images in the transformed topology when
-        $\tilde{\sigma} = 0.1$. All images fall outside of $\Omega$
-        for $\rho = 0.9$.}
-      \label{fig:proof-2}
     \end{minipage}
   \end{tabular}
 \end{figure}
 
-\section{Existence of valid systems of images} \label{sec:proof} For
-$\rho=0$, the above procedure is guaranteed to produce an admissible
-set of images regardless of the initial condition and
-$\sigma_{\tilde{y}}$ used. However, this is not the case for a general
-combination of $\rho$ and $\sigma_{\tilde{y}}$. Consider Figure
-(\ref{fig:counterexample-1}), which features the same configuration of
-parameters and reflections as above, except that $\rho=0.9$. We can
-see that applying the above procedure produces a system with images
-within the computational domain, violating the IC.  However, below we
-prove that for any IC and $\rho$ combination, we can find a
-sufficiently small $\sigma_{\tilde{y}}$ such that a series of
-reflections used for $p_\epsilon$ does not violate the problem.
 \begin{lemma}
-  Given $\rho > 0$, and $(x_0, y_0) \in \tilde{\Omega}$, there exists
+  Given $\rho > 0$, and
+  $(\tilde{x}_0, \tilde{y}_0) \in \tilde{\Omega}$, there exists
   $0 < \sigma_{\tilde{y}} \leq 1$ such that
-  $(x_0^{(j)}, y_0^{(j)}) \notin \tilde{\Omega}, \forall \, j\in
-  \left\{1, \ldots, J\right\}$, where the collection of image
-  locations $\left\{1, \ldots, J\right\}$ is the result of a finite
-  set of reflections about the boundaries of $\tilde{\Omega}$.
+  $(\tilde{x}_0^{(j)}, \tilde{y}_0^{(j)}) \notin \tilde{\Omega},
+  \forall \, j\in \left\{1, \ldots, J\right\}$, where the collection
+  of image locations $\left\{1, \ldots, J\right\}$ is the result of a
+  finite set of reflections about the boundaries of $\tilde{\Omega}$.
 \end{lemma}
 
 \begin{proof}
   Given that in the normalized problem $\tilde{\Omega}$ is a unit
   square whose lower-left corner is centered on the origin, applying
   the transformation $T_{(3)}$ in \eqref{eq:T3} produces a
-  characteristic geometry for the IC/BV problem that is illustrated in
-  Figure (\ref{fig:proof-1}). Corners a) and c) are obtuse, while b)
-  and d) are acute. Further, lines $(1,3)$ and $(2, 4)$ are each
-  parallel and of the same length, with lines 2 and 4 being
-  longer. This can be observed from the coordinates of the four
-  corners defining $\Omega$ in the transformed topology:
+  characteristic geometry for the initial initial-boundary problem
+  that is illustrated in Figure \ref{fig:proof-1}. Corners $a$ and $c$
+  are obtuse, while $b$ and $d$ are acute. Further, lines $(1,3)$ and
+  $(2, 4)$ are each parallel and of the same length, with lines 2 and
+  4 being longer. This can be observed from the coordinates of the
+  four corners defining $\tilde{\Omega}$ in the transformed topology:
   \begin{align*}
     a &= (0,\quad 0),&
                        b &= \frac{\sqrt{2}}{2} \left( \frac{1}{\sqrt{1-\rho}},\quad \frac{1}{\sqrt{1+\rho}} \right), \\
@@ -627,27 +628,27 @@ reflections used for $p_\epsilon$ does not violate the problem.
   Now consider placing the images $j = 1, \ldots, J$ by performing a
   finite number of alternating reflections about lines 4 and 2. This
   places images along a finite segment of a line running through the
-  IC position and orthogonal to lines 2 and 4 (dashed line and
-  black/red dots in Figure (\ref{fig:proof-1})). If the number of
+  initial condition position and orthogonal to lines 2 and 4 (dashed line and
+  black/red dots in Figure \ref{fig:proof-1}). If the number of
   reflections is kept constant and $\sigma_{\tilde{y}}$ is sufficiently
-  small such that all thus placed images are in the interior region
+  small, all thus placed images are in the interior region
   formed by extending lines 1 and 3. This is proved from the following
   observations:
   \begin{enumerate}
   \item The slopes of both lines 2 and 4 are equal to
     $-\frac{\sqrt{1+\rho}}{\sqrt{1-\rho}}$ and are therefore
     \textit{independent of the choice} of $\sigma_{\tilde{y}}$. Hence,
-    shrinking $\sigma_{\tilde{y}}$ moves corners d) and c) along lines 4
-    and 2, respectively, away from the origin and thereby increasing
-    the interior region formed by extending lines 1 and 3.
-  \item From observation i), the length of the chord covering the
-    reflection line within $\Omega$ is a constant independent of
+    shrinking $\sigma_{\tilde{y}}$ moves corners $d$ and $c$ along
+    lines 4 and 2, respectively, away from the origin and thereby
+    increasing the interior region formed by extending lines 1 and 3.
+  \item From observation $1$, the length of the chord covering the
+    reflection line within $\tilde{\Omega}$ is a constant independent of
     $\sigma_{\tilde{y}}$.  This implies that the length of the finite
     segment covering the reflected images is also constant and
     independent of $\sigma_{\tilde{y}}$.
   \item The coordinate of the point of intersection between the
     reflection line and the extension of line 3 (blue point in Figure
-    (\ref{fig:proof-1})) is $(x,y)$ where
+    \ref{fig:proof-1}) is $(x,y)$ where
     \begin{align*}
       x &= \frac{\sqrt{2}}{2} \left( \frac{-2 x_0\rho + 2
       y_0/\sigma_{\tilde{y}} -
@@ -658,18 +659,18 @@ reflections used for $p_\epsilon$ does not violate the problem.
       \frac{1}{\sqrt{2}\sigma_{\tilde{y}}\sqrt{1+\rho}} \right).
     \end{align*}
     The lengths of the $x-$ and $y-$segments of the chord connecting
-    the IC and the point of intersection are
+    the initial condition and the point of intersection are
     \begin{align*}
       \Delta x &= \frac{\sqrt{2}}{2}\left\{ \frac{1}{\sigma_{\tilde{y}}}\cdot\frac{\sigma_{\tilde{y}}x_0 - y_0/\rho + (1-\rho)/\rho + y_0}{\sqrt{1-\rho}} - \frac{x_0}{\sqrt{1-\rho}} \right\},\\
       \Delta y &= \frac{\sqrt{2}}{2} \left\{ \frac{1}{\sigma_{\tilde{y}}}\cdot\frac{(\sigma_{\tilde{y}}x_0 - 2y_0/\rho + (1-\rho)/\rho + 1/\sqrt{2})\sqrt{1-\rho} - y_0\sqrt{1+\rho}}{\sqrt{1-\rho}\sqrt{1+\rho}}- \frac{x_0}{\sqrt{1-\rho}} \right\}.
     \end{align*}
     Hence, as $\sigma_{\tilde{y}} \to 0$, both $\Delta x^2 \to \infty$ and
     $\Delta y^2 \to \infty$, so that the distance between the point of
-    intersection and the IC grows. The symmetry of the problem (in
+    intersection and the initial condition grows. The symmetry of the problem (in
     terms of reflections $x \to -x$ and $y \to -y$) makes the argument
     applied to line 3 and the line of reflection applicable to the
-    extension of line 1 as well. Figures (\ref{fig:proof-2}) and
-    (\ref{fig:proof-3}) show the reflected images falling within the
+    extension of line 1 as well. Figures \ref{fig:proof-2} and
+    \ref{fig:proof-3} show the reflected images falling within the
     interior region with $\sigma_{\tilde{y}} = 0.1$ in both geometries.
   \end{enumerate}
   Observations ii) and iii) imply that we can always find a
@@ -680,14 +681,35 @@ reflections used for $p_\epsilon$ does not violate the problem.
   images outside of the computational region $\Omega$.
 
   For any such finite, admissible collection of images, we can make
-  $t^*$ sufficiently small such that the BVs are numerically
-  enforced on three out of the four boundaries (since with a finite
-  set of reflections the BVs are analytically enforced at the last
-  boundary of reflection). Therefore, we have a collection of images
-  $J$ whose sum satisfies the IC/BV problem \textit{and} is
-  nontrivially differentiable with respect to the four boundary
-  parameters for $\Omega$.
+  $t^*$ sufficiently small such that the boundary values are
+  numerically enforced on three out of the four boundaries (since with
+  a finite set of reflections the boundaries are analytically enforced at the
+  last boundary of reflection). Therefore, we have a collection of
+  images $J$ whose sum satisfies the initial-boundary problem
+  \textit{and} is nontrivially differentiable with respect to the four
+  boundary parameters for $\tilde{\Omega}$. Moreover, the reflections
+  $J$ cover the required set in \eqref{eq:union}.
 \end{proof}
+
+%%
+\begin{figure}
+  \centering
+  \includegraphics[width=1\linewidth]{../chapter-3/chapter-3-figure-proof-3.pdf}
+  \caption{Set of images in the original topology when
+    $\sigma_{\tilde{y}} = 0.1$. All images fall outside of
+    $\tilde{\Omega}$ for $\rho = 0.9$.}
+  \label{fig:proof-3}
+\end{figure}
+
+
+\begin{figure}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-3/chapter-3-figure-proof-2.pdf}
+      \caption{Set of images in the transformed topology when
+        $\tilde{\sigma} = 0.1$. All images fall outside of $\tilde{\Omega}$
+        for $\rho = 0.9$.}
+      \label{fig:proof-2}
+\end{figure}
 
 \section{Matching the Small-time and Galerkin Solutions}
 So far we have developed an analytic likelihood solution valid for
@@ -708,7 +730,7 @@ region.
 The likelihood computed with the Galerkin solution as a
 function of $\tilde{t}$ is of the form
 \begin{align*}
-  \frac{\partial^4 p_{\mbox{Galerkin}}(\tilde{x}, \tilde{y}, \tilde{t})}{\partial a_x
+  \frac{\partial^4 p_{G}(\tilde{x}, \tilde{y}, \tilde{t})}{\partial a_x
   \partial b_x \partial a_y \partial b_y} = \sum_{k=1}^{K} e^{-\lambda_k\tilde{t}} p_k^{(4)}(\tilde{t}),
 \end{align*}
 where $p_i^{(4)}(\tilde{t})$ is a fourth-order polynomial. This
@@ -752,36 +774,45 @@ likelihood values. We need to use as few points as possible in the
 fitting exercise, as evaluating the Galerkin likelihood is relatively
 expensive, while still accurately representing the right-hand tail of
 the solution in the big-$\tilde{t}$ region. For this reason, we choose
-the first two generating functions $g_{1,4}, g_{2,4}$ as proportional
-to the matched solution
+a sparse representation of the likelihood using the first two
+generating functions $g_{1,4}, g_{2,4}$ as proportional to the matched
+solution
 \begin{align*}
-  f_{LS}(\tilde{t}) = \tilde{t}^4 \left( \omega_1 e^{-\lambda_1\tilde{t}} + \omega_2 e^{-\lambda_2\tilde{t}}\right)
+  f_{LS}(\tilde{t}) &= \tilde{t}^4 \left( \omega_1 e^{-\lambda_1\tilde{t}} + \omega_2 e^{-\lambda_2\tilde{t}}\right), \\
+  \log f_{LS}(\tilde{t})&= 4\log(\tilde{t}) - \lambda_1\tilde{t} + \log\left(\omega_1 + \omega_2e^{-(\lambda_2-\lambda_1)\tilde{t}} \right)
 \end{align*}
-$f_{LS}$ is asymptotically valid for large $\tilde{t}$; on the other
-hand, the largest possible degree of $\tilde{t}^{\alpha}$ used can
-more easily fit the small-$\tilde{t}$ likelihood which rapidly drops
-near $\tilde{t} = 0$. The weights $\omega_{1}, \omega_{2}$ are
-estimated from two likelihood values outside the transient region. The
-two points of evaluation are $\tilde{t}_1 = 0.80$ and
-$\tilde{t}_2 = 1.80$. If the Galerkin solver produces an invalid
-likelihood at $0.80$, then both trial points are increased by $1$
-until valid likelihoods are produced. The reason for the large jumps
-in this case is the relatively high cost of using the Galerkin solver
-and the guarantee of the existence of a valid likelihood for
-sufficiently large $\tilde{t}$. Once obtained, the two likelihood
-values are used to compute the best-fitting $\omega_{1}, \omega_{2}$
-via least squares. This matching scheme is applied to the same points
-as in Figures (\ref{fig:limitations-rho-0.95-1}) -
-(\ref{fig:limitations-rho-0.95-3}) and are shown in Figures
-(\ref{fig:matched-rho-0.95-1}) - (\ref{fig:matched-rho-0.95-3}). This
-least-squares solution is used to approximate the location and value
-of the maximum of the Galerkin solution, as well as its first two
-derivatives analytically. Our empirical observations show that LS
-solution matches the Galerkin solution well at the maximum point. We
-use the LS solution because running computations with the solver is
-expensive. Next, we use the small-time likelihood to pick the
-functional form of the interpolation between the small-time region and
-the maximum point of the Galerkin solution.
+where $f_{LS}$ is asymptotically valid for large $\tilde{t}$. Also,
+the largest possible degree of $\tilde{t}^{\alpha}$ used can more
+easily fit the small-$\tilde{t}$ likelihood which rapidly drops near
+$\tilde{t} = 0$. The weights $\omega_{1}, \omega_{2}$ are estimated
+from two likelihood values outside the transient region. The two
+points of evaluation are $\tilde{t}_1 = 0.80$ and
+$\tilde{t}_2 = 1.80$, chosen based on the empirical behavior of the
+Galerkin solver observed in Figures \ref{fig:limitations-rho-0.95-1} -
+\ref{fig:limitations-rho-0.95-3}. If the Galerkin solver produces an
+invalid likelihood at $\tilde{t} = 0.80$ or $\tilde{t} = 1.80$, then
+both trial points are increased by $1$ until valid likelihoods are
+produced. The reason for the large jumps in this case is the
+relatively high cost of using the Galerkin solver and the guarantee of
+the existence of a valid likelihood for sufficiently large
+$\tilde{t}$. Once obtained, the two likelihood values are used to
+compute the best-fitting $\omega_{1}, \omega_{2}$ via least
+squares. This matching scheme is applied to the same points as in
+Figures \ref{fig:limitations-rho-0.95-1} -
+\ref{fig:limitations-rho-0.95-3} and are shown in Figures
+\ref{fig:matched-rho-0.95-1} - \ref{fig:matched-rho-0.95-3}. This
+least-squares (LS) solution is used to approximate the location
+$\tilde{t}_m$ and value of the maximum of the likelihood, as well as
+compute its first two derivatives there analytically. This data is the
+right-hand side of the matching solution. We pick this point, because
+it is close to the maximum under the Galerkin solution and as such it
+is the inflection point where the dynamics of the solution move from
+being dominated by the $-\beta/\tilde{t}$ term (as we show below) to
+those dominated by $-\lambda_1\tilde{t}$ term. Next, we use the
+small-time likelihood to pick the functional form of the matching
+solution that interpolates between the small-time region and the
+maximum point of the Galerkin solution, as well as derive the data
+necessary for the left-hand side of the matching.
 
 Closer observation of (\ref{eq:truncated-approx}) reveal that each of
 the summands of the truncated small-time solution share a common
@@ -822,19 +853,33 @@ The assumed form for the matched solution is the same as
   \frac{\beta(\tilde{t})}{\tilde{t}}
 \]
 where the parameters $\omega(\tilde{t}), \gamma(\tilde{t}),$ and
-$\beta(\tilde{t})$ vary with $\tilde{t}$. The variational form adopted
-for these parameters is generally such that at the greatest small-time
-$\tilde{t}^*$ $\log f_{\mbox{matched}}(\tilde{t}^*)$ is equal to the
-small-time likelihoods. This is one side of the matching. The other
-side of the matching is performed at the point $\tilde{t}$ which
-maximized $\log f_{LS}(\tilde{t})$. We pick this point, because it is
-close to the maximum under the Galerkin solution and as such it is the
-inflection point where the dynamics of the solution move from being
-dominated by the $-\beta/\tilde{t}$ term to those dominated by
-$-\lambda_1\tilde{t}$ term. At this point, we have
-$\omega(\tilde{t}), \gamma(\tilde{t})$, and $\beta(\tilde{t})$ be such
-that $\log f_{\mbox{matched}}(\tilde{t})$ matches the value, first,
-and second derivatives of $\log (f_{LS}(\tilde{t}))$.
+$\beta(\tilde{t})$ vary with $\tilde{t}$. At $\tilde{t}^*$, the
+left-hand side of the matching condition, the values for these
+parameters are defined such that they match the small-time solution
+\begin{align*}
+  \omega(\tilde{t}^*) &= K, & \gamma(\tilde{t}^*) &= 4.5, & \beta(\tilde{t}^*) &= \beta_1.
+\end{align*}
+At $\tilde{t}_m$, the right-hand side of the matching condition and
+the maximum of the LS solution,
+$\omega(\tilde{t}), \gamma(\tilde{t}),$ and $\beta(\tilde{t})$ are
+chosen to match the value, first, and second derivatives of the
+logarithmic form of the LS solution. The form of the parameters
+between $\tilde{t}^*$ and $\tilde{t}_m$ is chosen to be a sigmoid
+function which rapidly transitions away from $\tilde{t}^*$ and is the
+same for all three parameters:
+\begin{align}
+  \begin{split}
+    \omega(\tilde{t}) &= \omega(\tilde{t}^*)e^{-k(\tilde{t}-\tilde{t}^*)} + \omega(\tilde{t}_m)\left(1-e^{-k(\tilde{t}-\tilde{t}^*)}\right), \\
+    \gamma(\tilde{t}) &= \gamma(\tilde{t}^*)e^{-k(\tilde{t}-\tilde{t}^*)} + \gamma(\tilde{t}_m)\left(1-e^{-k(\tilde{t}-\tilde{t}^*)}\right), \\
+    \beta(\tilde{t}) &= \beta(\tilde{t}^*)e^{-k(\tilde{t}-\tilde{t}^*)} + \beta(\tilde{t}_m)\left(1-e^{-k(\tilde{t}-\tilde{t}^*)}\right).
+  \end{split}
+\end{align}
+Given the order magnitudes of $\tilde{t}^*$ and $\tilde{t}_m$ commonly
+encountered, $k \approx 100$ is sufficiently such that the
+higher-order derivatives of $1-e^{-k(\tilde{t}-\tilde{t}^*)}$ are
+approximately zero at $\tilde{t}_m$ and the matching on the right-hand
+side is still satisfied.
+
 
 % The log-likelihood in this case is
 % \begin{multline}
