@@ -6,8 +6,8 @@ cd ~/PDE-solvers
 
 echo $PWD
 rhos_basis=($1)
-sigmas_x_basis=(0.08)
-sigma_y_basis=0.08
+sigmas_x_basis=(0.10)
+sigma_y_basis=0.10
 dx=$2
 data_size=$3
 rho_data=$4
@@ -28,7 +28,7 @@ do
     for sigma_x_basis in ${sigmas_x_basis[@]}; 
     do
 	echo $rho_basis_current $sigma_x_basis $data_size
-	results_files=($(ls .${path_to_dir}TEST-dx-${dx}-analytic-deriv*rho_basis-${rho_basis_current}-sigma_x_basis-${sigma_x_basis}-sigma_y_basis-${sigma_y_basis}-mle*.csv))
+	results_files=($(ls .${path_to_dir}TEST-MATCHING-dx-${dx}-analytic-deriv*rho_basis-${rho_basis_current}-sigma_x_basis-${sigma_x_basis}-sigma_y_basis-${sigma_y_basis}-mle*.csv))
 	
 	output_name=${PWD}${path_to_dir}dx-${dx}-analytic-deriv-rho_basis-${rho_basis_current}-sigma_x_basis-${sigma_x_basis}-sigma_y_basis-${sigma_y_basis}-mle-results-ALL.csv
 

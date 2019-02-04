@@ -14,20 +14,19 @@ price dynamics and more deeply study their statistical
 properties. \cite{engle1982} and \cite{bollerslev1986} introduced the
 Autoregressive Conditionally Heteroscedastic (ARCH) and Generalized
 Autoregressive Conditionally Heteroscedastic (GARCH) models as
-state-space-like timeseries representation of price
+state-space-like time series representation of price
 volatility. Shortly thereafter followed the stochastic volatility
 model of \cite{hull1987pricing}, which is still popular
 today. Extensions and further applications of these models to
 different assets types, markets, pricing scenarios, and inferential
 settings have allowed the literature to grow tremendously. In addition
 to the strides made by researchers in the field, the wide availability
-of high-quality historical data has facilitated the study of price
-volatility from a statistical standpoint. Despite their relatively
-long-term availability, two particular types of data have not been as
-extensively studied in the literature: high-frequency timeseries data
-and open, close, high, and low (OCHL for short) data. This work
-develops statistical approaches that more efficiently use these types
-of data.
+of high-quality data has facilitated the study of price volatility
+from a statistical standpoint. Despite their availability, two
+particular types of data have not been as extensively studied in the
+literature: high-frequency time series data and open, close, high, and
+low (OCHL for short) data. This work develops statistical approaches
+that more efficiently use these types of data.
 
 \section{High-Frequency Data}
 Traditionally, financial models have used low-frequency returns (e.g.,
@@ -108,16 +107,16 @@ continuous-time model.
 Chapter 1 is concerned with high-frequency data where only the period
 opening and closing prices are used to estimate volatility. However,
 even for lower-frequency data, it is common to assume that asset
-prices follow correlated geometric Brownian motions; and In that
+prices follow correlated geometric Brownian motions. In that
 setting, estimates of volatility and correlation are usually based on
 log-returns, which depend only on the opening and closing prices.
 However, typically more information is available.  For example,
 maximum and minimum trading prices over different trading intervals
-are readily available.  In univariate settings, it has been shown that
+are readily available which can serve as summary statistics for volatility over the periods of interest.  In univariate settings, it has been shown that
 incorporating this additional information can substantially improve
 estimates. For example, \cite{rodriguez2012} derive a full
 likelihood-based (Bayesian) approach to estimate volatility in
-univariate financial timeseries where open, closing, highest, and
+univariate financial time series where open, closing, highest, and
 lowest prices are included. Their work fits into a body of literature
 and collection of techniques by practitioners where the observed range
 of prices is used to make similar estimates. Likelihood-free
@@ -125,9 +124,7 @@ approaches, like that of \cite{rogers1991estimating},
 \cite{rogers2008estimating}, on the other hand suffer from not being
 able to be easily integrated into inferential frameworks that require
 explicit estimates of probability, as well as being sub-optimal as
-will be seen in the Simulation section below. Beyond the univariate
-setting, attempts to leverage open, close,high, low data in
-higher-dimensional cases is limited to the bivariate case. Likelihood
+will be seen in the Simulation section below. Likelihood
 approaches involving less than all four extrema have been used in
 computing first passage times \cite{kou2016first, sacerdote2016first},
 with application to structural models in credit risk and default

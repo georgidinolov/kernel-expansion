@@ -1,0 +1,46 @@
+\label{ch:conclusion}
+
+We have presented novel approaches for using two types of financial
+data for statistical inference and prediction. We have demonstrated
+the effectiveness of a Bayesian filtering approach in estimating
+financial market volatility in noisy, high-frequency data. This method
+outperforms the currently popular averaging approaches found in the
+realized volatility literature in estimating integrated volatility on
+a daily timescale. As part of our approach, we have elicited priors
+invariant with respect to sampling frequency, and have formulated the
+used discrete-time state-space models to be coherent over sampling
+frequencies as well. Future work on this project includes extending
+the problem to multiple assets. Given the nature of volatility shocks
+in markets, namely their occurrence over a single or a few days, the
+high-frequency resolution of the volatility paths and potentially
+fast-changing correlations among assets are of interest to both
+practitioners and academics in the field.
+
+We have also developed a semi-analytic computational framework for
+volatility estimation for bivariate assets with OCHL data, a
+completely novel contribution. As part of our approach, we have
+developed a non-separable variational-form basis expansion (Galerkin
+solution) to the governing differential equation. Our numerical
+Galerkin solver takes directly into account the correlation structure
+inherent in the bivariate OCHL problem and is therefore more efficient
+when compared to other proposed numerical methods. However, in the
+context statistical inference, often the likelihood in question needs
+to be evaluated in parameter regions where near-infinite computational
+memory and time needs to be employed in order to produce a valid
+numerical solution. To deal with this difficulty, we in turn developed
+an analytic solution asymptotically valid in this (small-time, under
+our proposed representation of the canonical problem) parameter
+region. This was achieved via the method of images and a symmetry
+argument. Next, we proposed a matching solution which interpolates
+between the regions where the Galerkin and small-time solutions are
+applicable. Finally, we performed a series of MLE exercises that
+showed the validity of our method and also demonstrated the increase
+in statistical power in using OCHL data in comparison to both the
+classical Gaussian MLE estimator that disregards boundary conditions as
+well as the other existing bivariate OCHL estimator.
+
+A natural extension of our OCHL solution is its application in more
+dynamical settings. In particular, when combined with a Gaussian
+process emulator, it is possible to implement the OCHL likelihood
+solution in the estimation of stochastic volatility dynamical models
+with the use of particle filters.
