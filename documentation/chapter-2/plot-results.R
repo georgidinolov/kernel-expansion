@@ -38,19 +38,19 @@ all.est = rbind(mle.ochl, rogers, mle.classical)
 rho.hist = ggplot(all.est, aes(y=..density.., x=rho, fill=type)) +
     geom_density(alpha=0.5) +
     xlab(expression(rho)) +
-    labs(title=paste0("n=", data_size)) +
+    labs(title=paste0("m=", data_size)) +
     geom_vline(xintercept=rho_data)
 
 sigma.x.hist = ggplot(all.est, aes(y=..density.., x=sigma_x, fill=type)) +
     geom_density(alpha=0.5) +
     xlab(expression(sigma[x])) +
-    labs(title=paste0("n=", data_size)) +
+    labs(title=paste0("m=", data_size)) +
     geom_vline(xintercept=1)
 
 sigma.y.hist = ggplot(all.est, aes(y=..density.., x=sigma_y, fill=type)) +
     geom_density(alpha=0.5) +
     xlab(expression(sigma[y])) +
-    labs(title=paste0("n=", data_size)) +
+    labs(title=paste0("m=", data_size)) +
     geom_vline(xintercept=1)
 
 all = grid.arrange(rho.hist, sigma.x.hist, sigma.y.hist, nrow=1)

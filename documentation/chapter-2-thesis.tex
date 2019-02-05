@@ -2,6 +2,17 @@
 
 \section{Introduction}
 
+In Chapter \ref{ch:sv-high-freq}, we showed how a filtering approach
+can be effectively applied to very high-frequency univariate data for
+the more accurate estimation of asset volatility. Information present
+in high-frequency returns can also be captured over longer
+observational periods by including the highest and lowest intraperiod
+prices. This information can substantially improve estimates (see for
+example \cite{rodriguez2012} for the univariate treatment). In this
+chapter we develop a general likelihood-based approach for
+incorporating open, close, high, and low data in the bivariate
+setting.
+
 We consider a two-dimensional correlated Brownian motion:
 \begin{align}
   X(t) &= x_0 + \mu_x t + \sigma_x W_x(t)  \label{eq:X} \\
@@ -9,12 +20,12 @@ We consider a two-dimensional correlated Brownian motion:
 \end{align}
 where $W_i$ are standard Brownian motions with
 $\mbox{Cov}(W_1(t), W_2(t)) = \rho t$. Our interest is in finding the
-joint probability density function for the pair $(X(t), Y(t))$
-along with the random variables $M_X(t)=\max_{0\leq s\leq t}X(t),$
-$m_X(t)=\min_{0\leq s\leq t}X(t),$ $M_Y(t)=\max_{0\leq s\leq t}Y(t),$
-$m_Y(t)=\min_{0\leq s\leq t}Y(t)$
+6-dimensional joint probability density function for the pair $(X(t), Y(t))$
+and the random variables $M_X(t)=\max_{0\leq s\leq t}X(s),$
+$m_X(t)=\min_{0\leq s\leq t}X(s),$ $M_Y(t)=\max_{0\leq s\leq t}Y(s),$
+$m_Y(t)=\min_{0\leq s\leq t}Y(s)$. We introduce
 \begin{multline}
-  \lim_{dy \to 0} \lim_{dx \to 0} \frac{1}{dx dy} \mbox{Pr}\left(x \leq X(t) < x+dx, y \leq Y(t) < y+dy, \right. \\
+  q(x,y,t) = \lim_{dy \to 0} \lim_{dx \to 0} \frac{1}{dx dy} \mbox{Pr}\left(x \leq X(t) < x+dx, y \leq Y(t) < y+dy, \right. \\
   \left. M_x(t) \leq b_x, M_y(t) \leq b_y, m_x(t) \geq a_x, m_y(t) \geq a_y | X(t) = x_0, Y(0) = y_0,
   \theta \right) \label{eq:CDF}
 \end{multline}
@@ -31,8 +42,8 @@ with $\theta := (\mu_x, \mu_y, \sigma_x, \sigma_y, \rho).$ % This
 %   \displaystyle \int_{a_x}^{x_t} \displaystyle \int_{a_y}^{y_t} q(x,y,t) dx\,dy,
 % \]
 % where $q(x,y,t)$ is the solution to the Fokker-Planck equation
-For shorthand labeling \eqref{eq:CDF} as $q(x,y,t)$, the density
-satisfies the Fokker-Planck equation \cite{oksendal2013stochastic}:
+The density satisfies the Fokker-Planck equation
+\cite{oksendal2013stochastic}:
 \begin{multline}
   \displaystyle \frac{\partial}{\partial t'} q(x,y,t') = -\mu_x \frac{\partial}{\partial x}q(x,y,t')
   - \mu_y \frac{\partial}{\partial y}q(x,y,t') + \\
@@ -44,11 +55,13 @@ Given that we consider the subset of $(X(t), Y(t))$ that satisfies the constrain
   q(a_x, y,t') &= q(b_x,y,t') = q(x,a_y,t') = q(x,b_y,t') = 0, & 0 &< t' \leq t. \label{eq:2}
 \end{align}
 Differentiating $q(x,y,t)$ with respect to the boundaries produces the
-transition density of a particle beginning at $(X(0), Y(0))$ and
-ending at $(X(t), Y(t))$, while attaining the minimum levels $a_x$ and
-$a_y$ in the $x-$ and $y-$directions and the maximum levels $b_x$ and
-$b_y$. We denote denote this transition density as
-$f(x,y,a_x,b_x,a_y,b_y)$ and note that it is  the fourth-order partial derivative of the unconstrained process $q$ with respect to the four boundaries:
+6-dimensional transition density of
+\[(X(0), Y(0), M_X(t), m_X(t), M_Y(t), m_Y(t)) =
+  (x,y,b_x,a_x,b_y,a_y)\] given the starting point of
+$(X(0), Y(0)) = (x_0, y_0)$. We denote this 6-dimensional transition
+density by $f(x,y,a_x,b_x,a_y,b_y)$ and note that it is the
+fourth-order partial derivative of the unconstrained process $q$ with
+respect to the four boundaries:
 \begin{align}
   \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial b_y} q(x,y,t) = f(x,y,a_x,b_x,a_y,b_y).
   \label{eq:pdf}
@@ -190,7 +203,7 @@ Secondly, the problem is then \textit{standardized} with the scaling transformat
   T_{(1)}: & \left\{ \begin{array}{ccc}
                        p_{(1)}(x^{(1)}, y^{(1)}, t) &=& L_xL_y p(x,y,t), \\
                        p_{(1)}(x^{(1)}, y^{(1)}, 0) &=& \delta(x^{(1)}-x_0^{(1)}) \delta(y^{(1)}-y_0^{(1)}), \\
-                       (x^{(1)}, y^{(1)}) &=& \left(\frac{x}{L_x}, \frac{y}{L_y} \right), \\
+                       (x^{(1)}, y^{(1)}) &=& \left(\frac{x - a_x}{L_x}, \frac{y - a_y}{L_y} \right), \\
                        (L_x,L_y) &=& \left(b_y - a_y, b_x - a_x\right)
                      \end{array} \right.
 \end{align}
@@ -198,7 +211,7 @@ which re-defines the differential equation and computational domain observed by
 $p_{(1)}(x^{(1)}, y^{(1)}, t)$
 \begin{align}
   \frac{\partial}{\partial t}p_{(1)}(x^{(1)}, y^{(1)}, t) &= \mathcal{L}^{(1)}p_{(1)}(x^{(1)}, y^{(1)}, t),\quad (x^{(1)},y^{(1)}) \in \Omega^{(1)}, \label{eq:qq-2} \\
-  \Omega &:= (0,1) \times (0,1). \nonumber
+  \Omega^{(1)} &:= (0,1) \times (0,1). \nonumber
 \end{align}
 The differential operator $\mathcal{L}^{(1)}$ takes the form
 \[
@@ -215,13 +228,13 @@ $\tau_y = \frac{\sigma_y}{L_y}$.  Two remarks are in order here:
 \item The transformation $T_{(1)}$ preserves $\rho$ from the original
   problem.
 \item We consider $L_x$ and $L_y$ as \textit{fixed} in differentiating
-  $p(x,y,t)$. This amounts to perturbing the boundaries of
-  $\Omega^{(1)}$ when differentiating $p_{(1)}(x^{(1)}, y^{(1)}, t)$
-  with respect to $(a_x, b_x, a_y, b_y)$, while keeping the diffusion
-  parameters $\tau_x, \tau_y$ constant. In contrast, if we treat
-  $L_x, L_y$ as functions of the boundary parameters, then upon
-  differentiation $\tau_x, \tau_y$ will be perturbed while preserving
-  $\Omega^{(1)}$.
+  $p(x,y,t)$, corresponding to the unperturbed $(a_x, b_x, a_y,
+  b_y)$. This amounts to perturbing the boundaries of $\Omega^{(1)}$
+  when differentiating $p_{(1)}(x^{(1)}, y^{(1)}, t)$ with respect to
+  $(a_x, b_x, a_y, b_y)$, while keeping the diffusion parameters
+  $\tau_x, \tau_y$ constant. In contrast, if we treat $L_x, L_y$ as
+  functions of the boundary parameters, then upon differentiation
+  $\tau_x, \tau_y$ will be perturbed while preserving $\Omega^{(1)}$.
 \end{enumerate}
 Thirdly, we \textit{normalize} the diffusion equation (\ref{eq:qq-2}) with the transformation
 \begin{align}
@@ -520,7 +533,7 @@ reader might recall, are the main object of interest in our problem.
 % +\mbox{F}_{irreg}(b-\varepsilon)}{\varepsilon^2 }  =
       %       O\left(\frac{h^2}{\max(\varepsilon^2, h^2)} \right) $$
 
-\subsection{Density Calculation} \label{sec:likelihood-calc} Following
+\subsection{Calculation of Joint Density} \label{sec:likelihood-calc} Following
 (\ref{eq:pdf}), to compute the joint density $f(x,y,a_x,b_x,a_y,b_y)$,
 we must take derivatives of the solution
 $p(\tilde{x},\tilde{y},\tilde{t})$ with respect to the boundary
@@ -672,13 +685,13 @@ Galerkin (continuous in time, discrete in space) solution to the
 general diffusion problem (\ref{eq:qq}). The method relies on an
 analytic approximation for the solution
 $p(\tilde{x},\tilde{y},\tilde{t})$ for small time $\tilde{t}$ and a
-basic convergence estimate from approximation theory for to parabolic
+basic convergence estimate from approximation theory for parabolic
 problems.
 
 Our numerical method produces a functional representation of the
-approximate solution which $(1)$ imposes a computational burden
+approximate solution which $(i)$ imposes a computational burden
 comparable to or better than that of the finite difference method and
-$(2)$ is infinitely differentiable with respect to the boundary
+$(ii)$ is infinitely differentiable with respect to the boundary
 parameters, allowing us to perform the crucial numerical
 differentiation needed to obtain the density of interest.
 
@@ -931,7 +944,7 @@ resolved.
 \subsection{Small-time Solution} \label{sec:pde-small-t}
 
 The initial condition for our problem requires that the basis family
-used for the Galerkin method resolve very high-frequency terms
+used for the Galerkin method resolve very high-wave number terms
 necessary to approximate a $\delta-$like function. In order to avoid this
 and thereby reduce the computational load for our method, we develop
 an analytic, small-time solution to the problem. In addition to
@@ -1092,7 +1105,7 @@ and evolving it forward in time by $\tilde{t} -
   M \mathbf{c}(\tilde{t}_\epsilon) &= \mathbf{p}(\tilde{t}_\epsilon), \\
   [\mathbf{p}(\tilde{t}_\epsilon)]_i &= \displaystyle \int_{\tilde{\Omega}} p(\tilde{x},\tilde{y},\tilde{t}_\epsilon) \psi_i(\tilde{x},\tilde{y}) d\tilde{x}\,d\tilde{y}. \nonumber
 \end{align}
-Intuitively, the bigger $\tilde{t}_\epsilon$, the smaller both
+Intuitively, the bigger $\tilde{t}_\epsilon$, the smaller both errors
 $R_e(k)$ and $R_0(k)$ will be in approximating the solution for the
 initial value $p(\tilde{x},\tilde{y},\tilde{t}_\epsilon)$. On the
 other hand, for large $\tilde{t}_\epsilon$, the error in the
@@ -1129,7 +1142,7 @@ captures the variation in a given function: for any set of eigenpairs
 $\left\{(\lambda_j, \phi_j)\right\}$ over the domain $\tilde{\Omega}$,
 increasing the absolute value of $\lambda_j$ with $j$ corresponds to a
 function $\phi_j$ with increasing number of oscillations over
-$\tilde{\Omega}$. The $\|\cdot\|_2$ norm is distict from the usual
+$\tilde{\Omega}$. The $\|\cdot\|_2$ norm is distinct from the usual
 $L_2(\tilde{\Omega})$ norm , which we denote as
 $\|\cdot \|_{L_2(\tilde{\Omega})}$. As referred to in
 \cite{bramble1977some}, functions $w \in L_2(\tilde{\Omega})$ with
@@ -1179,15 +1192,7 @@ solution and its Galerkin approximation under $L_2(\tilde{\Omega})$.
 
 
 \section{Estimation}
-In the estimation of asset price volatility, it is common to assume
-that asset prices follow correlated geometric Brownian motions.  In
-that setting, estimates of volatility and correlation are usually
-based on daily log-returns, which depend only on the opening and
-closing prices.  However, typically more information is available.
-For example, maximum and minimum trading prices over the days are
-readily available.  In univariate settings, it has been shown that
-incorporating this additional information can substantially improve
-estimates.  The pdf from \eqref{eq:pdf} provides the likelihood
+The pdf from \eqref{eq:pdf} provides the likelihood
 necessary for frequentist and Bayesian inference in bivariate
 settings.  Likelihood-free approaches, like that of
 \cite{rogers1991estimating}, \cite{rogers2008estimating}, on the other
@@ -1270,15 +1275,15 @@ function with the cumulative probability density and probability
 measure over $Z$ being
 \begin{align}
   F^{(k)}(z | \theta) &= \displaystyle \int_{-\infty}^{a_x} \displaystyle \int_{-\infty}^{a_y} \displaystyle \int_{-\infty}^{b_x} \displaystyle \int_{-\infty}^{b_y} \displaystyle \int_{-\infty}^x \displaystyle \int_{-\infty}^y \frac{\partial^4}{\partial a'_x \partial b'_x \partial a'_y \partial b'_y} q^{(k)}(x', y', t | a'_x, b'_x, a'_y, b'_y)\,\,\, dz, \label{eq:approx-measure} \\
-                          \Pr_{k}(A) &:= \displaystyle \int_{A} f^{(k)}(z)\, dz, \quad \mbox{ for any measurable } A \subset Z. \label{eq:approx-measure-2}
+                          \Pr_{k}(A) &:= \displaystyle \int_{A} f^{(k)}(z)\, dz, \quad \mbox{ for any measurable } A \subset Z, \label{eq:approx-measure-2}
 \end{align}
-We will prove that for every $z \in Z$,
+where $z = (x,y,a_x,b_x,a_y,b_y)$.  We will prove that for every
+$z \in Z$,
 \[
   \lim_{k\to \infty} F^{(k)}(z | \theta) = F(z | \theta).
 \]
 First, we prove the Lemma
 \begin{lemma}\label{lem:1}
-  For $z = (x, y, a_x, b_x, a_y, b_y)$,
   \[
     \lim_{k\to \infty} \displaystyle \int_{a_x}^{b_x} \displaystyle
     \int_{a_y}^{b_y} f^{(k)}(x,y,a_x,b_x,a_y,b_y)\, dx\,dy =
@@ -1298,7 +1303,8 @@ First, we prove the Lemma
   paths that stay within the region $[a_x, b_x] \times [a_y, b_y]$:
   \begin{multline*}
     B(a_x, b_x, a_y, b_y) = \\
-    \left\{ \omega \in W | X_\omega(t) \in [a_x, b_x], Y_\omega(t) \in [a_y, b_y], m_x \in [a_x,b_x), M_x \in (a_x, b_x] \right\}.
+    \left\{ \omega \in W | X_\omega(t) \in [a_x, b_x], Y_\omega(t) \in [a_y, b_y], \right. \\
+    \left. m_x \in [a_x,b_x), M_x \in (a_x, b_x], m_y \in [a_y,b_y), M_y \in (a_y, b_y] \right\}.
   \end{multline*}
   Then
   \begin{multline}
@@ -1340,13 +1346,13 @@ approximation
   \begin{align*}
     \Pr_k(B(a_x + k_1(i)\epsilon, b_x + k_2(i)\epsilon, a_y +
     k_3(i)\epsilon, b_y + k_4(i)\epsilon) &= \\
-    \MoveEqLeft[10] \displaystyle \int_{a_x +
+    \displaystyle \int_{a_x +
     k_1(i)\epsilon}^{b_x + k_2(i)\epsilon} \displaystyle \int_{a_y + k_3(i)\epsilon}^{b_y +
-    k_4(i)\epsilon} q^{(k)}(x,y,a_x,b_x,a_y,b_y)\, dx\, dy \to \\
-   \displaystyle
-     \int_{a_x + k_1(i)\epsilon}^{b_x + k_2(i)\epsilon} \displaystyle \int_{a_y +
-     k_3(i)\epsilon}^{b_y + k_4(i)\epsilon} q(x,y,a_x,b_x,a_y,b_y)\, dx\, dy &= \\
-    \MoveEqLeft[20] \Pr(B(a_x + k_1(i)\epsilon, b_x + k_2(i)\epsilon, a_y +
+    k_4(i)\epsilon} q^{(k)}(x,y,a_x+k_1(i)\epsilon,b_x+k_2(i)\epsilon,a_y+k_3(i)\epsilon,b_y+k_4(i)\epsilon)\, dx\, dy \to \\
+    \displaystyle
+    \int_{a_x + k_1(i)\epsilon}^{b_x + k_2(i)\epsilon} \displaystyle \int_{a_y +
+    k_3(i)\epsilon}^{b_y + k_4(i)\epsilon} q(x,y,a_x+k_1(i)\epsilon,b_x+k_2(i)\epsilon,a_y+k_3(i)\epsilon,b_y+k_4(i)\epsilon)\, dx\, dy &= \\
+     \Pr(B(a_x + k_1(i)\epsilon, b_x + k_2(i)\epsilon, a_y +
     k_3(i)\epsilon, b_y + k_4(i)\epsilon) \mbox{ as } k \to \infty \mbox{ in } L_2(\Omega).
   \end{align*}
   Hence, for a sufficiently large $k$ dependent on the supremum over
@@ -1605,8 +1611,8 @@ approximation
 
 \begin{lemma}
   Assuming that $\theta$ is bounded, the maximum likelihood estimator
-  is consistent as $n \to \infty$ and
-  $k \to \infty$: \[ \hat{\theta}_{n,k} \to \theta. \]
+  is consistent as $n \to \infty$ (number of data points) and
+  $k \to \infty$ (number of basis elements): \[ \hat{\theta}_{n,k} \to \theta. \]
 \end{lemma}
 \begin{proof}
   By Lemma \ref{lem:conv-dist}
@@ -1752,7 +1758,9 @@ optimization scheme when the parameter space is being explored.
       \includegraphics[width=1\linewidth]{../chapter-2/figures/{limitations-rho-0.95-data-point-7}.pdf}
     \end{minipage}
   \end{tabular}
-  \caption{Data points 2 through 7 used to test various parameter values for basis generation.}
+  \caption{Data points 2 through 7 used to test various parameter
+    values for basis generation. Legend is the same as in Figure
+    \ref{fig:limitations-rho-0.95-1}.}
   \label{fig:limitations-rho-0.95-2}
 \end{figure}
 
@@ -1784,7 +1792,9 @@ optimization scheme when the parameter space is being explored.
       \includegraphics[width=1\linewidth]{../chapter-2/figures/{limitations-rho-0.95-data-point-13}.pdf}
     \end{minipage}
   \end{tabular}
-    \caption{Data points 8 through 13 used to test various parameter values for basis generation.}
+  \caption{Data points 8 through 13 used to test various parameter
+    values for basis generation. Legend is the same as in Figure
+    \ref{fig:limitations-rho-0.95-1}.}
   \label{fig:limitations-rho-0.95-3}
 \end{figure}
 
