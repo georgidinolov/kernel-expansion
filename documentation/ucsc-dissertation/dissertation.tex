@@ -1,18 +1,17 @@
 \input{macros}
 
+\def\newblock{\hskip .11em plus.33em minus.07em}
+
 \begin{document}
 
-\title{A long and verbose title that sounds complicated but is really quite simple}
-\author{Georgi Dinolov}
-\degreeyear{2018}
-\degreemonth{August}
-\degree{DOCTOR OF PHILOSOPHY}
-\chair{Abel Rodriguez}
-\committeememberone{Hongyun Wang}
+\title{Volatility Estimation Methods for High-Frequency and Bivariate
+  Open, Close, High, Low Prices} \author{Georgi Dinolov}
+\degreeyear{2019} \degreemonth{March} \degree{DOCTOR OF PHILOSOPHY}
+\chair{Abel Rodr\'iguez} \committeememberone{Hongyun Wang}
 \committeemembertwo{Raquel Prado}
 %\committeememberthree{Professor 4} % Uncomment if you have 4 committee members. Also change the next line to `\numberofmembers{4}`
 \numberofmembers{3}
-\deanlineone{Tyrus Miller}
+\deanlineone{Lori Kletzer}
 \deanlinetwo{Vice Provost and Dean of Graduate Studies}
 \deanlinethree{}
 \field{Statistics and Applied Mathematics}
@@ -42,7 +41,19 @@
 \end{dedication}
 
 \begin{acknowledgements}
-Proper acknowledgments of everyone else who helped you graduate.
+  I want to thank my advisors, Professor Abel Rodr\'iguez and
+  Professor Hongyun Wang, for helping and mentoring me through the
+  process of completing this work. Thank you both for your unyielding
+  patience and never losing faith in my work. I have learned
+  tremendously, and I cannot have done this without you both guiding
+  me at every step. I also want to thank both Professor Raquel Prado
+  and Professor Athanasios Kottas for advising me during my first as a
+  statistics graduate student at UC Santa Cruz, and Professor Prado in
+  particular for serving on my dissertation committee.
+
+  I want to thank my wife, Alison, for always supporting me and
+  reminding me of the light at the end of the tunnel. Thank you also
+  to the rest of my family for your encouragement and love.
 \end{acknowledgements}
 
 \end{frontmatter}
@@ -62,12 +73,12 @@ Proper acknowledgments of everyone else who helped you graduate.
 \chapter{Conclusion}
 \input{../conclusion/conclusion.tex}
 
-\appendix % Uncomment if you have appendices. Add them below this exactly as you would a regular chapter.
+\appendix 
 \chapter{Details of the Markov chain Monte Carlo algorithm}
 \input{/home/gdinolov/PDE-solvers/src/SV-with-leverage/paper-revisions-7-11-2016/appendix.tex}
 
 \nocite{*}
-\bibliographystyle{plain}
+\bibliographystyle{plainnat}
 \singlespacing
 \bibliography{../master-bibliography}
 \doublespacing

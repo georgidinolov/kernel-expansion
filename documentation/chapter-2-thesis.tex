@@ -43,7 +43,7 @@ with $\theta := (\mu_x, \mu_y, \sigma_x, \sigma_y, \rho).$ % This
 % \]
 % where $q(x,y,t)$ is the solution to the Fokker-Planck equation
 The density satisfies the Fokker-Planck equation
-\cite{oksendal2013stochastic}:
+\citep{oksendal2013stochastic}:
 \begin{multline}
   \displaystyle \frac{\partial}{\partial t'} q(x,y,t') = -\mu_x \frac{\partial}{\partial x}q(x,y,t')
   - \mu_y \frac{\partial}{\partial y}q(x,y,t') + \\
@@ -84,29 +84,29 @@ We should note that $f(x,y,a_x,b_x,a_y,b_y)$ exists. Consider the relation
    We use the shorthand $X(t) \in dx$ for $X(t) \in (x, x+dx)$, and
    $\mathbb{P}_{W}$ is the Wiener measure on the sample space $W$ of
    all realizations (paths) $(X_\omega(t), Y_\omega(t))$ from the
-   stochastic process (\ref{eq:X}) - (\ref{eq:Y}). The process is defined in the usal
+   stochastic process (\ref{eq:X}) - (\ref{eq:Y}). The process is defined in the usual
    way using Kolmogorov's extension of measure over cylinder sets on
    $t \to \mathbb{R}^2$ (see \cite{freidlin1985functional}, Section
    1.2). Sets of the form $A(x,y,a_x,b_x,a_y,b_y)$ can be defined as a
-   countable intersection/union of cyliner sets on
+   countable intersection/union of cylinder sets on
    $t \to \mathbb{R}^2$, hence they are measurable under
    $\mathbb{P}_{W}$; therefore $f(x,y,a_x,b_x,a_y,b_y)$ exists.
 
 Marginals of (\ref{eq:CDF}) involving less than all four boundaries
-have been used in computing first passage times \cite{kou2016first,
+have been used in computing first passage times \citep{kou2016first,
   sacerdote2016first}, with application to structural models in credit
-risk and default correlations \cite{haworth2008modelling,
-  ching2014correlated}, and to pricing financial derivate instruments
+risk and default correlations \citep{haworth2008modelling,
+  ching2014correlated}, and to pricing financial derivative instruments
 whose payoff depends on some (but not all) of the observed boundaries
-\cite{he1998double}. One-dimensional analog of this problem was used
+\citep{he1998double}. One-dimensional analog of this problem was used
 in \cite{rodriguez2012} to derive a full likelihood-based (Bayesian)
 approach to estimate volatility in \textit{univariate} financial
-timeseries where open, closing, highest, and lowest prices are
+time series where open, closing, highest, and lowest prices are
 included. Their work fits into a body of literature and collection of
 techniques by practitioners where the observed range of prices is used
 to make similar estimates. In this chapter we will provide an
 efficient numerical method necessary for carrying out inferential
-procedures with correlated financial timeseries in the bivariate
+procedures with correlated financial time series in the bivariate
 setting.
 
 Closed-form solutions to (\ref{eq:1}) - (\ref{eq:2}) are only
@@ -126,7 +126,7 @@ partial derivative (recall equation \eqref{eq:pdf}).
 
 For non-zero correlation, it is still possible to approach the general
 problem by proposing a biorthogonal expansion in time and space
-(\cite{risken1989fokker-planck}, sections 6.2), where the
+\citep[section 6.2]{risken1989fokker-planck}, where the
 eigenfunctions for the differential operator are approximated by the
 eigenvectors of a linear system obtained using a truncated expansion
 based on eigenfunctions for the case $\rho=0$, a set of separable
@@ -156,7 +156,7 @@ separable approximation for the differential operator.
 In this chapter we propose a robust and efficient algorithm to
 numerically approximate the solution to (\ref{eq:1}) - (\ref{eq:2})
 and (\ref{eq:pdf}) in two distinct parameter regimes. We use a
-Galkerin discretization that directly takes into account the
+Galerkin discretization that directly takes into account the
 correlation parameter present in the differential operator in order to
 efficiently represent an analytic small-time solution and propagate it
 forward in time. We apply our computational method to estimate
@@ -640,12 +640,12 @@ points. Referring to the notation in (\ref{eq:trunc-error}), and
 setting $k := 1/h$, the interpolation error introduced by a finite
 difference scheme at position $b$ for the boundary parameters using
 step $h$ has the general form of
-$$\mbox{Interpolation error } = O(h^2) (1-\mbox{remainer}(b/h,1)) \mbox{remainer}(b/h,1)$$
+$$\mbox{Interpolation error } = O(h^2) (1-\mbox{remainder}(b/h,1)) \mbox{remainder}(b/h,1)$$
 The coefficient part
-$\mbox{F}_{irreg}(b) = (1-\mbox{remainer}(b/h,1)) \mbox{remainer}(b/h,1) $ is
+$\mbox{F}_{irreg}(b) = (1-\mbox{remainder}(b/h,1)) \mbox{remainder}(b/h,1) $ is
 continuous in $b$ but not differentiable. Its first derivative has the
 behavior of
-$$ \frac{\partial }{\partial b} \mbox{F}_{irreg}(b) =  \frac{1}{h} \left(1-2\mbox{remainer}(b/h,1) \right).$$ The contribution from the irregular part of truncation error is
+$$ \frac{\partial }{\partial b} \mbox{F}_{irreg}(b) =  \frac{1}{h} \left(1-2\mbox{remainder}(b/h,1) \right).$$ The contribution from the irregular part of truncation error is
 $$ h^2 \frac{\mbox{F}_{irreg}(b+\varepsilon)-\mbox{F}_{irreg}(b-\varepsilon)}{2 \varepsilon}  =
 O\left(\frac{h^2}{\max(\varepsilon, h)} \right) $$
 In the second order numerical differentiation, however, the contribution from
@@ -703,7 +703,7 @@ expansion
   \phi_\nu(\tilde{x},\tilde{y}) e^{-\lambda_\nu \tilde{t}},
 \]
 where $h_\nu$ is the coefficient of $\phi_\nu(\tilde{x},\tilde{y})$ in the
-eigenfunction expansion of $p(\tilde{x},\tilde{y},0)$. Proceeding with the standandard
+eigenfunction expansion of $p(\tilde{x},\tilde{y},0)$. Proceeding with the standard
 Galerkin approach, we propose a solution $p^{(k)}(\tilde{x},\tilde{y},\tilde{t})$ of similar
 form
 \[
@@ -781,7 +781,7 @@ matrix exponential
 is also infinitely differentiable with respect to the boundary
 parameters. Hence, we can safely apply
 $\frac{\partial}{\partial a_x \partial b_x \partial a_y \partial b_y}$
-to the Gelerkin approximation $p^{(k)}(\tilde{x},\tilde{y},\tilde{t})$
+to the Galerkin approximation $p^{(k)}(\tilde{x},\tilde{y},\tilde{t})$
 as long as the derivatives of the vectors
 $\boldsymbol{\psi}(\tilde{x},\tilde{y})^T$ and $\mathbf{c}(0)$
 exist. This is ensured as long as each $\psi_i(\tilde{x},\tilde{y})$
@@ -959,7 +959,7 @@ solution. We start with the fundamental solution
 $G_\rho(\tilde{x},\tilde{y},\tilde{t} | \tilde{x}_0, \tilde{y}_0)$ for
 the unbounded problem in (\ref{eq:qqq}), which is the bivariate
 Gaussian density with mean and covariance determined by the initial
-condition and the diffusion parameters \cite{stakgold2011green}. We
+condition and the diffusion parameters \citep{stakgold2011green}. We
 can then find a small enough $\tilde{t}_\epsilon$ such that
 $G_\rho\left(\tilde{x},\tilde{y}, \tilde{t}_\epsilon \left|
     \tilde{x}_0, \tilde{y}_0 \right.\right)$ is numerically zero on
@@ -1195,8 +1195,8 @@ solution and its Galerkin approximation under $L_2(\tilde{\Omega})$.
 The pdf from \eqref{eq:pdf} provides the likelihood
 necessary for frequentist and Bayesian inference in bivariate
 settings.  Likelihood-free approaches, like that of
-\cite{rogers1991estimating}, \cite{rogers2008estimating}, on the other
-hand suffer from not being suboptimal when data are independent and
+\cite{rogers1991estimating} and \cite{rogers2008estimating}, on the other
+hand suffer from being suboptimal when data are independent and
 identically distributed (i.i.d.) and cannot be easily extended to the
 non-i.i.d. case.
 
@@ -1269,7 +1269,7 @@ density
   q^{(k)}(\tilde{x},\tilde{y},\tilde{t}). \label{eq:galerkin-density}
 \end{align}
 At this point we will assume that for a sufficiently large $k$,
-$f^{(k)}(z)$ is positivie for all $z \in Z$ and is integrable over
+$f^{(k)}(z)$ is positive for all $z \in Z$ and is integrable over
 $Z$. As such, we may regard it as a proper probability density
 function with the cumulative probability density and probability
 measure over $Z$ being
@@ -1695,7 +1695,7 @@ of basis parameter choice (usually in this regime the likelihood
 produced by Galerkin solution is negative and thus identified as
 inadmissible) and solutions converge for $\tilde{t} > 1$. The
 transient region between these regimes is the most problematic,
-particularly when the solution produces large postivie values in what
+particularly when the solution produces large positive values in what
 should be relatively low-likelihood regions; an example is the
 low-resolution parameter combination
 $(\tilde{\rho} = 0.4, \tilde{\sigma} = 0.16)$. Moreover, there is no
@@ -1844,9 +1844,9 @@ optimization scheme when the parameter space is being explored.
     \end{minipage}
   \end{tabular}
   \caption{Data generated with $\rho=0.95$. Kernel-density
-    approximations of the repeated-sampling densities of the MLEs
-    samples obtained from the Galerkin likelihood (green) and the
-    classical likelihood (red) and the Rogers estimator
+    approximations of the repeated-sampling densities of the MLEs are
+    shown.  Samples are obtained from the Galerkin likelihood (green)
+    and the classical likelihood (red) and the Rogers estimator
     (blue). The data-generating parameters are denoted with the
     vertical solid line.}
   \label{fig:mle-comparison-rho-0.95}
@@ -1995,9 +1995,9 @@ this need is developed in the following chapter.
     \end{minipage}
   \end{tabular}
   \caption{Data generated with $\rho=0.60$. Kernel-density
-    approximations of the repeated-sampling densities of the MLEs
-    samples obtained from the Galerkin likelihood (green) and the
-    classical likelihood (red) and the Rogers estimator
+    approximations of the repeated-sampling densities of the MLEs are
+    shown.  Samples are obtained from the Galerkin likelihood (green)
+    and the classical likelihood (red) and the Rogers estimator
     (blue). The data-generating parameters are denoted with the
     vertical solid line.}
   \label{fig:mle-comparison-rho-0.60}
@@ -2049,9 +2049,9 @@ this need is developed in the following chapter.
     \end{minipage}
   \end{tabular}
   \caption{Data generated with $\rho=0.0$. Kernel-density
-    approximations of the repeated-sampling densities of the MLEs
-    samples obtained from the Galerkin likelihood (green) and the
-    classical likelihood (red) and the Rogers estimator
+    approximations of the repeated-sampling densities of the MLEs are
+    shown.  Samples are obtained from the Galerkin likelihood (green)
+    and the classical likelihood (red) and the Rogers estimator
     (blue). The data-generating parameters are denoted with the
     vertical solid line.}
   \label{fig:mle-comparison-rho-0.0}
