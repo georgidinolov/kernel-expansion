@@ -1,0 +1,419 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Beamer Presentation
+% LaTeX Template
+% Version 1.0 (10/11/12)
+%
+% This template has been downloaded from:
+% http://www.LaTeXTemplates.com
+%
+% License:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND THEMES
+%----------------------------------------------------------------------------------------
+
+\documentclass{beamer}
+
+\mode<presentation> {
+
+% The Beamer class comes with a number of default slide themes
+% which change the colors and layouts of slides. Below this is a list
+% of all the themes, uncomment each in turn to see what they look like.
+
+%\usetheme{default}
+%\usetheme{AnnArbor}
+%\usetheme{Antibes}
+%\usetheme{Bergen}
+%\usetheme{Berkeley}
+%\usetheme{Berlin}
+%\usetheme{Boadilla}
+\usetheme{CambridgeUS}
+%\usetheme{Copenhagen}
+%\usetheme{Darmstadt}
+%\usetheme{Dresden}
+%\usetheme{Frankfurt}
+%\usetheme{Goettingen}
+%\usetheme{Hannover}
+%\usetheme{Ilmenau}
+%\usetheme{JuanLesPins}
+%\usetheme{Luebeck}
+%\usetheme{Madrid}
+%\usetheme{Malmoe}
+%\usetheme{Marburg}
+%\usetheme{Montpellier}
+%\usetheme{PaloAlto}
+%\usetheme{Pittsburgh}
+%\usetheme{Rochester}
+%\usetheme{Singapore}
+%\usetheme{Szeged}
+%\usetheme{Warsaw}
+
+% As well as themes, the Beamer class has a number of color themes
+% for any slide theme. Uncomment each of these in turn to see how it
+% changes the colors of your current slide theme.
+
+%\usecolortheme{albatross}
+%\usecolortheme{beaver}
+%\usecolortheme{beetle}
+%\usecolortheme{crane}
+%\usecolortheme{dolphin}
+%\usecolortheme{dove}
+%\usecolortheme{fly}
+%\usecolortheme{lily}
+%\usecolortheme{orchid}
+%\usecolortheme{rose}
+%\usecolortheme{seagull}
+%\usecolortheme{seahorse}
+%\usecolortheme{whale}
+%\usecolortheme{wolverine}
+
+%\setbeamertemplate{footline} % To remove the footer line in all slides uncomment this line
+%\setbeamertemplate{footline}[page number] % To replace the footer line in all slides with a simple slide count uncomment this line
+
+%\setbeamertemplate{navigation symbols}{} % To remove the navigation symbols from the bottom of all slides uncomment this line
+}
+
+\usepackage{graphicx} % Allows including images
+\usepackage{booktabs} % Allows the use of \toprule, \midrule and \bottomrule in tables
+
+%----------------------------------------------------------------------------------------
+%	TITLE PAGE
+%----------------------------------------------------------------------------------------
+
+\title[]{Volatility and Correlation Analysis for } % The short title appears at the bottom of every slide, the full title is only on the title page
+
+\author{Georgi Dinolov} % Your name
+\institute[UCSC] % Your institution as it will appear on the bottom of every slide, may be shorthand to save space
+{
+University of California, Santa Cruz \\ % Your institution for the title page
+\medskip
+\textit{gdinolov@soe.ucsc.edu} % Your email address
+}
+\date{\today} % Date, can be changed to a custom date
+
+\begin{document}
+
+\begin{frame}
+\titlepage % Print the title page as the first slide
+\end{frame}
+
+\begin{frame}
+\frametitle{Overview} % Table of contents slide, comment this block out to remove it
+\tableofcontents % Throughout your presentation, if you choose to use \section{} and \subsection{} commands, these will automatically be printed on this slide as an overview of your presentation
+\end{frame}
+
+%----------------------------------------------------------------------------------------
+%	PRESENTATION SLIDES
+%----------------------------------------------------------------------------------------
+
+%------------------------------------------------
+\section{Introduction}
+%------------------------------------------------
+
+\begin{frame}
+\frametitle{Two Data Types: High-Frequency and Open, Close High, Low Prices}
+\begin{itemize}
+  \item high-frequency prices
+  \item open, close, high, low as summaries of volatility
+\end{itemize}
+\end{frame}
+
+%------------------------------------------------
+%------------------------------------------------
+\section{High-Frequency Prices}
+%------------------------------------------------
+\begin{frame}
+  \frametitle{High-frequency returns and difficulties}
+  \begin{itemize}
+  \item As sampling frequency approaches transaction-by-transaction
+    frequency, \textbf{irregular spacing} between transactions, \textbf{discreteness} in
+    transaction prices (such as the bid-ask spread), and very short term \textbf{temporal dependence} become
+    dominant features of the data \citep{stoll2000presidential}.
+
+  \item These confounding effects in estimating volatility are
+    generally termed \textbf{microstructure noise}.
+
+  \item Generally, microstructure noise effects become apparent with
+    sampling periods below $5$ minutes.
+  \end{itemize}
+\end{frame}
+% ------------------------------------------------
+\begin{frame}
+  \frametitle{Past model-based work and incoherence}
+  \begin{itemize}
+  \item Attempts have been made to fit the GARCH model to
+    high-frequency data \citep{bollerslev1986,andersen1997intraday}.
+
+  \item As formulated, such types of models are are not
+    robust with respect to the specification of the sampling interval
+    \citep{drost1993aggregation, andersen1997intraday,
+      zumbach2000pitfalls}.
+
+  \item Inference over shrinking sampling intervals leads to
+    \textbf{incoherence}.
+  \end{itemize}
+\end{frame}
+% ------------------------------------------------
+\begin{frame}
+  \frametitle{Realized volatility estimators}
+  \begin{itemize}
+  \item The \textbf{realized variance estimator} is a popular summary
+    statistic that converges to the integrated variance of the process
+    as sampling frequency increases.
+  \item Corrections for the presence of microstructure noise have been
+    successfully proposed in the form of:
+    \begin{enumerate}
+    \item sampling sparser grids and averaging,
+    \item combining estimators based on subsampled data at different frequencies,
+    \item kernel-based estimation.
+    \end{enumerate}
+  \item Disadvantages: averages out information; no inherent
+    model-based projection forward in time.
+  \end{itemize}
+\end{frame}
+% ------------------------------------------------
+\begin{frame}
+  \frametitle{A filtering-based approach} We employ a
+  \textbf{filtering-based} approach which models microstructure noise
+  as directly added to the true asset price and discretely observed:
+  \begin{align*}
+    P_j &= S_j + \nu_j,& \nu_j &\sim U[-D_p/2, D_p/2],
+  \end{align*}
+  where $D_p$ is the size of the bid-ask spread.
+  A first-order Taylor expansion of the observed log price produces
+  \begin{align*} log(P_j) &\approx log(S_j) + \zeta_j,& \zeta_j &= \frac{1}{S_j}\nu_j, \\
+    log(P_j) &\approx log(S_j) + \zeta_j,& \zeta_j &\sim N(0, \frac{1}{Q^2}\nu^2_j). \\
+  \end{align*}
+
+\end{frame}
+% ------------------------------------------------
+\begin{frame}
+  \frametitle{Full \textit{continuous-time} formulation}
+
+  \begin{align}
+  d\log(\hat{S}_t) &= \hat{\mu}\, dt + \sqrt{\hat{\sigma}_{t,1} \hat{\sigma}_{t,2}}\, \sqrt{dt} \hat{\epsilon}_{t,1} + dJ_t  ,   \label{eq:price_evo_2}\\
+  d\log( \hat{ \sigma }_{t,1}) &= -\hat{\theta}_1 ( \log(\hat{\sigma}_{t,1} ) - \hat{\alpha} )\, dt + \hat{\tau}_1\, \sqrt{dt} \hat{\epsilon}_{t,1}  , \label{eq:vol_evo_slow} \\
+  d\log( \hat{ \sigma }_{t,2}) &= -\hat{\theta}_2 ( \log(\hat{\sigma}_{t,2} ) - \hat{\alpha} )\, dt + \hat{\tau}_2\, \sqrt{dt} \hat{\epsilon}_{t,2}  . \label{eq:vol_evo_fast}
+  \end{align}
+  
+\end{frame}
+% ------------------------------------------------
+\begin{frame}
+  \frametitle{Full \textit{discrete-time} formulation}
+  \begin{align}
+    Y_j &= \log(S_j) + \zeta_j  ,   \label{eq:mod1}   \\
+    \log(S_{j}) &= \log(S_{j-1}) + \mu(\Delta) + \sqrt{\sigma_{j,1}\sigma_{j,2}} \, \epsilon_{j} + J_j(\Delta)   ,  \label{eq:mod2}  \\
+    \log(\sigma_{j+1,1}) &= \alpha(\Delta) + \theta_1(\Delta) \left\{ \log(\sigma_{j,1}) - \alpha(\Delta) \right\} + \tau_1(\Delta) \, \epsilon_{j,1}    ,  \label{eq:mod3}  \\
+    \log(\sigma_{j+1,2}) &= \alpha(\Delta) + \theta_2(\Delta) \left\{ \log(\sigma_{j,2}) - \alpha(\Delta) \right\} + \tau_2(\Delta) \, \epsilon_{j,2}    , \label{eq:mod4}
+  \end{align}
+
+  \begin{align}
+  \sigma_{j+1,i} &= \hat{\sigma}_{(j+1)\Delta,i}\sqrt{\Delta}, & S_j &= \hat{S}_{j\Delta}, & J_j(\Delta) &= J((j+1)\Delta) - J(j\Delta)
+\end{align}
+\begin{align}
+  \label{eq:mu_sigma_tau}
+  \begin{split}
+    \alpha(\Delta) = \halpha + \frac{1}{2}\log(\Delta),\quad  & 
+    \mu(\Delta) = \hat{\mu} \Delta,      \\
+   \tau_i(\Delta) = \hat{\tau}_i \sqrt{ \frac{1 - \exp \left\{
+          -2\hat{\theta}_i \Delta \right\}}{2\hat{\theta}_i } },\quad & \theta_i(\Delta) =
+    \exp\left\{
+      -\hat{\theta}_i \Delta \right\} ,
+    \end{split}
+\end{align}
+  % ------------------------------------------------
+\end{frame}
+\begin{frame}
+  \frametitle{\textit{Continuous-time} priors}
+  \begin{enumerate}
+  \item Define first two moments of each continuous-time parameter,
+  \item Use the Delta Method to calculate the first two moments of each discrete-time parameter,
+  \end{enumerate}
+  Example:
+  \begin{align}
+    \tau^2(\Delta) &\sim \mbox{Inv-Gamma}\left(  a_{\tau^2}(\Delta), b_{\tau^2}(\Delta) \right) \\
+    \mbox{E}(\tau^2(\Delta)) &\approx f(a_{\hat{\tau}^2}, b^2_{\hat{\tau}^2}, \Delta) \\
+    \mbox{Var}(\tau^2(\Delta)) &\approx g(a_{\hat{\tau}^2}, b^2_{\hat{\tau}^2}, \Delta)
+  \end{align}
+\end{frame}
+% ------------------------------------------------
+\begin{frame}
+  \frametitle{Computation}
+  Linearize \eqref{eq:mod2} by considering 
+\begin{multline*}
+  \log(S_{j}) = \log(S_{j-1}) + \mu(\Delta) + \sqrt{\sigma_{j,1}\sigma_{j,2}} \, \epsilon_{j} + J_j(\Delta)  \\
+  \leftrightarrow \quad \underbrace{ \log\left[ \left| \log(S_{j}/S_{j-1}) - \mu(\Delta) - J_j(\Delta) \right| \right] }_{y_j^*} = \frac{1}{2}\underbrace{  \log(\sigma_{j,1}) }_{h_{j,1}} + \frac{1}{2}\underbrace{  \log(\sigma_{j,2}) }_{h_{j,2}} \\
+   + \underbrace{ \log(  \epsilon_{j,1}^2  )/2 }_{\epsilon_{j}^{*}}.
+ \end{multline*}
+
+ We approximate $\epsilon^*_{j}$ as a mixture of Normals
+\[
+	\epsilon^*_{j} = \log( \epsilon_{j}^2 )/2 \sim \sum_{l=1}^{10} p_l N \left( \frac{m_l}{2}, \frac{v_l^2}{4} \right).
+\]
+\end{frame}
+% ------------------------------------------------
+\begin{frame}
+  \frametitle{Blocked Gibbs sampler with MH steps}
+  \begin{enumerate}
+  \item sample observational parameters
+  \item sample latent prices
+  \item sample volatility parameters
+  \item sample latent mixture indicators
+  \item sample valatility paths
+  \item sample jump parameters
+  \item sample jumps
+  \end{enumerate}
+\end{frame}
+% ------------------------------------------------
+\begin{frame}
+  \frametitle{Coverage results for simulated data sets}
+  \begin{table}[h]
+\begin{center}
+  \begin{tabular}{|l|ccccc|}
+    \hline
+    & \multicolumn{4}{c|}{Sampling period} \\
+    &   	60 sec 	&   30 sec   &   15 sec & 5 sec  \\ \hline \hline
+    Inference with $\xi^2 = 0$   &  72  &   28  &	 3 & 0 \\
+    Inference with $\xi^2 = 2.5 \cdot 10^{-7}$ &  79 & 57 & 23 & 0 \\
+    Inference with $\xi^2$ estimated & 91 & 92 & 96 & 97  \\ \hline
+    Inference with kernel-based estimator &  51 & 48 & 59  & 76 \\
+    \hline
+\end{tabular}
+\caption{Coverage table comparing the percentage of covered integrated variance levels by 95\% confidence/credible intervals of our estimator and a kernel-based estimator.}\label{ta:coverage}
+\end{center}
+\end{table}
+\end{frame}
+% ------------------------------------------------
+\begin{frame}
+  \frametitle{Parameter results for real data example}
+\end{frame}
+
+%------------------------------------------------
+%------------------------------------------------
+\section{Open, Close, High, Low Prices}
+%------------------------------------------------
+\begin{frame}
+  \frametitle{Open, Close, High, Low Prices}
+  Previous work, absence of bivariate solution
+\end{frame}
+% ------------------------------------------------
+\begin{frame}
+  \frametitle{Full model formulation: Diffusion Representation}
+  We consider a two-dimensional correlated Brownian motion:
+\begin{align}
+  X(t) &= x_0 + \mu_x t + \sigma_x W_x(t)  \label{eq:X} \\
+  Y(t) &= y_0 + \mu_y t + \sigma_y W_y(t)  \label{eq:Y}
+\end{align}
+where $W_i$ are standard Brownian motions with
+$\mbox{Cov}(W_1(t), W_2(t)) = \rho t$. Our interest is in finding the
+6-dimensional joint probability density function for the pair $(X(t), Y(t))$
+and the random variables $M_X(t)=\max_{0\leq s\leq t}X(s),$
+$m_X(t)=\min_{0\leq s\leq t}X(s),$ $M_Y(t)=\max_{0\leq s\leq t}Y(s),$
+$m_Y(t)=\min_{0\leq s\leq t}Y(s)$.
+\end{frame}
+% ------------------------------------------------
+\begin{frame}
+  \frametitle{Full model formulation: Fokker-Planck Representation}
+\begin{multline}
+  \displaystyle \frac{\partial}{\partial t'} q(x,y,t') = -\mu_x \frac{\partial}{\partial x}q(x,y,t')
+  - \mu_y \frac{\partial}{\partial y}q(x,y,t') + \\
+  \frac{1}{2}\sigma_x^2 \frac{\partial^2}{\partial x^2}q(x,y,t') + \rho\sigma_x\sigma_y \frac{\partial^2}{\partial x \partial y}q(x,y,t')
+  + \frac{1}{2}\sigma_y^2 \frac{\partial^2}{\partial y^2}q(x,y,t'). \label{eq:1}
+\end{multline}
+Given that we consider the subset of $(X(t), Y(t))$ that satisfies the constraints imposed by the boundary data, we impose the absorbing conditions on the Fokker-Planck equation
+\begin{align}
+  q(a_x, y,t') &= q(b_x,y,t') = q(x,a_y,t') = q(x,b_y,t') = 0, & 0 &< t' \leq t. \label{eq:2}
+\end{align}
+
+\end{frame}
+% ------------------------------------------------
+\begin{frame}
+  \frametitle{Density definition, fourth-order derivative with respect to boundaries}
+
+\begin{align}
+  \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial b_y} q(x,y,t) = f(x,y,a_x,b_x,a_y,b_y).
+  \label{eq:pdf}
+\end{align}
+  
+  Point out the analytic and numeric difficulties with the full problem.
+\end{frame}
+% ------------------------------------------------
+\begin{frame}
+  \frametitle{Approach 1: Finite Difference}
+  \begin{enumerate}
+  \item fast but ever-present truncation error
+  \end{enumerate}
+\end{frame}
+% ------------------------------------------------
+\begin{frame}
+  \frametitle{Approach 2: Trigonometric expansion}
+  \begin{enumerate}
+  \item made impractical by the correlation term
+  \end{enumerate}
+\end{frame}
+% ------------------------------------------------
+\begin{frame}
+  \frametitle{Introduce the Galerkin approach: weak solution to the PDE}
+\end{frame}
+% ------------------------------------------------
+\begin{frame}
+  \frametitle{Basis element choice}
+\end{frame}
+% ------------------------------------------------
+\begin{frame}
+  \frametitle{Upper bound on error based on initial condition and
+    first version of small-time solution}
+\end{frame}
+% ------------------------------------------------
+\begin{frame}
+  \frametitle{Simulation Results}
+\end{frame}
+% ------------------------------------------------
+\begin{frame}
+  \frametitle{Need for Higher Resolution}
+\end{frame}
+
+
+%------------------------------------------------
+%------------------------------------------------
+\section{Open, Close, High, Low Prices: Small Time Solution}
+%------------------------------------------------
+\begin{frame}
+  \frametitle{Counterexample: method of images and analytic differentiability}
+  Lack of uniqueness
+\end{frame}
+% ------------------------------------------------
+\begin{frame}
+  \frametitle{Symmetry condition for solution}
+\end{frame}
+% ------------------------------------------------
+\begin{frame}
+  \frametitle{Solution}
+\end{frame}
+% ------------------------------------------------
+\begin{frame}
+  \frametitle{Analytic Derivative and higher order terms}
+\end{frame}
+% ------------------------------------------------
+\begin{frame}
+  \frametitle{Illustration of proof for existence}
+\end{frame}
+% ------------------------------------------------
+\begin{frame}
+  \frametitle{Basis Expansion and Small-Time leading order order solution}
+\end{frame}
+% ------------------------------------------------
+\begin{frame}
+  \frametitle{Matching Solution}
+\end{frame}
+% ------------------------------------------------
+\begin{frame}
+  \frametitle{Repeated Simulation Results}
+\end{frame}
+
+\end{document} 
+
+

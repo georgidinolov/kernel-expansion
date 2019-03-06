@@ -6,11 +6,11 @@ cd ~/PDE-solvers
 
 echo $PWD
 rhos_basis=($1)
-sigmas_x_basis=(0.10)
-sigma_y_basis=0.10
-dx=$2
-data_size=$3
-rho_data=$4
+sigmas_x_basis=$2
+sigma_y_basis=$3
+dx=$4
+rho_data=$5
+data_size=$6
 
 data_sets=($(ls ./src/kernel-expansion/documentation/chapter-2/data/mle-data-sets-rho-${rho_data}-n-${data_size}/data-set-*.csv))
 for i in ${!data_sets[@]};
