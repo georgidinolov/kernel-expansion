@@ -1,12 +1,13 @@
+
 Statistical models of price volatility most commonly use low-frequency
 (daily, weekly, or monthly) returns. However, despite their
 availability, two types of financial data have not been extensively
 studied: high-frequency data where sampling periods are on the order
 of seconds; and open, close, high, and low (OCHL) data which
-incorporates intraperiod extremes.
+incorporate intraperiod extremes.
 
 The first part of this dissertation focuses on the development of a
-filtering-based method for estimation of volatility in high-frequency
+filtering-based method for the estimation of volatility in high-frequency
 returns, which contrasts currently popular averaging-based
 approaches. The second part of this dissertation develops a
 foundational and novel method for likelihood-based estimation for
@@ -21,25 +22,25 @@ with the goal of estimating the latent log-volatility signal from data
 collected at arbitrarily short sampling periods. In keeping with this
 goal, we carefully develop a method for eliciting priors. The
 empirical results derived from both simulated and real data show that
-directly accounting for microstructure in a state-space formulation
+directly accounting for microstructure noise in a state-space formulation
 allows for well-calibrated estimates of the log-volatility process
 driving prices.
 
 In Chapter 3, we present and motivate the bivariate OCHL problem,
 enumerate the fundamental limitations of some common out-of-the-box
 approaches, and present a semidiscrete Galerkin numerical solver for
-computing the likelihood of the observed data. Further, we prove the
-consistency of maximum likelihood estimates under the approximate
+computing the likelihood of the observed data. In addition, we prove
+the consistency of maximum likelihood estimates under the approximate
 density given by the solver.
 
 Chapter 4 develops a closed-form, analytic solution to the OCHL
-likelihood problem in parameter ranges where the Galerkin approach
+likelihood problem in parameter ranges where the Galerkin solver
 requires near-infinite compute time and memory to produce numerically
-accurate results. Further, a matching solution is proposed to
-interpolate between parameter regions where neither the Galerkin nor
-analytic solutions are applicable. Thus, we present a method for
-producing likelihoods based on OCHL data over all model parameter
-ranges, a key requirement in statistical estimation algorithms. We use
+accurate results. A matching solution is also proposed to interpolate
+between parameter regions where neither the Galerkin nor analytic
+solutions are applicable. Thus, we present a method for producing
+likelihoods based on OCHL data over all model parameter ranges, which
+is a key requirement in statistical estimation algorithms. We use
 numerical experiments in both Chapters 3 and 4 to show the validity of
 our methods and demonstrate the increase in statistical power in
 estimating price volatility and correlation when using bivariate OCHL

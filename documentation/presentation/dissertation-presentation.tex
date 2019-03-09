@@ -1,4 +1,5 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 % Beamer Presentation
 % LaTeX Template
 % Version 1.0 (10/11/12)
@@ -79,11 +80,87 @@
 \usepackage{graphicx} % Allows including images
 \usepackage{booktabs} % Allows the use of \toprule, \midrule and \bottomrule in tables
 
+\usepackage{bbm}
+\usepackage{fixltx2e}
+\usepackage{url}
+\usepackage{amsmath, amsthm, amssymb}
+\usepackage{mathtools}
+\usepackage{multirow}
+\usepackage{colortbl}
+\usepackage{xspace}
+\usepackage{verbatim}
+\usepackage{graphicx}
+\usepackage{psfrag}
+\usepackage{natbib}
+\usepackage{pbox}
+\usepackage{epstopdf}
+\usepackage{textcomp} % For copyright symbol
+\DeclareGraphicsExtensions{.pdf,.eps,.png,.jpg}
+\usepackage[font=singlespacing]{subcaption}
+\captionsetup[table]{labelfont=bf,font=singlespacing}
+\captionsetup[figure]{labelfont=bf,font=singlespacing}
+\captionsetup[subfigure]{labelfont=bf,font=singlespacing}
+\usepackage[titletoc,title]{appendix}
+\usepackage{tabularx}
+\usepackage{rotating}
+\usepackage{hyperref} % Turns all internal references into links to pages within the document
+
+\usepackage{lmodern} % Use the Latin Modern font
+\usepackage[T1]{fontenc} % Use a modern font encoding
+
+\newcommand{\Exp}[1]{\mbox{Exp}\left(#1\right)}
+\newcommand{\Pois}[1]{\mbox{Pois}\left(#1\right)}
+
+\newcommand{\hb}{\hat{b}}
+\newcommand{\ha}{\hat{a}}
+\newcommand{\htheta}{\hat{\theta}}
+\newcommand{\halpha}{\hat{\alpha}}
+\newcommand{\hmu}{\hat{\mu}}
+\newcommand{\hsigma}{\hat{\sigma}}
+\newcommand{\hphi}{\hat{\phi}}
+\newcommand{\htau}{\hat{\tau}}
+\newcommand{\heta}{\hat{\eta}}
+\newcommand{\E}[1]{\mbox{E}\left[#1\right]}
+\newcommand{\Var}[1]{\mbox{Var}\left[#1\right]}
+\newcommand{\Indicator}[1]{\mathbbm{1}_{ \left( #1 \right) } }
+\newcommand{\dNormal}[3]{ N\left( #1 \left| #2, #3 \right. \right) }
+\newcommand{\Beta}[2]{\mbox{Beta}\left( #1, #2 \right)}
+\newcommand{\alphaphi}{\alpha_{\hphi}}
+\newcommand{\betaphi}{\beta_{\hphi}}
+\newcommand{\expo}[1]{ \exp\left\{ #1 \right\}}
+\newcommand{\tauSquareDelta}{\htau^2
+  \left(\frac{1-\expo{-2\htheta\Delta}}{2\htheta} \right)}
+\newcommand{\mumu}{\mu_{\hmu}}
+\newcommand{\sigmamu}{\sigma^2_{\hmu}}
+\newcommand{\sigmamuexpr}{\log\left( \frac{\VarX}{\EX^2} + 1 \right)}
+\newcommand{\mumuexpr}{\log(\EX) -  \log\left( \frac{\VarX}{\EX^2} + 1 \right) /2 }
+
+\newcommand{\EX}{\mbox{E}\left[ X \right] }
+\newcommand{\VarX}{\mbox{Var}\left[ X \right] }
+\newcommand{\mueta}{\mu_{\heta} }
+\newcommand{\sigmaeta}{\sigma^2_{\heta}}
+\newcommand{\sigmaetaexpr}{ \log\left( \frac{\VarX}{\EX^2} + 1 \right) }
+\newcommand{\muetaexpr}{ \log(\EX) -  \sigmaetaexpr /2 }
+
+\newcommand{\mualpha}{\mu_{\halpha} }
+\newcommand{\sigmaalpha}{\sigma^2_{\halpha}}
+\newcommand{\sigmaalphaexpr}{ \log\left( \frac{\VarX}{\EX^2} + 1 \right) }
+\newcommand{\mualphaexpr}{ \log(\EX) -  \sigmaalphaexpr /2 }
+
+\newcommand{\mutauexpr}{ \frac{2}{T} \EX }
+\newcommand{\sigmatauexpr}{ \frac{4}{T^2} \Var{X}}
+
+\newcommand{\alphatau}{\alpha_{\htau^2}}
+\newcommand{\betatau}{\beta_{\htau^2}}
+
+\newcommand{\Gam}[2]{\mbox{Gamma}\left( #1, #2 \right) }
+\newcommand{\InvGam}[2]{\mbox{Inv-Gamma}\left( #1, #2 \right) }
+
 %----------------------------------------------------------------------------------------
 %	TITLE PAGE
 %----------------------------------------------------------------------------------------
 
-\title[]{Volatility and Correlation Analysis for } % The short title appears at the bottom of every slide, the full title is only on the title page
+\title[]{Volatility and Correlation Analysis of Financial Market Data} % The short title appears at the bottom of every slide, the full title is only on the title page
 
 \author{Georgi Dinolov} % Your name
 \institute[UCSC] % Your institution as it will appear on the bottom of every slide, may be shorthand to save space
@@ -136,13 +213,17 @@ University of California, Santa Cruz \\ % Your institution for the title page
   \item These confounding effects in estimating volatility are
     generally termed \textbf{microstructure noise}.
 
-  \item Generally, microstructure noise effects become apparent with
-    sampling periods below $5$ minutes.
+    \begin{itemize}
+    \item independent of sampling interval,
+    \item dominant over short time ($<5$ minutes),
+    \item not cumulative (prices at later times are not affected)
+    \end{itemize}
+
   \end{itemize}
 \end{frame}
 % ------------------------------------------------
 \begin{frame}
-  \frametitle{Past model-based work and incoherence}
+  \frametitle{Past work and model-bashed incoherence}
   \begin{itemize}
   \item Attempts have been made to fit the GARCH model to
     high-frequency data \citep{bollerslev1986,andersen1997intraday}.
@@ -154,84 +235,115 @@ University of California, Santa Cruz \\ % Your institution for the title page
 
   \item Inference over shrinking sampling intervals leads to
     \textbf{incoherence}.
+
+  \item Most recent work has forcused on the \textbf{realized variance} estimator:
+    \[
+      RV_T := \sum_{i=1}^{N/\Delta t} r_{t_i}^2,
+    \]
+    where $r_{t_i}^2$ is the squared \textit{return} observed over $[t_{i-1}, t_i]$.
   \end{itemize}
 \end{frame}
 % ------------------------------------------------
 \begin{frame}
-  \frametitle{Realized volatility estimators}
+  \frametitle{Realized variance estimator}
+  In the absence of microstructure noise, 
+  \[
+    RV_t = \sum_{i=1}^{N/\Delta t} r_{t_i}^2 \,\,\, \to \,\,\, \displaystyle \int_{0}^T \sigma^2\left(X_t, t\right)\, dt
+  \]
+  
   \begin{itemize}
-  \item The \textbf{realized variance estimator} is a popular summary
-    statistic that converges to the integrated variance of the process
-    as sampling frequency increases.
   \item Corrections for the presence of microstructure noise have been
     successfully proposed in the form of:
-    \begin{enumerate}
+    \begin{itemize}
     \item sampling sparser grids and averaging,
     \item combining estimators based on subsampled data at different frequencies,
     \item kernel-based estimation.
-    \end{enumerate}
+    \end{itemize}
   \item Disadvantages: averages out information; no inherent
     model-based projection forward in time.
   \end{itemize}
 \end{frame}
 % ------------------------------------------------
 \begin{frame}
-  \frametitle{A filtering-based approach} We employ a
-  \textbf{filtering-based} approach which models microstructure noise
-  as directly added to the true asset price and discretely observed:
+  \frametitle{A filtering-based approach} Given the \textbf{true}
+  price $S_j$ at sample index $j$, we model the \textbf{measured} price $P_j$ as contaminated by noise due to the bid-ask spread $D$:
   \begin{align*}
-    P_j &= S_j + \nu_j,& \nu_j &\sim U[-D_p/2, D_p/2],
-  \end{align*}
-  where $D_p$ is the size of the bid-ask spread.
-  A first-order Taylor expansion of the observed log price produces
-  \begin{align*} log(P_j) &\approx log(S_j) + \zeta_j,& \zeta_j &= \frac{1}{S_j}\nu_j, \\
-    log(P_j) &\approx log(S_j) + \zeta_j,& \zeta_j &\sim N(0, \frac{1}{Q^2}\nu^2_j). \\
+    P_j &= S_j + \nu_j,& \nu_j &\sim U[-D/2, D/2],
   \end{align*}
 
+  A first-order Taylor expansion of the \textbf{observed log price} $\log(P_j)$ produces
+  \begin{align*}
+    log(P_j) &\approx log(S_j) + \frac{1}{S_j}\nu_j.
+  \end{align*}
+
+  We further model the noise term with a Gaussian distribution
+  \begin{align*}
+    \zeta_j := \frac{1}{S_j}\nu_j \sim N\left(0, \frac{D}{4Q^2} \right)
+  \end{align*}
+  where $Q$ is an order-magnitude approximation of the true price
+  $S_j$.
 \end{frame}
 % ------------------------------------------------
 \begin{frame}
-  \frametitle{Full \textit{continuous-time} formulation}
+  \frametitle{Full \textit{continuous-time} formulation} We represent
+  the idealized joint log-price $\log(\hat{S}_t)$ and log-volatility
+  $\log(\hat{\sigma}_{t,1}), \log(\hat{\sigma}_{t,2})$ diffusion
+  process as the system of SDEs:
+  \begin{align*}
+  d\log(\hat{S}_t) &= \hat{\mu}\, dt + \sqrt{\hat{\sigma}_{t,1} \hat{\sigma}_{t,2}}\, \sqrt{dt} \hat{\epsilon}_{t} + dJ_t  ,   \\
+  d\log( \hat{ \sigma }_{t,1}) &= -\hat{\theta}_1 ( \log(\hat{\sigma}_{t,1} ) - \hat{\alpha} )\, dt + \hat{\tau}_1\, \sqrt{dt} \hat{\epsilon}_{t,1}  , \\
+  d\log( \hat{ \sigma }_{t,2}) &= -\hat{\theta}_2 ( \log(\hat{\sigma}_{t,2} ) - \hat{\alpha} )\, dt + \hat{\tau}_2\, \sqrt{dt} \hat{\epsilon}_{t,2}  . 
+  \end{align*}
 
-  \begin{align}
-  d\log(\hat{S}_t) &= \hat{\mu}\, dt + \sqrt{\hat{\sigma}_{t,1} \hat{\sigma}_{t,2}}\, \sqrt{dt} \hat{\epsilon}_{t,1} + dJ_t  ,   \label{eq:price_evo_2}\\
-  d\log( \hat{ \sigma }_{t,1}) &= -\hat{\theta}_1 ( \log(\hat{\sigma}_{t,1} ) - \hat{\alpha} )\, dt + \hat{\tau}_1\, \sqrt{dt} \hat{\epsilon}_{t,1}  , \label{eq:vol_evo_slow} \\
-  d\log( \hat{ \sigma }_{t,2}) &= -\hat{\theta}_2 ( \log(\hat{\sigma}_{t,2} ) - \hat{\alpha} )\, dt + \hat{\tau}_2\, \sqrt{dt} \hat{\epsilon}_{t,2}  . \label{eq:vol_evo_fast}
-  \end{align}
-  
+  \begin{itemize}
+  \item $\log(\hat{\sigma}_{t,1})$ evolves stochastically with long time scale $1/\hat{\theta}_1,$
+  \item $\log(\hat{\sigma}_{t,2})$ evolves stochastically with short time scale $1/\hat{\theta}_2,$
+  \item $dJ_t$ is a compound Poisson process,
+  \item $\hat{\epsilon}_t, \hat{\epsilon}_{t,1}, \hat{\epsilon}_{t,2}$ are Wiener processes with 
+    \begin{align*}
+      \E{\hat{\epsilon}_t\hat{\epsilon}_{t,2}} &= \rho, & \E{\hat{\epsilon}_t\hat{\epsilon}_{t,2}} &= 0, & \E{\hat{\epsilon}_{t,1}\hat{\epsilon}_{t,2}} &= 0.
+    \end{align*}
+  \end{itemize}
+    
 \end{frame}
 % ------------------------------------------------
 \begin{frame}
-  \frametitle{Full \textit{discrete-time} formulation}
-  \begin{align}
-    Y_j &= \log(S_j) + \zeta_j  ,   \label{eq:mod1}   \\
-    \log(S_{j}) &= \log(S_{j-1}) + \mu(\Delta) + \sqrt{\sigma_{j,1}\sigma_{j,2}} \, \epsilon_{j} + J_j(\Delta)   ,  \label{eq:mod2}  \\
-    \log(\sigma_{j+1,1}) &= \alpha(\Delta) + \theta_1(\Delta) \left\{ \log(\sigma_{j,1}) - \alpha(\Delta) \right\} + \tau_1(\Delta) \, \epsilon_{j,1}    ,  \label{eq:mod3}  \\
-    \log(\sigma_{j+1,2}) &= \alpha(\Delta) + \theta_2(\Delta) \left\{ \log(\sigma_{j,2}) - \alpha(\Delta) \right\} + \tau_2(\Delta) \, \epsilon_{j,2}    , \label{eq:mod4}
-  \end{align}
+  \frametitle{Discrete interpretation of the formulation}
+  Defining the log of the observed price $P_j$ as $Y_j := \log(P_j)$
+  \begin{align*}
+    Y_j &= \log(S_j) + \zeta_j  ,\\
+    \log(S_{j}) &= \log(S_{j-1}) + \mu(\Delta) + \sqrt{\sigma_{j,1}\sigma_{j,2}} \, \epsilon_{j} + J_j(\Delta)   ,  \\
+    \log(\sigma_{j+1,1}) &= \alpha(\Delta) + \theta_1(\Delta) \left\{ \log(\sigma_{j,1}) - \alpha(\Delta) \right\} + \tau_1(\Delta) \, \epsilon_{j,1}    ,  \\
+    \log(\sigma_{j+1,2}) &= \alpha(\Delta) + \theta_2(\Delta) \left\{ \log(\sigma_{j,2}) - \alpha(\Delta) \right\} + \tau_2(\Delta) \, \epsilon_{j,2}.
+  \end{align*}
 
-  \begin{align}
+  \begin{align*}
   \sigma_{j+1,i} &= \hat{\sigma}_{(j+1)\Delta,i}\sqrt{\Delta}, & S_j &= \hat{S}_{j\Delta}, & J_j(\Delta) &= J((j+1)\Delta) - J(j\Delta)
-\end{align}
-\begin{align}
-  \label{eq:mu_sigma_tau}
+  \end{align*}
+  
+\begin{align*}
   \begin{split}
     \alpha(\Delta) = \halpha + \frac{1}{2}\log(\Delta),\quad  & 
     \mu(\Delta) = \hat{\mu} \Delta,      \\
-   \tau_i(\Delta) = \hat{\tau}_i \sqrt{ \frac{1 - \exp \left\{
+    \tau_i(\Delta) = \hat{\tau}_i \sqrt{ \frac{1 - \exp \left\{
           -2\hat{\theta}_i \Delta \right\}}{2\hat{\theta}_i } },\quad & \theta_i(\Delta) =
     \exp\left\{
-      -\hat{\theta}_i \Delta \right\} ,
+      -\hat{\theta}_i \Delta \right\}.
     \end{split}
-\end{align}
-  % ------------------------------------------------
+\end{align*}
 \end{frame}
+% ------------------------------------------------
 \begin{frame}
-  \frametitle{\textit{Continuous-time} priors}
+  \frametitle{Prior formulation} To ensure that the model estimation
+  is coherent across choices of sampling periods $\Delta$, we
+  
   \begin{enumerate}
-  \item Define first two moments of each continuous-time parameter,
-  \item Use the Delta Method to calculate the first two moments of each discrete-time parameter,
+  \item define the first two moments of each continuous-time parameter,
+  \item define the prior for each continuous-time parameter,
+  \item use the Delta Method to calculate the first two moments of each discrete-time parameter,
+  \item define the prior for each discrete-time parameter.
   \end{enumerate}
+
   Example:
   \begin{align}
     \tau^2(\Delta) &\sim \mbox{Inv-Gamma}\left(  a_{\tau^2}(\Delta), b_{\tau^2}(\Delta) \right) \\
@@ -242,17 +354,39 @@ University of California, Santa Cruz \\ % Your institution for the title page
 % ------------------------------------------------
 \begin{frame}
   \frametitle{Computation}
-  Linearize \eqref{eq:mod2} by considering 
-\begin{multline*}
-  \log(S_{j}) = \log(S_{j-1}) + \mu(\Delta) + \sqrt{\sigma_{j,1}\sigma_{j,2}} \, \epsilon_{j} + J_j(\Delta)  \\
+  \begin{itemize}
+  \item We separate the standard innovation term from volatility
+    factors $\sigma_{j,1}$ and $\sigma_{j,2}$ by considering the
+    transformation
+  \begin{multline*}
+    \log(S_{j}) = \log(S_{j-1}) + \mu(\Delta) + \sqrt{\sigma_{j,1}\sigma_{j,2}} \, \epsilon_{j} + J_j(\Delta) \\
   \leftrightarrow \quad \underbrace{ \log\left[ \left| \log(S_{j}/S_{j-1}) - \mu(\Delta) - J_j(\Delta) \right| \right] }_{y_j^*} = \frac{1}{2}\underbrace{  \log(\sigma_{j,1}) }_{h_{j,1}} + \frac{1}{2}\underbrace{  \log(\sigma_{j,2}) }_{h_{j,2}} \\
-   + \underbrace{ \log(  \epsilon_{j,1}^2  )/2 }_{\epsilon_{j}^{*}}.
+   + \underbrace{ \log(  \epsilon_{j}^2  )/2 }_{\epsilon_{j}^{*}}.
  \end{multline*}
-
- We approximate $\epsilon^*_{j}$ as a mixture of Normals
-\[
-	\epsilon^*_{j} = \log( \epsilon_{j}^2 )/2 \sim \sum_{l=1}^{10} p_l N \left( \frac{m_l}{2}, \frac{v_l^2}{4} \right).
-\]
+ \pause
+\item We approximate $\epsilon^*_{j}$ as a mixture of Normals
+ \[
+   \epsilon^*_{j} = \log( \epsilon_{j}^2 )/2 \sim \sum_{l=1}^{10} p_l N \left( \frac{m_l}{2}, \frac{v_l^2}{4} \right).
+ \]
+\end{itemize}
+\end{frame}
+% ------------------------------------------------
+\begin{frame}
+  \frametitle{Computation, continued}
+  The joint distribution $(\epsilon^*_j, \epsilon_{j,2})$ conditional on the latent mixture element $\gamma_j$ becomes
+  \begin{align*}
+    p(\epsilon^*_j, \epsilon_{j,2} | \gamma_j) &= p(\epsilon_{j,2}|\epsilon^*_{j}, \gamma_j)p(\epsilon^*_{j}| \gamma_j) \\
+                                               &= p(\epsilon_{j,2}|\underbrace{d_j exp(\epsilon^*_{j})}_{\epsilon_j}, \gamma_j)p(\epsilon^*_{j}| \gamma_j) \\
+    &= N\left( \epsilon_{j,2} \left| d_j exp(\epsilon^*_{j}), (1-\rho^2) \right.\right) N\left( \epsilon_j^* \left| \frac{m_{\gamma_j}}{2}, \frac{v^2_{\gamma_j}}{4} \right. \right),
+  \end{align*}
+  where $d_j$ is the sign of $\epsilon_j$. \pause The joint
+  distribution becomes a linear combination of independent Normal
+  random variables when we replace the nonlinear $exp(\epsilon^*_{j})$
+  term with the first-order Taylor expansion
+  \[
+    exp(\epsilon^*_{j}) | \gamma_j \approx \exp(m_{\gamma_j}/2)(a_{\gamma_j} + b_{\gamma_j}(2\epsilon_j^* - m_{\gamma_j}))
+  \]
+ 
 \end{frame}
 % ------------------------------------------------
 \begin{frame}
@@ -269,7 +403,14 @@ University of California, Santa Cruz \\ % Your institution for the title page
 \end{frame}
 % ------------------------------------------------
 \begin{frame}
-  \frametitle{Coverage results for simulated data sets}
+  \frametitle{Estimating integrated volatility}
+  \begin{itemize}
+    \item We consider 300 simulated data sets over 1 trading day
+  
+    \item What percentage of $95\%$ probability/confidence intervals
+      cover the true data-generating integrated volatility
+      $\int \hat{\sigma}_t dt$:
+  \end{itemize}
   \begin{table}[h]
 \begin{center}
   \begin{tabular}{|l|ccccc|}
@@ -277,12 +418,11 @@ University of California, Santa Cruz \\ % Your institution for the title page
     & \multicolumn{4}{c|}{Sampling period} \\
     &   	60 sec 	&   30 sec   &   15 sec & 5 sec  \\ \hline \hline
     Inference with $\xi^2 = 0$   &  72  &   28  &	 3 & 0 \\
-    Inference with $\xi^2 = 2.5 \cdot 10^{-7}$ &  79 & 57 & 23 & 0 \\
+    Inference with $\xi^2$ fixed at prior mean &  79 & 57 & 23 & 0 \\
     Inference with $\xi^2$ estimated & 91 & 92 & 96 & 97  \\ \hline
     Inference with kernel-based estimator &  51 & 48 & 59  & 76 \\
     \hline
 \end{tabular}
-\caption{Coverage table comparing the percentage of covered integrated variance levels by 95\% confidence/credible intervals of our estimator and a kernel-based estimator.}\label{ta:coverage}
 \end{center}
 \end{table}
 \end{frame}
@@ -301,32 +441,48 @@ University of California, Santa Cruz \\ % Your institution for the title page
 \end{frame}
 % ------------------------------------------------
 \begin{frame}
-  \frametitle{Full model formulation: Diffusion Representation}
+  \frametitle{Model formulation}
   We consider a two-dimensional correlated Brownian motion:
 \begin{align}
   X(t) &= x_0 + \mu_x t + \sigma_x W_x(t)  \label{eq:X} \\
   Y(t) &= y_0 + \mu_y t + \sigma_y W_y(t)  \label{eq:Y}
 \end{align}
-where $W_i$ are standard Brownian motions with
-$\mbox{Cov}(W_1(t), W_2(t)) = \rho t$. Our interest is in finding the
-6-dimensional joint probability density function for the pair $(X(t), Y(t))$
-and the random variables $M_X(t)=\max_{0\leq s\leq t}X(s),$
-$m_X(t)=\min_{0\leq s\leq t}X(s),$ $M_Y(t)=\max_{0\leq s\leq t}Y(s),$
-$m_Y(t)=\min_{0\leq s\leq t}Y(s)$.
+where $W_x(t)$ and $W_y(t)$ are correlated standard Brownian motions
+with $\mbox{Cov}(W_x(t), W_x(t)) = \rho t$.
+
+\begin{itemize}
+\item We seek the 6-dimensional joint probability density
+function for the pair $(X(t), Y(t))$ and the random variables
+$M_X(t)=\max_{0\leq s\leq t}X(s),$ $m_X(t)=\min_{0\leq s\leq t}X(s),$
+$M_Y(t)=\max_{0\leq s\leq t}Y(s),$ $m_Y(t)=\min_{0\leq s\leq t}Y(s)$.
+\end{itemize}
 \end{frame}
 % ------------------------------------------------
 \begin{frame}
-  \frametitle{Full model formulation: Fokker-Planck Representation}
-\begin{multline}
+  \frametitle{Transition density} The evolution of the transition
+  density function $q(x,y | x_0, y_0)$ of $(X(t), Y(t))$ from the
+  starting position $(x_0, y_0)$ is given by the Fokker-Planck
+  equation
+\begin{multline*}
   \displaystyle \frac{\partial}{\partial t'} q(x,y,t') = -\mu_x \frac{\partial}{\partial x}q(x,y,t')
   - \mu_y \frac{\partial}{\partial y}q(x,y,t') + \\
   \frac{1}{2}\sigma_x^2 \frac{\partial^2}{\partial x^2}q(x,y,t') + \rho\sigma_x\sigma_y \frac{\partial^2}{\partial x \partial y}q(x,y,t')
-  + \frac{1}{2}\sigma_y^2 \frac{\partial^2}{\partial y^2}q(x,y,t'). \label{eq:1}
-\end{multline}
-Given that we consider the subset of $(X(t), Y(t))$ that satisfies the constraints imposed by the boundary data, we impose the absorbing conditions on the Fokker-Planck equation
-\begin{align}
-  q(a_x, y,t') &= q(b_x,y,t') = q(x,a_y,t') = q(x,b_y,t') = 0, & 0 &< t' \leq t. \label{eq:2}
-\end{align}
+  + \frac{1}{2}\sigma_y^2 \frac{\partial^2}{\partial y^2}q(x,y,t'), \\
+
+\end{multline*}
+\begin{align*}
+multline*}
+
+
+  \end{align*}
+
+Given that we consider the subset of $(X(t), Y(t))$ that satisfies the
+constraints imposed by the boundary data, we impose the absorbing
+boundary conditions as well as the initial conditions:
+\begin{align*}
+  q(a_x, y,t') &= q(b_x,y,t') = q(x,a_y,t') = q(x,b_y,t') = 0, & 0 &< t' \leq t, \\
+  q(x,y,0) &= \delta(x_0 - x)\delta(y_0 - y)
+\end{align*}
 
 \end{frame}
 % ------------------------------------------------
@@ -356,46 +512,284 @@ Given that we consider the subset of $(X(t), Y(t))$ that satisfies the constrain
 \end{frame}
 % ------------------------------------------------
 \begin{frame}
-  \frametitle{Introduce the Galerkin approach: weak solution to the PDE}
+  \frametitle{Normalized problem}
+  We can introduce a series of transformations to solve the equivalent initial-boundary problem
+  \begin{align*}
+    \frac{\partial}{\partial \tilde{t}} p_{(2)}(\tilde{x},\tilde{y},\tilde{t}) &= \tilde{\mathcal{L}} p_{(2)}(\tilde{x},\tilde{y},\tilde{y}), & (\tilde{x}, \tilde{y}) \in \tilde{\Omega} \\
+    \tilde{\mathcal{L}} &= \frac{1}{2} \frac{\partial^2}{\partial \tilde{x}^2} + \rho \sigma_{\tilde{y}} \frac{\partial^2}{\partial \tilde{x} \partial \tilde{y}} + \frac{1}{2} \sigma^2_{\tilde{y}} \frac{\partial^2}{\partial \tilde{y}^2},& \tilde{\Omega} := (0,1) \times (0,1)
+  \end{align*}
+  where $0 < \sigma_{\tilde{y}}^2 \leq 1$, and the terminal time
+  $\tilde{T}$ at which we need to evaluate the transition density is
+  bounded below by $0$.
+
+  \begin{itemize}
+  \item This new parameterization makes the computational domain invariant
+  to data/parameter combinations.
+  \end{itemize}
+\end{frame}
+% ------------------------------------------------
+\begin{frame}
+  \frametitle{The Galerkin approach: weak solution to the PDE, 1}
+  We propose a solution $p^{(k)}(\tilde{x},\tilde{y},\tilde{t})$ of similar
+  form
+  \[
+    p^{(k)}(\tilde{x},\tilde{y},\tilde{t}) = \sum_{i=0}^k c_i(\tilde{t})
+    \psi_i(\tilde{x},\tilde{y}),
+  \]
+  where the basis functions $\psi_i(\tilde{x},\tilde{y})$ satisfy the
+  boundary conditions on $\tilde{\Omega}$. We also require that all
+  first- and second-order derivatives of $\psi_i(\tilde{x},\tilde{y})$
+  are in $L_2(\tilde{\Omega})$.
+
+  \begin{align*}
+  \frac{\partial}{\partial \tilde{t}} p^{(k)}(\tilde{x},\tilde{y},\tilde{t}) - \tilde{\mathcal{L}}p^{(k)}(\tilde{x},\tilde{y},\tilde{t}) &:= R_e(k), \\
+  p(\tilde{x},\tilde{y},0) - p^{(k)}(\tilde{x},\tilde{y},0) &:= R_0(k).
+  \end{align*}
+\end{frame}
+% ------------------------------------------------
+\begin{frame}
+  \frametitle{The Galerkin approach: weak solution to the PDE, 2}
+  The \textit{orthogonality} condition coincides with the
+  Galerkin procedure:
+  \begin{align*}
+    \displaystyle \int_{\Omega} R_e(k) \psi_i(\tilde{x},\tilde{y}) d\tilde{x}\,d\tilde{y} &= 0,& \displaystyle \int_{\Omega} R_0(k) \psi_i(\tilde{x},\tilde{y}) d\tilde{x}\,d\tilde{y} &= 0,& i = 0,\ldots k, 
+  \end{align*}
+  which is equivalent to the weak formulation of the heat problem
+  \begin{align*}
+    \left< \partial_t p^{(k)}(\tilde{x},\tilde{y},\tilde{t}), \psi_i \right> &= \left<\tilde{\mathcal{L}}p^{(k)}(\tilde{x},\tilde{y},\tilde{t}), \psi_i \right>, \\
+    \left< p^{(k)}(\tilde{x},\tilde{y},0), \psi_i \right> &= \left<p(\tilde{x},\tilde{y},0), \psi_i\right>,
+  \end{align*}
+  where $<\cdot, \cdot>$ is the usual inner product in
+  $L_2(\tilde{\Omega})$.
 \end{frame}
 % ------------------------------------------------
 \begin{frame}
   \frametitle{Basis element choice}
+  \begin{align*}
+    \psi_i(\tilde{x},\tilde{y}) &= \frac{1}{2\pi \tilde{\sigma}^2\sqrt{1-\tilde{\rho}^2} } \\
+                                &\quad \times \exp\left\{ -\frac{\left( (\tilde{x} - \tilde{x}_i)^2 - 2\tilde{\rho} (\tilde{x}-\tilde{x}_i)(\tilde{y}-\tilde{y}_i) + (\tilde{y} - \tilde{y}_i)^2 \right)}{2(1-\tilde{\rho}^2)\tilde{\sigma}^2}  \right\} \nonumber \\
+                                &\quad \times \tilde{x}\left(1-\tilde{x}\right)\, \tilde{y}(1-\tilde{y}) \nonumber
+  \end{align*}
+  for some parameters $(\tilde{\rho}, \tilde{\sigma})$ and a collection of nodes
+  $\{ (\tilde{x}_i,\tilde{y}_i) \}_{i=0}^k$ which form a grid over
+  $\tilde{\Omega}$.
+  \begin{itemize}
+  \item Align basis elements along the principal axis of the differential operator,
+  \item Spacing between nodes is $l$ times the bandwidth $\tilde{\sigma}$ in each principal direction
+  \item This scheme is aimed at better resolving the initial condition (elaborated below)
+  \end{itemize}
 \end{frame}
 % ------------------------------------------------
 \begin{frame}
-  \frametitle{Upper bound on error based on initial condition and
-    first version of small-time solution}
+\begin{figure}
+  \centering
+  %%
+  %%
+  \begin{tabular}{cc}
+    \begin{minipage}{0.4\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../nodes-1.pdf}
+    \end{minipage}
+    %%
+    & \begin{minipage}{0.4\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../nodes-2.pdf}
+    \end{minipage}
+  \end{tabular}
+  %%
+  %%
+  \caption{A sample grid design for $l=1$, $\sigma=0.3$ and $\rho=0.6$. The
+    left panel corresponds to the initial grid
+    $\{ (x'_j,y'_j) \}_{j=0}^{k'}$ over $\Omega$ (solid black
+    square). The right panel depicts the rotated initial grid. The set
+    of final node points $\{ (x_i,y_i) \}_{i=0}^{k}$ is contained
+    within $\Omega$ and is denoted by the red solid points.}
+  \label{fig:grids}
+\end{figure}
 \end{frame}
 % ------------------------------------------------
 \begin{frame}
-  \frametitle{Simulation Results}
+  \frametitle{Small-time solution to the Fokker-Planck equation}
+  \begin{itemize}
+  \item A semi-analytic soluiont for a small time $\tilde{t}_\epsilon$ allows us to project a smooth function onto our basis family instead of a delta function
+  \item This reduces the numerical error of the solver
+
+    \begin{figure}
+  \centering
+  %%
+  %%
+  \begin{tabular}{cc}
+    \begin{minipage}{0.3\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../small-time-solution.png}
+    \end{minipage}
+    %%
+    & \begin{minipage}{0.3\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../small-time-solution-contour.png}
+    \end{minipage}
+  \end{tabular}
+  %%
+  %%
+\end{figure}
+\end{itemize}
 \end{frame}
 % ------------------------------------------------
 \begin{frame}
-  \frametitle{Need for Higher Resolution}
+  \frametitle{Consistency Results}
+\end{frame}
+% ------------------------------------------------
+\begin{frame}
+  \frametitle{Results and solution behavior for small $\tilde{t}$}
+  \begin{figure}
+  \centering
+  \includegraphics[scale=0.5]{../chapter-2/figures/{limitations-rho-0.95-data-point-4}.pdf}
+\end{figure}
+The behavior of Galerkin solution is valid only up to a some small time $\tilde{t}$.
+\end{frame}
+% ------------------------------------------------
+\begin{frame}
+  \frametitle{Simulation Study}
+  Ratios of Galerkin to Gaussian MSEs for the three simulation cases
+  \begin{table}  
+  \centering
+  \begin{tabular}{cccc|ccc}
+    &  \multicolumn{3}{c}{$\rho=0.95$} & \multicolumn{3}{c}{$\rho=0.60$} \\
+    & $m=4$ & $m=8$ & $m=16$ & $m=4$ & $m=8$ & $m=16$ \\
+    \hline
+    $\hat{\sigma}_x$ & 0.475 & 1.238 & 1.304 & 0.203 & 0.127 & 0.232   \\
+    \hline
+    $\hat{\sigma}_y$ & 0.593 & 1.040 & 1.088 &  0.111 & 0.120 & 0.260 \\
+    \hline
+    $\hat{\rho}$ & 0.287 & 0.910 & 0.445 & 0.315 & 0.283 & 0.463 
+  \end{tabular}
+\end{table}
+
+  \begin{table}  
+  \centering
+  \begin{tabular}{cccc}
+    & \multicolumn{3}{c}{$\rho=0.0$}\\
+    & $m=4$ & $m=8$ & $m=16$ \\
+    \hline
+    $\hat{\sigma}_x$ & .137 & 0.243 & 0.167 \\
+    \hline
+    $\hat{\sigma}_y$ &  0.189 & 0.171 & 0.107 \\
+    \hline
+    $\hat{\rho}$ &  0.517 & 0.365 & 0.194
+  \end{tabular}
+  \end{table}
+
+\end{frame}
+% ------------------------------------------------
+\begin{frame}
+  \frametitle{Need for resolving the transient region}
+
+  \begin{figure}
+  \centering
+  %%
+  %%
+  \begin{tabular}{ccc}
+    
+    \begin{minipage}{0.3\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-2/results/mle-results-rho-0.95-n-16/estimates-rho.pdf}
+    \end{minipage}
+    & \begin{minipage}{0.3\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-2/results/mle-results-rho-0.95-n-16/estimates-sigma-x.pdf}
+    \end{minipage}
+    & \begin{minipage}{0.3\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-2/results/mle-results-rho-0.95-n-16/estimates-sigma-y.pdf}
+    \end{minipage}
+  \end{tabular}
+  \caption{Data generated with $\rho=0.95$. Kernel-density
+    approximations of the repeated-sampling densities of the MLEs are
+    shown.  Samples are obtained from the Galerkin likelihood (green)
+    and the classical likelihood (red) and the Rogers estimator
+    (blue). The data-generating parameters are denoted with the
+    vertical solid line.}
+  \label{fig:mle-comparison-rho-0.95}
+\end{figure}
+  
 \end{frame}
 
 
 %------------------------------------------------
 %------------------------------------------------
 \section{Open, Close, High, Low Prices: Small Time Solution}
-%------------------------------------------------
+% ------------------------------------------------
+\begin{frame}
+Open, Close, High, Low Prices: Small Time Solution and Matching
+\end{frame}
 \begin{frame}
   \frametitle{Counterexample: method of images and analytic differentiability}
-  Lack of uniqueness
+  \centering
+  \includegraphics[scale=0.45]{../chapter-3/figures/chapter-3-figure-illustration-1.pdf}
 \end{frame}
 % ------------------------------------------------
 \begin{frame}
   \frametitle{Symmetry condition for solution}
+
+  A condition weaker than uniqueness which nonetheless restricts the
+solution space is the symmetry obeyed by the problem. We consider the transformation
+\begin{align*}
+  x^{new} = (a_x + b_x) - x^{old}, \\
+  y^{new} = (a_y + b_y) - y^{old}.
+\end{align*}
+
+Performing the set of reflections
+\begin{align*}
+  \left\{ 2,4,1,3 \right\} \cup \left\{ 2,4,3,1 \right\} \cup \left\{ 4,2,1,3 \right\} \cup \left\{ 4,2,3,1 \right\}. 
+\end{align*}
+produces a sum of images where only four elements are differentiable
+with respecto to all four boundaries:
+
+\[
+  \frac{\partial^4 p_\epsilon(\tilde{x}, \tilde{y}, \tilde{t})}{\partial a_x \partial b_x \partial a_y \partial b_y}  = \sum_{j'=1}^{4}
+                                                                                                                        \frac{\partial^4G(\tilde{x},\tilde{y},\tilde{t}|\tilde{x}_{(j')},\tilde{y}_{(j')})}{\partial a_x \partial b_x \partial a_y \partial b_y}.
+\]
+
 \end{frame}
 % ------------------------------------------------
 \begin{frame}
-  \frametitle{Solution}
+  \frametitle{Calculation of the joint density}
+  We can express the derivatives:
+\begin{align*}
+  % \frac{\partial}{\partial a_x} G(x,y|t^{*}, \tilde{\sigma}, \rho, x_0^{(j^*)}, y_0^{(j^*)}) &= G \cdot \mathcal{C}\,\,\cdot \left( \frac{\partial \mathcal{P}}{\partial a_x} \right)\\
+  % \frac{\partial^2}{\partial a_x \partial b_x} G(x,y|t^{*}, \tilde{\sigma}, \rho, x_0^{(j^*)}, y_0^{(j^*)}) &= G \cdot \mathcal{C}^2 \left( \frac{\partial \mathcal{P}}{\partial b_x} \right) \left( \frac{\partial \mathcal{P}}{\partial a_x} \right) + G \cdot \mathcal{C} \cdot \left( \frac{\partial^2 \mathcal{P}}{\partial a_x \partial b_x} \right) \\
+  % %% %% %%
+  % \frac{\partial^3}{\partial a_x \partial b_x \partial a_y} G(x,y|t^{*}, \tilde{\sigma}, \rho, x_0^{(j^*)}, y_0^{(j^*)}) &= G \cdot \mathcal{C}^3 \left( \frac{\partial \mathcal{P}}{\partial b_x} \right) \left( \frac{\partial \mathcal{P}}{\partial a_x} \right) \left( \frac{\partial \mathcal{P}}{\partial a_y} \right) \nonumber \\
+  %                                                                                            &\,\, + G \cdot \mathcal{C}^2 \left[\left( \frac{\partial^2 \mathcal{P}}{\partial a_x \partial a_y} \right) \left( \frac{\partial \mathcal{P}}{\partial b_x} \right) + \left( \frac{\partial^2 \mathcal{P}}{\partial b_x \partial a_y} \right) \left( \frac{\partial \mathcal{P}}{\partial a_x} \right) + \left( \frac{\partial^2 \mathcal{P}}{\partial a_x \partial b_x} \right) \left( \frac{\partial \mathcal{P}}{\partial a_y} \right)\right] \nonumber \\
+  %                                                                                            &\,\, + G \cdot \mathcal{C} \left( \frac{\partial^3 \mathcal{P}}{\partial a_x \partial b_x \partial a_y} \right) \nonumber \\
+  %                                                                                            %% %% %%
+  \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial b_y} G(\tilde{x},\tilde{y},\tilde{t} |  \tilde{x}_{(j)}, \tilde{y}_{(j)}) &= \\
+  \MoveEqLeft[15] G \cdot \mathcal{C}^4 \cdot \left(\partial_{a_x}\partial_{b_x} \partial_{a_y}\partial_{b_y} \right)\mathcal{P}&  \nonumber \\
+  \MoveEqLeft[15] \,\, + G \cdot \mathcal{C}^3 \cdot \left( \partial^2_{a_x\, b_x} \partial_{a_y} \partial_{b_y} + \partial^2_{a_x\, a_y} \partial_{b_x} \partial_{b_y} + \partial^2_{a_x\, b_y} \partial_{b_x} \partial_{a_y} + \right. &\nonumber \\
+  \MoveEqLeft[15] \left. \qquad\qquad\qquad +\partial^2_{b_x\, a_y} \partial_{a_x} \partial_{b_y} + \partial^2_{b_x\, b_y} \partial_{a_x} \partial_{a_y} \partial^2_{a_y\, b_y} \partial_{a_x} \partial_{b_x} \right) \mathcal{P} &  \nonumber \\
+  \MoveEqLeft[15] \,\, + G \cdot \mathcal{C}^2 \cdot \left( \partial^3_{a_x\,b_x\,a_y} \partial_{b_y} + \partial^2_{a_x\,b_x}\partial^2_{a_y\,b_y} + \partial^3_{a_x\,b_x\,b_y}\partial_{a_y}  + \right.& \nonumber \\
+  \MoveEqLeft[15] \left. \qquad\qquad\qquad + \partial^3_{a_x\,a_y\,b_y} \partial_{b_x} + \partial^2_{a_x\,a_y} \partial^2_{b_y\,b_x} + \partial^3_{b_x\,a_y\,b_y}\partial_{a_x} + \partial^2_{b_x\,a_y}\partial_{a_x}\partial_{b_y} \right) \mathcal{P} & \nonumber \\
+  \MoveEqLeft[15] \,\, + G \cdot \mathcal{C} \cdot \partial^4_{a_x\,b_x\,a_y\,b_y} P,& \label{eq:fourth-deriv}
+\end{align*}
 \end{frame}
 % ------------------------------------------------
 \begin{frame}
   \frametitle{Analytic Derivative and higher order terms}
+
+  Thinking of $\tilde{t}$ as variable allows us to further simplify
+  the expression. Since $\mathcal{C} = \mathcal{O}(1/\tilde{t})$, all
+  three terms $G\cdot \mathcal{C}^3, G\cdot \mathcal{C}^2,$ and
+  $G\cdot \mathcal{C}$ are
+  $o\left( G\cdot \mathcal{C}^4 \cdot
+    \left(\partial_{a_x}\partial_{b_x} \partial_{a_y}\partial_{b_y}
+    \right)\mathcal{P} \right)$, so that the $G\cdot \mathcal{C}^4$
+  order term in the derivative dominates the others for sufficiently
+  small $\,\,\tilde{t}$.
+
+  \begin{align*}
+  \frac{\partial^4 p_\epsilon(\tilde{x}, \tilde{y}, \tilde{t})}{\partial a_x
+  \partial b_x \partial a_y \partial b_y} &\approx \sum_{j'=1}^{4} G(\tilde{x},\tilde{y},\tilde{t}|\tilde{x}_{(j')},\tilde{y}_{(j')}) \cdot \mathcal{C}^4 \cdot \left(\partial_{a_x}\partial_{b_x} \partial_{a_y}\partial_{b_y} \right)\mathcal{P}_{j'}. 
+\end{align*}
 \end{frame}
 % ------------------------------------------------
 \begin{frame}
@@ -403,15 +797,105 @@ Given that we consider the subset of $(X(t), Y(t))$ that satisfies the constrain
 \end{frame}
 % ------------------------------------------------
 \begin{frame}
-  \frametitle{Basis Expansion and Small-Time leading order order solution}
+  \frametitle{Basis Expansion of Galerkin likelihood: RHS}
+  The likelihood computed with the Galerkin solution as a
+function of $\tilde{t}$ is of the form
+\begin{align*}
+  \frac{\partial^4 p_{G}(\tilde{x}, \tilde{y}, \tilde{t})}{\partial a_x
+  \partial b_x \partial a_y \partial b_y} = \sum_{k=1}^{K} e^{-\lambda_k\tilde{t}} p_k^{(4)}(\tilde{t}),
+\end{align*}
+where $p_i^{(4)}(\tilde{t})$ is a fourth-order polynomial. This
+proceeds from the Galerkin solution being dependent on $\tilde{t}$
+only through the exponential term: the eigenfunctions of the solution
+are by design solely functions of $(a_x, b_x, a_y, b_y)$ and
+$(\tilde{x}, \tilde{y})$
+
+
+\begin{itemize}
+\item This suggests a leading-order approximation that is fitted with the Galerking solver via least squares:
+  \begin{align*}
+    f_{LS}(\tilde{t}) &= \tilde{t}^4 \left( \omega_1 e^{-\lambda_1\tilde{t}} + \omega_2 e^{-\lambda_2\tilde{t}}\right).
+  \end{align*}
+\end{itemize}
 \end{frame}
 % ------------------------------------------------
 \begin{frame}
-  \frametitle{Matching Solution}
+  \frametitle{Leading order for small-time solution: LHS}
+
+  The summand in the small-time likelihood with the greatest
+  $\beta_{j'}$ contributes the most to the truncated small-time
+  solution in the $\tilde{t} \leq 1$ region where the matched solution
+  will be applied. Indexing $j'$ such that
+  $\beta_1 \geq \beta_2 \geq \beta_3 \geq \beta_4$, the small-time
+  log-likelihood is
+\begin{align*}
+  \log\left( \frac{\partial^4 p_\epsilon(\tilde{x}, \tilde{y}, \tilde{t})}{\partial a_x
+  \partial b_x \partial a_y \partial b_y} \right) &\approx \log(K) - 4.5\log(\tilde{t}) + \log(c_1) - \frac{\beta_1}{\tilde{t}} \nonumber \\
+  &\quad + \log\left(1 + \sum_{j \neq 1} \frac{c_j}{c_1}\exp\left( -\frac{(\beta_j-\beta_1)}{\tilde{t}} \right) \right) \nonumber \\
+  &\approx \log(K) - 4.5\log(\tilde{t}) + \log(c_1) - \frac{\beta_1}{\tilde{t}} + \log\left(1 + \epsilon(\tilde{t}) \right), 
+\end{align*}
+
+  \begin{itemize}
+\item The proposed matched solution is of the form
+  \[
+    \log f_{\mbox{matched}}(\tilde{t}) = \log(\omega(\tilde{t})) -
+    \gamma(\tilde{t})\log(\tilde{t}) -
+    \frac{\beta(\tilde{t})}{\tilde{t}}
+  \]
+  \end{itemize}
+\end{frame}
+% ------------------------------------------------
+\begin{frame}
+At $\tilde{t}^*$, the
+left-hand side of the matching condition, the values for these
+parameters are defined such that they match the small-time solution
+\begin{align*}
+  \omega(\tilde{t}^*) &= K, & \gamma(\tilde{t}^*) &= 4.5, & \beta(\tilde{t}^*) &= \beta_1.
+\end{align*}
+At $\tilde{t}_m$, the right-hand side of the matching condition and
+the maximum of the LS solution,
+$\omega(\tilde{t}), \gamma(\tilde{t}),$ and $\beta(\tilde{t})$ are
+chosen to match the value, first, and second derivatives of the
+logarithmic form of the LS solution. The form of the parameters
+between $\tilde{t}^*$ and $\tilde{t}_m$ is chosen to be a sigmoid
+function which rapidly transitions away from $\tilde{t}^*$ and is the
+same for all three parameters:
+\begin{align*}
+    \omega(\tilde{t}) &= \omega(\tilde{t}^*)e^{-k(\tilde{t}-\tilde{t}^*)} + \omega(\tilde{t}_m)\left(1-e^{-k(\tilde{t}-\tilde{t}^*)}\right), \\
+    \gamma(\tilde{t}) &= \gamma(\tilde{t}^*)e^{-k(\tilde{t}-\tilde{t}^*)} + \gamma(\tilde{t}_m)\left(1-e^{-k(\tilde{t}-\tilde{t}^*)}\right), \\
+    \beta(\tilde{t}) &= \beta(\tilde{t}^*)e^{-k(\tilde{t}-\tilde{t}^*)} + \beta(\tilde{t}_m)\left(1-e^{-k(\tilde{t}-\tilde{t}^*)}\right).
+\end{align*}
+\end{frame}
+% ------------------------------------------------
+\begin{frame}
+  \centering
+  \includegraphics[scale=0.8]{../chapter-3/figures/{matched-rho-0.95-data-point-4}.pdf}
 \end{frame}
 % ------------------------------------------------
 \begin{frame}
   \frametitle{Repeated Simulation Results}
+  \begin{table}
+  \centering
+  \begin{tabular}{cccc}
+    \multicolumn{4}{c}{$\rho=0.95$} \\
+    & $m=4$ & $m=8$ & $m=16$ \\
+    \hline
+    $\hat{\sigma}_x$ & 0.124 & 0.429  & 0.318 \\
+    \hline
+    $\hat{\sigma}_y$ & 0.310 & 0.147  & 0.365 \\
+    \hline
+    $\hat{\rho}$ & 0.250 & 0.753 & 0.699
+  \end{tabular}
+\end{table}
+\end{frame}
+
+\begin{frame}
+\centering
+\includegraphics[scale=0.5]{../chapter-3/results/mle-results-rho-0.95-n-16/estimates-sigma-x.pdf}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Future work}
 \end{frame}
 
 \end{document} 
