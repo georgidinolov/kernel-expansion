@@ -2,4 +2,4 @@
 \beamer@sectionintoc {1}{Introduction}{3}{0}{1}
 \beamer@sectionintoc {2}{High-Frequency Prices}{4}{0}{2}
 \beamer@sectionintoc {3}{Open, Close, High, Low Prices}{18}{0}{3}
-\beamer@sectionintoc {4}{Open, Close, High, Low Prices: Small Time Solution}{34}{0}{4}
+\beamer@sectionintoc {4}{Open, Close, High, Low Prices: Small Time Solution}{36}{0}{4}

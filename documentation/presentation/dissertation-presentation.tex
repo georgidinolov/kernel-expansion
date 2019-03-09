@@ -459,63 +459,47 @@ $M_Y(t)=\max_{0\leq s\leq t}Y(s),$ $m_Y(t)=\min_{0\leq s\leq t}Y(s)$.
 \end{frame}
 % ------------------------------------------------
 \begin{frame}
-  \frametitle{Transition density} The evolution of the transition
-  density function $q(x,y | x_0, y_0)$ of $(X(t), Y(t))$ from the
-  starting position $(x_0, y_0)$ is given by the Fokker-Planck
-  equation
-\begin{multline*}
-  \displaystyle \frac{\partial}{\partial t'} q(x,y,t') = -\mu_x \frac{\partial}{\partial x}q(x,y,t')
-  - \mu_y \frac{\partial}{\partial y}q(x,y,t') + \\
-  \frac{1}{2}\sigma_x^2 \frac{\partial^2}{\partial x^2}q(x,y,t') + \rho\sigma_x\sigma_y \frac{\partial^2}{\partial x \partial y}q(x,y,t')
-  + \frac{1}{2}\sigma_y^2 \frac{\partial^2}{\partial y^2}q(x,y,t'), \\
-
-\end{multline*}
-\begin{align*}
-multline*}
-
-
+  \frametitle{Transition density} To calculate the joint density
+  \begin{multline*}
+    p(X(t) = x, Y(t) = y, \\
+    m_X(t) = a_x, M_X(t) = b_X, m_Y(t) = a_Y, M_Y(t) = b_Y),
+  \end{multline*}
+  we first study cumulative-like distribution
+  \begin{multline*}
+    p(X(t) = x, Y(t) = y, \\
+    m_X(t) \geq a_x, M_X(t) \leq b_X, m_Y(t) \geq
+    a_Y, M_Y(t) \leq b_Y),
+  \end{multline*}
+  which is governed by a Fokker-Planck equation with absorbing boundaries:
+\end{frame}
+% ------------------------------------------------
+\begin{frame}
+  \frametitle{Governing Fokker-Planck equation}
+  Abbreviating 
+  \begin{multline*}
+    q(x,y,t) := p(X(t) = x, Y(t) = y, \\
+    m_X(t) \geq a_x, M_X(t) \leq b_X, m_Y(t) \geq
+    a_Y, M_Y(t) \leq b_Y),
+  \end{multline*}
+  the FP equation is
+  \begin{multline*}
+    \displaystyle \frac{\partial}{\partial t'} q(x,y,t') = -\mu_x \frac{\partial}{\partial x}q(x,y,t')
+    - \mu_y \frac{\partial}{\partial y}q(x,y,t') + \\
+    \frac{1}{2}\sigma_x^2 \frac{\partial^2}{\partial x^2}q(x,y,t') + \rho\sigma_x\sigma_y \frac{\partial^2}{\partial x \partial y}q(x,y,t')
+    + \frac{1}{2}\sigma_y^2 \frac{\partial^2}{\partial y^2}q(x,y,t'),
+  \end{multline*}
+  \begin{align*}
+    q(a_x, y,t') &= q(b_x,y,t') = q(x,a_y,t') = q(x,b_y,t') = 0, & 0 &< t' \leq t, \\
+    q(x,y,0) &= \delta(x_0 - x)\delta(y_0 - y)
   \end{align*}
 
-Given that we consider the subset of $(X(t), Y(t))$ that satisfies the
-constraints imposed by the boundary data, we impose the absorbing
-boundary conditions as well as the initial conditions:
-\begin{align*}
-  q(a_x, y,t') &= q(b_x,y,t') = q(x,a_y,t') = q(x,b_y,t') = 0, & 0 &< t' \leq t, \\
-  q(x,y,0) &= \delta(x_0 - x)\delta(y_0 - y)
-\end{align*}
-
-\end{frame}
-% ------------------------------------------------
-\begin{frame}
-  \frametitle{Density definition, fourth-order derivative with respect to boundaries}
-
-\begin{align}
-  \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial b_y} q(x,y,t) = f(x,y,a_x,b_x,a_y,b_y).
-  \label{eq:pdf}
-\end{align}
-  
-  Point out the analytic and numeric difficulties with the full problem.
-\end{frame}
-% ------------------------------------------------
-\begin{frame}
-  \frametitle{Approach 1: Finite Difference}
-  \begin{enumerate}
-  \item fast but ever-present truncation error
-  \end{enumerate}
-\end{frame}
-% ------------------------------------------------
-\begin{frame}
-  \frametitle{Approach 2: Trigonometric expansion}
-  \begin{enumerate}
-  \item made impractical by the correlation term
-  \end{enumerate}
 \end{frame}
 % ------------------------------------------------
 \begin{frame}
   \frametitle{Normalized problem}
   We can introduce a series of transformations to solve the equivalent initial-boundary problem
   \begin{align*}
-    \frac{\partial}{\partial \tilde{t}} p_{(2)}(\tilde{x},\tilde{y},\tilde{t}) &= \tilde{\mathcal{L}} p_{(2)}(\tilde{x},\tilde{y},\tilde{y}), & (\tilde{x}, \tilde{y}) \in \tilde{\Omega} \\
+    \frac{\partial}{\partial \tilde{t}} q(\tilde{x},\tilde{y},\tilde{t}) &= \tilde{\mathcal{L}} q(\tilde{x},\tilde{y},\tilde{y}), & (\tilde{x}, \tilde{y}) \in \tilde{\Omega} \\
     \tilde{\mathcal{L}} &= \frac{1}{2} \frac{\partial^2}{\partial \tilde{x}^2} + \rho \sigma_{\tilde{y}} \frac{\partial^2}{\partial \tilde{x} \partial \tilde{y}} + \frac{1}{2} \sigma^2_{\tilde{y}} \frac{\partial^2}{\partial \tilde{y}^2},& \tilde{\Omega} := (0,1) \times (0,1)
   \end{align*}
   where $0 < \sigma_{\tilde{y}}^2 \leq 1$, and the terminal time
@@ -528,6 +512,84 @@ boundary conditions as well as the initial conditions:
   \end{itemize}
 \end{frame}
 % ------------------------------------------------
+\begin{frame}
+  \frametitle{Joint density is given by the fourth derivative with respect to boundaries}
+  Denoting the joint density of the diffusion process and the attained extrema over the interval $t$ as
+  $f(x,y,a_x,b_x,a_y,b_y)$,
+  \begin{align*}
+  \frac{\partial^4}{\partial a_x \partial b_x \partial a_y \partial b_y} q(x,y,t) = f(x,y,a_x,b_x,a_y,b_y).
+  \end{align*}
+
+  \begin{itemize}
+  \item The finite difference approximation of
+    $\partial^4/\partial a_x \partial b_x \partial a_y \partial b_y$
+    introduces a fundamental limitation due to finite precision
+    round-off errors when the analytic solution $q(x,y,t)$ is not available
+    \[
+      \mathcal{O}\left(\frac{\varepsilon_{mach}}{\varepsilon^4} \right) \to \infty \,\,\, \mbox{ as } \,\,\, \varepsilon \to 0,
+    \]
+    where $\varepsilon$ is the step size with respect to the boundaries.
+  \end{itemize}
+\end{frame}
+% ------------------------------------------------
+
+\begin{frame}
+  \frametitle{Approach 1: Finite Difference}
+  Requires the solution to a system of ODEs:
+  \begin{align*}
+    & \dot{c}(\tilde{t}) = Bc(\tilde{t}) &\Rightarrow& c(\tilde{t}) = \exp\left(B\tilde{t}\right)c(0), 
+  \end{align*}
+  where the sparse system matrix $B$ can be computed once and stored for a regular grid over $\tilde{\Omega}$ with finite step size $h$. 
+  \[ B = \frac{1}{2} \frac{1}{h^2}B_{\tilde{x},\tilde{x}} +
+    \rho\sigma_{\tilde{y}} \frac{1}{4h^2}B_{\tilde{x},\tilde{y}} +
+    \frac{1}{2}\sigma_{\tilde{y}}^2
+    \frac{1}{h^2}B_{\tilde{y},\tilde{y}}.
+\]
+\end{frame}
+% ------------------------------------------------
+\begin{frame}
+  \frametitle{Approach 1: Finite Difference}
+  Letting $k := 1/h$ and $b$ denote the boundary parameters, 
+\begin{itemize}
+  \item FD approximation is fast but also limited by irregular truncation errors
+  \begin{multline*}
+    q^{(k)}(\tilde{x},\tilde{y},\tilde{t} | b) - q(\tilde{x},\tilde{y},\tilde{t} | b) = \underbrace{\left( \frac{1}{k}
+    \right)^{\alpha} \mbox{F}_{reg}(b)}_{\mbox{smooth in } b, \,\,\alpha > 0} \\
+    + \underbrace{\left( \frac{1}{k}\right)^{\beta}\mbox{F}_{irreg}(b)}_{\mbox{continuous but not differentiable w.r.t }b, \,\, \beta > 0} + \underbrace{\varepsilon_{mach}F_{round}(b)}_{\mbox{behaves as a R.V}}
+  \end{multline*}
+  \item With linear interpolation which arises when function arguments are not on grid points
+  \begin{align*}
+    \mathcal{O}(F_{irreg}(b)) &= k^\beta/\varepsilon &\Rightarrow \left( \frac{1}{k}\right)^{\beta}\mbox{F}_{irreg}(b) &\to \infty \,\,\, \mbox{as} \,\,\, \varepsilon \to 0.
+  \end{align*}
+\end{itemize}
+\end{frame}
+% ------------------------------------------------
+\begin{frame}
+  \frametitle{Approach 2: Trigonometric expansion}
+  \begin{align*}
+    q(\tilde{x},\tilde{y},\tilde{t}) &\approx  \sum_\nu h_\nu \phi_\nu (\tilde{x}, \tilde{y}) e^{-\lambda_\nu \tilde{t}}, \\
+    \phi_\nu(\tilde{x},\tilde{y}) &= \sum_{l=1}^L \sum_{m=1}^M c_{l,m, \nu}
+                                    \sin\left(2\pi\, l\, \tilde{x} \right) \sin\left(2\pi\, m\, \tilde{y} \right) := \Psi(\tilde{x},\tilde{y})^T c_\nu, \\
+    \mathcal{L}\phi_\nu &= \mathcal{L}(\Psi(\tilde{x},\tilde{y})^T c_\nu) =
+  \mathcal{L}(\Psi(\tilde{x},\tilde{y})^T) c_\nu = (A \Psi(\tilde{x},\tilde{y}))^T c_\nu = -\lambda_\nu \phi_\nu
+  \end{align*}
+  \begin{itemize}
+  \item When $\rho = 0$,
+    \begin{itemize}
+    \item the system matrix $A$ is diagonal,
+    \item no new error is introduced in the time evolution,
+    \item truncated solution converges fast
+    \end{itemize}
+  \item When $\rho \neq 0$, mixing term in the FP equation produces
+    $\cos(2\pi l \tilde{x})\cos(2\pi k \tilde{y})$ terms such that
+    \begin{itemize}
+    \item $A$ is dense and convergence is slow,
+    \item new error is introduced in the time evolution
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+% ------------------------------------------------
+
 \begin{frame}
   \frametitle{The Galerkin approach: weak solution to the PDE, 1}
   We propose a solution $p^{(k)}(\tilde{x},\tilde{y},\tilde{t})$ of similar
