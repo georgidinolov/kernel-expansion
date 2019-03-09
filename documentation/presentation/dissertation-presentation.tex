@@ -407,7 +407,7 @@ University of California, Santa Cruz \\ % Your institution for the title page
   \begin{itemize}
     \item We consider 300 simulated data sets over 1 trading day
   
-    \item What percentage of $95\%$ probability/confidence intervals
+    \item Percentage of $95\%$ probability/confidence intervals
       cover the true data-generating integrated volatility
       $\int \hat{\sigma}_t dt$:
   \end{itemize}
@@ -591,26 +591,25 @@ $M_Y(t)=\max_{0\leq s\leq t}Y(s),$ $m_Y(t)=\min_{0\leq s\leq t}Y(s)$.
 % ------------------------------------------------
 
 \begin{frame}
-  \frametitle{The Galerkin approach: weak solution to the PDE, 1}
-  We propose a solution $p^{(k)}(\tilde{x},\tilde{y},\tilde{t})$ of similar
+  \frametitle{The Galerkin approach: weak solution to the PDE}
+  We propose a solution $q^{(k)}(\tilde{x},\tilde{y},\tilde{t})$ of similar
   form
   \[
-    p^{(k)}(\tilde{x},\tilde{y},\tilde{t}) = \sum_{i=0}^k c_i(\tilde{t})
+    q^{(k)}(\tilde{x},\tilde{y},\tilde{t}) = \sum_{i=0}^k c_i(\tilde{t})
     \psi_i(\tilde{x},\tilde{y}),
   \]
   where the basis functions $\psi_i(\tilde{x},\tilde{y})$ satisfy the
   boundary conditions on $\tilde{\Omega}$. We also require that all
   first- and second-order derivatives of $\psi_i(\tilde{x},\tilde{y})$
   are in $L_2(\tilde{\Omega})$.
-
   \begin{align*}
-  \frac{\partial}{\partial \tilde{t}} p^{(k)}(\tilde{x},\tilde{y},\tilde{t}) - \tilde{\mathcal{L}}p^{(k)}(\tilde{x},\tilde{y},\tilde{t}) &:= R_e(k), \\
-  p(\tilde{x},\tilde{y},0) - p^{(k)}(\tilde{x},\tilde{y},0) &:= R_0(k).
+  \frac{\partial}{\partial \tilde{t}} q^{(k)}(\tilde{x},\tilde{y},\tilde{t}) - \tilde{\mathcal{L}}q^{(k)}(\tilde{x},\tilde{y},\tilde{t}) &:= R_e(k), \\
+  q(\tilde{x},\tilde{y},0) - q^{(k)}(\tilde{x},\tilde{y},0) &:= R_0(k).
   \end{align*}
 \end{frame}
 % ------------------------------------------------
 \begin{frame}
-  \frametitle{The Galerkin approach: weak solution to the PDE, 2}
+  \frametitle{The Galerkin approach: weak solution to the PDE}
   The \textit{orthogonality} condition coincides with the
   Galerkin procedure:
   \begin{align*}
@@ -618,8 +617,8 @@ $M_Y(t)=\max_{0\leq s\leq t}Y(s),$ $m_Y(t)=\min_{0\leq s\leq t}Y(s)$.
   \end{align*}
   which is equivalent to the weak formulation of the heat problem
   \begin{align*}
-    \left< \partial_t p^{(k)}(\tilde{x},\tilde{y},\tilde{t}), \psi_i \right> &= \left<\tilde{\mathcal{L}}p^{(k)}(\tilde{x},\tilde{y},\tilde{t}), \psi_i \right>, \\
-    \left< p^{(k)}(\tilde{x},\tilde{y},0), \psi_i \right> &= \left<p(\tilde{x},\tilde{y},0), \psi_i\right>,
+    \left< \partial_t q^{(k)}(\tilde{x},\tilde{y},\tilde{t}), \psi_i \right> &= \left<\tilde{\mathcal{L}}q^{(k)}(\tilde{x},\tilde{y},\tilde{t}), \psi_i \right>, \\
+    \left< q^{(k)}(\tilde{x},\tilde{y},0), \psi_i \right> &= \left<q(\tilde{x},\tilde{y},0), \psi_i\right>,
   \end{align*}
   where $<\cdot, \cdot>$ is the usual inner product in
   $L_2(\tilde{\Omega})$.
@@ -660,21 +659,26 @@ $M_Y(t)=\max_{0\leq s\leq t}Y(s),$ $m_Y(t)=\min_{0\leq s\leq t}Y(s)$.
   \end{tabular}
   %%
   %%
-  \caption{A sample grid design for $l=1$, $\sigma=0.3$ and $\rho=0.6$. The
-    left panel corresponds to the initial grid
-    $\{ (x'_j,y'_j) \}_{j=0}^{k'}$ over $\Omega$ (solid black
-    square). The right panel depicts the rotated initial grid. The set
-    of final node points $\{ (x_i,y_i) \}_{i=0}^{k}$ is contained
-    within $\Omega$ and is denoted by the red solid points.}
-  \label{fig:grids}
+  % \caption{A sample grid design for $l=1$, $\sigma=0.3$ and $\rho=0.6$. The
+  %   left panel corresponds to the initial grid
+  %   $\{ (x'_j,y'_j) \}_{j=0}^{k'}$ over $\Omega$ (solid black
+  %   square). The right panel depicts the rotated initial grid. The set
+  %   of final node points $\{ (x_i,y_i) \}_{i=0}^{k}$ is contained
+  %   within $\Omega$ and is denoted by the red solid points.}
 \end{figure}
+A sample grid design for $l=1$, $\sigma=0.3$ and $\rho=0.6$. The left
+panel corresponds to the initial grid $\{ (x'_j,y'_j) \}_{j=0}^{k'}$
+over $\Omega$ (solid black square). The right panel depicts the
+rotated initial grid. The set of final node points
+$\{ (x_i,y_i) \}_{i=0}^{k}$ is contained within $\Omega$ and is
+denoted by the red solid points.
 \end{frame}
 % ------------------------------------------------
 \begin{frame}
   \frametitle{Small-time solution to the Fokker-Planck equation}
   \begin{itemize}
-  \item A semi-analytic soluiont for a small time $\tilde{t}_\epsilon$ allows us to project a smooth function onto our basis family instead of a delta function
-  \item This reduces the numerical error of the solver
+  \item A semi-analytic soluiont for a small time $\tilde{t}_\epsilon$ allows us to project a smooth function onto our basis family instead of a $\delta$-function
+  \item This reduces the numerical error of the Galerkin solver
 
     \begin{figure}
   \centering
@@ -683,12 +687,12 @@ $M_Y(t)=\max_{0\leq s\leq t}Y(s),$ $m_Y(t)=\min_{0\leq s\leq t}Y(s)$.
   \begin{tabular}{cc}
     \begin{minipage}{0.3\textwidth}
       \centering
-      \includegraphics[width=1\linewidth]{../small-time-solution.png}
+      \includegraphics[width=1\linewidth]{../small-time-solution-contour.png}
     \end{minipage}
     %%
     & \begin{minipage}{0.3\textwidth}
       \centering
-      \includegraphics[width=1\linewidth]{../small-time-solution-contour.png}
+      \includegraphics[width=1\linewidth]{../small-time-solution.png}
     \end{minipage}
   \end{tabular}
   %%
@@ -699,6 +703,39 @@ $M_Y(t)=\max_{0\leq s\leq t}Y(s),$ $m_Y(t)=\min_{0\leq s\leq t}Y(s)$.
 % ------------------------------------------------
 \begin{frame}
   \frametitle{Consistency Results}
+  Denoting the approximate density due to the Galerkin solution as
+  \[
+    f^{(k)}(x,y,a_x,b_x,a_y,b_y) = \frac{\partial^4
+      q^{(k)}(x,y,t)}{\partial a_x \partial b_x \partial a_y \partial
+      b_y},
+  \]
+  we show that the two integrals below converge in $L_2(\Omega)$:
+  \begin{lemma}[1]\label{lem:1}
+  \begin{multline*}
+    \lim_{k\to \infty} \displaystyle \int_{a_x}^{b_x} \displaystyle
+    \int_{a_y}^{b_y} f^{(k)}(x,y,a_x,b_x,a_y,b_y)\, dx\,dy = \\
+    \displaystyle \int_{a_x}^{b_x} \displaystyle \int_{a_y}^{b_y}
+    f(x,y,a_x,b_x,a_y,b_y)\, dx\,dy
+  \end{multline*}
+\end{lemma}
+\end{frame}
+% ------------------------------------------------
+\begin{frame}
+Denoting the random variable
+\[Z := (X(t), Y(t), m_X(t), M_X(t), m_Y(t), M_Y(t)),\] we consider the
+distribution function $F(Z \leq z)$ generated by the true solution to the
+Fokker-Planck equation as well as the distribution $F^{(k)}(Z \leq z)$
+generated by the Galerkin solution.
+\begin{lemma}[Convergence in distribution] \label{lem:conv-dist}
+  For any $z \in Z$,
+  $ \lim_{k \to \infty} F^{(k)}(Z \leq z ) = F(Z \leq z).$
+\end{lemma}
+
+Assuming that the maximum likelihood estimate (MLE) (under $F^{(k)}$
+for sufficiently large $k$) is continuous with respect to the data, we
+can use the convergence result above and Chebyshev's inequality to
+show that the MLE under $F^{(k)}$ is consistent as the number of basis
+elements $k$ and number of data points $n$ go to infinity.
 \end{frame}
 % ------------------------------------------------
 \begin{frame}
@@ -711,8 +748,13 @@ The behavior of Galerkin solution is valid only up to a some small time $\tilde{
 \end{frame}
 % ------------------------------------------------
 \begin{frame}
-  \frametitle{Simulation Study}
-  Ratios of Galerkin to Gaussian MSEs for the three simulation cases
+  \frametitle{Simulation Study} We consider $50$ simulated data sets with
+  \begin{align*}
+    \sigma_x &= 1, & \sigma_y &= 1, & \mu_x &= 0, & \mu_y &= 0
+  \end{align*}
+  with increasing sample size over several values of $\rho$. For each
+  case, we consider the ratio of mean-square error of the Galerkin
+  solver compared to that generated by Gaussian likelihoods ignoring the boundaries:
   \begin{table}  
   \centering
   \begin{tabular}{cccc|ccc}
@@ -791,7 +833,7 @@ Open, Close, High, Low Prices: Small Time Solution and Matching
 \end{frame}
 % ------------------------------------------------
 \begin{frame}
-  \frametitle{Symmetry condition for solution}
+  \frametitle{Symmetry constraint in constructing approximate solutions}
 
   A condition weaker than uniqueness which nonetheless restricts the
 solution space is the symmetry obeyed by the problem. We consider the transformation

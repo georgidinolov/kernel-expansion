@@ -1,5 +1,6 @@
 \beamer@slide {eq:X}{19}
 \beamer@slide {eq:Y}{19}
-\beamer@slide {fig:grids}{30}
-\beamer@slide {fig:mle-comparison-rho-0.95}{35}
-\beamer@slide {eq:fourth-deriv}{39}
+\beamer@slide {lem:1}{32}
+\beamer@slide {lem:conv-dist}{33}
+\beamer@slide {fig:mle-comparison-rho-0.95}{36}
+\beamer@slide {eq:fourth-deriv}{40}
