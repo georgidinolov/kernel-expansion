@@ -32,7 +32,7 @@
 %\usetheme{Berlin}
 %\usetheme{Boadilla}
 \usetheme{CambridgeUS}
-%\usetheme{Copenhagen}
+% \usetheme{Copenhagen}
 %\usetheme{Darmstadt}
 %\usetheme{Dresden}
 %\usetheme{Frankfurt}
@@ -66,7 +66,7 @@
 %\usecolortheme{lily}
 %\usecolortheme{orchid}
 %\usecolortheme{rose}
-%\usecolortheme{seagull}
+\usecolortheme{seagull}
 %\usecolortheme{seahorse}
 %\usecolortheme{whale}
 %\usecolortheme{wolverine}
@@ -199,11 +199,49 @@ University of California, Santa Cruz \\ % Your institution for the title page
 %------------------------------------------------
 
 \begin{frame}
-\frametitle{Two Data Types: High-Frequency and Open, Close High, Low Prices}
+\frametitle{Two data types: High-Frequency}
+
 \begin{itemize}
-  \item high-frequency prices
-  \item open, close, high, low as summaries of volatility
+  \item Longitudonal view
+\begin{table}
+\begin{tabular}{|c|c|c|}
+  Timestamp & Volume& Price \\
+  \hline
+  2011-08-01 03:02:52.112434 & 1000 & 179.6400 \\
+  \hline
+  2011-08-01 03:02:53.752456 & 1000 & 179.6200 \\
+  \hline
+  2011-08-01 03:02:53.900010 & 1000 & 179.6300 \\
+  \hline
+  2011-08-01 03:02:54.103493 & 1000 & 179.6050 \\
+  \hline
+  2011-08-01 03:02:54.343493 & 1000 & 179.6700 \\
+\end{tabular}
+\end{table}
+
+\item Cross-sectional view: the bid-ask spread
+  \begin{table}
+  \begin{tabular}{c|c}
+    Volume & Price \\
+    \hline \hline
+    101 & 179.6400 \\
+    203 & 179.6200 \\
+    \hline
+    305 & 179.6100 \\
+    500 & 179.6000 \\
+  \end{tabular}
+  \end{table}
 \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Two data types: Open, Close, High, Low}
+
+\begin{figure}
+  \includegraphics[width=1\textwidth]{/home/gdinolov/PDE-solvers/src/kernel-expansion/documentation/presentation/OCHL.png}
+\end{figure}
+
 \end{frame}
 
 %------------------------------------------------
@@ -238,8 +276,8 @@ University of California, Santa Cruz \\ % Your institution for the title page
     models to high-frequency data and estimate price volatility
     \citep{bollerslev1986,andersen1997intraday}
     \begin{align*}
-      y_{t+\Delta t} &= F_{t} \theta_t + C_t \mathbf{W}_{t,1} \\
-      \theta_{t+\Delta t} &= G_{t} \theta_t + V_t \mathbf{W}_{t,1}. \\
+      y_{t+\Delta t} &= F_{t} \theta_t + C_t W_{t,1} \\
+      \theta_{t+\Delta t} &= G_{t} \theta_t + V_t W_{t,1}. \\
     \end{align*}
 
   \item As formulated, such types of models are are not
@@ -250,7 +288,7 @@ University of California, Santa Cruz \\ % Your institution for the title page
   \item Inference over shrinking sampling interval $\Delta t$ leads to
     \textbf{incoherence}.
 
-  \item Most recent work has forcused on the \textbf{realized variance} estimator:
+  \item Most recent work has forcused on the \textbf{realized variance} \cite{comte1998long} estimator:
     \[
       RV_T := \sum_{i=1}^{N/\Delta t} r_{t_i}^2,
     \]
@@ -269,9 +307,9 @@ University of California, Santa Cruz \\ % Your institution for the title page
   \item Corrections for the presence of microstructure noise have been
     proposed in the form of:
     \begin{itemize}
-    \item sampling sparser grids and averaging,
-    \item combining estimators based on subsampled data at different frequencies,
-    \item kernel-based estimation.
+    \item sampling sparser grids and averaging \cite{zhang2005tale},
+    \item combining estimators based on subsampled data at different frequencies \cite{ait2011ultra},
+    \item kernel-based estimation \cite{hansen2006realized, barndorff2008designing}.
     \end{itemize}
   \item Disadvantages: averages out information; no inherent
     model-based projection forward in time.
@@ -357,7 +395,7 @@ University of California, Santa Cruz \\ % Your institution for the title page
   
   \begin{enumerate}
   \item define the first two moments of each continuous-time parameter,
-  \item define the prior for each continuous-time parameter,
+  % \item define the prior for each continuous-time parameter,
   \item use the Delta Method to calculate the first two moments of each discrete-time parameter,
   \item define the prior for each discrete-time parameter.
   \end{enumerate}
@@ -429,23 +467,23 @@ University of California, Santa Cruz \\ % Your institution for the title page
       $\int \hat{\sigma}^2_t dt$:
   \end{itemize}
   \begin{table}[h]
-\begin{center}
-  \begin{tabular}{|l|ccccc|}
-    \hline
-    & \multicolumn{4}{c|}{Sampling period} \\
-    &   	60 sec 	&   30 sec   &   15 sec & 5 sec  \\ \hline \hline
-    Inference with $\xi^2 = 0$   &  72  &   28  &	 3 & 0 \\
-    Inference with $\xi^2$ fixed at prior mean &  79 & 57 & 23 & 0 \\
-    Inference with $\xi^2$ estimated & \textcolor{red}{91} & \textcolor{red}{92} & \textcolor{red}{96} & \textcolor{red}{97}  \\ \hline
-    Inference with kernel-based estimator &  51 & 48 & 59  & 76 \\
-    \hline
-\end{tabular}
-\end{center}
-\end{table}
+    \begin{center}
+      \begin{tabular}{l|ccccc}
+        \hline
+        & \multicolumn{4}{c}{Sampling period} \\
+        &   	60 sec 	&   30 sec   &   15 sec & 5 sec  \\ \hline \hline
+        Inference with $\xi^2 = 0$   &  72  &   28  &	 3 & 0 \\
+        Inference with $\xi^2$ fixed at prior mean &  79 & 57 & 23 & 0 \\
+        Inference with $\xi^2$ estimated & \textcolor{red}{91} & \textcolor{red}{92} & \textcolor{red}{96} & \textcolor{red}{97}  \\ \hline
+        Inference with kernel-based estimator &  51 & 48 & 59  & 76 \\
+        \hline
+      \end{tabular}
+    \end{center}
+  \end{table}
 \end{frame}
 % ------------------------------------------------
 \begin{frame}
-  \frametitle{Parameter results for real data example}
+  \frametitle{Results for real data example}
 
   \centering
   \begin{tabular}{m{0.25cm}ccc}
@@ -510,88 +548,93 @@ University of California, Santa Cruz \\ % Your institution for the title page
   \end{tabular}
   Log-volatility paths for the AAPL 03/06/2014 data.
 \end{frame}
-% ------------------------------------------------
-\begin{frame}
-  \frametitle{Parameter results for real data example}
+% % ------------------------------------------------
+% \begin{frame}
+%   \frametitle{Parameter results for real data example}
 
-  \centering
-  \begin{tabular}{m{0.25cm}ccc}
-    & Inference with & Inference with & Inference with \\
-    & $\xi^2 = 0$ & $\xi^2\,\, \mbox{fixed at prior mean} $ & $\xi^2 \mbox{ estimated }$ \\
-    % 
-    \begin{sideways} $\Delta = 5$ min \end{sideways}
-    & \begin{minipage}{0.25\textwidth}
-      \centering
-      \includegraphics[width=1\linewidth]{/home/gdinolov/PDE-solvers/src/SV-with-leverage/paper-revisions-7-11-2016/results-real-data-plots-VOL-PATHS-microstructure-VOL-PATHS-XI-0-dt-3e05-SDs-0.png}
-    \end{minipage}
-                     & \begin{minipage}{0.25\textwidth}
-                       \centering
-                       \includegraphics[width=1\linewidth]{{/home/gdinolov/PDE-solvers/src/SV-with-leverage/paper-revisions-7-11-2016/results-real-data-plots-VOL-PATHS-microstructure-VOL-PATHS-XI-2.5e-07-dt-3e05-SDs-0}.png}
-                     \end{minipage}
-                                      & \begin{minipage}{0.25\textwidth}
-                                        \centering
-                                        \includegraphics[width=1\linewidth]{/home/gdinolov/PDE-solvers/src/SV-with-leverage/paper-revisions-7-11-2016/results-real-data-plots-VOL-PATHS-microstructure-VOL-PATHS-XI-Inf-dt-3e05-SDs-0.png}
-                                      \end{minipage}  \\
-                                      % 
-    % \begin{sideways} $\Delta = 15$ sec \end{sideways}
-    % & \begin{minipage}{0.25\textwidth}
-    %   \centering
-    %   \includegraphics[width=1\linewidth]{/home/gdinolov/PDE-solvers/src/SV-with-leverage/paper-revisions-7-11-2016/results-real-data-plots-VOL-PATHS-microstructure-VOL-PATHS-XI-0-dt-15000-SDs-0.png}
-    % \end{minipage}
-    %                  & \begin{minipage}{0.25\textwidth}
-    %                    \centering
-    %                    \includegraphics[width=1\linewidth]{{/home/gdinolov/PDE-solvers/src/SV-with-leverage/paper-revisions-7-11-2016/results-real-data-plots-VOL-PATHS-microstructure-VOL-PATHS-XI-2.5e-07-dt-15000-SDs-0}.png}
-    %                  \end{minipage}
-    %                                   & \begin{minipage}{0.25\textwidth}
-    %                                     \centering
-    %                                     \includegraphics[width=1\linewidth]{/home/gdinolov/PDE-solvers/src/SV-with-leverage/paper-revisions-7-11-2016/results-real-data-plots-VOL-PATHS-microstructure-VOL-PATHS-XI-Inf-dt-15000-SDs-0.png}
-    %                                   \end{minipage}  \\
-                                      % 
-    \begin{sideways} $\Delta = 5$ sec \end{sideways}
-    & \begin{minipage}{0.25\textwidth}
-      \centering
-      \includegraphics[width=1\linewidth]{/home/gdinolov/PDE-solvers/src/SV-with-leverage/paper-revisions-7-11-2016/results-real-data-plots-VOL-PATHS-microstructure-VOL-PATHS-XI-0-dt-5000-SDs-0.png}
-    \end{minipage}
-                     & \begin{minipage}{0.25\textwidth}
-                       \centering
-                       \includegraphics[width=1\linewidth]{{/home/gdinolov/PDE-solvers/src/SV-with-leverage/paper-revisions-7-11-2016/results-real-data-plots-VOL-PATHS-microstructure-VOL-PATHS-XI-2.5e-07-dt-5000-SDs-0}.png}
-                     \end{minipage}
-                                      & \begin{minipage}{0.25\textwidth}
-                                        \centering
-                                        \includegraphics[width=1\linewidth]{/home/gdinolov/PDE-solvers/src/SV-with-leverage/paper-revisions-7-11-2016/results-real-data-plots-VOL-PATHS-microstructure-VOL-PATHS-XI-Inf-dt-5000-SDs-0.png}
-                                      \end{minipage}  \\
-                                      %% 
-                                      % \begin{sideways} $\Delta = 1$ sec \end{sideways}
-                                      % & \begin{minipage}{0.25\textwidth}
-                                      %   \centering
-                                      %   \includegraphics[width=1\linewidth]{results/real-data/plots/VOL-PATHS/microstructure-VOL-PATHS-XI-0-dt-1000-SDs-0.png}
-                                      % \end{minipage}
-                                      % & \begin{minipage}{0.25\textwidth}
-                                      %   \centering
-                                      %   \includegraphics[width=1\linewidth]{results/real-data/plots/VOL-PATHS/microstructure-VOL-PATHS-XI-1e-06-dt-1000-SDs-0.png}
-                                      % \end{minipage}
-                                      % & \begin{minipage}{0.25\textwidth}
-                                      %   \centering
-                                      %   \includegraphics[width=1\linewidth]{results/real-data/plots/VOL-PATHS/microstructure-VOL-PATHS-XI-Inf-dt-1000-SDs-0.png}
-                                      % \end{minipage}
-  \end{tabular}
-  Log-volatility paths for the AAPL 03/06/2014 data.
-\end{frame}
-%------------------------------------------------
-\section{Open, Close, High, Low Prices}
+%   \centering
+%   \begin{tabular}{m{0.25cm}ccc}
+%     & Inference with & Inference with & Inference with \\
+%     & $\xi^2 = 0$ & $\xi^2\,\, \mbox{fixed at prior mean} $ & $\xi^2 \mbox{ estimated }$ \\
+%     % 
+%     \begin{sideways} $\Delta = 5$ min \end{sideways}
+%     & \begin{minipage}{0.25\textwidth}
+%       \centering
+%       \includegraphics[width=1\linewidth]{/home/gdinolov/PDE-solvers/src/SV-with-leverage/paper-revisions-7-11-2016/results-real-data-plots-VOL-PATHS-microstructure-VOL-PATHS-XI-0-dt-3e05-SDs-0.png}
+%     \end{minipage}
+%                      & \begin{minipage}{0.25\textwidth}
+%                        \centering
+%                        \includegraphics[width=1\linewidth]{{/home/gdinolov/PDE-solvers/src/SV-with-leverage/paper-revisions-7-11-2016/results-real-data-plots-VOL-PATHS-microstructure-VOL-PATHS-XI-2.5e-07-dt-3e05-SDs-0}.png}
+%                      \end{minipage}
+%                                       & \begin{minipage}{0.25\textwidth}
+%                                         \centering
+%                                         \includegraphics[width=1\linewidth]{/home/gdinolov/PDE-solvers/src/SV-with-leverage/paper-revisions-7-11-2016/results-real-data-plots-VOL-PATHS-microstructure-VOL-PATHS-XI-Inf-dt-3e05-SDs-0.png}
+%                                       \end{minipage}  \\
+%                                       % 
+%     % \begin{sideways} $\Delta = 15$ sec \end{sideways}
+%     % & \begin{minipage}{0.25\textwidth}
+%     %   \centering
+%     %   \includegraphics[width=1\linewidth]{/home/gdinolov/PDE-solvers/src/SV-with-leverage/paper-revisions-7-11-2016/results-real-data-plots-VOL-PATHS-microstructure-VOL-PATHS-XI-0-dt-15000-SDs-0.png}
+%     % \end{minipage}
+%     %                  & \begin{minipage}{0.25\textwidth}
+%     %                    \centering
+%     %                    \includegraphics[width=1\linewidth]{{/home/gdinolov/PDE-solvers/src/SV-with-leverage/paper-revisions-7-11-2016/results-real-data-plots-VOL-PATHS-microstructure-VOL-PATHS-XI-2.5e-07-dt-15000-SDs-0}.png}
+%     %                  \end{minipage}
+%     %                                   & \begin{minipage}{0.25\textwidth}
+%     %                                     \centering
+%     %                                     \includegraphics[width=1\linewidth]{/home/gdinolov/PDE-solvers/src/SV-with-leverage/paper-revisions-7-11-2016/results-real-data-plots-VOL-PATHS-microstructure-VOL-PATHS-XI-Inf-dt-15000-SDs-0.png}
+%     %                                   \end{minipage}  \\
+%                                       % 
+%     \begin{sideways} $\Delta = 5$ sec \end{sideways}
+%     & \begin{minipage}{0.25\textwidth}
+%       \centering
+%       \includegraphics[width=1\linewidth]{/home/gdinolov/PDE-solvers/src/SV-with-leverage/paper-revisions-7-11-2016/results-real-data-plots-VOL-PATHS-microstructure-VOL-PATHS-XI-0-dt-5000-SDs-0.png}
+%     \end{minipage}
+%                      & \begin{minipage}{0.25\textwidth}
+%                        \centering
+%                        \includegraphics[width=1\linewidth]{{/home/gdinolov/PDE-solvers/src/SV-with-leverage/paper-revisions-7-11-2016/results-real-data-plots-VOL-PATHS-microstructure-VOL-PATHS-XI-2.5e-07-dt-5000-SDs-0}.png}
+%                      \end{minipage}
+%                                       & \begin{minipage}{0.25\textwidth}
+%                                         \centering
+%                                         \includegraphics[width=1\linewidth]{/home/gdinolov/PDE-solvers/src/SV-with-leverage/paper-revisions-7-11-2016/results-real-data-plots-VOL-PATHS-microstructure-VOL-PATHS-XI-Inf-dt-5000-SDs-0.png}
+%                                       \end{minipage}  \\
+%                                       %% 
+%                                       % \begin{sideways} $\Delta = 1$ sec \end{sideways}
+%                                       % & \begin{minipage}{0.25\textwidth}
+%                                       %   \centering
+%                                       %   \includegraphics[width=1\linewidth]{results/real-data/plots/VOL-PATHS/microstructure-VOL-PATHS-XI-0-dt-1000-SDs-0.png}
+%                                       % \end{minipage}
+%                                       % & \begin{minipage}{0.25\textwidth}
+%                                       %   \centering
+%                                       %   \includegraphics[width=1\linewidth]{results/real-data/plots/VOL-PATHS/microstructure-VOL-PATHS-XI-1e-06-dt-1000-SDs-0.png}
+%                                       % \end{minipage}
+%                                       % & \begin{minipage}{0.25\textwidth}
+%                                       %   \centering
+%                                       %   \includegraphics[width=1\linewidth]{results/real-data/plots/VOL-PATHS/microstructure-VOL-PATHS-XI-Inf-dt-1000-SDs-0.png}
+%                                       % \end{minipage}
+%   \end{tabular}
+%   Log-volatility paths for the AAPL 03/06/2014 data.
+% \end{frame}
+% %----------------------------------------------
+\section{Bivariate Open, Close, High, Low Prices}
 %------------------------------------------------
 \begin{frame}
   \frametitle{Open, Close, High, Low Prices}
-  Previous work, absence of bivariate solution
+  \begin{itemize}
+  \item Some work has been done in the univariate case
+  \item No equivalent results in the bivariate setting
+  \item There exists only a single estimator in the literature which
+    used bivarate OCHL to estimate asset correlation.
+  \end{itemize}
 \end{frame}
 % ------------------------------------------------
 \begin{frame}
   \frametitle{Model formulation}
   We consider a two-dimensional correlated Brownian motion:
-\begin{align}
-  X(t) &= x_0 + \mu_x t + \sigma_x W_x(t)  \label{eq:X} \\
-  Y(t) &= y_0 + \mu_y t + \sigma_y W_y(t)  \label{eq:Y}
-\end{align}
+\begin{align*}
+  X(t) &= x_0 + \mu_x t + \sigma_x W_x(t)  \\
+  Y(t) &= y_0 + \mu_y t + \sigma_y W_y(t) 
+\end{align*}
 where $W_x(t)$ and $W_y(t)$ are correlated standard Brownian motions
 with $\mbox{Cov}(W_x(t), W_x(t)) = \rho t$.
 
@@ -691,7 +734,7 @@ $M_Y(t)=\max_{0\leq s\leq t}Y(s),$ $m_Y(t)=\min_{0\leq s\leq t}Y(s)$.
 \end{frame}
 % ------------------------------------------------
 \begin{frame}
-  \frametitle{Approach 1: Finite Difference}
+  \frametitle{Approach 1: Finite Difference approximation to FP equation}
   Letting $k := 1/h$ and $b$ denote the boundary parameters, 
 \begin{itemize}
   \item FD approximation is fast but also limited by irregular truncation errors
@@ -709,27 +752,45 @@ $M_Y(t)=\max_{0\leq s\leq t}Y(s),$ $m_Y(t)=\min_{0\leq s\leq t}Y(s)$.
 \end{frame}
 % ------------------------------------------------
 \begin{frame}
-  \frametitle{Approach 2: Trigonometric expansion}
+  \frametitle{Approach 2: Trigonometric expansion of the differential operator}
+
   \begin{align*}
-    q(\tilde{x},\tilde{y},\tilde{t}) &\approx  \sum_\nu h_\nu \phi_\nu (\tilde{x}, \tilde{y}) e^{-\lambda_\nu \tilde{t}}, \\
-    \phi_\nu(\tilde{x},\tilde{y}) &= \sum_{l=1}^L \sum_{m=1}^M c_{l,m, \nu}
-                                    \sin\left(2\pi\, l\, \tilde{x} \right) \sin\left(2\pi\, m\, \tilde{y} \right) := \Psi(\tilde{x},\tilde{y})^T c_\nu, \\
-    \mathcal{L}\phi_\nu &= \mathcal{L}(\Psi(\tilde{x},\tilde{y})^T c_\nu) =
-  \mathcal{L}(\Psi(\tilde{x},\tilde{y})^T) c_\nu = (A \Psi(\tilde{x},\tilde{y}))^T c_\nu = -\lambda_\nu \phi_\nu
+    q(\tilde{x},\tilde{y},\tilde{t}) &\approx  \sum_\nu h_\nu \phi_\nu (\tilde{x}, \tilde{y}) e^{-\lambda_\nu \tilde{t}}.
   \end{align*}
+  
   \begin{itemize}
   \item When $\rho = 0$,
+    \begin{align*}
+      q(\tilde{x},\tilde{y},\tilde{t}) &\approx \sum_{l=1}^L \sum_{m=1}^M c_{l,m}
+                                         \sin\left(2\pi\, l\, \tilde{x} \right) \sin\left(2\pi\, m\, \tilde{y} \right)
+    \end{align*}
+
     \begin{itemize}
-    \item the system matrix $A$ is diagonal,
-    \item no new error is introduced in the time evolution,
+    \item the system matrix is diagonal
+    \item no new error is introduced in the time evolution
     \item truncated solution converges fast
     \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Approach 2: Trigonometric expansion of the differential operator}
+  \begin{itemize}
+    
   \item When $\rho \neq 0$, mixing term in the FP equation produces
-    $\cos(2\pi l \tilde{x})\cos(2\pi k \tilde{y})$ terms such that
+    $\cos(2\pi l \tilde{x})\cos(2\pi k \tilde{y})$ terms in the above
+    expansion such that
+    
+    \begin{align*}
+      \phi_\nu(\tilde{x},\tilde{y}) &= \sum_{l=1}^L \sum_{m=1}^M c_{l,m, \nu}
+                                      \sin\left(2\pi\, l\, \tilde{x} \right) \sin\left(2\pi\, m\, \tilde{y} \right) := \Psi(\tilde{x},\tilde{y})^T c_\nu,
+    \end{align*}
+    
     \begin{itemize}
-    \item $A$ is dense and convergence is slow,
+    \item system matrix is dense and convergence is slow,
     \item new error is introduced in the time evolution
     \end{itemize}
+    
   \end{itemize}
 \end{frame}
 % ------------------------------------------------
@@ -828,32 +889,38 @@ $M_Y(t)=\max_{0\leq s\leq t}Y(s),$ $m_Y(t)=\min_{0\leq s\leq t}Y(s)$.
   \begin{itemize}
   \item A semi-analytic soluiont for a small time $\tilde{t}_\epsilon$ allows us to project a smooth function onto our basis family instead of a $\delta$-function
   \item This reduces the numerical error of the Galerkin solver
-
     \begin{figure}
-  \centering
-  %%
-  %%
-  \begin{tabular}{cc}
-    \begin{minipage}{0.3\textwidth}
       \centering
-      \includegraphics[width=1\linewidth]{../small-time-solution.png}
-    \end{minipage}
-    %%
-    & \begin{minipage}{0.3\textwidth}
-      \centering
-      \includegraphics[width=1\linewidth]{../small-time-solution-contour.png}
-    \end{minipage}
-  \end{tabular}
-  %%
-  %%
-\end{figure}
-\item \textbf{Left:} Computational domain small-time solution under
-  transformation where diffusion parameters are both unity and
-  correlation is zero.
+      %% 
+      %% 
+      \begin{tabular}{cc}
+        \begin{minipage}{0.3\textwidth}
+          \centering
+          \includegraphics[width=1\linewidth]{../small-time-solution.png}
+        \end{minipage}
+        %% 
+        & \begin{minipage}{0.3\textwidth}
+          \centering
+          \includegraphics[width=1\linewidth]{../small-time-solution-contour.png}
+        \end{minipage}
+      \end{tabular}
+      %% 
+      %% 
+    \end{figure}
+  \item \textbf{Left:} Computational domain under the transformation
+    where diffusion parameters are both unity and correlation is zero.
   \item \textbf{Right:} Contour of small-time solution in original coordinate system.
-\end{itemize}
-
-
+  \end{itemize}
+\end{frame}
+% ------------------------------------------------
+\begin{frame}
+  \centering
+  \includegraphics[scale=0.40]{../small-time-solution.png}
+\end{frame}
+% ------------------------------------------------
+\begin{frame}
+  \centering
+  \includegraphics[scale=0.55]{../small-time-solution-contour.png}
 \end{frame}
 % ------------------------------------------------
 \begin{frame}
@@ -868,9 +935,8 @@ $M_Y(t)=\max_{0\leq s\leq t}Y(s),$ $m_Y(t)=\min_{0\leq s\leq t}Y(s)$.
   \begin{lemma}[1]\label{lem:1}
   \begin{multline*}
     \lim_{k\to \infty} \displaystyle \int_{a_x}^{b_x} \displaystyle
-    \int_{a_y}^{b_y} f^{(k)}(x,y,a_x,b_x,a_y,b_y)\, dx\,dy = \\
-    \displaystyle \int_{a_x}^{b_x} \displaystyle \int_{a_y}^{b_y}
-    f(x,y,a_x,b_x,a_y,b_y)\, dx\,dy
+    \int_{a_y}^{b_y} \left( f^{(k)}(x,y,a_x,b_x,a_y,b_y) - f(x,y,a_x,b_x,a_y,b_y) \right)^2\, dx\,dy \\
+    = 0
   \end{multline*}
 \end{lemma}
 \end{frame}
@@ -932,7 +998,7 @@ The behavior of Galerkin solution is valid only up to a some small time $\tilde{
     & \multicolumn{3}{c}{$\rho=0.0$}\\
     & $m=4$ & $m=8$ & $m=16$ \\
     \hline
-    $\hat{\sigma}_x$ & .137 & 0.243 & 0.167 \\
+    $\hat{\sigma}_x$ & 0.137 & 0.243 & 0.167 \\
     \hline
     $\hat{\sigma}_y$ &  0.189 & 0.171 & 0.107 \\
     \hline
@@ -943,51 +1009,61 @@ The behavior of Galerkin solution is valid only up to a some small time $\tilde{
 \end{frame}
 % ------------------------------------------------
 \begin{frame}
-  \frametitle{Need for resolving the transient region}
-
-  \begin{figure}
-  \centering
-  %%
-  %%
-  \begin{tabular}{ccc}
+  \frametitle{Simulation study}
+%   \begin{figure}
+%   \centering
+%   %%
+%   %%
+%   \begin{tabular}{ccc}
     
-    \begin{minipage}{0.3\textwidth}
-      \centering
-      \includegraphics[width=1\linewidth]{../chapter-2/results/mle-results-rho-0.95-n-16/estimates-rho.pdf}
-    \end{minipage}
-    & \begin{minipage}{0.3\textwidth}
-      \centering
-      \includegraphics[width=1\linewidth]{../chapter-2/results/mle-results-rho-0.95-n-16/estimates-sigma-x.pdf}
-    \end{minipage}
-    & \begin{minipage}{0.3\textwidth}
-      \centering
-      \includegraphics[width=1\linewidth]{../chapter-2/results/mle-results-rho-0.95-n-16/estimates-sigma-y.pdf}
-    \end{minipage}
-  \end{tabular}
-
-\end{figure}
+%     \begin{minipage}{0.3\textwidth}
+%       \centering
+%       \includegraphics[width=1\linewidth]{../chapter-2/results/mle-results-rho-0.95-n-16/estimates-rho.pdf}
+%     \end{minipage}
+%     & \begin{minipage}{0.3\textwidth}
+%       \centering
+%       \includegraphics[width=1\linewidth]{../chapter-2/results/mle-results-rho-0.95-n-16/estimates-sigma-x.pdf}
+%     \end{minipage}
+%     & \begin{minipage}{0.3\textwidth}
+%       \centering
+%       \includegraphics[width=1\linewidth]{../chapter-2/results/mle-results-rho-0.95-n-16/estimates-sigma-y.pdf}
+%     \end{minipage}
+%   \end{tabular}
+% \end{figure}
+  
 \begin{itemize}
-\item Data generated with $\rho=0.95$. Kernel-density approximations
+\item For data generated with $\rho=0.95$, kernel-density approximations
   of the repeated-sampling densities of the MLEs are shown.  Samples
   are obtained from the Galerkin likelihood (green) and the classical
   Gaussian likelihood (red) The data-generating parameters are denoted
   with the vertical solid line.
 
-\item The Rogers estimator (blue) is the only existing correlatino estimator for
+\item The Rogers estimator (blue) is the only existing correlation estimator for
   bivariate OCHL data.
   \end{itemize}
 \end{frame}
-
-
+%------------------------------------------------
+\begin{frame}
+  \centering
+  \includegraphics[scale=0.5]{../chapter-2/results/mle-results-rho-0.95-n-16/estimates-rho.pdf}
+\end{frame}
+\begin{frame}
+  \centering
+  \includegraphics[scale=0.5]{../chapter-2/results/mle-results-rho-0.95-n-16/estimates-sigma-x.pdf}
+\end{frame}
+\begin{frame}
+  \centering
+  \includegraphics[scale=0.5]{../chapter-2/results/mle-results-rho-0.95-n-16/estimates-sigma-y.pdf}
+\end{frame}
 %------------------------------------------------
 %------------------------------------------------
 \section{Open, Close, High, Low Prices: Small Time Solution}
 % ------------------------------------------------
 \begin{frame}
-Open, Close, High, Low Prices: Small Time Solution and Matching
+Open, Close, High, Low Prices: Small Time Solution and Gap-Fill Solution
 \end{frame}
 \begin{frame}
-  \frametitle{Counterexample: method of images and analytic differentiability}
+  \frametitle{Method of images and analytic differentiability}
   \centering
   \includegraphics[scale=0.45]{../chapter-3/figures/chapter-3-figure-illustration-1.pdf}
 \end{frame}
@@ -1033,7 +1109,7 @@ with respecto to all four boundaries:
   \MoveEqLeft[15] \left. \qquad\qquad\qquad +\partial^2_{b_x\, a_y} \partial_{a_x} \partial_{b_y} + \partial^2_{b_x\, b_y} \partial_{a_x} \partial_{a_y} \partial^2_{a_y\, b_y} \partial_{a_x} \partial_{b_x} \right) \mathcal{P} &  \nonumber \\
   \MoveEqLeft[15] \,\, + G \cdot \mathcal{C}^2 \cdot \left( \partial^3_{a_x\,b_x\,a_y} \partial_{b_y} + \partial^2_{a_x\,b_x}\partial^2_{a_y\,b_y} + \partial^3_{a_x\,b_x\,b_y}\partial_{a_y}  + \right.& \nonumber \\
   \MoveEqLeft[15] \left. \qquad\qquad\qquad + \partial^3_{a_x\,a_y\,b_y} \partial_{b_x} + \partial^2_{a_x\,a_y} \partial^2_{b_y\,b_x} + \partial^3_{b_x\,a_y\,b_y}\partial_{a_x} + \partial^2_{b_x\,a_y}\partial_{a_x}\partial_{b_y} \right) \mathcal{P} & \nonumber \\
-  \MoveEqLeft[15] \,\, + G \cdot \mathcal{C} \cdot \partial^4_{a_x\,b_x\,a_y\,b_y} P,& \label{eq:fourth-deriv}
+  \MoveEqLeft[15] \,\, + G \cdot \mathcal{C} \cdot \partial^4_{a_x\,b_x\,a_y\,b_y} \mathcal{P}& \label{eq:fourth-deriv}
 \end{align*}
 \end{frame}
 % ------------------------------------------------
@@ -1056,9 +1132,7 @@ with respecto to all four boundaries:
 \end{align*}
 \end{frame}
 % ------------------------------------------------
-\begin{frame}
-  \frametitle{Illustration of proof for existence}
-\end{frame}
+
 % ------------------------------------------------
 \begin{frame}
   \frametitle{Basis Expansion of Galerkin likelihood: RHS}
@@ -1078,7 +1152,8 @@ $(\tilde{x}, \tilde{y})$
 \begin{itemize}
 \item This suggests a leading-order approximation that is fitted with the Galerking solver via least squares:
   \begin{align*}
-    f_{LS}(\tilde{t}) &= \tilde{t}^4 \left( \omega_1 e^{-\lambda_1\tilde{t}} + \omega_2 e^{-\lambda_2\tilde{t}}\right).
+     f_{LS}(\tilde{t}) &= \tilde{t}^4 \left( \omega_1 e^{-\lambda_1\tilde{t}} + \omega_2 e^{-\lambda_2\tilde{t}}\right), \\
+    \Rightarrow \log f_{LS}(\tilde{t}) &= \log(\omega_1) + 4 \log(\tilde{t}) -\lambda_1\tilde{t} + \log\left(1 + \omega_2/\omega_1 e^{-(\lambda_2-\lambda_1)\tilde{t}} \right)
   \end{align*}
 \end{itemize}
 \end{frame}
@@ -1102,7 +1177,7 @@ $(\tilde{x}, \tilde{y})$
   \begin{itemize}
 \item The proposed matched solution is of the form
   \[
-    \log f_{\mbox{matched}}(\tilde{t}) = \log(\omega(\tilde{t})) -
+    \log f_{\mbox{gap}}(\tilde{t}) = \log(\omega(\tilde{t})) -
     \gamma(\tilde{t})\log(\tilde{t}) -
     \frac{\beta(\tilde{t})}{\tilde{t}}
   \]
@@ -1110,25 +1185,37 @@ $(\tilde{x}, \tilde{y})$
 \end{frame}
 % ------------------------------------------------
 \begin{frame}
-At $\tilde{t}^*$, the
-left-hand side of the matching condition, the values for these
-parameters are defined such that they match the small-time solution
-\begin{align*}
-  \omega(\tilde{t}^*) &= K, & \gamma(\tilde{t}^*) &= 4.5, & \beta(\tilde{t}^*) &= \beta_1.
-\end{align*}
-At $\tilde{t}_m$, the right-hand side of the matching condition and
-the maximum of the LS solution,
-$\omega(\tilde{t}), \gamma(\tilde{t}),$ and $\beta(\tilde{t})$ are
-chosen to match the value, first, and second derivatives of the
-logarithmic form of the LS solution. The form of the parameters
-between $\tilde{t}^*$ and $\tilde{t}_m$ is chosen to be a sigmoid
-function which rapidly transitions away from $\tilde{t}^*$ and is the
-same for all three parameters:
-\begin{align*}
-    \omega(\tilde{t}) &= \omega(\tilde{t}^*)e^{-k(\tilde{t}-\tilde{t}^*)} + \omega(\tilde{t}_m)\left(1-e^{-k(\tilde{t}-\tilde{t}^*)}\right), \\
-    \gamma(\tilde{t}) &= \gamma(\tilde{t}^*)e^{-k(\tilde{t}-\tilde{t}^*)} + \gamma(\tilde{t}_m)\left(1-e^{-k(\tilde{t}-\tilde{t}^*)}\right), \\
-    \beta(\tilde{t}) &= \beta(\tilde{t}^*)e^{-k(\tilde{t}-\tilde{t}^*)} + \beta(\tilde{t}_m)\left(1-e^{-k(\tilde{t}-\tilde{t}^*)}\right).
-\end{align*}
+  \begin{align*}
+    \log f_{LS}(\tilde{t}) &= \log(\omega_1) + 4 \log(\tilde{t}) -\lambda_1\tilde{t} + \log\left(1 + \omega_2/\omega_1 e^{-(\lambda_2-\lambda_1)\tilde{t}} \right) \\
+    \log f_{\mbox{gap}}(\tilde{t}) &= \log(\omega(\tilde{t})) -
+                                         \gamma(\tilde{t})\log(\tilde{t}) -
+                                         \frac{\beta(\tilde{t})}{\tilde{t}}
+  \end{align*}
+
+  \begin{itemize}
+  \item At $\tilde{t}^*$, the
+    left-hand side of the matching condition, the values for these
+    parameters are defined such that they match the small-time solution
+    \begin{align*}
+      \omega(\tilde{t}^*) &= K, & \gamma(\tilde{t}^*) &= 4.5, & \beta(\tilde{t}^*) &= \beta_1.
+    \end{align*}
+  \item At $\tilde{t}_m$, the right-hand side of the matching condition and
+    the maximum of the LS solution,
+    $\omega(\tilde{t}), \gamma(\tilde{t}),$ and $\beta(\tilde{t})$ are
+    chosen to match the value, first, and second derivatives of the
+    logarithmic form of the LS solution. The form of the parameters
+    between $\tilde{t}^*$ and $\tilde{t}_m$ is chosen to be a sigmoid
+    function which rapidly transitions away from $\tilde{t}^*$ and is the
+    same for all three parameters.
+  \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+    \begin{align*}
+      \omega(\tilde{t}) &= \omega(\tilde{t}^*)e^{-k(\tilde{t}-\tilde{t}^*)} + \omega(\tilde{t}_m)\left(1-e^{-k(\tilde{t}-\tilde{t}^*)}\right), \\
+      \gamma(\tilde{t}) &= \gamma(\tilde{t}^*)e^{-k(\tilde{t}-\tilde{t}^*)} + \gamma(\tilde{t}_m)\left(1-e^{-k(\tilde{t}-\tilde{t}^*)}\right), \\
+      \beta(\tilde{t}) &= \beta(\tilde{t}^*)e^{-k(\tilde{t}-\tilde{t}^*)} + \beta(\tilde{t}_m)\left(1-e^{-k(\tilde{t}-\tilde{t}^*)}\right).
+    \end{align*}
 \end{frame}
 % ------------------------------------------------
 \begin{frame}
@@ -1158,10 +1245,37 @@ same for all three parameters:
 \includegraphics[scale=0.5]{../chapter-3/results/mle-results-rho-0.95-n-16/estimates-sigma-x.pdf}
 \end{frame}
 
+
+\section{Future Work}
 \begin{frame}
-  \frametitle{Future work}
+  \begin{itemize}
+  \item Multivariate High-Frequency models
+  \item Gaussian Process Emulator for interpolating the OCHL likelihood
+  \item Particle Filter
+  \end{itemize}
 \end{frame}
 
-\end{document} 
+\begin{frame}
+  \frametitle{Illustration of proof for existence}
+    \begin{tabular}{cc}
+    \begin{minipage}{0.5\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-3/chapter-3-figure-proof-1.pdf}
+    \end{minipage}
+    %%
+    & \begin{minipage}{0.5\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{../chapter-3/chapter-3-figure-proof-2.pdf}
+    \end{minipage}
+  \end{tabular}
+\end{frame}
 
+
+\begin{frame}[allowframebreaks]
+  \frametitle{References}
+  \bibliographystyle{plain}
+  \bibliography{../master-bibliography}
+  \end{frame}
+
+\end{document}
 
