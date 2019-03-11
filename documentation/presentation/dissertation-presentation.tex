@@ -179,7 +179,15 @@ University of California, Santa Cruz \\ % Your institution for the title page
 
 \begin{frame}
 \frametitle{Overview} % Table of contents slide, comment this block out to remove it
-\tableofcontents % Throughout your presentation, if you choose to use \section{} and \subsection{} commands, these will automatically be printed on this slide as an overview of your presentation
+\begin{enumerate}
+\item Introduction
+\item High-Frequency Prices and Inference
+\item Open, Close, High, Low Prices
+  \begin{itemize}
+  \item Galerkin soluiton
+  \item Small-time Analytic Solution and Gap-Fill Approximation
+  \end{itemize}
+\end{enumerate}
 \end{frame}
 
 %----------------------------------------------------------------------------------------
@@ -206,16 +214,17 @@ University of California, Santa Cruz \\ % Your institution for the title page
   \frametitle{High-frequency returns and difficulties}
   \begin{itemize}
   \item As sampling frequency approaches transaction-by-transaction
-    frequency, \textbf{irregular spacing} between transactions, \textbf{discreteness} in
-    transaction prices (such as the bid-ask spread), and very short term \textbf{temporal dependence} become
-    dominant features of the data \citep{stoll2000presidential}.
+    frequency, \textbf{irregular spacing} between transactions and 
+    \textbf{discreteness} in transaction prices (such as the bid-ask
+    spread) become dominant features of the data
+    \citep{stoll2000presidential}.
 
   \item These confounding effects in estimating volatility are
-    generally termed \textbf{microstructure noise}.
+    generally termed \textbf{microstructure noise}, which is
 
     \begin{itemize}
-    \item independent of sampling interval,
-    \item dominant over short time ($<5$ minutes),
+    \item independent of sampling interval
+    \item dominant over short time ($<5$ minutes)
     \item not cumulative (prices at later times are not affected)
     \end{itemize}
 
@@ -225,15 +234,20 @@ University of California, Santa Cruz \\ % Your institution for the title page
 \begin{frame}
   \frametitle{Past work and model-bashed incoherence}
   \begin{itemize}
-  \item Attempts have been made to fit the GARCH model to
-    high-frequency data \citep{bollerslev1986,andersen1997intraday}.
+  \item Attempts have been made to fit discrete time state-space
+    models to high-frequency data and estimate price volatility
+    \citep{bollerslev1986,andersen1997intraday}
+    \begin{align*}
+      y_{t+\Delta t} &= F_{t} \theta_t + C_t \mathbf{W}_{t,1} \\
+      \theta_{t+\Delta t} &= G_{t} \theta_t + V_t \mathbf{W}_{t,1}. \\
+    \end{align*}
 
   \item As formulated, such types of models are are not
     robust with respect to the specification of the sampling interval
     \citep{drost1993aggregation, andersen1997intraday,
       zumbach2000pitfalls}.
 
-  \item Inference over shrinking sampling intervals leads to
+  \item Inference over shrinking sampling interval $\Delta t$ leads to
     \textbf{incoherence}.
 
   \item Most recent work has forcused on the \textbf{realized variance} estimator:
@@ -253,7 +267,7 @@ University of California, Santa Cruz \\ % Your institution for the title page
   
   \begin{itemize}
   \item Corrections for the presence of microstructure noise have been
-    successfully proposed in the form of:
+    proposed in the form of:
     \begin{itemize}
     \item sampling sparser grids and averaging,
     \item combining estimators based on subsampled data at different frequencies,
@@ -265,8 +279,12 @@ University of California, Santa Cruz \\ % Your institution for the title page
 \end{frame}
 % ------------------------------------------------
 \begin{frame}
-  \frametitle{A filtering-based approach} Given the \textbf{true}
-  price $S_j$ at sample index $j$, we model the \textbf{measured} price $P_j$ as contaminated by noise due to the bid-ask spread $D$:
+  \frametitle{A filtering-based approach}
+  \framesubtitle{modeling microstructure noise}
+
+  Given the \textbf{true} price $S_j$ at sample index $j$, we model
+  the \textbf{measured} price $P_j$ as contaminated by noise due to
+  the bid-ask spread $D$:
   \begin{align*}
     P_j &= S_j + \nu_j,& \nu_j &\sim U[-D/2, D/2],
   \end{align*}
@@ -285,7 +303,7 @@ University of California, Santa Cruz \\ % Your institution for the title page
 \end{frame}
 % ------------------------------------------------
 \begin{frame}
-  \frametitle{Full \textit{continuous-time} formulation} We represent
+  \frametitle{Stochastic evolution of price and volatility}
   the idealized joint log-price $\log(\hat{S}_t)$ and log-volatility
   $\log(\hat{\sigma}_{t,1}), \log(\hat{\sigma}_{t,2})$ diffusion
   process as the system of SDEs:
@@ -298,8 +316,8 @@ University of California, Santa Cruz \\ % Your institution for the title page
   \begin{itemize}
   \item $\log(\hat{\sigma}_{t,1})$ evolves stochastically with long time scale $1/\hat{\theta}_1,$
   \item $\log(\hat{\sigma}_{t,2})$ evolves stochastically with short time scale $1/\hat{\theta}_2,$
-  \item $dJ_t$ is a compound Poisson process,
-  \item $\hat{\epsilon}_t, \hat{\epsilon}_{t,1}, \hat{\epsilon}_{t,2}$ are Wiener processes with 
+  \item $dJ_t$ is a compound Poisson process modeling jumps,
+  \item $\hat{\epsilon}_t, \hat{\epsilon}_{t,1}, \hat{\epsilon}_{t,2}$ are Normally distributed with 
     \begin{align*}
       \E{\hat{\epsilon}_t\hat{\epsilon}_{t,2}} &= \rho, & \E{\hat{\epsilon}_t\hat{\epsilon}_{t,2}} &= 0, & \E{\hat{\epsilon}_{t,1}\hat{\epsilon}_{t,2}} &= 0.
     \end{align*}
@@ -343,13 +361,12 @@ University of California, Santa Cruz \\ % Your institution for the title page
   \item use the Delta Method to calculate the first two moments of each discrete-time parameter,
   \item define the prior for each discrete-time parameter.
   \end{enumerate}
-
-  Example:
-  \begin{align}
-    \tau^2(\Delta) &\sim \mbox{Inv-Gamma}\left(  a_{\tau^2}(\Delta), b_{\tau^2}(\Delta) \right) \\
-    \mbox{E}(\tau^2(\Delta)) &\approx f(a_{\hat{\tau}^2}, b^2_{\hat{\tau}^2}, \Delta) \\
-    \mbox{Var}(\tau^2(\Delta)) &\approx g(a_{\hat{\tau}^2}, b^2_{\hat{\tau}^2}, \Delta)
-  \end{align}
+  % Example:
+  % \begin{align}
+  %   \tau^2(\Delta) &\sim \mbox{Inv-Gamma}\left(  a_{\tau^2}(\Delta), b_{\tau^2}(\Delta) \right) \\
+  %   \mbox{E}(\tau^2(\Delta)) &\approx f(a_{\hat{\tau}^2}, b^2_{\hat{\tau}^2}, \Delta) \\
+  %   \mbox{Var}(\tau^2(\Delta)) &\approx g(a_{\hat{\tau}^2}, b^2_{\hat{\tau}^2}, \Delta)
+  % \end{align}
 \end{frame}
 % ------------------------------------------------
 \begin{frame}
@@ -382,7 +399,7 @@ University of California, Santa Cruz \\ % Your institution for the title page
   where $d_j$ is the sign of $\epsilon_j$. \pause The joint
   distribution becomes a linear combination of independent Normal
   random variables when we replace the nonlinear $exp(\epsilon^*_{j})$
-  term with the first-order Taylor expansion
+  term with the first-order approximation
   \[
     exp(\epsilon^*_{j}) | \gamma_j \approx \exp(m_{\gamma_j}/2)(a_{\gamma_j} + b_{\gamma_j}(2\epsilon_j^* - m_{\gamma_j}))
   \]
@@ -390,15 +407,15 @@ University of California, Santa Cruz \\ % Your institution for the title page
 \end{frame}
 % ------------------------------------------------
 \begin{frame}
-  \frametitle{Blocked Gibbs sampler with MH steps}
+  \frametitle{Blocked Gibbs sampler with predominantly Metropolis-Hastings and Forward Filter Backward Sampling steps}
   \begin{enumerate}
-  \item sample observational parameters
-  \item sample latent prices
-  \item sample volatility parameters
-  \item sample latent mixture indicators
-  \item sample valatility paths
-  \item sample jump parameters
-  \item sample jumps
+  \item sample observational parameters (MH)
+  \item sample latent prices (FFBS)
+  \item sample volatility parameters (MH)
+  \item sample latent mixture indicators (Discrete)
+  \item sample valatility paths (FFBS)
+  \item sample jump parameters (MH)
+  \item sample jumps (Conjugate prior)
   \end{enumerate}
 \end{frame}
 % ------------------------------------------------
@@ -407,9 +424,9 @@ University of California, Santa Cruz \\ % Your institution for the title page
   \begin{itemize}
     \item We consider 300 simulated data sets over 1 trading day
   
-    \item Percentage of $95\%$ probability/confidence intervals
-      cover the true data-generating integrated volatility
-      $\int \hat{\sigma}_t dt$:
+    \item Coverage : percent of $95\%$ probability/confidence intervals
+      covering the true data-generating integrated volatility
+      $\int \hat{\sigma}^2_t dt$:
   \end{itemize}
   \begin{table}[h]
 \begin{center}
@@ -419,7 +436,7 @@ University of California, Santa Cruz \\ % Your institution for the title page
     &   	60 sec 	&   30 sec   &   15 sec & 5 sec  \\ \hline \hline
     Inference with $\xi^2 = 0$   &  72  &   28  &	 3 & 0 \\
     Inference with $\xi^2$ fixed at prior mean &  79 & 57 & 23 & 0 \\
-    Inference with $\xi^2$ estimated & 91 & 92 & 96 & 97  \\ \hline
+    Inference with $\xi^2$ estimated & \textcolor{red}{91} & \textcolor{red}{92} & \textcolor{red}{96} & \textcolor{red}{97}  \\ \hline
     Inference with kernel-based estimator &  51 & 48 & 59  & 76 \\
     \hline
 \end{tabular}
@@ -429,9 +446,137 @@ University of California, Santa Cruz \\ % Your institution for the title page
 % ------------------------------------------------
 \begin{frame}
   \frametitle{Parameter results for real data example}
-\end{frame}
 
-%------------------------------------------------
+  \centering
+  \begin{tabular}{m{0.25cm}ccc}
+    & Inference with & Inference with & Inference with \\
+    & $\xi^2 = 0$ & $\xi^2\,\, \mbox{fixed at prior mean} $ & $\xi^2 \mbox{ estimated }$ \\
+    % 
+    \begin{sideways} $\Delta = 5$ min \end{sideways}
+    & \begin{minipage}{0.25\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{/home/gdinolov/PDE-solvers/src/SV-with-leverage/paper-revisions-7-11-2016/results-real-data-plots-VOL-PATHS-microstructure-VOL-PATHS-XI-0-dt-3e05-SDs-0.png}
+    \end{minipage}
+                     & \begin{minipage}{0.25\textwidth}
+                       \centering
+                       \includegraphics[width=1\linewidth]{{/home/gdinolov/PDE-solvers/src/SV-with-leverage/paper-revisions-7-11-2016/results-real-data-plots-VOL-PATHS-microstructure-VOL-PATHS-XI-2.5e-07-dt-3e05-SDs-0}.png}
+                     \end{minipage}
+                                      & \begin{minipage}{0.25\textwidth}
+                                        \centering
+                                        \includegraphics[width=1\linewidth]{/home/gdinolov/PDE-solvers/src/SV-with-leverage/paper-revisions-7-11-2016/results-real-data-plots-VOL-PATHS-microstructure-VOL-PATHS-XI-Inf-dt-3e05-SDs-0.png}
+                                      \end{minipage}  \\
+                                      % 
+    % \begin{sideways} $\Delta = 15$ sec \end{sideways}
+    % & \begin{minipage}{0.25\textwidth}
+    %   \centering
+    %   \includegraphics[width=1\linewidth]{/home/gdinolov/PDE-solvers/src/SV-with-leverage/paper-revisions-7-11-2016/results-real-data-plots-VOL-PATHS-microstructure-VOL-PATHS-XI-0-dt-15000-SDs-0.png}
+    % \end{minipage}
+    %                  & \begin{minipage}{0.25\textwidth}
+    %                    \centering
+    %                    \includegraphics[width=1\linewidth]{{/home/gdinolov/PDE-solvers/src/SV-with-leverage/paper-revisions-7-11-2016/results-real-data-plots-VOL-PATHS-microstructure-VOL-PATHS-XI-2.5e-07-dt-15000-SDs-0}.png}
+    %                  \end{minipage}
+    %                                   & \begin{minipage}{0.25\textwidth}
+    %                                     \centering
+    %                                     \includegraphics[width=1\linewidth]{/home/gdinolov/PDE-solvers/src/SV-with-leverage/paper-revisions-7-11-2016/results-real-data-plots-VOL-PATHS-microstructure-VOL-PATHS-XI-Inf-dt-15000-SDs-0.png}
+    %                                   \end{minipage}  \\
+                                      % 
+    \begin{sideways} $\Delta = 5$ sec \end{sideways}
+    & \begin{minipage}{0.25\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{/home/gdinolov/PDE-solvers/src/SV-with-leverage/paper-revisions-7-11-2016/results-real-data-plots-VOL-PATHS-microstructure-VOL-PATHS-XI-0-dt-5000-SDs-0.png}
+    \end{minipage}
+                     & \begin{minipage}{0.25\textwidth}
+                       \centering
+                       \includegraphics[width=1\linewidth]{{/home/gdinolov/PDE-solvers/src/SV-with-leverage/paper-revisions-7-11-2016/results-real-data-plots-VOL-PATHS-microstructure-VOL-PATHS-XI-2.5e-07-dt-5000-SDs-0}.png}
+                     \end{minipage}
+                                      & \begin{minipage}{0.25\textwidth}
+                                        \centering
+                                        \includegraphics[width=1\linewidth]{/home/gdinolov/PDE-solvers/src/SV-with-leverage/paper-revisions-7-11-2016/results-real-data-plots-VOL-PATHS-microstructure-VOL-PATHS-XI-Inf-dt-5000-SDs-0.png}
+                                      \end{minipage}  \\
+                                      %% 
+                                      % \begin{sideways} $\Delta = 1$ sec \end{sideways}
+                                      % & \begin{minipage}{0.25\textwidth}
+                                      %   \centering
+                                      %   \includegraphics[width=1\linewidth]{results/real-data/plots/VOL-PATHS/microstructure-VOL-PATHS-XI-0-dt-1000-SDs-0.png}
+                                      % \end{minipage}
+                                      % & \begin{minipage}{0.25\textwidth}
+                                      %   \centering
+                                      %   \includegraphics[width=1\linewidth]{results/real-data/plots/VOL-PATHS/microstructure-VOL-PATHS-XI-1e-06-dt-1000-SDs-0.png}
+                                      % \end{minipage}
+                                      % & \begin{minipage}{0.25\textwidth}
+                                      %   \centering
+                                      %   \includegraphics[width=1\linewidth]{results/real-data/plots/VOL-PATHS/microstructure-VOL-PATHS-XI-Inf-dt-1000-SDs-0.png}
+                                      % \end{minipage}
+  \end{tabular}
+  Log-volatility paths for the AAPL 03/06/2014 data.
+\end{frame}
+% ------------------------------------------------
+\begin{frame}
+  \frametitle{Parameter results for real data example}
+
+  \centering
+  \begin{tabular}{m{0.25cm}ccc}
+    & Inference with & Inference with & Inference with \\
+    & $\xi^2 = 0$ & $\xi^2\,\, \mbox{fixed at prior mean} $ & $\xi^2 \mbox{ estimated }$ \\
+    % 
+    \begin{sideways} $\Delta = 5$ min \end{sideways}
+    & \begin{minipage}{0.25\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{/home/gdinolov/PDE-solvers/src/SV-with-leverage/paper-revisions-7-11-2016/results-real-data-plots-VOL-PATHS-microstructure-VOL-PATHS-XI-0-dt-3e05-SDs-0.png}
+    \end{minipage}
+                     & \begin{minipage}{0.25\textwidth}
+                       \centering
+                       \includegraphics[width=1\linewidth]{{/home/gdinolov/PDE-solvers/src/SV-with-leverage/paper-revisions-7-11-2016/results-real-data-plots-VOL-PATHS-microstructure-VOL-PATHS-XI-2.5e-07-dt-3e05-SDs-0}.png}
+                     \end{minipage}
+                                      & \begin{minipage}{0.25\textwidth}
+                                        \centering
+                                        \includegraphics[width=1\linewidth]{/home/gdinolov/PDE-solvers/src/SV-with-leverage/paper-revisions-7-11-2016/results-real-data-plots-VOL-PATHS-microstructure-VOL-PATHS-XI-Inf-dt-3e05-SDs-0.png}
+                                      \end{minipage}  \\
+                                      % 
+    % \begin{sideways} $\Delta = 15$ sec \end{sideways}
+    % & \begin{minipage}{0.25\textwidth}
+    %   \centering
+    %   \includegraphics[width=1\linewidth]{/home/gdinolov/PDE-solvers/src/SV-with-leverage/paper-revisions-7-11-2016/results-real-data-plots-VOL-PATHS-microstructure-VOL-PATHS-XI-0-dt-15000-SDs-0.png}
+    % \end{minipage}
+    %                  & \begin{minipage}{0.25\textwidth}
+    %                    \centering
+    %                    \includegraphics[width=1\linewidth]{{/home/gdinolov/PDE-solvers/src/SV-with-leverage/paper-revisions-7-11-2016/results-real-data-plots-VOL-PATHS-microstructure-VOL-PATHS-XI-2.5e-07-dt-15000-SDs-0}.png}
+    %                  \end{minipage}
+    %                                   & \begin{minipage}{0.25\textwidth}
+    %                                     \centering
+    %                                     \includegraphics[width=1\linewidth]{/home/gdinolov/PDE-solvers/src/SV-with-leverage/paper-revisions-7-11-2016/results-real-data-plots-VOL-PATHS-microstructure-VOL-PATHS-XI-Inf-dt-15000-SDs-0.png}
+    %                                   \end{minipage}  \\
+                                      % 
+    \begin{sideways} $\Delta = 5$ sec \end{sideways}
+    & \begin{minipage}{0.25\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{/home/gdinolov/PDE-solvers/src/SV-with-leverage/paper-revisions-7-11-2016/results-real-data-plots-VOL-PATHS-microstructure-VOL-PATHS-XI-0-dt-5000-SDs-0.png}
+    \end{minipage}
+                     & \begin{minipage}{0.25\textwidth}
+                       \centering
+                       \includegraphics[width=1\linewidth]{{/home/gdinolov/PDE-solvers/src/SV-with-leverage/paper-revisions-7-11-2016/results-real-data-plots-VOL-PATHS-microstructure-VOL-PATHS-XI-2.5e-07-dt-5000-SDs-0}.png}
+                     \end{minipage}
+                                      & \begin{minipage}{0.25\textwidth}
+                                        \centering
+                                        \includegraphics[width=1\linewidth]{/home/gdinolov/PDE-solvers/src/SV-with-leverage/paper-revisions-7-11-2016/results-real-data-plots-VOL-PATHS-microstructure-VOL-PATHS-XI-Inf-dt-5000-SDs-0.png}
+                                      \end{minipage}  \\
+                                      %% 
+                                      % \begin{sideways} $\Delta = 1$ sec \end{sideways}
+                                      % & \begin{minipage}{0.25\textwidth}
+                                      %   \centering
+                                      %   \includegraphics[width=1\linewidth]{results/real-data/plots/VOL-PATHS/microstructure-VOL-PATHS-XI-0-dt-1000-SDs-0.png}
+                                      % \end{minipage}
+                                      % & \begin{minipage}{0.25\textwidth}
+                                      %   \centering
+                                      %   \includegraphics[width=1\linewidth]{results/real-data/plots/VOL-PATHS/microstructure-VOL-PATHS-XI-1e-06-dt-1000-SDs-0.png}
+                                      % \end{minipage}
+                                      % & \begin{minipage}{0.25\textwidth}
+                                      %   \centering
+                                      %   \includegraphics[width=1\linewidth]{results/real-data/plots/VOL-PATHS/microstructure-VOL-PATHS-XI-Inf-dt-1000-SDs-0.png}
+                                      % \end{minipage}
+  \end{tabular}
+  Log-volatility paths for the AAPL 03/06/2014 data.
+\end{frame}
 %------------------------------------------------
 \section{Open, Close, High, Low Prices}
 %------------------------------------------------
@@ -502,9 +647,7 @@ $M_Y(t)=\max_{0\leq s\leq t}Y(s),$ $m_Y(t)=\min_{0\leq s\leq t}Y(s)$.
     \frac{\partial}{\partial \tilde{t}} q(\tilde{x},\tilde{y},\tilde{t}) &= \tilde{\mathcal{L}} q(\tilde{x},\tilde{y},\tilde{y}), & (\tilde{x}, \tilde{y}) \in \tilde{\Omega} \\
     \tilde{\mathcal{L}} &= \frac{1}{2} \frac{\partial^2}{\partial \tilde{x}^2} + \rho \sigma_{\tilde{y}} \frac{\partial^2}{\partial \tilde{x} \partial \tilde{y}} + \frac{1}{2} \sigma^2_{\tilde{y}} \frac{\partial^2}{\partial \tilde{y}^2},& \tilde{\Omega} := (0,1) \times (0,1)
   \end{align*}
-  where $0 < \sigma_{\tilde{y}}^2 \leq 1$, and the terminal time
-  $\tilde{T}$ at which we need to evaluate the transition density is
-  bounded below by $0$.
+  where $0 < \sigma_{\tilde{y}}^2 \leq 1$.
 
   \begin{itemize}
   \item This new parameterization makes the computational domain invariant
@@ -528,13 +671,13 @@ $M_Y(t)=\max_{0\leq s\leq t}Y(s),$ $m_Y(t)=\min_{0\leq s\leq t}Y(s)$.
     \[
       \mathcal{O}\left(\frac{\varepsilon_{mach}}{\varepsilon^4} \right) \to \infty \,\,\, \mbox{ as } \,\,\, \varepsilon \to 0,
     \]
-    where $\varepsilon$ is the step size with respect to the boundaries.
+    where $\varepsilon$ is the step size of the numerical differentiation with respect to the boundaries.
   \end{itemize}
 \end{frame}
 % ------------------------------------------------
 
 \begin{frame}
-  \frametitle{Approach 1: Finite Difference}
+  \frametitle{Approach 1: Finite Difference approximation to FP equation}
   Requires the solution to a system of ODEs:
   \begin{align*}
     & \dot{c}(\tilde{t}) = Bc(\tilde{t}) &\Rightarrow& c(\tilde{t}) = \exp\left(B\tilde{t}\right)c(0), 
@@ -557,7 +700,8 @@ $M_Y(t)=\max_{0\leq s\leq t}Y(s),$ $m_Y(t)=\min_{0\leq s\leq t}Y(s)$.
     \right)^{\alpha} \mbox{F}_{reg}(b)}_{\mbox{smooth in } b, \,\,\alpha > 0} \\
     + \underbrace{\left( \frac{1}{k}\right)^{\beta}\mbox{F}_{irreg}(b)}_{\mbox{continuous but not differentiable w.r.t }b, \,\, \beta > 0} + \underbrace{\varepsilon_{mach}F_{round}(b)}_{\mbox{behaves as a R.V}}
   \end{multline*}
-  \item With linear interpolation which arises when function arguments are not on grid points
+\item With linear interpolation which arises when function arguments
+  are not on grid points with respect to boundary differentiation
   \begin{align*}
     \mathcal{O}(F_{irreg}(b)) &= k^\beta/\varepsilon &\Rightarrow \left( \frac{1}{k}\right)^{\beta}\mbox{F}_{irreg}(b) &\to \infty \,\,\, \mbox{as} \,\,\, \varepsilon \to 0.
   \end{align*}
@@ -599,9 +743,11 @@ $M_Y(t)=\max_{0\leq s\leq t}Y(s),$ $m_Y(t)=\min_{0\leq s\leq t}Y(s)$.
     \psi_i(\tilde{x},\tilde{y}),
   \]
   where the basis functions $\psi_i(\tilde{x},\tilde{y})$ satisfy the
-  boundary conditions on $\tilde{\Omega}$. We also require that all
-  first- and second-order derivatives of $\psi_i(\tilde{x},\tilde{y})$
-  are in $L_2(\tilde{\Omega})$.
+  boundary conditions on $\tilde{\Omega}$ and they need not be
+  eigenfunctions but capture some essential features of the
+  solution. We also require that all first- and second-order
+  derivatives of $\psi_i(\tilde{x},\tilde{y})$ are in
+  $L_2(\tilde{\Omega})$.
   \begin{align*}
   \frac{\partial}{\partial \tilde{t}} q^{(k)}(\tilde{x},\tilde{y},\tilde{t}) - \tilde{\mathcal{L}}q^{(k)}(\tilde{x},\tilde{y},\tilde{t}) &:= R_e(k), \\
   q(\tilde{x},\tilde{y},0) - q^{(k)}(\tilde{x},\tilde{y},0) &:= R_0(k).
@@ -609,9 +755,8 @@ $M_Y(t)=\max_{0\leq s\leq t}Y(s),$ $m_Y(t)=\min_{0\leq s\leq t}Y(s)$.
 \end{frame}
 % ------------------------------------------------
 \begin{frame}
-  \frametitle{The Galerkin approach: weak solution to the PDE}
-  The \textit{orthogonality} condition coincides with the
-  Galerkin procedure:
+  \frametitle{The Galerkin approach: weak solution to the PDE} The
+  \textit{orthogonality} condition of the Galerkin procedure:
   \begin{align*}
     \displaystyle \int_{\Omega} R_e(k) \psi_i(\tilde{x},\tilde{y}) d\tilde{x}\,d\tilde{y} &= 0,& \displaystyle \int_{\Omega} R_0(k) \psi_i(\tilde{x},\tilde{y}) d\tilde{x}\,d\tilde{y} &= 0,& i = 0,\ldots k, 
   \end{align*}
@@ -637,7 +782,7 @@ $M_Y(t)=\max_{0\leq s\leq t}Y(s),$ $m_Y(t)=\min_{0\leq s\leq t}Y(s)$.
   \begin{itemize}
   \item Align basis elements along the principal axis of the differential operator,
   \item Spacing between nodes is $l$ times the bandwidth $\tilde{\sigma}$ in each principal direction
-  \item This scheme is aimed at better resolving the initial condition (elaborated below)
+  \item This scheme is aimed at better resolving the correlatio in the solution
   \end{itemize}
 \end{frame}
 % ------------------------------------------------
@@ -666,12 +811,16 @@ $M_Y(t)=\max_{0\leq s\leq t}Y(s),$ $m_Y(t)=\min_{0\leq s\leq t}Y(s)$.
   %   of final node points $\{ (x_i,y_i) \}_{i=0}^{k}$ is contained
   %   within $\Omega$ and is denoted by the red solid points.}
 \end{figure}
-A sample grid design for $l=1$, $\sigma=0.3$ and $\rho=0.6$. The left
-panel corresponds to the initial grid $\{ (x'_j,y'_j) \}_{j=0}^{k'}$
-over $\Omega$ (solid black square). The right panel depicts the
-rotated initial grid. The set of final node points
-$\{ (x_i,y_i) \}_{i=0}^{k}$ is contained within $\Omega$ and is
-denoted by the red solid points.
+\begin{itemize}
+  \item A sample grid design for $l=1$, $\tilde{\sigma}=0.3$ and
+    $\tilde{\rho}=0.6$.
+  \item \textbf{Left:} Grid along coordinates of observed prices
+    within the computational domain (solid black square).
+  \item \textbf{Right:} Grid along the major axes of the basis
+    element kernels. The set of final node points
+    $\{ (x_i,y_i) \}_{i=0}^{k}$ is contained within the computational
+    domain and is denoted by the red solid points.
+\end{itemize}
 \end{frame}
 % ------------------------------------------------
 \begin{frame}
@@ -687,18 +836,24 @@ denoted by the red solid points.
   \begin{tabular}{cc}
     \begin{minipage}{0.3\textwidth}
       \centering
-      \includegraphics[width=1\linewidth]{../small-time-solution-contour.png}
+      \includegraphics[width=1\linewidth]{../small-time-solution.png}
     \end{minipage}
     %%
     & \begin{minipage}{0.3\textwidth}
       \centering
-      \includegraphics[width=1\linewidth]{../small-time-solution.png}
+      \includegraphics[width=1\linewidth]{../small-time-solution-contour.png}
     \end{minipage}
   \end{tabular}
   %%
   %%
 \end{figure}
+\item \textbf{Left:} Computational domain small-time solution under
+  transformation where diffusion parameters are both unity and
+  correlation is zero.
+  \item \textbf{Right:} Contour of small-time solution in original coordinate system.
 \end{itemize}
+
+
 \end{frame}
 % ------------------------------------------------
 \begin{frame}
@@ -740,9 +895,11 @@ elements $k$ and number of data points $n$ go to infinity.
 % ------------------------------------------------
 \begin{frame}
   \frametitle{Results and solution behavior for small $\tilde{t}$}
+  \framesubtitle{Here we consider the parameters defining the basis family
+  $(\tilde{\rho}, \tilde{\sigma})$}
   \begin{figure}
   \centering
-  \includegraphics[scale=0.5]{../chapter-2/figures/{limitations-rho-0.95-data-point-4}.pdf}
+  \includegraphics[scale=0.45]{../chapter-2/figures/{limitations-rho-0.95-data-point-4}.pdf}
 \end{figure}
 The behavior of Galerkin solution is valid only up to a some small time $\tilde{t}$.
 \end{frame}
@@ -807,15 +964,18 @@ The behavior of Galerkin solution is valid only up to a some small time $\tilde{
       \includegraphics[width=1\linewidth]{../chapter-2/results/mle-results-rho-0.95-n-16/estimates-sigma-y.pdf}
     \end{minipage}
   \end{tabular}
-  \caption{Data generated with $\rho=0.95$. Kernel-density
-    approximations of the repeated-sampling densities of the MLEs are
-    shown.  Samples are obtained from the Galerkin likelihood (green)
-    and the classical likelihood (red) and the Rogers estimator
-    (blue). The data-generating parameters are denoted with the
-    vertical solid line.}
-  \label{fig:mle-comparison-rho-0.95}
+
 \end{figure}
-  
+\begin{itemize}
+\item Data generated with $\rho=0.95$. Kernel-density approximations
+  of the repeated-sampling densities of the MLEs are shown.  Samples
+  are obtained from the Galerkin likelihood (green) and the classical
+  Gaussian likelihood (red) The data-generating parameters are denoted
+  with the vertical solid line.
+
+\item The Rogers estimator (blue) is the only existing correlatino estimator for
+  bivariate OCHL data.
+  \end{itemize}
 \end{frame}
 
 
