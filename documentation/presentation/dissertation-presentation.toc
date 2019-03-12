@@ -3,4 +3,4 @@
 \beamer@sectionintoc {2}{High-Frequency Prices}{5}{0}{2}
 \beamer@sectionintoc {3}{Bivariate Open, Close, High, Low Prices}{19}{0}{3}
 \beamer@sectionintoc {4}{Open, Close, High, Low Prices: Small Time Solution}{44}{0}{4}
-\beamer@sectionintoc {5}{Future Work}{56}{0}{5}
+\beamer@sectionintoc {5}{Future Work}{57}{0}{5}

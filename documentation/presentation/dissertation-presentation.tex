@@ -165,7 +165,8 @@
 \author{Georgi Dinolov} % Your name
 \institute[UCSC] % Your institution as it will appear on the bottom of every slide, may be shorthand to save space
 {
-University of California, Santa Cruz \\ % Your institution for the title page
+  University of California, Santa Cruz \\ % Your institution for the title page
+  Baskin School of Engineering \\
 \medskip
 \textit{gdinolov@soe.ucsc.edu} % Your email address
 }
@@ -184,7 +185,7 @@ University of California, Santa Cruz \\ % Your institution for the title page
 \item High-Frequency Prices and Inference
 \item Open, Close, High, Low Prices
   \begin{itemize}
-  \item Galerkin soluiton
+  \item Galerkin solution
   \item Small-time Analytic Solution and Gap-Fill Approximation
   \end{itemize}
 \end{enumerate}
@@ -199,13 +200,13 @@ University of California, Santa Cruz \\ % Your institution for the title page
 %------------------------------------------------
 
 \begin{frame}
-\frametitle{Two data types: High-Frequency}
+\frametitle{Data type: High-Frequency Prices}
 
 \begin{itemize}
-  \item Longitudonal view
+  \item Longitudinal view
 \begin{table}
 \begin{tabular}{|c|c|c|}
-  Timestamp & Volume& Price \\
+  Time-stamp & Volume& Price \\
   \hline
   2011-08-01 03:02:52.112434 & 1000 & 179.6400 \\
   \hline
@@ -236,7 +237,7 @@ University of California, Santa Cruz \\ % Your institution for the title page
 
 
 \begin{frame}
-\frametitle{Two data types: Open, Close, High, Low}
+\frametitle{Data type: Open, Close, High, Low prices}
 
 \begin{figure}
   \includegraphics[width=1\textwidth]{/home/gdinolov/PDE-solvers/src/kernel-expansion/documentation/presentation/OCHL.png}
@@ -288,7 +289,7 @@ University of California, Santa Cruz \\ % Your institution for the title page
   \item Inference over shrinking sampling interval $\Delta t$ leads to
     \textbf{incoherence}.
 
-  \item Most recent work has forcused on the \textbf{realized variance} \cite{comte1998long} estimator:
+  \item Most recent work has focused on the \textbf{realized variance} \cite{comte1998long} estimator:
     \[
       RV_T := \sum_{i=1}^{N/\Delta t} r_{t_i}^2,
     \]
@@ -308,7 +309,7 @@ University of California, Santa Cruz \\ % Your institution for the title page
     proposed in the form of:
     \begin{itemize}
     \item sampling sparser grids and averaging \cite{zhang2005tale},
-    \item combining estimators based on subsampled data at different frequencies \cite{ait2011ultra},
+    \item combining estimators based on sub-sampled data at different frequencies \cite{ait2011ultra},
     \item kernel-based estimation \cite{hansen2006realized, barndorff2008designing}.
     \end{itemize}
   \item Disadvantages: averages out information; no inherent
@@ -445,13 +446,13 @@ University of California, Santa Cruz \\ % Your institution for the title page
 \end{frame}
 % ------------------------------------------------
 \begin{frame}
-  \frametitle{Blocked Gibbs sampler with predominantly Metropolis-Hastings and Forward Filter Backward Sampling steps}
+  \frametitle{Blocked Gibbs sampler with predominantly Metropolis-Hastings and Forward Filtering Backward Sampling steps}
   \begin{enumerate}
   \item sample observational parameters (MH)
   \item sample latent prices (FFBS)
   \item sample volatility parameters (MH)
   \item sample latent mixture indicators (Discrete)
-  \item sample valatility paths (FFBS)
+  \item sample volatility paths (FFBS)
   \item sample jump parameters (MH)
   \item sample jumps (Conjugate prior)
   \end{enumerate}
@@ -460,6 +461,8 @@ University of California, Santa Cruz \\ % Your institution for the title page
 \begin{frame}
   \frametitle{Estimating integrated volatility}
   \begin{itemize}
+  \item
+    $\zeta \sim N(0, \xi^2)$
     \item We consider 300 simulated data sets over 1 trading day
   
     \item Coverage : percent of $95\%$ probability/confidence intervals
@@ -619,12 +622,12 @@ University of California, Santa Cruz \\ % Your institution for the title page
 \section{Bivariate Open, Close, High, Low Prices}
 %------------------------------------------------
 \begin{frame}
-  \frametitle{Open, Close, High, Low Prices}
+  \frametitle{Bivariate Open, Close, High, Low Prices}
   \begin{itemize}
-  \item Some work has been done in the univariate case
+  \item Work has been done in the univariate case
   \item No equivalent results in the bivariate setting
   \item There exists only a single estimator in the literature which
-    used bivarate OCHL to estimate asset correlation.
+    used bivariate OCHL to estimate asset correlation \cite{rogers2008estimating} (Rogers estimator)
   \end{itemize}
 \end{frame}
 % ------------------------------------------------
@@ -673,8 +676,8 @@ $M_Y(t)=\max_{0\leq s\leq t}Y(s),$ $m_Y(t)=\min_{0\leq s\leq t}Y(s)$.
   \begin{multline*}
     \displaystyle \frac{\partial}{\partial t'} q(x,y,t') = -\mu_x \frac{\partial}{\partial x}q(x,y,t')
     - \mu_y \frac{\partial}{\partial y}q(x,y,t') + \\
-    \frac{1}{2}\sigma_x^2 \frac{\partial^2}{\partial x^2}q(x,y,t') + \rho\sigma_x\sigma_y \frac{\partial^2}{\partial x \partial y}q(x,y,t')
-    + \frac{1}{2}\sigma_y^2 \frac{\partial^2}{\partial y^2}q(x,y,t'),
+    \frac{1}{2}\sigma_x^2 \frac{\partial^2}{\partial x^2}q(x,y,t') + \color{red}{\rho\sigma_x\sigma_y \frac{\partial^2}{\partial x \partial y}  q(x,y,t')}
+    \color{black}{ + \frac{1}{2}\sigma_y^2 \frac{\partial^2}{\partial y^2}q(x,y,t')},
   \end{multline*}
   \begin{align*}
     q(a_x, y,t') &= q(b_x,y,t') = q(x,a_y,t') = q(x,b_y,t') = 0, & 0 &< t' \leq t, \\
@@ -843,7 +846,7 @@ $M_Y(t)=\max_{0\leq s\leq t}Y(s),$ $m_Y(t)=\min_{0\leq s\leq t}Y(s)$.
   \begin{itemize}
   \item Align basis elements along the principal axis of the differential operator,
   \item Spacing between nodes is $l$ times the bandwidth $\tilde{\sigma}$ in each principal direction
-  \item This scheme is aimed at better resolving the correlatio in the solution
+  \item This scheme is aimed at better resolving the correlation in the solution
   \end{itemize}
 \end{frame}
 % ------------------------------------------------
@@ -887,7 +890,7 @@ $M_Y(t)=\max_{0\leq s\leq t}Y(s),$ $m_Y(t)=\min_{0\leq s\leq t}Y(s)$.
 \begin{frame}
   \frametitle{Small-time solution to the Fokker-Planck equation}
   \begin{itemize}
-  \item A semi-analytic soluiont for a small time $\tilde{t}_\epsilon$ allows us to project a smooth function onto our basis family instead of a $\delta$-function
+  \item A semi-analytic solution for a small time $\tilde{t}_\epsilon$ allows us to project a smooth function onto our basis family instead of a $\delta$-function
   \item This reduces the numerical error of the Galerkin solver
     \begin{figure}
       \centering
@@ -1060,7 +1063,7 @@ The behavior of Galerkin solution is valid only up to a some small time $\tilde{
 \section{Open, Close, High, Low Prices: Small Time Solution}
 % ------------------------------------------------
 \begin{frame}
-Open, Close, High, Low Prices: Small Time Solution and Gap-Fill Solution
+\frametitle{Open, Close, High, Low Prices: Small Time Solution and Gap-Fill Solution}
 \end{frame}
 \begin{frame}
   \frametitle{Method of images and analytic differentiability}
@@ -1083,7 +1086,7 @@ Performing the set of reflections
   \left\{ 2,4,1,3 \right\} \cup \left\{ 2,4,3,1 \right\} \cup \left\{ 4,2,1,3 \right\} \cup \left\{ 4,2,3,1 \right\}. 
 \end{align*}
 produces a sum of images where only four elements are differentiable
-with respecto to all four boundaries:
+with respect to all four boundaries:
 
 \[
   \frac{\partial^4 p_\epsilon(\tilde{x}, \tilde{y}, \tilde{t})}{\partial a_x \partial b_x \partial a_y \partial b_y}  = \sum_{j'=1}^{4}
@@ -1139,7 +1142,7 @@ with respecto to all four boundaries:
   The likelihood computed with the Galerkin solution as a
 function of $\tilde{t}$ is of the form
 \begin{align*}
-  \frac{\partial^4 p_{G}(\tilde{x}, \tilde{y}, \tilde{t})}{\partial a_x
+  \frac{\partial^4 q_{\mbox{Galerkin}}(\tilde{x}, \tilde{y}, \tilde{t})}{\partial a_x
   \partial b_x \partial a_y \partial b_y} = \sum_{k=1}^{K} e^{-\lambda_k\tilde{t}} p_k^{(4)}(\tilde{t}),
 \end{align*}
 where $p_i^{(4)}(\tilde{t})$ is a fourth-order polynomial. This
@@ -1150,10 +1153,10 @@ $(\tilde{x}, \tilde{y})$
 
 
 \begin{itemize}
-\item This suggests a leading-order approximation that is fitted with the Galerking solver via least squares:
+\item This suggests a leading-order approximation that is fitted with the Galerkin solver via least squares:
   \begin{align*}
-     f_{LS}(\tilde{t}) &= \tilde{t}^4 \left( \omega_1 e^{-\lambda_1\tilde{t}} + \omega_2 e^{-\lambda_2\tilde{t}}\right), \\
-    \Rightarrow \log f_{LS}(\tilde{t}) &= \log(\omega_1) + 4 \log(\tilde{t}) -\lambda_1\tilde{t} + \log\left(1 + \omega_2/\omega_1 e^{-(\lambda_2-\lambda_1)\tilde{t}} \right)
+     f_{\mbox{Galerkin}}(\tilde{t}) &= \tilde{t}^4 \left( \omega_1 e^{-\lambda_1\tilde{t}} + \omega_2 e^{-\lambda_2\tilde{t}}\right), \\
+    \log f_{\mbox{Galerkin}}(\tilde{t}) &= \log(\omega_1) + 4 \log(\tilde{t}) -\lambda_1\tilde{t} + \log\left(1 + \omega_2/\omega_1 e^{-(\lambda_2-\lambda_1)\tilde{t}} \right)
   \end{align*}
 \end{itemize}
 \end{frame}
@@ -1185,8 +1188,10 @@ $(\tilde{x}, \tilde{y})$
 \end{frame}
 % ------------------------------------------------
 \begin{frame}
+  \frametitle{Gap-fill solution}
   \begin{align*}
-    \log f_{LS}(\tilde{t}) &= \log(\omega_1) + 4 \log(\tilde{t}) -\lambda_1\tilde{t} + \log\left(1 + \omega_2/\omega_1 e^{-(\lambda_2-\lambda_1)\tilde{t}} \right) \\
+    \log f_{\mbox{Galerkin}}(\tilde{t}) &\approx \log(\omega_1) + 4 \log(\tilde{t}) -\lambda_1\tilde{t} + \log\left(1 + \omega_2/\omega_1 e^{-(\lambda_2-\lambda_1)\tilde{t}} \right) \\
+    \log f_{\mbox{small-time}}(\tilde{t}) &\approx \log(K) - 4.5\log(\tilde{t})  - \frac{\beta_1}{\tilde{t}} + \log(c_1) + \log\left(1 + \epsilon(\tilde{t}) \right), \\
     \log f_{\mbox{gap}}(\tilde{t}) &= \log(\omega(\tilde{t})) -
                                          \gamma(\tilde{t})\log(\tilde{t}) -
                                          \frac{\beta(\tilde{t})}{\tilde{t}}
@@ -1203,10 +1208,7 @@ $(\tilde{x}, \tilde{y})$
     the maximum of the LS solution,
     $\omega(\tilde{t}), \gamma(\tilde{t}),$ and $\beta(\tilde{t})$ are
     chosen to match the value, first, and second derivatives of the
-    logarithmic form of the LS solution. The form of the parameters
-    between $\tilde{t}^*$ and $\tilde{t}_m$ is chosen to be a sigmoid
-    function which rapidly transitions away from $\tilde{t}^*$ and is the
-    same for all three parameters.
+    logarithmic form of the Galerkin approximate log-likelihood.
   \end{itemize}
   \end{frame}
 
@@ -1216,7 +1218,13 @@ $(\tilde{x}, \tilde{y})$
       \gamma(\tilde{t}) &= \gamma(\tilde{t}^*)e^{-k(\tilde{t}-\tilde{t}^*)} + \gamma(\tilde{t}_m)\left(1-e^{-k(\tilde{t}-\tilde{t}^*)}\right), \\
       \beta(\tilde{t}) &= \beta(\tilde{t}^*)e^{-k(\tilde{t}-\tilde{t}^*)} + \beta(\tilde{t}_m)\left(1-e^{-k(\tilde{t}-\tilde{t}^*)}\right).
     \end{align*}
-\end{frame}
+  \end{frame}
+  
+  \begin{frame}
+    \centering
+  \includegraphics[scale=0.55]{../chapter-2/figures/{limitations-rho-0.95-data-point-4}.pdf}  
+  \end{frame}
+  
 % ------------------------------------------------
 \begin{frame}
   \centering
@@ -1256,6 +1264,11 @@ $(\tilde{x}, \tilde{y})$
 \end{frame}
 
 \begin{frame}
+  \centering
+  Thank you
+\end{frame}
+
+\begin{frame}
   \frametitle{Illustration of proof for existence}
     \begin{tabular}{cc}
     \begin{minipage}{0.5\textwidth}
@@ -1269,6 +1282,204 @@ $(\tilde{x}, \tilde{y})$
     \end{minipage}
   \end{tabular}
 \end{frame}
+
+\begin{frame}[allowframebreaks]
+  \frametitle{Prior elicitation example}
+
+  \textbf{Prior for } $\boldsymbol{\theta}_i(\boldsymbol{\Delta})$: The discrete-time autocorrelation coefficient $\theta(\Delta)$ of the volatility process is bounded above by 1 and below by 0 such that $\log(\sigma_j)$ is bounded as $j \to \infty$.  Hence, we employ a truncated normal prior for $\theta(\Delta)$,
+$$
+p(\theta(\Delta)) \propto N\left(a_{\theta}(\Delta), b^2_{\theta}(\Delta) \right) \Indicator{\theta(\Delta) \in [0,1]},
+$$
+which leads again to a tractable computational algorithm. Note that because of the truncation,
+\begin{align}
+\E{\theta(\Delta)} &= a_{\theta}(\Delta) + \frac{ \phi\left( -\frac{a_{\theta}(\Delta)}{b_{\theta}(\Delta)} \right) - \phi\left(\frac{1- a_{\theta}(\Delta)}{b_{\theta}(\Delta)} \right)}{\Phi\left( \frac{1- a_{\theta}(\Delta) }{b_{\theta}(\Delta)} \right) - \Phi\left( -\frac{a_{\theta}(\Delta)}{b_{\theta}(\Delta)} \right)}  b_{\theta}(\Delta)  \label{eq:meantheta1} \\
+%%%%%%
+\Var{\theta(\Delta)} &= b^2_{\theta}(\Delta)  \left[ 1 + \frac{ -\frac{a_{\theta}(\Delta)}{b_{\theta}(\Delta)}\phi\left( -\frac{a_{\theta}(\Delta)}{b_{\theta}(\Delta)} \right) - \frac{1- a_{\theta}(\Delta)}{b_{\theta}(\Delta)}\phi\left(\frac{1- a_{\theta}(\Delta)}{b_{\theta}(\Delta)} \right)}{\Phi\left( \frac{1- a_{\theta}(\Delta) }{b_{\theta}(\Delta)} \right) - \Phi\left( -\frac{a_{\theta}(\Delta)}{b_{\theta}(\Delta)} \right)}   \right.  \nonumber \\ &      \left.
+%
++\left\{ \frac{ \phi\left( -\frac{a_{\theta}(\Delta)}{b_{\theta}(\Delta)} \right) - \phi\left(\frac{1- a_{\theta}(\Delta)}{b_{\theta}(\Delta)} \right)}{\Phi\left( \frac{1- a_{\theta}(\Delta) }{b_{\theta}(\Delta)} \right) - \Phi\left( -\frac{a_{\theta}(\Delta)}{b_{\theta}(\Delta)} \right)} \right\}^2    \label{eq:vartheta1}
+\right]
+\end{align}
+where $\phi(\cdot)$ and $\Phi(\cdot)$ denote the density and the cumulative distribution functions of the standard normal distribution.  Now, given the prior mean $\ha_{\htheta}$ and variance $\hb^2_{\htheta}$ for $\htheta$, we choose the values of $a_{\theta}(\Delta)$ and $b_{\theta}(\Delta)$ so that the mean and variance of $\theta(\Delta)$ above are approximately equal to the mean and variance of $\exp\left\{ -\htheta \Delta \right\}$. To simplify calculation of the moments of $\exp\left\{ -\htheta \Delta \right\}$ we use a second-order Taylor expansion of $\exp\left\{ -\hat{\theta} \Delta \right\}$ to approximate the first two moments of $\theta(\Delta)$ in terms of $\ha_{\htheta}$ and $\hb^2_{\theta}$, an approach known as the Delta-Method (e.g., see \cite{casella2002statistical}):
+\begin{align}
+\E{\expo{-\htheta \Delta}} &\approx \exp \left(-\ha_{\htheta} \Delta \right) \left( 1 + \frac{1}{2} \hb_{\htheta}^2 \Delta^2 \right) \label{eq:e-theta-delta}, \\
+%
+\E{\expo{-2\htheta \Delta}} &\approx \exp \left(-2\ha_{\htheta} \Delta \right) \left( 1 + 2 \hb_{\htheta}^2 \Delta^2 \right) \label{eq:var-theta-delta}.
+\end{align}
+Using \eqref{eq:meantheta1}, \eqref{eq:vartheta1}, \eqref{eq:e-theta-delta}, and \eqref{eq:var-theta-delta}, and by setting
+\begin{align*}
+  \E{\theta(\Delta)}  &= \E{\expo{-\htheta \Delta}},& \Var{\theta(\Delta)} &= \Var{\expo{-\htheta \Delta}},
+\end{align*}
+we obtain a system of two equations with two unknowns that can be solved numerically to find the values of $a_\theta(\Delta)$ and $b^2_\theta(\Delta)$ in terms of $\ha_{\htheta}$, $\hb^2_{\htheta}$, and $\Delta$.
+
+To elicit $\ha_{\htheta}$ and $\hb^2_{\htheta}$, recall that $\hat{\theta}$ is the inverse of the time scale of inertia for $\log(\hsigma_t)$ in the continuous-time formulation, which can be thought of as the characteristic time length, or unit of time, over which the process for the diffusion of $\log(\hsigma_t)$ ``forgets'' about an endogenous shock. The two hyper-parameters can be chosen so that the prior probability mass for $\htheta$ permits a reasonable range for the timescale of inertia.
+\end{frame}
+
+
+\begin{frame}{Solution by Method of Images: single dimension}
+
+\begin{centering}
+
+\vspace{-15mm}
+
+\begin{tabular}{ccc}
+
+\hspace{-10mm}
+
+\begin{minipage}{0.3\textwidth}
+
+	\includegraphics[scale=0.4,angle=0]{ic.pdf}
+
+\end{minipage}
+
+\pause
+
+
+
+&
+
+
+
+\begin{minipage}{0.3\textwidth}
+
+	\includegraphics[scale=0.4,angle=0]{g0.pdf}
+
+\end{minipage}
+
+\pause
+
+
+
+&	
+
+
+
+\begin{minipage}{0.3\textwidth}
+
+	\includegraphics[scale=0.4,angle=0]{g0r0.pdf}
+
+\end{minipage}
+
+\vspace{-15mm}
+
+\\\hspace{-10mm}
+
+\pause
+
+
+
+\begin{minipage}{0.3\textwidth}
+
+	\includegraphics[scale=0.4,angle=0]{g1.pdf}
+
+\end{minipage}
+
+\pause
+
+
+
+&
+
+
+
+\begin{minipage}{0.3\textwidth}
+
+	\includegraphics[scale=0.4,angle=0]{g1r1.pdf}
+
+\end{minipage}
+
+\pause
+
+
+
+&
+
+
+
+\begin{minipage}{0.3\textwidth}
+
+	\includegraphics[scale=0.4,angle=0]{g2.pdf}
+
+\end{minipage}
+
+\vspace{-15mm}
+
+\\\hspace{-10mm}
+
+\pause
+
+
+
+\begin{minipage}{0.3\textwidth}
+
+	\[ \]
+
+\end{minipage}
+
+
+
+&
+
+
+
+\begin{minipage}{0.3\textwidth}
+
+	\includegraphics[scale=0.4,angle=0]{g3.pdf}
+
+\end{minipage}
+
+\vspace{-20mm}
+
+
+
+& 
+
+
+
+\begin{minipage}{0.3\textwidth}
+
+	\[ \]
+
+\end{minipage}
+
+
+
+
+
+\end{tabular}
+
+\end{centering}
+
+
+
+
+
+\end{frame}
+
+
+\begin{frame}{Solution by Method of Images: bivariate case}
+ 
+{\color{red} Method of Images does not work in generate.}
+\vspace{10mm}
+%\[
+%\frac{\partial p(\boldsymbol{\zeta},s)}{\partial s} = \frac{1}{2}\tilde{\sigma}_1^2 \frac{\partial^2}{\partial \zeta_1^2} p(\boldsymbol{\zeta},s) + \frac{1}{2} \tilde{\sigma}_2^2 \frac{\partial^2}{\partial^2 \zeta_2}p(\boldsymbol{\zeta},s).
+%\]
+
+\begin{tabular}{cc}
+\begin{minipage}{5cm}
+\begin{center}
+\includegraphics[scale=0.5,angle=0]{unmodified-reflection.pdf}
+\end{center}
+\end{minipage}
+&
+\begin{minipage}{5cm}
+\begin{center}
+\includegraphics[scale=0.6,angle=0]{transformed-reflection.pdf}\\
+\end{center}
+\end{minipage}
+\end{tabular}
+
+\end{frame}
+
 
 
 \begin{frame}[allowframebreaks]
